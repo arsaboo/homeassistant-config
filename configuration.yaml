@@ -304,7 +304,7 @@ history:
       - sensor.plexspy
 recorder:
   purge_days: 3
-  #db_url: !secret recorder_db_url
+  db_url: !secret recorder_db_url
   exclude:
     domains:
       - sun
