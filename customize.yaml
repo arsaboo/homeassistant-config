@@ -1,0 +1,202 @@
+#################################################################
+## Customize
+#################################################################
+     climate.downstairs:
+       friendly_name: EcobeeDown
+       entity_picture: /local/Ecobee.png
+     climate.upstairs:
+       friendly_name: EcobeeUp
+       entity_picture: /local/Ecobee.png
+#devices
+
+     device_tracker.myiphone:
+       icon: mdi:cellphone-iphone
+       friendly_name: Alok's iPhone
+     device_tracker.pi_alokphone:
+       icon: mdi:cellphone-iphone
+       friendly_name: Alok's iPhone MQTT
+     device_tracker.rashmisiphone:
+       icon: mdi:cellphone-iphone
+       friendly_name: Rashmi's iPhone
+     device_tracker.pi_rashmiphone:
+       icon: mdi:cellphone-iphone
+       friendly_name: Rashmi's iPhone MQTT
+     device_tracker.alokdelllatitude:
+       icon: mdi:laptop-windows
+       friendly_name: Dell Laptop
+     device_tracker.gameroom:
+       icon: mdi:access-point-network
+       friendly_name: Ubiquiti Unifi
+     device_tracker.harmonyhub:
+       icon: mdi:remote
+       friendly_name: Logitech Harmony
+     device_tracker.hpaio:
+       icon: mdi:desktop-mac
+       friendly_name: HP AIO
+     device_tracker.toshibaaio:
+       icon: mdi:desktop-mac
+       friendly_name: Toshiba AIO
+     device_tracker.44650d8ae465:
+       friendly_name: Echo Dot
+       icon: mdi:amazon
+     device_tracker.94a1a273348b:
+       friendly_name: BloomSky
+       icon: mdi:compass-outline
+    #  device_tracker.alok_29677a2f60cb45e1a9ef0fce8c1cb8ac:
+    #    entity_picture: /local/life360.png
+    #    friendly_name: Alok Life360
+    #  device_tracker.sonu_1169166c6fc048c98e47b8bbd0423d54:
+    #    entity_picture: /local/life360.png
+    #    friendly_name: Rashmi Life360
+     device_tracker.alok_alok:
+       entity_picture: /local/life360.png
+       friendly_name: Alok Life360
+     device_tracker.sonu_sonu:
+       entity_picture: /local/life360.png
+       friendly_name: Rashmi Life360
+
+ #weather
+     sensor.ars_bloom_voltage:
+       friendly_name: 'BloomSky Voltage'
+       icon: mdi:battery
+     binary_sensor.ars_bloom_rain:
+       friendly_name: 'BloomSky Rain'
+     sensor.ars_bloom_humidity:
+       friendly_name: 'BloomSky Humidity'
+       icon: mdi:water-percent
+     sensor.pws_pressure_in:
+       friendly_name: 'Outdoor Pressure'
+       icon: mdi:gauge
+     sensor.pws_wind_dir:
+       friendly_name: 'Wind Direction'
+       icon: mdi:compass-outline
+     sensor.pws_wind_string:
+       friendly_name: 'Wind Summary'
+       icon: mdi:weather-windy
+     sensor.leeotemp:
+       icon: mdi:thermometer-lines
+     sensor.leeohumid:
+       icon: mdi:water-percent
+     sensor.leeouptemp:
+       icon: mdi:thermometer-lines
+     sensor.leeouphumid:
+       icon: mdi:water-percent
+     sensor.leeoalarmstatus:
+       icon: mdi:fire
+     sensor.ars_bloom_temperature:
+       friendly_name: 'BloomSky Temperature'
+     sensor.pws_temp_f:
+       friendly_name: 'Outdoor Temperature'
+       icon: mdi:thermometer
+     sensor.pws_weather:
+       friendly_name: 'Weather Summary'
+     sensor.pws_relative_humidity:
+       icon: mdi:water-percent
+       friendly_name: 'Outdoor Humidity'
+     sensor.dark_sky_cloud_coverage:
+       friendly_name: 'Cloud Coverage'
+     sensor.dark_sky_daily_summary:
+       friendly_name: 'Daily Summary'
+     sensor.dark_sky_hourly_summary:
+       friendly_name: 'Hourly Summary'
+     group.weather:
+       icon: mdi:weather-pouring
+     group.information:
+       icon: mdi:information-outline
+     group.all_automations:
+       hidden: false
+       friendly_name: 'Automations'
+     group.all_scripts:
+       hidden: false
+       friendly_name: 'Scripts'
+     group.all_devices:
+       hidden: false
+       friendly_name: 'Devices'
+     group.all_lights:
+       hidden: false
+       friendly_name: 'Lights'
+     group.all_switches:
+       hidden: false
+       friendly_name: 'Switches'
+     remote.livingroom:
+       friendly_name: 'Livingroom Remote'
+       icon: mdi:remote
+     sensor.living_room:
+       friendly_name: 'Harmony Activity'
+       entity_picture: /local/Harmony.png
+     sensor.usd_inr:
+       friendly_name: USD/INR
+       icon: mdi:currency-inr
+     sensor.usd_eur:
+       friendly_name: USD/EUR
+       icon: mdi:currency-eur
+
+     sensor.hoursslept:
+       icon: mdi:sleep
+     sensor.google_travel_time:
+       friendly_name: 'Morning Commute'
+       icon: mdi:car
+     sensor.morning_commute:
+       friendly_name: 'Morning Commute'
+       icon: mdi:car
+     sensor.evening_commute:
+       friendly_name: 'Evening Commute'
+       icon: mdi:car
+     sensor.garagedoor:
+       icon: mdi:glassdoor
+     media_player.castlivingroom:
+       friendly_name: Chromecast
+     media_player.shieldtv:
+       friendly_name: ShieldTV Cast
+     media_player.my_shield_android_tv:
+       friendly_name: Shield TV
+     thermostat.main_floor:
+       icon: mdi:thermometer-lines
+     thermostat.upstairs:
+       icon: mdi:thermometer-lines
+     sensor.downstairs_humidity:
+       icon: mdi:water-percent
+     sensor.downstairsthermmode:
+       icon: mdi:home
+     sensor.upstairs_humidity:
+       icon: mdi:water-percent
+     sensor.upstairshermostatmode:
+       icon: mdi:home
+
+ #Emulated_Hue Devices
+     input_boolean.abodeupdate:
+       emulated_hue: true
+     input_boolean.startrecording:
+       emulated_hue: true
+     input_boolean.alokhome:
+       emulated_hue: true
+     input_boolean.rashmihome:
+       emulated_hue: true
+     switch.driveway:
+       emulated_hue: true
+       emulated_hue_name: "Driveway Light"
+       friendly_name: "Driveway Light"
+     switch.garage_relay_switch_8_0:
+       emulated_hue: true
+       emulated_hue_name: "Garage Door"
+       friendly_name: Garage Door Switch
+
+     climate.ecobee:
+       max_temp: 90
+       min_temp: 55
+     zone.home:
+       track_ios: true
+      #  beacon:
+      #    uuid: 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6
+      #    major: 0
+      #    minor: 0
+     zone.buckhead:
+       track_ios: true
+     zone.downtown:
+       track_ios: true
+     script.colorloop_start:
+       icon: mdi:palette
+     script.lifx_stop_effects:
+       icon: mdi:palette
+     script.disco_party:
+       icon: mdi:palette

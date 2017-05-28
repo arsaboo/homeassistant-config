@@ -1,0 +1,68 @@
+  intents:
+    Temperature:
+      speech: Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}.
+    LocateIntent:
+      speech: >
+          {%- if User.lower() == "alok" -%}
+            Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+          {%- elif User.lower() == "rashmi" -%}
+            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
+          {%- else -%}
+            I am sorry, I do not know where {{ User }} is.
+          {%- endif -%}
+    WhereAreWeIntent:
+      speech: >
+          {%- if is_state('input_boolean.alokhome', 'on') and
+                 is_state('input_boolean.rashmihome', 'on') -%}
+            You are both home, you silly
+          {%- else -%}
+            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+          {% endif %}
+    HowIsTheTrafficIntent:
+      speech: >
+          Your commute to work is about {{ states.sensor.morning_commute.state }} minutes and to home is {{ states.sensor.evening_commute.state }} minutes.
+    TurnLights:
+      speech: Turning {{ Room }} lights {{ OnOff }}
+      action:
+        - service: logbook.log
+          data_template:
+            name: 'Api.AI: '
+            message: Someone asked to turn {{ Room }} lights {{ OnOff }}
+        - service_template: >
+            {%- if OnOff == 'on' -%}
+              light.turn_on
+            {%- else -%}
+              light.turn_off
+            {%- endif -%}
+          data_template:
+            entity_id: >
+              {%- if Room.lower() in ['kitchen'] -%}
+                light.
+              {%- elif Room.lower() in ['living room'] -%}
+                group.
+              {%- endif -%}
+              {%- if Room.lower() in ['kitchen'] -%}
+                kitchen_lights
+              {%- elif Room.lower() in ['living room'] -%}
+                living_room_lights
+              {%- endif -%}
+    TurnDeviceIntent:
+      speech: Turning {{ Devices }} {{ OnOff }}
+      action:
+        - service: logbook.log
+          data_template:
+            name: 'Api.AI: '
+            message: Someone asked to turn {{ Devices }} {{ OnOff }}
+        - service: remote.turn_on
+          data_template:
+            entity_id: remote.livingroom
+            activity: >
+              {%- if Devices.lower() in ['television', 'plex', 'shield','tv'] and OnOff == 'on'-%}
+                18032761
+              {%- elif Devices.lower() in ['apple tv'] and OnOff == 'on' -%}
+                23043915
+              {%- elif Devices.lower() in ['fire tv', 'amazon fire', 'amazon fire tv'] and OnOff == 'on' -%}
+                17230861
+              {%- elif OnOff == 'off' -%}
+                -1
+              {%- endif -%}

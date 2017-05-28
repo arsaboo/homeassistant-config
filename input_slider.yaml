@@ -1,0 +1,39 @@
+#################################################################
+## Input_slider
+#################################################################
+
+  harmonyvolume:
+    icon: mdi:volume-high
+    name: Volume
+    initial: 30
+    min: 1
+    max: 100
+    step: 1
+  leeotemperature:
+    icon: mdi:thermometer-lines
+    name: Leeo Temperature
+    initial: 60
+    min: 20
+    max: 120
+    step: 0.1
+  leeohumidity:
+    icon: mdi:water-percent
+    name: Leeo Humidity
+    initial: 50
+    min: 0
+    max: 100
+    step: 1
+  leeoupstairstemp:
+    icon: mdi:thermometer-lines
+    name: Leeo Upstairs Temp
+    initial: 60
+    min: 20
+    max: 120
+    step: 0.1
+  leeoupstairshumidity:
+    icon: mdi:water-percent
+    name: Leeo Upstairs Humidity
+    initial: 50
+    min: 0
+    max: 100
+    step: 1

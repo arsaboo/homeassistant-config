@@ -1,0 +1,204 @@
+#################################################################
+## Scripts
+#################################################################
+
+  abodeaway:
+    alias: 'Abode Arm'
+    sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.abodestatus
+          option: 'away'
+      - service: ifttt.trigger
+        data: {"event":"AbodeAway", "value1":"Arm Abode"}
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.downstairs
+          away_mode: 'True'
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.upstairs
+          away_mode: 'True'
+      # - service: homeassistant.turn_on
+      #   entity_id: input_boolean.startrecording
+
+  abodehome:
+    alias: 'Abode Home'
+    sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.abodestatus
+          option: 'home'
+      - service: ifttt.trigger
+        data: {"event":"AbodeHome", "value1":"Abode Home"}
+
+  abodestandby:
+    alias: 'Abode Standby'
+    sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.abodestatus
+          option: 'standby'
+      - service: ifttt.trigger
+        data: {"event":"AbodeStandby", "value1":"Abode Standby"}
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.upstairs
+          away_mode: 'False'
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.downstairs
+          away_mode: 'False'
+      - service: light.turn_off
+        entity_id: group.living_room_lights
+      # - service: homeassistant.turn_off
+      #   entity_id: input_boolean.startrecording
+
+  tv_off:
+    alias: 'Turn Television off'
+    sequence:
+      - condition: state
+        entity_id: input_boolean.tv
+        state: 'on'
+      - service: remote.send_command
+        data_template:
+          command: Home
+          device: 31747959
+          entity_id: remote.livingroom
+      - service: remote.turn_on
+        data_template:
+          entity_id: remote.livingroom
+          activity: PowerOff
+  sonos_say:
+    alias: "Sonos TTS script"
+    sequence:
+      - service: media_player.sonos_snapshot
+        data_template:
+          entity_id: "{{ sonos_entity }}"
+      - service: media_player.sonos_unjoin
+        data_template:
+          entity_id: "{{ sonos_entity }}"
+      - service: media_player.volume_set
+        data_template:
+          entity_id: "{{ sonos_entity }}"
+          volume_level: "{{ volume }}"
+      - service: tts.google_say
+        data_template:
+          entity_id: "{{ sonos_entity }}"
+          message: "{{ message }}"
+      - delay: "{{ delay }}"
+      - service: media_player.sonos_restore
+        data_template:
+          entity_id: "{{ sonos_entity }}"
+  notificationgaragedoor:
+    alias: 'Garage Door Open'
+    sequence:
+      - service: script.sonos_say
+        data:
+          sonos_entity: media_player.livingroomsonos
+          volume: 0.7
+          delay: '00:00:04'
+          message: 'Garage door is open, please check!'
+
+  notificationleavework:
+    alias: 'Leave for Work'
+    sequence:
+      - service: script.sonos_say
+        data:
+          sonos_entity: media_player.livingroomsonos
+          volume: 0.6
+          delay: '00:00:05'
+          message: 'Traffic has cleared, you can leave for work.'
+  notificationalarm:
+    alias: 'Notify that sensors changed when nobody is home'
+    sequence:
+      - service: media_player.sonos_snapshot
+        entity_id: media_player.livingroomsonos
+      - service: media_player.volume_set
+        entity_id: media_player.livingroomsonos
+        data:
+          volume_level: .9
+      - service: media_player.play_media
+        entity_id: media_player.livingroomsonos
+        data:
+          media_content_id: 'https://dl.dropboxusercontent.com/u/7457/HASS/Burglar_Alarm.mp3'
+          media_content_type: 'music'
+      - delay: '00:01:28'
+      - service: media_player.sonos_restore
+        entity_id: media_player.livingroomsonos
+
+  arm_security:
+    alias: 'Arm Security'
+    sequence:
+      - delay: 00:05:00
+      - service: homeassistant.turn_on
+        entity_id: script.abodeaway
+
+  disarm_security:
+    alias: 'Disarm Security'
+    sequence:
+      - service: homeassistant.turn_on
+        entity_id: script.abodestandby
+
+  playradio:
+    alias: 'Play Radio on Sonos'
+    sequence:
+      - service: media_player.play_media
+        data_template:
+          entity_id: media_player.livingroomsonos
+          media_content_id: >-
+            {% if station == 'golden_oldies' %}
+              x-sonosapi-radio:STATION%3afeatured%5e-%5eGolden%20Oldies%5e-%5ehindi?sid=164&flags=8236&sn=29
+            {% elif station == 'party' %}
+              x-sonosapi-radio:STATION%3afeatured%5e-%5eParty%5e-%5ehindi?sid=164&flags=8236&sn=29
+            {% elif station == 'chartbusters' %}
+              x-sonosapi-radio:STATION%3afeatured%5e-%5eChartbusters%5e-%5ehindi?sid=164&flags=8236&sn=29
+            {% elif station == 'flashback' %}
+              x-sonosapi-radio:STATION%3afeatured%5e-%5eFlashback%5e-%5ehindi?sid=164&flags=8236&sn=29
+            {% elif station == 'bollywood_instrumental' %}
+              x-rincon-mp3radio://123.176.41.8:8532
+            {% elif station == 'bollywood_radio_and_beyond' %}
+              x-rincon-mp3radio://96.31.83.86:8084
+            {% elif station == 'npr' %}
+              x-rincon-mp3radio://nprdmp-live01-mp3.akacast.akamaistream.net/7/998/364916/v1/npr.akacast.akamaistream.net/nprdmp_live01_mp3
+            {% elif station == 'wabe_news' %}
+              x-rincon-mp3radio://pba-ice.streamguys.org:80/news
+            {% elif station == 'wabe' %}
+              x-rincon-mp3radio://pba-ice.streamguys.org:80/wabe
+            {% endif %}
+          media_content_type: "MUSIC"
+
+  colorloop_start:
+    alias: 'Start LIFX colorloop'
+    sequence:
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: group.living_room_lights
+          brightness: 255
+          period: 15
+          spread: 359
+          change: 35
+
+  disco_party:
+    alias: 'Start Party Mode'
+    sequence:
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: group.living_room_lights
+          brightness: 255
+          period: 1
+          spread: 359
+          change: 35
+
+  lifx_stop_effects:
+    alias: 'Stop LIFX effects'
+    sequence:
+      - service: light.lifx_effect_stop
+        data:
+          entity_id: group.all_lights
+      - service: light.turn_on
+        entity_id: group.living_room_lights
+        data:
+          rgb_color: [255, 255, 255]
+          brightness: 250
+          color_temp: 285

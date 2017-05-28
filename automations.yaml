@@ -1,1 +1,1179 @@
-[]
+#################################################################
+## Presence
+#################################################################
+- id: alok_away
+  alias: 'Alok Away'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.alokhome
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.input_boolean.alokhome.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.alokhome.last_changed)) > 300 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+  trigger:
+    - platform: state
+      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone
+      state: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id: device_tracker.alokiosiphone, device_tracker.alok_alok
+      state: 'not_home'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.alokhome
+    - service: logbook.log
+      data_template:
+        name: "Alok away: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is Away.
+          {%- endfor -%}
+
+- id: rashmi_away
+  alias: 'Rashmi Away'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.rashmihome
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.input_boolean.rashmihome.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.rashmihome.last_changed)) > 300 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+  trigger:
+    - platform: state
+      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
+      state: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id: device_tracker.rashmiappiphone, device_tracker.sonu_sonu
+      state: 'not_home'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.rashmihome
+    - service: logbook.log
+      data_template:
+        name: "Rashmi away: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is Away.
+          {%- endfor -%}
+
+- id: alok_home
+  alias: 'Alok Home'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.alokhome
+      state: 'off'
+    - condition: template
+      value_template: >
+        {%- if states.input_boolean.alokhome.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.alokhome.last_changed)) > 600 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+  trigger:
+    - platform: state
+      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone, device_tracker.alokiosiphone, device_tracker.elantrase, device_tracker.alok_alok
+      state: 'home'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.alokhome
+    - service: logbook.log
+      data_template:
+        name: "Alok home: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is Home.
+          {%- endfor -%}
+
+- id: rashmi_home
+  alias: 'Rashmi Home'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.rashmihome
+      state: 'off'
+    - condition: template
+      value_template: >
+        {%- if states.input_boolean.rashmihome.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.rashmihome.last_changed)) > 600 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+  trigger:
+    - platform: state
+      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone, device_tracker.rashmiappiphone, device_tracker.sonu_sonu
+      state: 'home'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.rashmihome
+    - service: logbook.log
+      data_template:
+        name: "Rashmi home: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is Home.
+          {%- endfor -%}
+
+- id: mark_both_away_if_armed
+  alias: 'Mark both away if Abode armed'
+  initial_state: 'on'
+  condition:
+   - condition: or
+     conditions:
+      - condition: state
+        entity_id: input_boolean.rashmihome
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.alokhome
+        state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_select.abodestatus
+      state: 'away'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.rashmihome
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.alokhome
+
+#################################################################
+## Security System
+#################################################################
+
+- id: disarm_abode_from_away
+  alias: 'Disarm Abode from Away'
+  initial_state: 'on'
+  condition:
+   - condition: state
+     entity_id: input_select.abodestatus
+     state: 'away'
+   - condition: state
+     entity_id: input_boolean.abodeupdate
+     state: 'on'
+  trigger:
+   - platform: state
+     entity_id: group.household
+     state: 'on'
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodestandby
+
+- id: garage_door_open
+  alias: 'Garage Door open'
+  initial_state: 'on'
+  condition:
+    condition: state
+    entity_id: sensor.garagedoor
+    state: 'Open'
+  trigger:
+    - platform: state
+      entity_id: input_select.abodestatus
+      state: 'home'
+    - platform: state
+      entity_id: input_select.abodestatus
+      state: 'away'
+  action:
+    - service: notify.pushbullet
+      data:
+        message: "Garage Door Open"
+        title: "Garage Door Open"
+    - service: homeassistant.turn_on
+      entity_id: script.notificationgaragedoor
+
+- id: disarm_abode_at_night
+  alias: 'Disarm Abode at night'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.abodeupdate
+      state: 'on'
+  trigger:
+   - platform: state
+     entity_id: input_boolean.rashmihome, input_boolean.alokhome
+     to: 'on'
+  action:
+    service: homeassistant.turn_on
+    entity_id: script.abodestandby
+
+- id: abode_home_from_standby
+  alias: 'Abode Home from Standby'
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: state
+       entity_id: input_select.abodestatus
+       state: 'standby'
+     - condition: time
+       after: '22:15:00'
+       before: '07:30:00'
+     - condition: state
+       entity_id: input_boolean.abodeupdate
+       state: 'on'
+     - condition: template
+       value_template: >
+         {%- if states.input_select.abodestatus.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
+         {%- else -%}
+           true
+         {%- endif -%}
+  trigger:
+   - platform: time
+     minutes: '/10'
+     seconds: 00
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodehome
+
+- id: abode_standby
+  alias: 'Abode Standby'
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: state
+       entity_id: group.household
+       state: 'on'
+     - condition: time
+       after: '08:15:00'
+       before: '21:45:00'
+     - condition: state
+       entity_id: input_boolean.abodeupdate
+       state: 'on'
+     - condition: template
+       value_template: >
+         {%- if states.input_select.abodestatus.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
+         {%- else -%}
+           true
+         {%- endif -%}
+     - condition: or
+       conditions:
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'home'
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'away'
+  trigger:
+   - platform: time
+     minutes: '/10'
+     seconds: 00
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodestandby
+
+- id: adjust_settings_changed_by_abode
+  alias: 'Adjust settings changed by Abode'
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: or
+       conditions:
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'home'
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'standby'
+     - condition: or
+       conditions:
+        - condition: state
+          entity_id: input_boolean.thermo_away_main
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.thermo_away_upstairs
+          state: 'on'
+  trigger:
+   - platform: time
+     minutes: '/10'
+     seconds: 00
+  action:
+     - service: climate.set_away_mode
+       data:
+         entity_id: climate.downstairs
+         away_mode: 'False'
+     - service: climate.set_away_mode
+       data:
+         entity_id: climate.upstairs
+         away_mode: 'False'
+
+- id: abode_arm
+  alias: 'Arm Abode'
+  initial_state: 'on'
+  condition:
+    condition: state
+    entity_id: input_boolean.abodeupdate
+    state: 'on'
+  trigger:
+    - platform: state
+      entity_id: group.household
+      state: 'off'
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodeaway
+
+- id: abode_home_at_night
+  alias: 'Abode Home at night'
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: state
+       entity_id: input_boolean.abodeupdate
+       state: 'on'
+     - condition: state
+       entity_id: group.household
+       state: 'on'
+  trigger:
+    platform: time
+    after: '22:00:00'
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodehome
+
+- id: abode_disarm_morning
+  alias: 'Disarm Abode in the morning'
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: state
+       entity_id: group.household
+       state: 'on'
+     - condition: state
+       entity_id: input_boolean.abodeupdate
+       state: 'on'
+  trigger:
+    platform: time
+    after: '07:45:00'
+  action:
+     service: homeassistant.turn_on
+     entity_id: script.abodestandby
+
+- id: enable_recording
+  alias: Enable Recording
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_boolean.startrecording
+    state: 'on'
+  action:
+    service: switch.turn_on
+    entity_id: switch.foscam_record
+
+- id: disable_recording
+  alias: Disable Recording
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_boolean.startrecording
+    state: 'off'
+  action:
+    service: switch.turn_off
+    entity_id: switch.foscam_record
+
+- id: notify_camera_pictures
+  alias: 'Notify camera pictures'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'away'
+    - condition: template
+      value_template: >
+        {%- if states.automation.notify_camera_pictures.attributes.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.notify_camera_pictures.attributes.last_triggered)) > 120 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if trigger.entity_id == "binary_sensor.backyard_field_detection" or trigger.entity_id == "binary_sensor.backyard_line_crossing" -%}
+        {{((as_timestamp(now()) - as_timestamp(states.binary_sensor.backyard_motion.attributes.last_tripped_time)))|round|abs < 30}}
+        {%- elif trigger.entity_id == "binary_sensor.driveway_field_detection" or trigger.entity_id == "binary_sensor.driveway_line_crossing" -%}
+        {{((as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_motion.attributes.last_tripped_time)))|round|abs < 30}}
+        {%- elif trigger.entity_id == "binary_sensor.patio_field_detection" or trigger.entity_id == "binary_sensor.patio_line_crossing" -%}
+        {{((as_timestamp(now()) - as_timestamp(states.binary_sensor.patio_motion.attributes.last_tripped_time)))|round|abs < 30}}
+        {%- elif trigger.entity_id == "binary_sensor.porch_field_detection" or trigger.entity_id == "binary_sensor.porch_line_crossing" -%}
+        {{((as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time)))|round|abs < 30}}
+        {%- else -%}
+          true
+        {%- endif -%}
+  trigger:
+   - platform: state
+     entity_id:
+       - binary_sensor.backyard_field_detection
+       - binary_sensor.driveway_field_detection
+       - binary_sensor.patio_field_detection
+       - binary_sensor.porch_field_detection
+       - binary_sensor.backyard_line_crossing
+       - binary_sensor.driveway_line_crossing
+       - binary_sensor.patio_line_crossing
+       - binary_sensor.porch_line_crossing
+     state: 'on'
+  action:
+    - service: notify.ios
+      data_template:
+        message: "Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} camera."
+        data:
+          push:
+            category: camera
+          entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+          attachment:
+            url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[0]].attributes.entity_picture }}"
+            content-type: jpg
+    - service: logbook.log
+      data_template:
+        name: "Camera activity: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} activated at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
+          {%- endfor -%}
+    - service: logbook.log
+      data_template:
+        name: "Motion detected: "
+        message: >-
+          {%- if trigger.entity_id == "binary_sensor.backyard_field_detection" or trigger.entity_id == "binary_sensor.backyard_line_crossing" -%}
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.backyard_motion.attributes.last_tripped_time))}} seconds ago.
+          {%- elif trigger.entity_id == "binary_sensor.driveway_field_detection" or trigger.entity_id == "binary_sensor.driveway_line_crossing" -%}
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_motion.attributes.last_tripped_time))}} seconds ago.
+          {%- elif trigger.entity_id == "binary_sensor.patio_field_detection" or trigger.entity_id == "binary_sensor.patio_line_crossing" -%}
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.patio_motion.attributes.last_tripped_time))}} seconds ago.
+          {%- elif trigger.entity_id == "binary_sensor.porch_field_detection" or trigger.entity_id == "binary_sensor.porch_line_crossing" -%}
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))}} seconds ago.
+          {%- endif -%}
+#################################################################
+## HASS Related
+#################################################################
+
+- id: heal_zwave_network
+  alias: Heal Z-Wave Network
+  initial_state: 'on'
+  trigger:
+    platform: time
+    after: '2:31:00'
+  action:
+    service: zwave.heal_network
+
+- id: update_available_notification
+  alias: "Update Available Notification"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: updater.updater
+  action:
+    - service: notify.pushbullet
+      data:
+        message: "HomeAssistant {{ states('updater.updater') }} is now available"
+        title: "Update HASS"
+    - service: persistent_notification.create
+      data:
+        title: "Update Available"
+        message: >
+          Home Assistant {{ states('updater.updater') }} is available, please [update](https://home-assistant.io/getting-started/installation-raspberry-pi-all-in-one/#upgrading).
+        notification_id: "update_available"
+
+#################################################################
+## Commute Times
+#################################################################
+
+- id: morning_commute
+  alias: "Morning Commute"
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: time
+       after: '08:15:00'
+       before: '11:00:00'
+     - condition: time
+       weekday:
+         - mon
+         - tue
+         - wed
+         - thu
+         - fri
+     - condition: state
+       entity_id: input_boolean.alokhome
+       state: 'on'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.morning_commute
+    below: 43
+  action:
+    - service: notify.pushbullet
+      data:
+        message: Commute time is 43 minutes
+        title: Leave for Work
+        target: device/myiPhone
+    - service: homeassistant.turn_on
+      entity_id: script.notificationleavework
+
+- id: evening_commute
+  alias: "Evening Commute"
+  initial_state: 'on'
+  condition:
+    condition: and
+    conditions:
+     - condition: time
+       after: '17:00:00'
+       before: '20:00:00'
+     - condition: time
+       weekday:
+         - mon
+         - tue
+         - wed
+         - thu
+         - fri
+     - condition: state
+       entity_id: input_boolean.alokhome
+       state: 'off'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.evening_commute
+    below: 43
+  action:
+    service: notify.pushbullet
+    data:
+      message: Commute time is 43 minutes
+      title: Leave for Home
+      target: device/myiPhone
+
+- id: plexspy_notification
+  alias: "Plex Spy notification"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: sensor.plexspy
+  action:
+    - service: notify.pushbullet
+      data_template:
+        message: >
+          {%- if states.sensor.plexspy.attributes -%}
+            {% set space = joiner(' ') %}
+            {%- for attr in states.sensor.plexspy.attributes -%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" -%}
+              {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
+             {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+        title: "Plex {{ trigger.to_state.state }} people streaming. "
+        target: device/myiPhone
+    - service: logbook.log
+      data_template:
+        name: "Plex {{ trigger.to_state.state }} people streaming. "
+        message: >
+          {%- if states.sensor.plexspy.attributes -%}
+            {% set space = joiner(' ') %}
+            {%- for attr in states.sensor.plexspy.attributes -%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" -%}
+              {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
+             {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+#################################################################
+## Home Automation Related
+#################################################################
+
+- id: kitchen_light_brightness
+  alias: 'Kitchen light brightness'
+  initial_state: 'on'
+  trigger:
+   - platform: state
+     entity_id: light.kitchen_lights
+     state: 'on'
+  condition:
+    - condition: template
+      value_template: '{{ trigger.from_state.state == "off" }}'
+  action:
+     service: light.turn_on
+     data:
+       entity_id: light.kitchen_lights
+       brightness: 200
+
+- id: change_leeo_color
+  alias: 'Change Leeo color'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: device_tracker.leeoalert
+      state: 'home'
+    - condition: time
+      after: '19:15:00'
+      before: '07:45:00'
+    - condition: state
+      entity_id: binary_sensor.living_room_occupancy
+      state: 'on'
+  trigger:
+   - platform: time
+     minutes: '/15'
+     seconds: 00
+  action:
+     service: ifttt.trigger
+     data_template: {"event":"leeocolor", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
+
+- id: change_leeoup_color
+  alias: 'Change Leeo upstairs color'
+  initial_state: 'on'
+  condition:
+    - condition: time
+      after: '19:15:00'
+      before: '07:45:00'
+  trigger:
+   - platform: time
+     minutes: '/15'
+     seconds: 00
+  action:
+     service: ifttt.trigger
+     data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
+
+- id: lifx_party_mode
+  alias: "Turn Lifx Party Mode On"
+  initial_state: 'on'
+  trigger:
+    - platform: time
+      seconds: '/3'
+  condition:
+    - condition: state
+      entity_id: input_boolean.partymode
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.lifxnrkitchen
+      data_template:
+        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
+        brightness: 220
+        transition: '{{ (range(1, 2)|random) }}'
+    - service: light.turn_on
+      entity_id: light.lifxnrguest
+      data_template:
+        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
+        brightness: 220
+        transition: '{{ (range(1, 2)|random) }}'
+    - service: light.turn_on
+      entity_id: light.lifx3
+      data_template:
+        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
+        brightness: 220
+        transition: '{{ (range(1, 2)|random) }}'
+- id: lifx_party_mode_off
+  alias: "Turn Lifx Party Mode Off"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.partymode
+      state: 'off'
+  action:
+    - service: light.turn_on
+      entity_id: group.living_room_lights
+      data:
+        rgb_color: [255, 255, 255]
+        brightness: 250
+        color_temp: 285
+
+- id: downstairs_thermostat_to_input_boolean
+  alias: Downstairs thermostat to Input_Boolean
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: sensor.downstairsthermmode
+  action:
+    service_template: >
+      {%- if is_state('sensor.downstairsthermmode', 'Home') -%}
+        homeassistant.turn_off
+      {%- elif is_state('sensor.downstairsthermmode', 'Away') -%}
+        homeassistant.turn_on
+      {%- endif -%}
+    entity_id: input_boolean.thermo_away_main
+
+- id: change_downstairs_thermostat_mode
+  alias: Change downstairs Thermostat mode
+  initial_state: 'on'
+  condition:
+    condition: template
+    value_template: >
+      {%- if states.sensor.downstairsthermmode.last_changed -%}
+        {{ (as_timestamp(now()) - as_timestamp(states.sensor.downstairsthermmode.last_changed)) > 60 }}
+      {%- else -%}
+        true
+      {%- endif -%}
+  trigger:
+    platform: state
+    entity_id: input_boolean.thermo_away_main
+  action:
+     service: climate.set_away_mode
+     entity_id: climate.downstairs
+     data_template:
+       away_mode: >
+         {%- if is_state('input_boolean.thermo_away_main', 'off') -%}
+           off
+         {%- elif is_state('input_boolean.thermo_away_main', 'on') -%}
+           on
+         {%- endif -%}
+
+- id: upstairs_thermostat_to_input_boolean
+  alias: Upstairs thermostat to Input_Boolean
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: sensor.upstairshermostatmode
+  action:
+    service_template: >
+      {%- if is_state('sensor.upstairshermostatmode', 'Home') -%}
+        homeassistant.turn_off
+      {%- elif is_state('sensor.upstairshermostatmode', 'Away') -%}
+        homeassistant.turn_on
+      {%- endif -%}
+    entity_id: input_boolean.thermo_away_upstairs
+
+- id: change_upstairs_thermostat_mode
+  alias: Change upstairs Thermostat mode
+  initial_state: 'on'
+  condition:
+    condition: template
+    value_template: >
+      {%- if states.sensor.upstairshermostatmode.last_changed -%}
+        {{ (as_timestamp(now()) - as_timestamp(states.sensor.upstairshermostatmode.last_changed)) > 60 }}
+      {%- else -%}
+        true
+      {%- endif -%}
+  trigger:
+    platform: state
+    entity_id: input_boolean.thermo_away_upstairs
+  action:
+    service: climate.set_away_mode
+    entity_id: climate.upstairs
+    data_template:
+      away_mode: >
+        {%- if is_state('input_boolean.thermo_away_upstairs', 'off') -%}
+          off
+        {%- elif is_state('input_boolean.thermo_away_upstairs', 'on') -%}
+          on
+        {%- endif -%}
+
+- id: driveway_light_at_night
+  alias: Driveway light at night
+  initial_state: 'on'
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "00:45:00"
+  action:
+    - service: switch.turn_on
+      entity_id: switch.driveway
+
+- id: driveway_light_off
+  alias: Driveway light Off
+  initial_state: 'on'
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "01:30:00"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.driveway
+- id: driveway_light_off_during_the_day
+  alias: Driveway light Off during the day
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: switch.driveway
+    state: 'on'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'above_horizon'
+  action:
+    - service: switch.turn_off
+      entity_id: switch.driveway
+
+- id: reset_garage_relay
+  alias: 'Reset Garage Relay'
+  initial_state: 'on'
+  trigger:
+    - platform: time
+      seconds: '/5'
+  condition:
+    - condition: state
+      entity_id: switch.garage_relay_switch_8_0
+      state: "on"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.garage_relay_switch_8_0
+
+- id: open_garage_door_when_someone_home
+  alias: 'Open Garage door when someone home'
+  initial_state: 'on'
+  condition:
+   - condition: state
+     entity_id: binary_sensor.garagedoor
+     state: 'off'
+   - condition: state
+     entity_id: input_boolean.abodeupdate
+     state: 'on'
+   - condition: template
+     value_template: >
+       {%- if states.automation.open_garage_door_when_someone_home.attributes.last_triggered -%}
+         {{ (as_timestamp(now()) - as_timestamp(states.automation.open_garage_door_when_someone_home.attributes.last_triggered)) > 150 }}
+       {%- else -%}
+         true
+       {%- endif -%}
+  trigger:
+   - platform: state
+     entity_id: input_boolean.alokhome, input_boolean.rashmihome
+     to: 'on'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.garage_relay_switch_8_0
+
+- id: close_garage_door_when_abode_is_home_or_away
+  alias: 'Close garage door when Abode is Home or Away'
+  initial_state: 'on'
+  condition:
+   - condition: state
+     entity_id: binary_sensor.garagedoor
+     state: 'on'
+   - condition: template
+     value_template: >
+       {%- if states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered  -%}
+         {{(as_timestamp(now()) - as_timestamp(states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered)) > 60}}
+       {%- else -%}
+         true
+       {%- endif -%}
+   - condition: or
+     conditions:
+      - condition: state
+        entity_id: input_select.abodestatus
+        state: 'home'
+      - condition: state
+        entity_id: input_select.abodestatus
+        state: 'away'
+  trigger:
+   - platform: time
+     minutes: '/5'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.garage_relay_switch_8_0
+
+- id: sensors_changed_when_nobody_home
+  alias: 'Sensors changed when nobody is home'
+  initial_state: 'on'
+  condition:
+    condition: state
+    entity_id: input_select.abodestatus
+    state: 'away'
+    for:
+      minutes: 10
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.garagedoor
+        - binary_sensor.downstairs_occupancy
+        - binary_sensor.living_room_occupancy
+        - binary_sensor.upstairs_occupancy
+      from: 'off'
+      to: 'on'
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: group.all_lights
+    - service: notify.pushbullet
+      data_template:
+        title: "Alarm!"
+        message: "The {{ trigger.to_state.name }} was changed to {{ trigger.to_state.state }} while no one is home - {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p %d-%b-%Y', true) }}"
+    - service: homeassistant.turn_on
+      entity_id: script.notificationalarm
+
+- id: turn_on_lights_randomly
+  alias: Turn lights on randomly
+  initial_state: 'on'
+  condition:
+    condition: state
+    entity_id: input_select.abodestatus
+    state: 'away'
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "00:45:00"
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: group.living_room_lights
+
+- id: turn_off_lights_in_2_hours
+  alias: Turn off lights 2 hours
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'away'
+    - condition: state
+      entity_id: group.living_room_lights
+      state: 'on'
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "02:45:00"
+  action:
+    - service: light.turn_off
+      data:
+        entity_id: group.living_room_lights
+
+## Humidifier
+- id: turn_on_humidifier
+  alias: Turn on humidifier
+  initial_state: 'on'
+  condition:
+     - condition: time
+       after: '08:15:00'
+       before: '21:45:00'
+     - condition: template
+       value_template: '{{ states.sensor.leeohumid.state | int < 30 }}'
+     - condition: state
+       entity_id: switch.wemoswitch
+       state: 'off'
+  trigger:
+   - platform: time
+     minutes: '/10'
+     seconds: 00
+  action:
+    service: homeassistant.turn_on
+    entity_id: switch.wemoswitch
+
+- id: turn_off_humidifier
+  alias: Turn off humidifier
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: switch.wemoswitch
+      state: 'on'
+  trigger:
+    platform: template
+    value_template: '{{ states.sensor.leeohumid.state | int >= 30 }}'
+  action:
+    service: homeassistant.turn_off
+    entity_id: switch.wemoswitch
+
+#################################################################
+## Harmony Remote
+#################################################################
+- id: set_initial_values_on_harmony_start
+  alias: "Set initial values on Harmony Start"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: remote.livingroom
+    state: 'on'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.tv
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.livingroomharmony
+        option: >
+          {{ states.remote.livingroom.attributes.current_activity }}
+    - service: input_slider.select_value
+      data_template:
+        entity_id: input_slider.harmonyvolume
+        value: >
+            {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) | int }}
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.hdmiswitcher
+        option: >
+          {%- if states.remote.livingroom.attributes.current_activity == "Watch Apple TV" -%}
+            AppleTV
+          {%- elif states.remote.livingroom.attributes.current_activity == "Watch Fire TV" -%}
+            FireTV
+          {%- elif states.remote.livingroom.attributes.current_activity == "SATV" -%}
+            Shield
+          {%- endif -%}
+
+- id: update_tv_status_in_ha
+  alias: Update TV status in HA
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: media_player.panasonic_viera_tv
+  action:
+    - service_template: "homeassistant.turn_{{ 'on' if trigger.to_state.state == 'on' else 'off' }}"
+      data:
+        entity_id: input_boolean.tv
+- id: no_tv_time
+  alias: No TV time
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: media_player.panasonic_viera_tv
+    state: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.tvtime
+      state: 'off'
+  action:
+    - service: remote.send_command
+      data_template:
+        command: PowerOff
+        device: 31747892
+        entity_id: remote.livingroom
+    - service: media_player.turn_off
+      entity_id:
+        - media_player.panasonic_viera_tv
+
+- id: turn_tv_on_off
+  alias: Turn TV on/off
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_boolean.tv
+  action:
+    service: remote.send_command
+    data_template:
+      command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
+      device: 31747892
+      entity_id: remote.livingroom
+- id: set_volume
+  alias: "Set Volume"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_slider.harmonyvolume
+  action:
+    - service: media_player.volume_set
+      data_template:
+        entity_id: media_player.livingroomsonos
+        volume_level: >
+          {{states.input_slider.harmonyvolume.state | int / 100}}
+
+- id: start_harmony_activity_from_input_select
+  alias: "Start Harmony activity from input_select"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_select.livingroomharmony
+  action:
+  - service: remote.turn_on
+    data_template:
+      entity_id: remote.livingroom
+      activity: "{{trigger.to_state.state}}"
+
+- id: update_ha_if_harmony_activity_changes
+  alias: "Update HA if Harmony activity changes"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: sensor.living_room
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.livingroomharmony
+        option: "{{trigger.to_state.state}}"
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.hdmiswitcher
+        option: >
+          {%- if trigger.to_state.state == "Watch Apple TV" -%}
+            AppleTV
+          {%- elif trigger.to_state.state == "Watch Fire TV" -%}
+            FireTV
+          {%- else -%}
+            Shield
+          {%- endif -%}
+
+- id: update_ha_after_startup
+  alias: Update HA after startup
+  initial_state: 'on'
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+    - delay:
+        minutes: 1
+    - service_template: "homeassistant.turn_{{ 'on' if states.media_player.panasonic_viera_tv.state == 'on' else 'off' }}"
+      entity_id:
+        - input_boolean.tv
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.livingroomharmony
+        option: "{{states.sensor.living_room.state}}"
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.hdmiswitcher
+        option: >
+          {%- if states.remote.livingroom.attributes.current_activity == "Watch Apple TV" -%}
+            AppleTV
+          {%- elif states.remote.livingroom.attributes.current_activity == "Watch Fire TV" -%}
+            FireTV
+          {%- else -%}
+            Shield
+          {%- endif -%}
+- id: change_hdmi_switcher
+  alias: "Change HDMI Switcher"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_select.hdmiswitcher
+  action:
+  - service: remote.send_command
+    data_template:
+      command: >-
+        {%- if trigger.to_state.state == "AppleTV" -%}
+          Input1
+        {%- elif trigger.to_state.state == "FireTV" -%}
+          Input2
+        {%- elif trigger.to_state.state == "Shield" -%}
+          Input3
+        {%- endif -%}
+      device: 31766668
+      entity_id: remote.livingroom
+- id: change_hdmi_input
+  alias: "Change HDMI Input"
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: input_select.hdmiinput
+  action:
+  - service: remote.send_command
+    data_template:
+      command: >-
+        {%- if trigger.to_state.state == "InputHdmi1" -%}
+          InputHdmi1
+        {%- elif trigger.to_state.state == "InputHdmi2" -%}
+          InputHdmi2
+        {%- elif trigger.to_state.state == "InputHDMI3" -%}
+          InputHDMI3
+        {%- elif trigger.to_state.state == "InputHdmi4" -%}
+          InputHdmi4
+        {%- endif -%}
+      device: 31747892
+      entity_id: remote.livingroom
+- id: update_volume_slider
+  alias: "Update Volume Slider"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: sensor.sonos_volume
+  action:
+    - service: input_slider.select_value
+      data_template:
+        entity_id: input_slider.harmonyvolume
+        value: >-
+          {{ (states.media_player.livingroomsonos.attributes|default({})).volume_level|default(0) * 100 }}

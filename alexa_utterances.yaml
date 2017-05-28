@@ -1,0 +1,19 @@
+LocateIntent Where is {User}
+LocateIntent Where's {User}
+LocateIntent Where {User} is
+LocateIntent Where did {User} go
+
+WhereAreWeIntent where we are
+
+HowIsTheTrafficIntent How is the traffic
+HowIsTheTrafficIntent How's the traffic
+HowIsTheTrafficIntent How's the traffic to office
+HowIsTheTrafficIntent Should I leave now
+HowIsTheTrafficIntent If I should leave for work
+HowIsTheTrafficIntent how does my commute look like
+
+RunScriptIntent run {Script}
+
+PlayRadioIntent play {Station}
+PlayRadioIntent play {Station} songs
+PlayRadioIntent play {Station} on Sonos

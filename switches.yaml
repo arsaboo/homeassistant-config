@@ -1,0 +1,91 @@
+#################################################################
+## Switches
+#################################################################
+  - platform: transmission
+    host: 192.168.2.113
+  - platform: hikvisioncam
+    host: 192.168.2.91
+    name: PorchMotion
+    username: !secret hikvision_username
+    password: !secret hikvision_password
+  - platform: hikvisioncam
+    host: 192.168.2.92
+    name: BackyardMotion
+    username: !secret hikvision_username
+    password: !secret hikvision_password
+  - platform: hikvisioncam
+    host: 192.168.2.93
+    name: PatioMotion
+    username: !secret hikvision_username
+    password: !secret hikvision_password
+  - platform: hikvisioncam
+    host: 192.168.2.94
+    name: DrivewayMotion
+    username: !secret hikvision_username
+    password: !secret hikvision_password
+  # - platform: command_line
+  #   switches:
+  #     porch_recording:
+  #       command_on: 'python3 /home/hass/.homeassistant/python/camera_recording.py 6 start'
+  #       command_off: 'python3 /home/hass/.homeassistant/python/camera_recording.py 6 stop'
+  #       command_state: 'python3 /home/hass/.homeassistant/python/camera_recording.py 6 status'
+  #       friendly_name: "Porch Recording"
+  #       value_template: >
+  #         {% if value_json is defined %}
+  #           {{ value_json.data.cameras[0].recStatus == 6 }}
+  #         {% else %}
+  #           {{ states.switch.camera_bedroom_recording.state == 'on' }}
+  #         {% endif %}
+  #     patio_recording:
+  #       command_on: 'python3 /home/hass/.homeassistant/python/camera_recording.py 3 start'
+  #       command_off: 'python3 /home/hass/.homeassistant/python/camera_recording.py 3 stop'
+  #       command_state: 'python3 /home/hass/.homeassistant/python/camera_recording.py 3 status'
+  #       friendly_name: "Patio Recording"
+  #       value_template: >
+  #         {% if value_json is defined %}
+  #           {{ value_json.data.cameras[0].recStatus == 6 }}
+  #         {% else %}
+  #           {{ states.switch.camera_bedroom_recording.state == 'on' }}
+  #         {% endif %}
+  #     backyard_recording:
+  #       command_on: 'python3 /home/hass/.homeassistant/python/camera_recording.py 4 start'
+  #       command_off: 'python3 /home/hass/.homeassistant/python/camera_recording.py 4 stop'
+  #       command_state: 'python3 /home/hass/.homeassistant/python/camera_recording.py 4 status'
+  #       friendly_name: "Backyard Recording"
+  #       value_template: >
+  #         {% if value_json is defined %}
+  #           {{ value_json.data.cameras[0].recStatus == 6 }}
+  #         {% else %}
+  #           {{ states.switch.camera_bedroom_recording.state == 'on' }}
+  #         {% endif %}
+  #     driveway_recording:
+  #       command_on: 'python3 /home/hass/.homeassistant/python/camera_recording.py 5 start'
+  #       command_off: 'python3 /home/hass/.homeassistant/python/camera_recording.py 5 stop'
+  #       command_state: 'python3 /home/hass/.homeassistant/python/camera_recording.py 5 status'
+  #       friendly_name: "Driveway Recording"
+  #       value_template: >
+  #         {% if value_json is defined %}
+  #           {{ value_json.data.cameras[0].recStatus == 6 }}
+  #         {% else %}
+  #           {{ states.switch.camera_bedroom_recording.state == 'on' }}
+  #         {% endif %}
+      # pihole:
+      #   command_on: !secret pi_hole_command_on
+      #   command_off: !secret pi_hole_command_off
+      #   command_state: !secret pi_hole_command_state
+      #   friendly_name: "Pi-Hole"
+#  platform: command_line
+#  switches:
+#    #Switch for Foscam Motion Detection
+#    foscam_record:
+#      command_on: 'curl -k "http://192.168.2.173:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      command_off: 'curl -k "http://192.168.2.173:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      value_template: ''
+#    foscam_record2:
+#      command_on: 'curl -k "http://192.168.2.224:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      command_off: 'curl -k "http://192.168.2.224:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      value_template: ''
+#    foscam_record3:
+#      command_on: 'curl -k "http://192.168.2.50:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      command_off: 'curl -k "http://192.168.2.50:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
+#      value_template: ''

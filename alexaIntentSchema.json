@@ -1,0 +1,42 @@
+{
+  "intents": [
+    {
+      "intent": "LocateIntent",
+      "slots":
+      [
+        {
+          "name": "User",
+          "type": "Names"
+        }
+      ]
+    },
+    {
+      "intent": "WhereAreWeIntent",
+      "slots": []
+    },
+    {
+      "intent": "HowIsTheTrafficIntent",
+      "slots": []
+    },
+    {
+      "intent": "RunScriptIntent",
+      "slots":
+       [
+        {
+         "name" : "Script",
+         "type" : "Scripts"
+        }
+       ]
+    },
+    {
+      "intent": "PlayRadioIntent",
+      "slots":
+       [
+        {
+         "name" : "Station",
+         "type" : "Stations"
+        }
+       ]
+    }
+  ]
+}

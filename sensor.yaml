@@ -1,0 +1,285 @@
+  - platform: history_stats
+    name: Total TV Time
+    entity_id: media_player.panasonic_viera_tv
+    state: 'on'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: transmission
+    host: 192.168.2.113
+    monitored_variables:
+      - 'current_status'
+      - 'download_speed'
+      - 'upload_speed'
+  - platform: fitbit
+    monitored_resources:
+      - "activities/calories"
+      - "activities/distance"
+      - "activities/steps"
+      - "sleep/efficiency"
+      - "sleep/awakeningsCount"
+      - "sleep/efficiency"
+      - "sleep/minutesAfterWakeup"
+      - "sleep/minutesAsleep"
+      - "sleep/minutesAwake"
+      - "sleep/minutesToFallAsleep"
+      - "sleep/startTime"
+      - "sleep/timeInBed"
+  - platform: currencylayer
+    api_key: !secret currencylayer_key
+    base: USD #optional
+    quote:
+      - EUR
+      - INR
+#Forecast.io weather sensors
+  - platform: darksky
+    api_key: !secret darksky_key
+    monitored_conditions:
+      - wind_speed
+      - cloud_cover
+      - hourly_summary
+      - daily_summary
+#Time and Date Sensor
+  - platform: time_date
+    display_options:
+      - 'time_date'
+  - platform: plex
+    name: PlexSpy
+    host: 192.168.2.212
+    port: 32400
+    username: !secret plex_user
+    password: !secret plex_password
+#Morning Commute Google Travel Time Sensor
+  - platform: google_travel_time
+    name: Morning Commute
+    api_key: !secret google_key
+    origin: !secret add_home
+    destination: !secret add_buckhead
+#Evening Commute Google Travel Time Sensor
+  - platform: google_travel_time
+    name: Evening Commute
+    api_key: !secret google_key
+    origin: !secret add_buckhead
+    destination: !secret add_home
+  - platform: google_travel_time
+    name: Alok to Home
+    api_key: !secret google_key
+    origin: device_tracker.alokiosiphone
+    destination: !secret add_home
+  - platform: wunderground
+    api_key: !secret wunderground_key
+    pws_id: !secret wunderground_pws
+    monitored_conditions:
+      - weather
+      - temp_f
+      - pressure_in
+      - wind_string
+      - relative_humidity
+  - platform: rest
+    name: pollen
+    resource: !secret pollen_url
+    value_template: "{{value_json.Location.periods[1].Index}}"
+    scan_interval: 21600
+    headers:
+       Referer: "https://www.pollen.com"
+  - platform: rest
+    name: cold_flu
+    resource: !secret cold_flu_url
+    value_template: "{{value_json.Location.periods[0].Index}}"
+    scan_interval: 21600
+    headers:
+       Referer: "https://www.pollen.com"
+  - platform: command_line
+    name: "HASS Uptime"
+    command: echo "$(($(date +%s) - $(date -d "$(head -n1 /home/homeassistant/.homeassistant/home-assistant.log | cut -d' ' -f-2)" +%s)))"
+    scan_interval: 720
+    value_template: >-
+      {% set uptime = value | int %}
+      {% set seconds = uptime % 60 %}
+      {% set minutes = ((uptime % 3600) / 60) | int %}
+      {% set hours = ((uptime % 86400) / 3600) | int %}
+      {% set days = (uptime / 86400) | int %}
+      {%- if days > 0 -%}
+        {%- if days == 1 -%}
+          1 day
+        {%- else -%}
+          {{ days }} days
+        {%- endif -%}
+        {{ ', ' }}
+      {%- endif -%}
+      {{ '%02d' % hours }}:{{ '%02d' % minutes }}
+  - platform: template
+    sensors:
+      hoursslept:
+        friendly_name: "Hours Slept"
+        unit_of_measurement: "hrs"
+        value_template: >-
+           {%- if states.sensor.sleep_minutesasleep != None -%}
+             {{(states.sensor.sleep_minutesasleep.state|int/60)|round(2)}}
+           {%- else -%}
+             unknown
+           {%- endif -%}
+      garagedoorbattery:
+        friendly_name: "Garage Door Sensor Battery"
+        unit_of_measurement: "%"
+        value_template: >-
+           {%- if states.binary_sensor.garage_door_tilt_sensor_sensor_5_0 != None -%}
+             {{ states.binary_sensor.garage_door_tilt_sensor_sensor_5_0.attributes.battery_level }}
+           {%- else -%}
+             unknown
+           {%- endif -%}
+      downstairsthermmode:
+        friendly_name: "Downstairs Away mode"
+        value_template: >-
+           {%- if  states.climate.downstairs.attributes.away_mode == 'off' -%}
+              Home
+           {%- elif states.climate.downstairs.attributes.away_mode == 'on' -%}
+              Away
+           {%- elif states.climate.downstairs != None -%}
+              unknown
+           {%- endif -%}
+      downstairsthermoper:
+        friendly_name: "Downstairs Thermostat"
+        value_template: >-
+           {%- if states.climate.downstairs != None -%}
+             {{ states.climate.downstairs.attributes.operation }}
+           {%- else -%}
+             unknown
+           {%- endif -%}
+        icon_template: >-
+          {%- if states.climate.downstairs.attributes.operation == "heat" -%}
+            mdi:fire
+          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
+      upstairshermostatmode:
+        friendly_name: "Upstairs Away Mode"
+        value_template: >-
+           {%- if  states.climate.upstairs.attributes.away_mode == 'off' -%}
+              Home
+           {%- elif states.climate.upstairs.attributes.away_mode == 'on' -%}
+              Away
+           {%- elif states.climate.upstairs != None -%}
+              unknown
+           {%- endif -%}
+      upstairsthermostatoperation:
+        friendly_name: "Upstairs Thermostat"
+        value_template: >-
+           {%- if states.climate.upstairs != None -%}
+             {{ states.climate.upstairs.attributes.operation }}
+           {%- else -%}
+             unknown
+           {%- endif -%}
+        icon_template: >-
+          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
+            mdi:fire
+          {%- elif states.climate.upstairs.attributes.operation ==  "cool" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
+      living_room:
+        value_template: >-
+          {%- if states.states.remote.livingroom != None -%}
+            {{ states.remote.livingroom.attributes.current_activity }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      sonos_volume:
+        value_template: >-
+          {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) |int }}
+        friendly_name: 'Sonos Volume'
+      leeotemp:
+        friendly_name: "Leeo Temperature"
+        unit_of_measurement: '°F'
+        value_template: >-
+          {%- if states.input_slider.leeotemperature.state != None -%}
+            {{ states.input_slider.leeotemperature.state }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      leeohumid:
+        friendly_name: "Leeo Humidity"
+        unit_of_measurement: '%'
+        value_template: >-
+          {%- if states.input_slider.leeohumidity.state != None -%}
+            {{ states.input_slider.leeohumidity.state }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      leeouptemp:
+        friendly_name: "Leeo Upstairs Temperature"
+        unit_of_measurement: '°F'
+        value_template: >-
+          {%- if states.input_slider.leeoupstairstemp.state != None -%}
+            {{ states.input_slider.leeoupstairstemp.state }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      leeouphumid:
+        friendly_name: "Leeo Upstairs Humidity"
+        unit_of_measurement: '%'
+        value_template: >-
+          {%- if states.input_slider.leeoupstairshumidity.state != None -%}
+            {{ states.input_slider.leeoupstairshumidity.state }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      leeoalarmstatus:
+        friendly_name: "Leeo Alarm"
+        value_template: >-
+           {%- if states.input_boolean.leeoalarm.state == 'off' -%}
+              Off
+           {%- elif states.input_boolean.leeoalarm.state == 'on' -%}
+              Active
+           {%- elif states.input_boolean.leeoalarm.state == None -%}
+              unknown
+           {%- endif -%}
+      pollen_level:
+        friendly_name: 'Pollen Level'
+        value_template: >-
+          {%- if states.sensor.pollen.state|float <= 2.4 %}
+              Low
+          {%- elif states.sensor.pollen.state|float <= 4.8 %}
+              Medium-Low
+          {%- elif states.sensor.pollen.state|float <= 7.2 %}
+              Medium
+          {%- elif states.sensor.pollen.state|float <= 9.6 %}
+              Medium-High
+          {%- elif states.sensor.pollen.state|float <= 12.0 %}
+              High
+          {% else %}
+              Unknown
+          {%- endif %}
+      cold_flu_risk:
+        friendly_name: 'Cold & Flu Risk'
+        value_template: >-
+          {%- if states.sensor.cold_flu.state|float <= 2.4 %}
+              Low
+          {%- elif states.sensor.cold_flu.state|float <= 4.8 %}
+              Medium-Low
+          {%- elif states.sensor.cold_flu.state|float <= 7.2 %}
+              Medium
+          {%- elif states.sensor.cold_flu.state|float <= 9.6 %}
+              Medium-High
+          {%- elif states.sensor.cold_flu.state|float <= 12.0 %}
+              High
+          {% else %}
+              Unknown
+          {%- endif %}
+      # garagedoor:
+        # friendly_name: "Garage Door"
+        # value_template: >-
+           # {% if  states.sensor.garage_door_tilt_sensor_alarm_level_5.state == '255' %}
+              # Open
+           # {% elif states.sensor.garage_door_tilt_sensor_alarm_level_5.state == '0' %}
+              # Closed
+           # {% elif states.sensor.garage_door_tilt_sensor_alarm_level_5 != None %}
+              # unknown
+           # {% endif %}
+#      bloomsky_last_update:
+#        value_template: '{{ states.sensor.ars_bloom_temperature.last_updated.strftime("%H:%M, %Y-%m-%d") }} '
+#      timeutcnow:
+#        value_template: '{{ utcnow.strftime("%H:%M, %Y-%m-%d") }}'

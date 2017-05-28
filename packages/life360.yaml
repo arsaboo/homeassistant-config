@@ -1,0 +1,83 @@
+###############################################################################
+# PACKAGE:      LIFE360 SENSOR
+# Description:  The Life360 sensor requires username, password and mqtt topic.
+#               Whatever the topic you specify, the data will be dumped there.
+#               Use the exact topic name in the Parse Life360 Data automation.
+###############################################################################
+
+homeassistant:
+  customize:
+    sensor.life360_sensor:
+      friendly_name: Life 360
+      hidden: true
+
+sensor:
+  - platform: life360
+    username: !secret life360_username
+    password: !secret life360_password
+    mqtt_topic: 'life360/data'
+
+automation:
+
+###############################################################################
+# Alert me When the sensor fails
+###############################################################################
+  - alias: Alert Life360 Sensor Error
+    initial_state: true
+    hide_entity: true
+
+    trigger:
+      platform: state
+      entity_id: sensor.life360_sensor
+      from: 'running'
+      to: 'error'
+
+    action:
+      - service: notify.pushbullet
+        data:
+          message: "Life360 Sensor"
+          title: "There seem to be a problem with Life360 Sensor!"
+###############################################################################
+# Extract the Life360 data and drop it into mqtt in "OwnTracks" json format.
+###############################################################################
+  - alias: Parse Life360 Data
+    initial_state: true
+    hide_entity: true
+
+    trigger:
+      platform: mqtt
+      topic: 'life360/data'
+
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: 'owntracks/{{trigger.payload_json.members.0.firstName | lower}}/{{trigger.payload_json.members.0.firstName | lower}}'
+          retain: true
+          payload: >
+            {
+              "t": "p",
+              "tst": "{{trigger.payload_json.members.0.location.timestamp}}",
+              "acc": {{trigger.payload_json.members.0.location.accuracy | int }},
+              "_type": "location",
+              "alt": "0",
+              "lon": {{trigger.payload_json.members.0.location.longitude | float }},
+              "lat": {{trigger.payload_json.members.0.location.latitude | float }},
+              "batt": {{trigger.payload_json.members.0.location.battery | int }},
+              "charging": {{trigger.payload_json.members.0.location.charge | int }}
+            }
+      - service: mqtt.publish
+        data_template:
+          topic: 'owntracks/{{trigger.payload_json.members.1.firstName | lower}}/{{trigger.payload_json.members.1.firstName | lower}}'
+          retain: true
+          payload: >
+            {
+              "t": "p",
+              "tst": "{{trigger.payload_json.members.1.location.timestamp}}",
+              "acc": {{trigger.payload_json.members.1.location.accuracy | int }},
+              "_type": "location",
+              "alt": "0",
+              "lon": {{trigger.payload_json.members.1.location.longitude | float }},
+              "lat": {{trigger.payload_json.members.1.location.latitude | float }},
+              "batt": {{trigger.payload_json.members.1.location.battery | int }},
+              "charging": {{trigger.payload_json.members.1.location.charge | int }}
+            }

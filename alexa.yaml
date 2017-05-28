@@ -1,0 +1,66 @@
+  intents:
+    WhereAreWeIntent:
+      speech:
+        type: plaintext
+        text: >
+          {%- if is_state('input_boolean.alokhome', 'on') and
+                 is_state('input_boolean.rashmihome', 'on') -%}
+            You are both home, you silly
+          {%- else -%}
+            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
+            and Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+          {% endif %}
+      card:
+        type: simple
+        title: Where are We?
+        content: Ask Home Assistant about where everyone is
+    LocateIntent:
+      action:
+        - service: logbook.log
+          data_template:
+            message: The location of {{ User }} has been queried via Alexa.
+      speech:
+        type: plaintext
+        text: >
+          {%- if User == "Alok" -%}
+            Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+          {%- elif User == "Rashmi" -%}
+            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
+          {%- endif -%}
+      card:
+        type: simple
+        title: Location queried
+        content: Ask Home Assistant about user location
+    HowIsTheTrafficIntent:
+      speech:
+        type: plaintext
+        text: >
+          The fastest route to office takes about {{ states("sensor.morning_commute") }} minutes.
+      card:
+        type: simple
+        title: Traffic Conditions
+        content: Ask Home Assistant about current traffic conditions
+    RunScriptIntent:
+      action:
+        service: script.turn_on
+        data_template:
+          entity_id: script.{{ Script | replace(" ", "_") }}
+      speech:
+        type: plaintext
+        text: OK
+      card:
+        type: simple
+        title: Run Script
+        content: Ask Home Assistant to run Script.
+    PlayRadioIntent:
+      action:
+        service: script.playradio
+        data_template:
+          station: "{{ Station | lower | replace(' ', '_') }}"
+      speech:
+        type: plaintext
+        text: OK
+      card:
+        type: simple
+        title: Play Music
+        content: Ask Home Assistant to play music.

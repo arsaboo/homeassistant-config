@@ -1,0 +1,40 @@
+#################################################################
+## Input_select
+#################################################################
+
+  abodestatus:
+    name: Abode status
+    options:
+     - standby
+     - home
+     - away
+    initial: standby
+    icon: mdi:security
+  livingroomharmony:
+    name: Harmony Activity
+    options:
+     - PowerOff
+     - Watch Fire TV
+     - Chromecast
+     - Youtube
+     - SATV
+     - Watch Apple TV
+    initial: PowerOff
+    icon: mdi:remote
+  hdmiswitcher:
+    name: HDMI Switcher
+    options:
+     - AppleTV
+     - FireTV
+     - Shield
+    initial: Shield
+    icon: mdi:remote
+  hdmiinput:
+    name: HDMI Input
+    options:
+     - InputHdmi1
+     - InputHdmi2
+     - InputHDMI3
+     - InputHdmi4
+    initial: InputHdmi4
+    icon: mdi:remote
