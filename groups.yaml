@@ -51,7 +51,6 @@
   Weather:
     - sensor.pws_weather
     - sensor.pws_temp_f
-    - sensor.pws_pressure_in
     - sensor.pws_relative_humidity
     - binary_sensor.ars_bloom_rain
     - sensor.pws_wind_dir
@@ -93,6 +92,7 @@
     - sensor.transmission_status
     - sensor.transmission_up_speed
     - switch.transmission_turtle_mode
+    - sensor.fastcom_download
 
   Media Player:
     - media_player.livingroomsonos
@@ -155,6 +155,7 @@
     - switch.wemoswitch
     - switch.garage_relay_switch_8_0
     - switch.driveway
+    - switch.wemoporch
     - input_boolean.partymode
     - script.colorloop_start
     - script.disco_party

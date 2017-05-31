@@ -114,7 +114,6 @@
     - platform: state
       entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone, device_tracker.rashmiappiphone, device_tracker.sonu_sonu
       state: 'home'
-
   action:
     - service: homeassistant.turn_on
       entity_id: input_boolean.rashmihome
@@ -645,6 +644,77 @@
      service: ifttt.trigger
      data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
 
+- id: frontyard_lights
+  alias: 'Turn on frontyard lights'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  trigger:
+   - platform: state
+     entity_id:
+       - binary_sensor.driveway_field_detection
+       - binary_sensor.porch_field_detection
+       - binary_sensor.driveway_line_crossing
+       - binary_sensor.porch_line_crossing
+     state: 'on'
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
+
+- id: frontyard_lights_off
+  alias: 'Turn off frontyard lights'
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {%- if states.binary_sensor.driveway_field_detection.last_changed -%}
+          {{as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_field_detection.last_changed)}} >200
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if states.binary_sensor.porch_field_detection.last_changed -%}
+          {{as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_field_detection.last_changed)}} >200
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if states.binary_sensor.driveway_line_crossing.last_changed -%}
+          {{as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_line_crossing.last_changed)}} >200
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if states.binary_sensor.porch_line_crossing.last_changed -%}
+          {{as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_line_crossing.last_changed)}} >200
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: switch.driveway
+          state: 'on'
+        - condition: state
+          entity_id: switch.wemoporch
+          state: 'on'
+  trigger:
+   - platform: time
+     minutes: '/5'
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
+
+
 - id: lifx_party_mode
   alias: "Turn Lifx Party Mode On"
   initial_state: 'on'
@@ -769,8 +839,8 @@
           on
         {%- endif -%}
 
-- id: driveway_light_at_night
-  alias: Driveway light at night
+- id: outdoor_light_at_night
+  alias: Outdoor lights at night
   initial_state: 'on'
   trigger:
     platform: sun
@@ -778,10 +848,12 @@
     offset: "00:45:00"
   action:
     - service: switch.turn_on
-      entity_id: switch.driveway
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
 
-- id: driveway_light_off
-  alias: Driveway light Off
+- id: outdoor_light_off
+  alias: Outdoor light Off
   initial_state: 'on'
   trigger:
     platform: sun
@@ -789,7 +861,10 @@
     offset: "01:30:00"
   action:
     - service: switch.turn_off
-      entity_id: switch.driveway
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
+
 - id: driveway_light_off_during_the_day
   alias: Driveway light Off during the day
   initial_state: 'on'
@@ -803,7 +878,9 @@
       state: 'above_horizon'
   action:
     - service: switch.turn_off
-      entity_id: switch.driveway
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
 
 - id: reset_garage_relay
   alias: 'Reset Garage Relay'

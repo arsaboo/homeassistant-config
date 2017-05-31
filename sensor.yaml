@@ -1,3 +1,5 @@
+  - platform: fastdotcom
+    manual: True
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.panasonic_viera_tv
@@ -16,15 +18,9 @@
       - "activities/calories"
       - "activities/distance"
       - "activities/steps"
-      - "sleep/efficiency"
-      - "sleep/awakeningsCount"
-      - "sleep/efficiency"
-      - "sleep/minutesAfterWakeup"
       - "sleep/minutesAsleep"
       - "sleep/minutesAwake"
-      - "sleep/minutesToFallAsleep"
       - "sleep/startTime"
-      - "sleep/timeInBed"
   - platform: currencylayer
     api_key: !secret currencylayer_key
     base: USD #optional
@@ -72,7 +68,6 @@
     monitored_conditions:
       - weather
       - temp_f
-      - pressure_in
       - wind_string
       - relative_humidity
   - platform: rest

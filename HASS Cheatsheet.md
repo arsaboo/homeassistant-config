@@ -1,3 +1,17 @@
+# If RPi is not syncing the time
+Use the `systemd-timesyncd` service as explained [here](https://wiki.archlinux.org/index.php/systemd-timesyncd)
+Here are the [time servers](https://wiki.archlinux.org/index.php/Network_Time_Protocol_daemon#Connection_to_NTP_servers) that I used.
+```
+NTP=0.north-america.pool.ntp.org 1.north-america.pool.ntp.org 2.north-america.pool.ntp.org 3.north-america.pool.ntp.org
+FallbackNTP=0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org
+```
+
+# Configuring WinSCP to edit HASS files
+Default AIO installation does not allow editing the configuration files in WinSCP. To enable the same, you will need to change the SFTP server (in Advanced settings -> Environment -> SFTP).
+
+1. Obtain the SFTP by running `grep sftp /etc/ssh/sshd_config` at the `pi` shell. You will get something like, `Subsystem sftp /usr/lib/openssh/sftp-server`.
+2. Now, set the sftp server to: `sudo su -c /usr/lib/openssh/sftp-server` (note that the `/usr/lib/openssh/sftp-server` is the same path obtained from the previous step) and set Shell to `sudo -s`.
+
 # Mosquitto operations
 I am using the default AIO username/password, replace them with yours
 
@@ -95,6 +109,8 @@ If you are using AIO (which has Mosquitto pre-installed), you can use the follow
     ```
 4. Start ST-MQTT bridge `pm2 start smartthings-mqtt-bridge`
 5. Follow the rest of the instructions (from step 2) listed [here](https://github.com/stjohnjohnson/smartthings-mqtt-bridge#usage).
+6. Once `pm2` runs the program, you can then run `pm2 save` to save the running programs into a configuration file.
+7. You can then run `pm2` as a systemd or service by running the command that you get after running `pm2 startup systemd` (run this without `sudo`). 
 
 # To upgrade the All-In-One setup manually (using this as I am using the older version of AIO):
 
@@ -153,7 +169,7 @@ Some useful commands:
 * `select entity_id, count(*), sum(length(state)), sum(length(attributes))/ (1024 * 1024) siz  from states group by entity_id order by siz;` to obtain the space (in MB) occupied by each entity in the `states` table.
 
 # Miscellaneous Tips/Tricks
-* You can test the the Read Speed of your SD card using (note, this command takes some time to run):
+* You can test the Read Speed of your SD card using (note, this command takes some time to run):
   ```
   sudo dd if=/dev/mmcblk0 of=/dev/null bs=8M count=100
   sudo hdparm -t /dev/mmcblk0

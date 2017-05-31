@@ -53,7 +53,9 @@ light:
     retain: true
     optimistic: false
     qos: 0
-
+#Adds Amazon Echo support
+emulated_hue:
+  expose_by_default: false
 # Enables the frontend
 frontend:
 
@@ -203,7 +205,6 @@ logbook:
     entities:
       - sensor.pws_weather
       - sensor.pws_temp_f
-      - sensor.pws_pressure_in
       - sensor.pws_relative_humidity
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
@@ -328,6 +329,7 @@ recorder:
       - sensor.pollen
       - sensor.pollen_level
       - sensor.hass_uptime
+      - sensor.time__date
       - switch.pihole
       - sensor.dns_queries_today
       - sensor.domains_being_blocked

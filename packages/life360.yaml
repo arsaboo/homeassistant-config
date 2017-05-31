@@ -22,16 +22,23 @@ automation:
 ###############################################################################
 # Alert me When the sensor fails
 ###############################################################################
-  - alias: Alert Life360 Sensor Error
+  - id: life360_sensor_error
+    alias: Alert Life360 Sensor Error
     initial_state: true
     hide_entity: true
-
+    condition:
+      - condition: template
+        value_template: >
+          {%- if states.automation.parse_life360_data.attributes.last_triggered -%}
+            {{ (as_timestamp(now()) - as_timestamp(states.automation.parse_life360_data.attributes.last_triggered)) > 500 }}
+          {%- else -%}
+            true
+          {%- endif -%}
     trigger:
       platform: state
       entity_id: sensor.life360_sensor
       from: 'running'
       to: 'error'
-
     action:
       - service: notify.pushbullet
         data:
@@ -40,14 +47,13 @@ automation:
 ###############################################################################
 # Extract the Life360 data and drop it into mqtt in "OwnTracks" json format.
 ###############################################################################
-  - alias: Parse Life360 Data
+  - id: parse_life360_data
+    alias: Parse Life360 Data
     initial_state: true
     hide_entity: true
-
     trigger:
       platform: mqtt
       topic: 'life360/data'
-
     action:
       - service: mqtt.publish
         data_template:

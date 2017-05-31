@@ -42,12 +42,6 @@
      device_tracker.94a1a273348b:
        friendly_name: BloomSky
        icon: mdi:compass-outline
-    #  device_tracker.alok_29677a2f60cb45e1a9ef0fce8c1cb8ac:
-    #    entity_picture: /local/life360.png
-    #    friendly_name: Alok Life360
-    #  device_tracker.sonu_1169166c6fc048c98e47b8bbd0423d54:
-    #    entity_picture: /local/life360.png
-    #    friendly_name: Rashmi Life360
      device_tracker.alok_alok:
        entity_picture: /local/life360.png
        friendly_name: Alok Life360
@@ -64,9 +58,6 @@
      sensor.ars_bloom_humidity:
        friendly_name: 'BloomSky Humidity'
        icon: mdi:water-percent
-     sensor.pws_pressure_in:
-       friendly_name: 'Outdoor Pressure'
-       icon: mdi:gauge
      sensor.pws_wind_dir:
        friendly_name: 'Wind Direction'
        icon: mdi:compass-outline
@@ -176,6 +167,10 @@
        emulated_hue: true
        emulated_hue_name: "Driveway Light"
        friendly_name: "Driveway Light"
+     switch.wemoporch:
+       emulated_hue: true
+       emulated_hue_name: "Porch Lights"
+       friendly_name: "Porch Lights"     
      switch.garage_relay_switch_8_0:
        emulated_hue: true
        emulated_hue_name: "Garage Door"
