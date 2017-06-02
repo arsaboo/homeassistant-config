@@ -110,15 +110,14 @@ If you are using AIO (which has Mosquitto pre-installed), you can use the follow
 4. Start ST-MQTT bridge `pm2 start smartthings-mqtt-bridge`
 5. Follow the rest of the instructions (from step 2) listed [here](https://github.com/stjohnjohnson/smartthings-mqtt-bridge#usage).
 6. Once `pm2` runs the program, you can then run `pm2 save` to save the running programs into a configuration file.
-7. You can then run `pm2` as a systemd or service by running the command that you get after running `pm2 startup systemd` (run this without `sudo`). 
+7. You can then run `pm2` as a systemd or service by running the command that you get after running `pm2 startup systemd` (run this without `sudo`).
 
-# To upgrade the All-In-One setup manually (using this as I am using the older version of AIO):
+# To upgrade HASS manually:
 
-*  Login to system
+*  Login to system. HASS configuration files are saved in `/home/homeassistant/.homeassistant` and the code files are saved in `/srv/homeassistant/lib/python3.5/site-packages/homeassistant/`.
 *  Change to homeassistant user `sudo su -s /bin/bash homeassistant`
 *  Change to virtual enviroment `source /srv/homeassistant/bin/activate`
-*  Update HA `pip3 install --upgrade homeassistant`. To update to a different branch, use the complete git URL, `pip3 install --upgrade git+git://github.com/home-assistant/home-assistant.git@dev
-`
+*  Update HA `pip3 install --upgrade homeassistant`. To update to a different branch, use the complete git URL, `pip3 install --upgrade git+git://github.com/home-assistant/home-assistant.git@dev`
 *  Type `exit` to logout the hass user and return to the `pi` user.
 *  Restart the Home-Assistant Service `sudo systemctl restart home-assistant@homeassistant`
 

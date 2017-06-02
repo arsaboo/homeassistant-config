@@ -170,11 +170,19 @@
      switch.wemoporch:
        emulated_hue: true
        emulated_hue_name: "Porch Lights"
-       friendly_name: "Porch Lights"     
+       friendly_name: "Porch Lights"
      switch.garage_relay_switch_8_0:
        emulated_hue: true
        emulated_hue_name: "Garage Door"
        friendly_name: Garage Door Switch
+     group.living_room_lights:
+       emulated_hue: true
+       emulated_hue_name: "Living room lights"
+       friendly_name: Living room lights
+     light.kitchen_lights:
+       emulated_hue: true
+       emulated_hue_name: "Kitchen lights"
+       friendly_name: Kitchen lights
 
      climate.ecobee:
        max_temp: 90

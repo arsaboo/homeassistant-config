@@ -55,6 +55,8 @@ light:
     qos: 0
 #Adds Amazon Echo support
 emulated_hue:
+  type: alexa
+  host_ip: 192.168.2.212
   expose_by_default: false
 # Enables the frontend
 frontend:
@@ -88,6 +90,10 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
+  # - platform: generic
+  #   still_image_url: !secret porch_camera_image_url
+  #   name: porch2
+
 ring:
   username: !secret ring_username
   password: !secret ring_password
@@ -101,6 +107,7 @@ ifttt:
 #   - platform: dlib_face_detect
 #     source:
 #       - entity_id: camera.porch
+#       - entity_id: camera.patio
 # opencv:
 #   classifier_group:
 #     - name: Face
@@ -172,9 +179,18 @@ ecobee:
   api_key: !secret ecobee_key
   hold_temp: True
 
+# image_processing:
+#   - platform: opencv
+#     name: body
+#     source:
+#       - entity_id: camera.porch
+#     classifier:
+#       body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
+  logs:
+    homeassistant.components.image_processing: info
 # Text to speech
 tts:
   - platform: google
