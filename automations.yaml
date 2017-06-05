@@ -1,6 +1,6 @@
-#################################################################
+################################################################
 ## Presence
-#################################################################
+################################################################
 - id: alok_away
   alias: 'Alok Away'
   initial_state: 'on'
@@ -18,11 +18,11 @@
   trigger:
     - platform: state
       entity_id: device_tracker.myiphone, device_tracker.pi_alokphone
-      state: 'not_home'
+      to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id: device_tracker.alokiosiphone, device_tracker.alok_alok
-      state: 'not_home'
+      to: 'not_home'
   action:
     - service: homeassistant.turn_off
       entity_id: input_boolean.alokhome
@@ -51,11 +51,11 @@
   trigger:
     - platform: state
       entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
-      state: 'not_home'
+      to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id: device_tracker.rashmiappiphone, device_tracker.sonu_sonu
-      state: 'not_home'
+      to: 'not_home'
   action:
     - service: homeassistant.turn_off
       entity_id: input_boolean.rashmihome
@@ -84,7 +84,7 @@
   trigger:
     - platform: state
       entity_id: device_tracker.myiphone, device_tracker.pi_alokphone, device_tracker.alokiosiphone, device_tracker.elantrase, device_tracker.alok_alok
-      state: 'home'
+      to: 'home'
   action:
     - service: homeassistant.turn_on
       entity_id: input_boolean.alokhome
@@ -113,7 +113,7 @@
   trigger:
     - platform: state
       entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone, device_tracker.rashmiappiphone, device_tracker.sonu_sonu
-      state: 'home'
+      to: 'home'
   action:
     - service: homeassistant.turn_on
       entity_id: input_boolean.rashmihome
@@ -140,7 +140,7 @@
   trigger:
     - platform: state
       entity_id: input_select.abodestatus
-      state: 'away'
+      to: 'away'
   action:
     - service: homeassistant.turn_off
       entity_id: input_boolean.rashmihome
@@ -179,10 +179,10 @@
   trigger:
     - platform: state
       entity_id: input_select.abodestatus
-      state: 'home'
+      to: 'home'
     - platform: state
       entity_id: input_select.abodestatus
-      state: 'away'
+      to: 'away'
   action:
     - service: notify.pushbullet
       data:
@@ -323,7 +323,7 @@
   trigger:
     - platform: state
       entity_id: group.household
-      state: 'off'
+      to: 'off'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodeaway
@@ -342,7 +342,7 @@
        state: 'on'
   trigger:
     platform: time
-    after: '22:00:00'
+    at: '22:00:00'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodehome
@@ -361,7 +361,7 @@
        state: 'on'
   trigger:
     platform: time
-    after: '07:45:00'
+    at: '07:45:00'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
@@ -372,7 +372,7 @@
   trigger:
     platform: state
     entity_id: input_boolean.startrecording
-    state: 'on'
+    to: 'on'
   action:
     service: switch.turn_on
     entity_id: switch.foscam_record
@@ -383,7 +383,7 @@
   trigger:
     platform: state
     entity_id: input_boolean.startrecording
-    state: 'off'
+    to: 'off'
   action:
     service: switch.turn_off
     entity_id: switch.foscam_record
@@ -426,7 +426,7 @@
        - binary_sensor.driveway_line_crossing
        - binary_sensor.patio_line_crossing
        - binary_sensor.porch_line_crossing
-     state: 'on'
+     to: 'on'
   action:
     - service: notify.ios
       data_template:
@@ -467,7 +467,7 @@
   initial_state: 'on'
   trigger:
     platform: time
-    after: '2:31:00'
+    at: '2:31:00'
   action:
     service: zwave.heal_network
 
@@ -598,7 +598,7 @@
   trigger:
    - platform: state
      entity_id: light.kitchen_lights
-     state: 'on'
+     to: 'on'
   condition:
     - condition: template
       value_template: '{{ trigger.from_state.state == "off" }}'
@@ -658,7 +658,7 @@
 #        - binary_sensor.porch_field_detection
 #        - binary_sensor.driveway_line_crossing
 #        - binary_sensor.porch_line_crossing
-#      state: 'on'
+#      to: 'on'
 #   action:
 #     - service: switch.turn_on
 #       entity_id:
@@ -750,7 +750,7 @@
   trigger:
     - platform: state
       entity_id: input_boolean.partymode
-      state: 'off'
+      to: 'off'
   action:
     - service: light.turn_on
       entity_id: group.living_room_lights
@@ -871,7 +871,7 @@
   trigger:
     platform: state
     entity_id: switch.driveway
-    state: 'on'
+    to: 'on'
   condition:
     - condition: state
       entity_id: sun.sun
@@ -1058,7 +1058,7 @@
   trigger:
     platform: state
     entity_id: remote.livingroom
-    state: 'on'
+    to: 'on'
   action:
     - service: homeassistant.turn_on
       entity_id: input_boolean.tv
@@ -1100,7 +1100,7 @@
   trigger:
     platform: state
     entity_id: media_player.panasonic_viera_tv
-    state: 'on'
+    to: 'on'
   condition:
     - condition: state
       entity_id: input_boolean.tvtime

@@ -202,7 +202,7 @@ tts:
 remote:
   - platform: harmony
     name: livingroom
-    host: 192.168.2.153
+    host: 192.168.2.152
 ios:
 scene:
   platform: lifx_cloud
