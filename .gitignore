@@ -51,7 +51,7 @@ __pycache__
 *.sqlite
 *.xml
 *.backup
-*.sh
+life360.sh
 *.google.token
 .google.token
 .ring_cache.pickle
