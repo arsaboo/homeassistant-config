@@ -35,8 +35,8 @@
     icon: mdi:play-circle-outline
     entities:
       - group.entertainment
-      - group.media_player
       - group.network_details
+      - group.media_player
 
   settings:
     name: Settings
@@ -156,6 +156,7 @@
     - switch.garage_relay_switch_8_0
     - switch.driveway
     - switch.wemoporch
+    - switch.wemoinsight
     - input_boolean.partymode
     - script.colorloop_start
     - script.disco_party
