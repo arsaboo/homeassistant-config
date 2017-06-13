@@ -1,32 +1,31 @@
-'''
-@ Author	:   Suresh Kalavala
-@ Date		:   05/24/2017
-@ Descrition	:   Life360 Sensor - It queries Life360 API and retrieves 
-                    data at a specified interval and dumpt into MQTT
+"""
+@ Author      : Suresh Kalavala
+@ Date        : 05/24/2017
+@ Description : Life360 Sensor - It queries Life360 API and retrieves
+                data at a specified interval and dumpt into MQTT
 
-@ How To	:   Copy this file and place it in your 
-                    "Home Assistant Config folder\custom_components\sensor\" folder
-		    Copy corresponding Life360 Package frommy repo, 
-		    and make sure you have MQTT installed and Configured
-
-@ Notes		:   1) Only enable logging on need basis - it might show passwords
-		    2) To make it portable, a lot of stuff is hard coded :)
-		    3) Make sure the life360 password doesn't contain '#' or '$' symbols
-'''
+@ Notes:        Copy this file and place it in your
+                "Home Assistant Config folder\custom_components\sensor\" folder
+                Copy corresponding Life360 Package frommy repo,
+                and make sure you have MQTT installed and Configured
+                Make sure the life360 password don't contain '#' or '$' symbols
+"""
 
 from datetime import timedelta
 import logging
 import subprocess
+import json
 
 import voluptuous as vol
 import homeassistant.components.mqtt as mqtt
 
+from io import StringIO
 from homeassistant.components.mqtt import (CONF_STATE_TOPIC, CONF_COMMAND_TOPIC, CONF_QOS, CONF_RETAIN)
 from homeassistant.helpers import template
 from homeassistant.exceptions import TemplateError
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
-    CONF_NAME, CONF_VALUE_TEMPLATE, CONF_UNIT_OF_MEASUREMENT, 
+    CONF_NAME, CONF_VALUE_TEMPLATE, CONF_UNIT_OF_MEASUREMENT,
     STATE_UNKNOWN)
 from homeassistant.helpers.entity import Entity
 import homeassistant.helpers.config_validation as cv
@@ -136,67 +135,122 @@ class Life360SensorData(object):
     def update(self):
 
         try:
-            ''' Prepare and Execute Commands '''
-            _LOGGER.info( "Preparing and executing get Access Token command." )
+            """ Prepare and Execute Commands """
             self.COMMAND_ACCESS_TOKEN = self.COMMAND_ACCESS_TOKEN.replace("USERNAME360", self.username)
             self.COMMAND_ACCESS_TOKEN = self.COMMAND_ACCESS_TOKEN.replace("PASSWORD360", self.password)
-            access_token = self.execShellCommand( self.COMMAND_ACCESS_TOKEN )
-        
+            access_token = self.exec_shell_command( self.COMMAND_ACCESS_TOKEN )
+
             if access_token == None:
                 self.value = CONST_STATE_ERROR
                 return None
-        
-            _LOGGER.info( "Preparing and executing get ID command." )
+
             self.COMMAND_ID = self.COMMAND_ID.replace("ACCESS_TOKEN", access_token)
-            id = self.execShellCommand( self.COMMAND_ID )
-        
+            id = self.exec_shell_command( self.COMMAND_ID )
+
             if id == None:
                 self.value = CONST_STATE_ERROR
                 return None
-        
-            _LOGGER.info( "Preparing and executing get Member command." )
+
             self.COMMAND_MEMBERS = self.COMMAND_MEMBERS.replace("ACCESS_TOKEN", access_token)
             self.COMMAND_MEMBERS = self.COMMAND_MEMBERS.replace("ID", id)
-            payload = self.execShellCommand( self.COMMAND_MEMBERS )
-        
+            payload = self.exec_shell_command( self.COMMAND_MEMBERS )
+
             if payload != None:
-                self.saveToMqtt ( payload )
+                self.save_payload_to_mqtt ( self.mqtt_topic, payload )
+                data = json.loads ( payload )
+                for member in data["members"]:
+                    topic = StringBuilder()
+                    topic.Append("owntracks/")
+                    topic.Append(member["firstName"].lower())
+                    topic.Append("/")
+                    topic.Append(member["firstName"].lower())
+                    topic = topic
+
+                    msgPayload = StringBuilder()
+                    msgPayload.Append("{")
+                    msgPayload.Append("\"t\":\"p\"")
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"tst\":")
+                    msgPayload.Append(member['location']['timestamp'])
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"acc\":")
+                    msgPayload.Append(member['location']['accuracy'])
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"_type\":\"location\"")
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"alt\":\"0\"")
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"lon\":")
+                    msgPayload.Append(member['location']['longitude'])
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"lat\":")
+                    msgPayload.Append(member['location']['latitude'])
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"batt\":")
+                    msgPayload.Append(member['location']['battery'])
+                    msgPayload.Append(",")
+
+                    msgPayload.Append("\"charging\":")
+                    msgPayload.Append(member['location']['charge'])
+                    msgPayload.Append("}")
+
+                    self.save_payload_to_mqtt ( str(topic), str(msgPayload) )
                 self.value = CONST_STATE_RUNNING
             else:
                 self.value = CONST_STATE_ERROR
-				
+
         except:
             self.value = CONST_STATE_ERROR
 
-    def execShellCommand( self, command ):
+    def exec_shell_command( self, command ):
 
         output = None
         try:
-            _LOGGER.info( "Running command: %s", command )
             output = subprocess.check_output( command, shell=True, timeout=15 )
             output = output.strip().decode('utf-8')
-            _LOGGER.debug( "Command executed successfully, here is the output: %s", output )
 
         except subprocess.CalledProcessError:
-            _LOGGER.error("Command failed: %s", command)
+            """ _LOGGER.error("Command failed: %s", command)"""
             self.value = CONST_STATE_ERROR
             output = None
         except subprocess.TimeoutExpired:
-            _LOGGER.error("Timeout for command: %s", command)
+            """ _LOGGER.error("Timeout for command: %s", command)"""
             self.value = CONST_STATE_ERROR
             output = None
 
         if output == None:
-            _LOGGER.error( "Empty data reveived from Life360 API" )
+            _LOGGER.error( "Life360 has not responsed well. Nothing to worry, will try again!" )
             self.value = CONST_STATE_ERROR
             return None
         else:
             return output
 
-    def saveToMqtt( self, payload ):
+    def save_payload_to_mqtt( self, topic, payload ):
 
         try:
-            mqtt.async_publish ( self.hass, self.mqtt_topic, payload, self.mqtt_qos, self.mqtt_retain )
+            """mqtt.async_publish ( self.hass, topic, payload, self.mqtt_qos, self.mqtt_retain )"""
+            _LOGGER.info("topic: %s", topic)
+            _LOGGER.info("payload: %s", payload)
+            mqtt.publish ( self.hass, topic, payload, self.mqtt_qos, self.mqtt_retain )
 
         except:
             _LOGGER.error( "Error saving Life360 data to mqtt." )
+
+class StringBuilder:
+     _file_str = None
+
+     def __init__(self):
+         self._file_str = StringIO()
+
+     def Append(self, str):
+         self._file_str.write(str)
+
+     def __str__(self):
+         return self._file_str.getvalue()

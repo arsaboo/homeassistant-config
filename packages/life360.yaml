@@ -15,7 +15,8 @@ sensor:
   - platform: life360
     username: !secret life360_username
     password: !secret life360_password
-    mqtt_topic: 'life360/data'
+    mqtt_topic: "/life360/data"
+    scan_interval: 60
 
 automation:
 
@@ -44,46 +45,3 @@ automation:
         data:
           message: "Life360 Sensor"
           title: "There seem to be a problem with Life360 Sensor!"
-###############################################################################
-# Extract the Life360 data and drop it into mqtt in "OwnTracks" json format.
-###############################################################################
-  - id: parse_life360_data
-    alias: Parse Life360 Data
-    initial_state: true
-    hide_entity: true
-    trigger:
-      platform: mqtt
-      topic: 'life360/data'
-    action:
-      - service: mqtt.publish
-        data_template:
-          topic: 'owntracks/{{trigger.payload_json.members.0.firstName | lower}}/{{trigger.payload_json.members.0.firstName | lower}}'
-          retain: true
-          payload: >
-            {
-              "t": "p",
-              "tst": "{{trigger.payload_json.members.0.location.timestamp}}",
-              "acc": {{trigger.payload_json.members.0.location.accuracy | int }},
-              "_type": "location",
-              "alt": "0",
-              "lon": {{trigger.payload_json.members.0.location.longitude | float }},
-              "lat": {{trigger.payload_json.members.0.location.latitude | float }},
-              "batt": {{trigger.payload_json.members.0.location.battery | int }},
-              "charging": {{trigger.payload_json.members.0.location.charge | int }}
-            }
-      - service: mqtt.publish
-        data_template:
-          topic: 'owntracks/{{trigger.payload_json.members.1.firstName | lower}}/{{trigger.payload_json.members.1.firstName | lower}}'
-          retain: true
-          payload: >
-            {
-              "t": "p",
-              "tst": "{{trigger.payload_json.members.1.location.timestamp}}",
-              "acc": {{trigger.payload_json.members.1.location.accuracy | int }},
-              "_type": "location",
-              "alt": "0",
-              "lon": {{trigger.payload_json.members.1.location.longitude | float }},
-              "lat": {{trigger.payload_json.members.1.location.latitude | float }},
-              "batt": {{trigger.payload_json.members.1.location.battery | int }},
-              "charging": {{trigger.payload_json.members.1.location.charge | int }}
-            }
