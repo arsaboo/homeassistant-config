@@ -110,6 +110,15 @@
       {{ '%02d' % hours }}:{{ '%02d' % minutes }}
   - platform: template
     sensors:
+      wemopowerused:
+        friendly_name: "Wemo Current Power"
+        unit_of_measurement: "w"
+        value_template: >-
+           {%- if states.switch.wemoinsight	!= None -%}
+             {{states.switch.wemoinsight.attributes.current_power_w|round(2)}}
+           {%- else -%}
+             unknown
+           {%- endif -%}
       hoursslept:
         friendly_name: "Hours Slept"
         unit_of_measurement: "hrs"
@@ -123,8 +132,8 @@
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
         value_template: >-
-           {%- if states.binary_sensor.garage_door_tilt_sensor_sensor_5_0 != None -%}
-             {{ states.binary_sensor.garage_door_tilt_sensor_sensor_5_0.attributes.battery_level }}
+           {%- if states.binary_sensor.garage_door_tilt_sensor_sensor != None -%}
+             {{ states.binary_sensor.garage_door_tilt_sensor_sensor.attributes.battery_level }}
            {%- else -%}
              unknown
            {%- endif -%}

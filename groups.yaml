@@ -153,7 +153,7 @@
 
   Switches:
     - switch.wemoswitch
-    - switch.garage_relay_switch_8_0
+    - switch.garage_relay_switch
     - switch.driveway
     - switch.wemoporch
     - switch.wemoinsight

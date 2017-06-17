@@ -37,6 +37,7 @@ zone 3:
   icon: mdi:school
 zwave:
   usb_path: /dev/ttyACM0
+  new_entity_ids: true
 light:
   - platform: lifx
   # z-wave dimmer switch (http://amzn.to/2j1UEli)
@@ -232,7 +233,7 @@ logbook:
       - sensor.pws_relative_humidity
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
-      - binary_sensor.garage_door_tilt_sensor_sensor_5_0
+      - binary_sensor.garage_door_tilt_sensor_sensor
       - binary_sensor.upstairs_occupancy
       - binary_sensor.downstairs_occupancy
       - binary_sensor.porch_field_detection
@@ -252,10 +253,10 @@ logbook:
       - sensor.dark_sky_daily_summary
       - sensor.time__date
       - sensor.bloomlastupdate
-      - sensor.garage_door_tilt_sensor_alarm_level_5_1
-      - sensor.garage_door_tilt_sensor_alarm_type_5_0
-      - sensor.garage_door_tilt_sensor_burglar_5_10
-      - sensor.garage_door_tilt_sensor_sourcenodeid_5_2
+      - sensor.garage_door_tilt_sensor_alarm_level
+      - sensor.garage_door_tilt_sensor_alarm_type
+      - sensor.garage_door_tilt_sensor_burglar
+      - sensor.garage_door_tilt_sensor_sourcenodeid
       - sensor.garagedoorbattery
       - sensor.phonebatteryalok
       - sensor.phonebatteryrashmi
@@ -295,8 +296,8 @@ logbook:
       - automation.alok_home
       - automation.notify_camera_pictures
       - zwave.garage_relay_8
-      - zwave.aeotec_zw090_zstick_gen5_1
-      - zwave.garage_door_tilt_sensor_5
+      - zwave.aeotec_zw090_zstick_gen5
+      - zwave.garage_door_tilt_sensor
       - input_slider.harmonyvolume
       - input_boolean.leeoalarm
       - input_boolean.thermo_away_main
@@ -345,7 +346,7 @@ recorder:
       - input_slider.leeoupstairshumidity
       - input_select.livingroomharmony
       - sensor.living_room
-      - zwave.garage_door_tilt_sensor_5
+      - zwave.garage_door_tilt_sensor
       - automation.change_leeo_color
       - automation.change_leeo_upstairs_color
       - automation.parse_life360_data

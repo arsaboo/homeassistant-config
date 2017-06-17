@@ -890,11 +890,11 @@
       seconds: '/5'
   condition:
     - condition: state
-      entity_id: switch.garage_relay_switch_8_0
+      entity_id: switch.garage_relay_switch
       state: "on"
   action:
     - service: switch.turn_off
-      entity_id: switch.garage_relay_switch_8_0
+      entity_id: switch.garage_relay_switch
 
 - id: open_garage_door_when_someone_home
   alias: 'Open Garage door when someone home'
@@ -919,7 +919,7 @@
      to: 'on'
   action:
     - service: switch.turn_on
-      entity_id: switch.garage_relay_switch_8_0
+      entity_id: switch.garage_relay_switch
 
 - id: close_garage_door_when_abode_is_home_or_away
   alias: 'Close garage door when Abode is Home or Away'
@@ -948,7 +948,7 @@
      minutes: '/5'
   action:
     - service: switch.turn_on
-      entity_id: switch.garage_relay_switch_8_0
+      entity_id: switch.garage_relay_switch
 
 - id: sensors_changed_when_nobody_home
   alias: 'Sensors changed when nobody is home'

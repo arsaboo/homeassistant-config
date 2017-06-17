@@ -171,7 +171,7 @@
        emulated_hue: true
        emulated_hue_name: "Porch Lights"
        friendly_name: "Porch Lights"
-     switch.garage_relay_switch_8_0:
+     switch.garage_relay_switch:
        emulated_hue: true
        emulated_hue_name: "Garage Door"
        friendly_name: Garage Door Switch
