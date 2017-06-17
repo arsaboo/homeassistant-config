@@ -53,6 +53,7 @@ light:
     retain: true
     optimistic: false
     qos: 0
+
 #Adds Amazon Echo support
 emulated_hue:
   type: alexa
@@ -69,13 +70,17 @@ http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
   base_url: !secret base_url
+  ip_ban_enabled: True
+  login_attempts_threshold: 3
   trusted_networks:
     - 192.168.2.0/24
+
 
 # Discover some devices automatically
 discovery:
 wemo:
 updater:
+  include_used_components: true
 
 
 # Allows you to issue voice commands from the frontend in enabled browsers
@@ -103,18 +108,21 @@ bloomsky:
 ifttt:
   key: !secret ifttt_key
 
-# image_processing:
+image_processing:
+  - platform: opencv
+    name: OpenCV
+    source:
+      - entity_id: camera.porch
+      - entity_id: camera.patio
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
+    classifier:
+      body:
+        file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
 #   - platform: dlib_face_detect
 #     source:
 #       - entity_id: camera.porch
 #       - entity_id: camera.patio
-# opencv:
-#   classifier_group:
-#     - name: Face
-#       entity_id:
-#         - camera.porch
-#       classifier:
-#         - file_path: /home/homeassistant/.homeassistant/classifier/haarcascade_frontalface_default.xml
 # Track the sun
 sun:
 media_player:
@@ -130,8 +138,8 @@ media_player:
     host: 192.168.2.128
     port: 55000
     name: Panasonic Viera TV
-  - platform: plex
-    host: 192.168.2.212
+  # - platform: plex
+  #   host: 192.168.2.212
   - platform: apple_tv
     host: 192.168.2.90
     login_id: !secret apple_hsgid
@@ -190,7 +198,7 @@ ecobee:
 logger:
   default: error
   logs:
-    homeassistant.components.image_processing: info
+    homeassistant.components.image_processing: error
 # Text to speech
 tts:
   - platform: google

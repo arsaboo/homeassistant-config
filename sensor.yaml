@@ -1,3 +1,9 @@
+  - platform: speedtest
+    hour:
+      - 12
+    monitored_conditions:
+      - download
+      - upload
   - platform: fastdotcom
     manual: True
   - platform: history_stats
@@ -70,7 +76,7 @@
       - temp_f
       - wind_string
       - relative_humidity
-# Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE      
+# Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
   - platform: rest
     name: pollen
     resource: !secret pollen_url
