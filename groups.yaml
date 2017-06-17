@@ -92,7 +92,7 @@
     - sensor.transmission_status
     - sensor.transmission_up_speed
     - switch.transmission_turtle_mode
-    - sensor.fastcom_download
+    - sensor.speedtest_download
 
   Media Player:
     - media_player.livingroomsonos

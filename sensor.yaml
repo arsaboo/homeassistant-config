@@ -3,9 +3,6 @@
       - 12
     monitored_conditions:
       - download
-      - upload
-  - platform: fastdotcom
-    manual: True
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.panasonic_viera_tv
