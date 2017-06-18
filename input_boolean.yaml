@@ -33,7 +33,7 @@
     icon: mdi:television
   tvtime:
     name: TV Time
-    initial: off
+    initial: on
     icon: mdi:television-guide
   leeoalarm:
     name: Leeo Alarm

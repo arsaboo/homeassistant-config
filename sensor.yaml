@@ -114,10 +114,10 @@
         friendly_name: "Wemo Current Power"
         unit_of_measurement: "w"
         value_template: >-
-           {%- if states.switch.wemoinsight	!= None -%}
+           {%- if states.switch.wemoinsight.attributes.current_power_w != None -%}
              {{states.switch.wemoinsight.attributes.current_power_w|round(2)}}
            {%- else -%}
-             unknown
+             0
            {%- endif -%}
       hoursslept:
         friendly_name: "Hours Slept"
