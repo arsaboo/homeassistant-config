@@ -38,6 +38,7 @@ zone 3:
 zwave:
   usb_path: /dev/ttyACM0
   new_entity_ids: true
+  network_key: !secret zwave_network_key
 light:
   - platform: lifx
   # z-wave dimmer switch (http://amzn.to/2j1UEli)
@@ -76,13 +77,11 @@ http:
   trusted_networks:
     - 192.168.2.0/24
 
-
 # Discover some devices automatically
 discovery:
 wemo:
 updater:
   include_used_components: true
-
 
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
@@ -188,13 +187,6 @@ ecobee:
   api_key: !secret ecobee_key
   hold_temp: True
 
-# image_processing:
-#   - platform: opencv
-#     name: body
-#     source:
-#       - entity_id: camera.porch
-#     classifier:
-#       body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
@@ -295,7 +287,7 @@ logbook:
       - automation.rashmi_home
       - automation.alok_home
       - automation.notify_camera_pictures
-      - zwave.garage_relay_8
+      - zwave.garage_relay
       - zwave.aeotec_zw090_zstick_gen5
       - zwave.garage_door_tilt_sensor
       - input_slider.harmonyvolume

@@ -730,19 +730,19 @@
       entity_id: light.lifxnrkitchen
       data_template:
         rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 220
+        brightness: 200
         transition: '{{ (range(1, 2)|random) }}'
     - service: light.turn_on
       entity_id: light.lifxnrguest
       data_template:
         rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 220
+        brightness: 200
         transition: '{{ (range(1, 2)|random) }}'
     - service: light.turn_on
       entity_id: light.lifx3
       data_template:
         rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 220
+        brightness: 200
         transition: '{{ (range(1, 2)|random) }}'
 - id: lifx_party_mode_off
   alias: "Turn Lifx Party Mode Off"

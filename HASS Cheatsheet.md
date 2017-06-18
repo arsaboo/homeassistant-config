@@ -67,16 +67,16 @@ Thanks to @dale3h for assistance with these instructions.
     * `git commit -m 'your commit message'`
     * `git push origin master`
 11. To restore from your Github repository (replace the URL):
-    ```
+    ```bash
     sudo su -s /bin/bash homeassistant
     cd /home/homeassistant
     git clone git@github.com:arsaboo/homeassistant-config.git .homeassistant
     ```
 # Integrating HASS (AIO) with Smartthings using Mosquitto
-If you are using AIO (which has Mosquitto pre-installed), you can use the following to integrate Smartthings and HA.
+If you are using AIO (which has Mosquitto pre-installed), you can use the following to integrate SmartThings and HA.
 
 1. Install node.js, and pm2
-    ```
+    ```bash
     sudo apt-get update && sudo apt-get upgrade -y
     curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo apt-get install -y nodejs
@@ -84,7 +84,7 @@ If you are using AIO (which has Mosquitto pre-installed), you can use the follow
     sudo su -c "env PATH=$PATH:/usr/local/bin pm2 startup systemd -u pi --hp /user/pi"
     ```
 2. Install the [SmartThings MQTT Bridge](https://github.com/stjohnjohnson/smartthings-mqtt-bridge)
-    ```
+    ```bash
     $ sudo npm install -g smartthings-mqtt-bridge
     ```
 3. Add details of your Mosquitto to `config.yml`. For the default AIO username password, your file should look something like:
@@ -123,7 +123,7 @@ If you are using AIO (which has Mosquitto pre-installed), you can use the follow
 
 # Setting up MySQL
 Follow the instructions [here](https://community.home-assistant.io/t/large-homeassistant-database-files/4201/124) to set-up MySQL.
-```
+```bash
 sudo apt-get update && sudo apt-get upgrade -y
 sudo apt-get install mysql-server && sudo apt-get install mysql-client
 sudo apt-get install libmysqlclient-dev
@@ -132,7 +132,7 @@ sudo pip3 install --upgrade mysql-connector
 sudo pip3 install mysqlclient
 ```
 Create homeassistant database and grant privileges:
-```
+```bash
 mysql -u root -p
 CREATE DATABASE homeassistant;
 CREATE USER 'hass'@'localhost' IDENTIFIED BY 'PASSWORD';
@@ -141,12 +141,12 @@ FLUSH PRIVILEGES;
 exit;
 ```
 Test if user works:
-```
+```bash
 mysql -u hass homeassistant -p
 exit;
 ```
 Switch to homeassistant user:
-```
+```bash
 sudo su -s /bin/bash hass
 source /srv/hass/hass_venv/bin/activate
 pip3 install --upgrade mysqlclient

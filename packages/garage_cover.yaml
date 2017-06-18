@@ -1,8 +1,8 @@
 
 ###############################################################################
 # Combile tilt sensor and z-wave relay switch to a cover cmponent.
-# Example garage_door_command_open: 'curl -X POST -H "x-ha-access: PASSWORD" -H "Content-Type: application/json" -d ''{"entity_id": "switch.garage_relay_switch_8_0"}'' https://bla.duckdns.org/api/services/switch/turn_on'
-# Example garage_door_command_state: 'curl -X GET -H "x-ha-access: PASSWORD" -H "Content-Type: application/json" https://bla.duckdns.org/api/states/sensor.garage_door_tilt_sensor_alarm_level_5_1 | python -c ''import sys, json; print json.load(sys.stdin)["state"]'''
+# Example garage_door_command_open: 'curl -X POST -H "x-ha-access: PASSWORD" -H "Content-Type: application/json" -d ''{"entity_id": "switch.garage_relay_switch"}'' https://bla.duckdns.org/api/services/switch/turn_on'
+# Example garage_door_command_state: 'curl -X GET -H "x-ha-access: PASSWORD" -H "Content-Type: application/json" https://bla.duckdns.org/api/states/sensor.garage_door_tilt_sensor_alarm_level | python -c ''import sys, json; print json.load(sys.stdin)["state"]'''
 ###############################################################################
 
 cover:
