@@ -59,7 +59,7 @@ light:
 emulated_hue:
   type: alexa
   host_ip: 192.168.2.212
-  #expose_by_default: false
+  expose_by_default: false
 # Enables the frontend
 frontend:
 

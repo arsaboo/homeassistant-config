@@ -115,7 +115,7 @@
         unit_of_measurement: "w"
         value_template: >-
            {%- if states.switch.wemoinsight.attributes.current_power_w != None -%}
-             {{states.switch.wemoinsight.attributes.current_power_w|round(2)}}
+             {{(states.switch.wemoinsight.attributes|default({})).current_power_w|default(0)|round(2)}}
            {%- else -%}
              0
            {%- endif -%}

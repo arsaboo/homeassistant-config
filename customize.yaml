@@ -159,10 +159,10 @@
        emulated_hue: true
      input_boolean.startrecording:
        emulated_hue: true
-     input_boolean.alokhome:
-       emulated_hue: true
-     input_boolean.rashmihome:
-       emulated_hue: true
+    #  input_boolean.alokhome:
+    #    emulated_hue: true
+    #  input_boolean.rashmihome:
+    #    emulated_hue: true
      switch.driveway:
        emulated_hue: true
        emulated_hue_name: "Driveway Light"
