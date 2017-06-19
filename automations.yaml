@@ -458,6 +458,7 @@
           {%- elif trigger.entity_id == "binary_sensor.porch_field_detection" or trigger.entity_id == "binary_sensor.porch_line_crossing" -%}
             {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))}} seconds ago.
           {%- endif -%}
+
 #################################################################
 ## HASS Related
 #################################################################

@@ -2,6 +2,22 @@
 ## Unused automations
 ################################################################
 
+- id: notify_camera_pictures_telegram
+  alias: 'Notify camera pictures using Telegram'
+  initial_state: 'on'
+  trigger:
+   - platform: time
+     minutes: '/2'
+     seconds: 00
+  action:
+    - service: notify.telegram
+      data_template:
+        message: "Check camera."
+        data:
+          photo:
+            - url: !secret porch_camera_image_url
+              caption: "Test"
+
 ## Automate Christmas Lights
 - alias: Turn Christmas Lights On At Sunset
   trigger:
