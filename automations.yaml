@@ -476,6 +476,13 @@
           {%- for state in states if state.entity_id == trigger.entity_id -%}
             {{state.attributes}}
           {%- endfor -%}
+    - service: notify.telegram
+      data_template:
+        title: "OpenCV: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{state.attributes}}
+          {%- endfor -%}
 
 #################################################################
 ## HASS Related
