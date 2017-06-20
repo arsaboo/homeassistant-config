@@ -458,6 +458,24 @@
           {%- elif trigger.entity_id == "binary_sensor.porch_field_detection" or trigger.entity_id == "binary_sensor.porch_line_crossing" -%}
             {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))}} seconds ago.
           {%- endif -%}
+- id: log_opencv
+  alias: 'OpenCV detection'
+  initial_state: 'on'
+  trigger:
+   - platform: state
+     entity_id:
+       - image_processing.opencv_backyard
+       - image_processing.opencv_patio
+       - image_processing.opencv_driveway
+       - image_processing.opencv_porch
+  action:
+    - service: logbook.log
+      data_template:
+        name: "OpenCV activity: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{state.attributes}}
+          {%- endfor -%}
 
 #################################################################
 ## HASS Related
