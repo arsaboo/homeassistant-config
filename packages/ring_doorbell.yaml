@@ -2,7 +2,6 @@ group:
   Ring Doorbell:
     - binary_sensor.ring_front_door_ding
     - binary_sensor.ring_front_door_motion
-    - sensor.ring_front_door_volume
     - sensor.ring_front_door_last_activity
     - sensor.ring_front_door_last_ding
     - sensor.ring_front_door_last_motion
@@ -10,11 +9,9 @@ group:
 sensor:
   - platform: ring
     monitored_conditions:
-      - battery
       - last_activity
       - last_ding
       - last_motion
-      - volume
 
 binary_sensor:
   - platform: ring

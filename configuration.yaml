@@ -117,8 +117,8 @@ image_processing:
       - entity_id: camera.backyard
       - entity_id: camera.driveway
     classifier:
-      body:
-        file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
+      body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
+      neighbors: 5
 #   - platform: dlib_face_detect
 #     source:
 #       - entity_id: camera.porch
