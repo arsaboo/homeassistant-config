@@ -1,0 +1,50 @@
+homeassistant:
+  customize:
+    sensor.secrets:
+      base_url: !secret base_url
+    image_processing.opencv_backyard:
+      camera: camera.backyard
+    image_processing.opencv_patio:
+      camera: camera.patio
+    image_processing.opencv_driveway:
+      camera: camera.driveway
+    image_processing.opencv_porch:
+      camera: camera.porch
+automation:
+  - id: log_opencv
+    alias: 'OpenCV detection'
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id:
+          - image_processing.opencv_backyard
+          - image_processing.opencv_patio
+          - image_processing.opencv_driveway
+          - image_processing.opencv_porch
+    condition:
+      - condition: template
+        value_template: >
+          {{ trigger.to_state.attributes.total_matches > 0 }}
+    action:
+      - service: logbook.log
+        data_template:
+          name: "OpenCV activity: "
+          message: >-
+            {{ dict(trigger.to_state.attributes)|tojson }}
+      - service: notify.telegram
+        data_template:
+          title: "OpenCV: "
+          message: >-
+            {{ dict(trigger.to_state.attributes)|tojson }}
+          data:
+            photo:
+              - url: >-
+                  {% set camera = trigger.to_state.attributes.camera.split('.')[1] %}
+                  {{ states.sensor.secrets.attributes.base_url ~ states.camera[camera].attributes.entity_picture }}
+                caption: >-
+                  {{ trigger.to_state.attributes.matches.Face }}
+sensor:
+  - platform: template
+    sensors:
+      secrets:
+        value_template: "Secrets Container"
