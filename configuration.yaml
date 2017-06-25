@@ -353,7 +353,10 @@ recorder:
       - sensor.ads_blocked_today
       - sensor.ads_percentage_today
       - automation.populate_owntracks_data_from_life360
-
+      - image_processing.opencv_backyard
+      - image_processing.opencv_patio
+      - image_processing.opencv_driveway
+      - image_processing.opencv_porch
 automation: !include automations.yaml
 group: !include groups.yaml
 script: !include scripts.yaml

@@ -13,7 +13,7 @@ homeassistant:
 automation:
   - id: log_opencv
     alias: 'OpenCV detection'
-    initial_state: 'on'
+    initial_state: 'off'
     trigger:
       - platform: state
         entity_id:
