@@ -14,7 +14,7 @@ homeassistant:
   unit_system: imperial
   customize: !include customize.yaml
   packages: !include_dir_named packages
-
+python_scripts:
 zone:
   name: Home
   latitude: !secret latitude_home
