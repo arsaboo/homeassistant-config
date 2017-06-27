@@ -21,13 +21,14 @@
     entities:
       - camera.ars_bloom
       - camera.radarga
-      - camera.driveway
-      - camera.porch
-      - camera.backyard
-      - camera.patio
+      - camera.opencv_driveway
+      - camera.opencv_porch
+      - camera.opencv_backyard
+      - camera.opencv_patio
       - camera.door_camera
       - camera.door_camera_2
       - camera.door_camera_3
+      - camera.wundergroundradar
 
   media:
     name: Media
