@@ -20,7 +20,6 @@
     icon: mdi:camera
     entities:
       - camera.ars_bloom
-      - camera.radarga
       - camera.opencv_driveway
       - camera.opencv_porch
       - camera.opencv_backyard

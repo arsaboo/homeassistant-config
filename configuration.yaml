@@ -88,9 +88,6 @@ conversation:
 
 camera:
   - platform: bloomsky
-  - platform: generic
-    still_image_url: 'https://radblast.wunderground.com/cgi-bin/radar/WUNIDS_map?station=FFC&brand=wui&num=1&delay=100&type=NTP&frame=0&scale=1&noclutter=0&showstorms=5&mapx=400&mapy=240&centerx=400&centery=240&transx=0&transy=0&showlabels=1&severe=0&rainsnow=0&lightning=0&smooth=0&rand=24427697&lat=0&lon=0&label=you'
-    name: RadarGA
     # Generate your link - https://www.wunderground.com/weather-radar/united-states/
   - platform: generic
     still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
@@ -115,6 +112,9 @@ camera:
     camera: camera.driveway
     processor: image_processing.opencv_driveway
     name: OpenCV Driveway
+  # - platform: generic
+  #   still_image_url: 'https://radblast.wunderground.com/cgi-bin/radar/WUNIDS_map?station=FFC&brand=wui&num=1&delay=100&type=NTP&frame=0&scale=1&noclutter=0&showstorms=5&mapx=400&mapy=240&centerx=400&centery=240&transx=0&transy=0&showlabels=1&severe=0&rainsnow=0&lightning=0&smooth=0&rand=24427697&lat=0&lon=0&label=you'
+  #   name: RadarGA  
     # Generate link - http://www.intellicast.com/National/Radar/Current.aspx
   # - platform: generic
   #   still_image_url: 'http://images.intellicast.com/WxImages/RadarLoop/prc_None_anim.gif'
