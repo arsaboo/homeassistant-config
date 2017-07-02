@@ -20,10 +20,10 @@
     icon: mdi:camera
     entities:
       - camera.ars_bloom
-      - camera.opencv_driveway
-      - camera.opencv_porch
-      - camera.opencv_backyard
-      - camera.opencv_patio
+      - camera.driveway
+      - camera.porch
+      - camera.backyard
+      - camera.patio
       - camera.door_camera
       - camera.door_camera_2
       - camera.door_camera_3
@@ -81,7 +81,7 @@
     - sensor.usd_inr
     - sensor.usd_eur
     - binary_sensor.garagedoor
-    - cover.garage_door
+    - cover.garagedoor
     - sensor.ars_bloom_voltage
     - sensor.steps
     - sensor.calories

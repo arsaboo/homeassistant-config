@@ -37,7 +37,7 @@ zone 3:
   icon: mdi:school
 zwave:
   usb_path: /dev/ttyACM0
-  new_entity_ids: true
+  # new_entity_ids: true
   network_key: !secret zwave_network_key
 light:
   - platform: lifx
@@ -96,25 +96,25 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
-  - platform: opencv
-    camera: camera.porch
-    processor: image_processing.opencv_porch
-    name: OpenCV Porch
-  - platform: opencv
-    camera: camera.patio
-    processor: image_processing.opencv_patio
-    name: OpenCV Patio
-  - platform: opencv
-    camera: camera.backyard
-    processor: image_processing.opencv_backyard
-    name: OpenCV Backyard
-  - platform: opencv
-    camera: camera.driveway
-    processor: image_processing.opencv_driveway
-    name: OpenCV Driveway
+  # - platform: opencv
+  #   camera: camera.porch
+  #   processor: image_processing.opencv_porch
+  #   name: OpenCV Porch
+  # - platform: opencv
+  #   camera: camera.patio
+  #   processor: image_processing.opencv_patio
+  #   name: OpenCV Patio
+  # - platform: opencv
+  #   camera: camera.backyard
+  #   processor: image_processing.opencv_backyard
+  #   name: OpenCV Backyard
+  # - platform: opencv
+  #   camera: camera.driveway
+  #   processor: image_processing.opencv_driveway
+  #   name: OpenCV Driveway
   # - platform: generic
   #   still_image_url: 'https://radblast.wunderground.com/cgi-bin/radar/WUNIDS_map?station=FFC&brand=wui&num=1&delay=100&type=NTP&frame=0&scale=1&noclutter=0&showstorms=5&mapx=400&mapy=240&centerx=400&centery=240&transx=0&transy=0&showlabels=1&severe=0&rainsnow=0&lightning=0&smooth=0&rand=24427697&lat=0&lon=0&label=you'
-  #   name: RadarGA  
+  #   name: RadarGA
     # Generate link - http://www.intellicast.com/National/Radar/Current.aspx
   # - platform: generic
   #   still_image_url: 'http://images.intellicast.com/WxImages/RadarLoop/prc_None_anim.gif'
@@ -132,17 +132,17 @@ bloomsky:
 ifttt:
   key: !secret ifttt_key
 
-image_processing:
-  - platform: opencv
-    name: OpenCV
-    source:
-      - entity_id: camera.porch
-      - entity_id: camera.patio
-      - entity_id: camera.backyard
-      - entity_id: camera.driveway
-    classifier:
-      body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
-      neighbors: 5
+# image_processing:
+#   - platform: opencv
+#     name: OpenCV
+#     source:
+#       - entity_id: camera.porch
+#       - entity_id: camera.patio
+#       - entity_id: camera.backyard
+#       - entity_id: camera.driveway
+#     classifier:
+#       body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
+#       neighbors: 5
 #   - platform: dlib_face_detect
 #     source:
 #       - entity_id: camera.porch
