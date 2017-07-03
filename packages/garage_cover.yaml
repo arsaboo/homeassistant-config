@@ -6,20 +6,20 @@
 ###############################################################################
 
 cover:
-  - platform: command_line
-    covers:
-      garage_door:
-        friendly_name: Garage Door
-        command_open: !secret garage_door_command_open
-        command_close: !secret garage_door_command_close
-        command_stop: !secret garage_door_command_stop
-        command_state: !secret garage_door_command_state
-        value_template: >-
-          {% if value | int == 255 %}
-            100
-          {% else %}
-            0
-          {% endif %}
+  # - platform: command_line
+  #   covers:
+  #     garage_door:
+  #       friendly_name: Garage Door
+  #       command_open: !secret garage_door_command_open
+  #       command_close: !secret garage_door_command_close
+  #       command_stop: !secret garage_door_command_stop
+  #       command_state: !secret garage_door_command_state
+  #       value_template: >-
+  #         {% if value | int == 255 %}
+  #           100
+  #         {% else %}
+  #           0
+  #         {% endif %}
   - platform: template
     covers:
       garagedoor:
