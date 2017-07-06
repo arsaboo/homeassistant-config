@@ -1,8 +1,8 @@
 # Combine multiple device trackers into one entity
 #
 # OPTIONS
-# New tracker name
-metatrackerName = 'device_tracker.meta_rashmi'
+# Get the name of the tracker to be updated
+metatrackerName = data.get('tracker')
 
 # Get Data from Automation Trigger
 triggeredEntity = data.get('entity_id')
@@ -11,6 +11,13 @@ newState = hass.states.get(triggeredEntity)
 currentState = hass.states.get(metatrackerName)
 # Get New data
 newSource = newState.attributes.get('source_type')
+newFriendlyName_temp = newState.attributes.get('friendly_name')
+
+# If Rashmi in friendly_name, set friendly_name as Rashmi Tracker
+if "Rashmi" not in newFriendlyName_temp:
+    newFriendlyName = 'Alok Tracker'
+else:
+    newFriendlyName = 'Rashmi Tracker'
 
 # If GPS source, set new coordinates
 if newSource == 'gps':
@@ -36,23 +43,14 @@ elif currentState.attributes.get('battery') is not None:
 else:
   newBattery = None
 
-# Set new state and icon
-# Everything updates 'home'
-if newState.state == 'home':
-  newStatus = 'home'
-  newIcon = 'mdi:home-map-marker'
-# only GPS platforms update 'not_home'
-elif newState.state == 'not_home':
-    newStatus = 'not_home'
-    newIcon = 'mdi:home'
-# Otherwise keep old status
+if newState.state is not None:
+  newStatus = newState.state
 else:
     newStatus = currentState.state
 
 # Create device_tracker.meta entity
 hass.states.set(metatrackerName, newStatus, {
-    'friendly_name': 'Rashmi Tracker',
-    'icon': newIcon,
+    'friendly_name': newFriendlyName,
     'source_type': newSource,
     'battery': newBattery,
     'gps_accuracy': newgpsAccuracy,
