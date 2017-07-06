@@ -1,6 +1,52 @@
 ###############################################################
 ## Presence
 ################################################################
+- id: update_meta_alok
+  alias: "Update Alok Meta Tracker"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone
+      to: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id: device_tracker.alokiosiphone, device_tracker.alok_alok
+    - platform: state
+      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone, device_tracker.elantrase
+      to: 'home'
+  action:
+    - service: python_script.alok_device_tracker
+      data_template:
+        entity_id: '{{trigger.entity_id}}'
+    - service: logbook.log
+      data_template:
+        name: "Alok Tracker updated: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
+          {%- endfor -%}
+- id: update_meta_rashmi
+  alias: "Update Rashmi Meta Tracker"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
+      to: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id: device_tracker.rashmiappiphone, device_tracker.sonu_sonu
+    - platform: state
+      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
+      to: 'home'
+  action:
+    - service: python_script.rashmi_device_tracker
+      data_template:
+        entity_id: '{{trigger.entity_id}}'
+    - service: logbook.log
+      data_template:
+        name: "Rashmi Tracker updated: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
+          {%- endfor -%}
 - id: alok_away
   alias: 'Alok Away'
   initial_state: 'on'

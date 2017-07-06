@@ -167,6 +167,8 @@
     - input_boolean.rashmihome
 
   Devices:
+    - device_tracker.meta_rashmi
+    - device_tracker.meta_alok
     - device_tracker.pi_rashmiphone
     - device_tracker.rashmiappiphone
     - device_tracker.rashmisiphone
