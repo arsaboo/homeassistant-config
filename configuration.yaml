@@ -79,6 +79,8 @@ http:
 
 # Discover some devices automatically
 discovery:
+  ignore:
+    - apple_tv
 wemo:
 updater:
   include_used_components: true
@@ -147,7 +149,7 @@ ifttt:
 #     source:
 #       - entity_id: camera.porch
 #       - entity_id: camera.patio
-# Track the sun
+
 sun:
 media_player:
   - platform: sonos
@@ -162,20 +164,16 @@ media_player:
     host: 192.168.2.128
     port: 55000
     name: Panasonic Viera TV
-  # - platform: plex
-  #   host: 192.168.2.212
-  - platform: apple_tv
-    host: 192.168.2.90
-    login_id: !secret apple_hsgid
   - platform: spotify
     client_id: !secret spotify_client_id
     client_secret: !secret spotify_client_secret
+  # - platform: plex
+  #   host: 192.168.2.212
+  # - platform: apple_tv
+  #   host: 192.168.2.90
+  #   login_id: !secret apple_hsgid
+
 device_tracker:
-  # - platform: asuswrt
-  #   host: 192.168.2.1
-  #   protocol: telnet
-  #   username: !secret asus_username
-  #   password: !secret asus_password
   - platform: owntracks
     max_gps_accuracy: 200
   - platform: unifi
@@ -183,6 +181,11 @@ device_tracker:
     username: !secret unifi_username
     password: !secret unifi_password
     verify_ssl: False
+  # - platform: asuswrt
+  #   host: 192.168.2.1
+  #   protocol: telnet
+  #   username: !secret asus_username
+  #   password: !secret asus_password
 
 telegram_bot:
   platform: polling
