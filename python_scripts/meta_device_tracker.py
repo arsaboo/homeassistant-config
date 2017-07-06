@@ -60,5 +60,5 @@ hass.states.set(metatrackerName, newStatus, {
     'gps_accuracy': newgpsAccuracy,
     'latitude': newLatitude,
     'longitude': newLongitude,
-    'last_update_source': triggeredEntity
+    'update_source': triggeredEntity
 })
