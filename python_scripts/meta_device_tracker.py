@@ -1,5 +1,9 @@
 # Combine multiple device trackers into one entity
-#
+# You can call the script using the following:
+# - service: python_script.meta_device_tracker
+#   data_template:
+#     entity_id: '{{trigger.entity_id}}'
+#     tracker: device_tracker.meta_alok
 # OPTIONS
 # Get the name of the tracker to be updated
 metatrackerName = data.get('tracker')
