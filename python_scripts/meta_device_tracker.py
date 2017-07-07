@@ -17,9 +17,11 @@ triggeredEntity = data.get('entity_id')
 # Set friendly name and the metatracker name based on the entity that triggered
 if triggeredEntity in AlokTrackers:
     newFriendlyName = 'Alok Tracker'
+    newEntityPicture = '/local/Alok.png'
     metatrackerName = 'device_tracker.meta_alok'
 elif triggeredEntity in RashmiTrackers:
     newFriendlyName = 'Rashmi Tracker'
+    newEntityPicture = '/local/Rashmi.png'
     metatrackerName = 'device_tracker.meta_rashmi'
 else:
     newFriendlyName = None
@@ -64,6 +66,7 @@ else:
 # Create device_tracker.meta entity
 hass.states.set(metatrackerName, newStatus, {
     'friendly_name': newFriendlyName,
+    'entity_picture': newEntityPicture
     'source_type': newSource,
     'battery': newBattery,
     'gps_accuracy': newgpsAccuracy,
