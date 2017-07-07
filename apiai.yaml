@@ -4,23 +4,23 @@
     LocateIntent:
       speech: >
           {%- if User.lower() == "alok" -%}
-            Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+            Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
           {%- elif User.lower() == "rashmi" -%}
-            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
+            Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }}.
           {%- else -%}
             I am sorry, I do not know where {{ User }} is.
           {%- endif -%}
     WhereAreWeIntent:
       speech: >
-          {%- if is_state('input_boolean.alokhome', 'on') and
-                 is_state('input_boolean.rashmihome', 'on') -%}
+          {%- if is_state('device_tracker.meta_alok', 'home') and
+                 is_state('device_tracker.meta_rashmi', 'home') -%}
             You are both home, you silly
           {%- else -%}
-            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+            Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
           {% endif %}
     HowIsTheTrafficIntent:
       speech: >
-          Your commute to work is about {{ states.sensor.morning_commute.state }} minutes and to home is {{ states.sensor.evening_commute.state }} minutes.
+          Your commute to work is about {{ states.sensor.morning_commute.state }} minutes and to home is {{ states.sensor.alok_to_home.state }} minutes.
     TurnLights:
       speech: Turning {{ Room }} lights {{ OnOff }}
       action:

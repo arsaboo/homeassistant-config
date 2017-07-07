@@ -3,12 +3,12 @@
       speech:
         type: plaintext
         text: >
-          {%- if is_state('input_boolean.alokhome', 'on') and
-                 is_state('input_boolean.rashmihome', 'on') -%}
+          {%- if is_state('device_tracker.meta_alok', 'home') and
+                 is_state('device_tracker.meta_rashmi', 'on') -%}
             You are both home, you silly
           {%- else -%}
-            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
-            and Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+            Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }}.
+            and Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
           {% endif %}
       card:
         type: simple
@@ -23,9 +23,9 @@
         type: plaintext
         text: >
           {%- if User == "Alok" -%}
-            Alok is at {{ states.device_tracker.alokiosiphone.state.replace('_', ' ') }}.
+            Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
           {%- elif User == "Rashmi" -%}
-            Rashmi is at {{ states.device_tracker.rashmiappiphone.state.replace('_', ' ') }}.
+            Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }}.
           {%- endif -%}
       card:
         type: simple
