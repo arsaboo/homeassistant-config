@@ -342,8 +342,8 @@ history:
       - device_tracker.rashmiappiphone
       - device_tracker.rashmisiphone
       - device_tracker.sonu_sonu
-      - input_boolean.alokhome
-      - input_boolean.rashmihome
+      - device_tracker.meta_rashmi
+      - device_tracker.meta_alok      
       - input_select.abodestatus
       - media_player.panasonic_viera_tv
       - sensor.plexspy

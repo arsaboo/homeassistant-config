@@ -163,12 +163,10 @@
     - script.lifx_stop_effects
 
   Household:
-    - input_boolean.alokhome
-    - input_boolean.rashmihome
-
-  Devices:
     - device_tracker.meta_rashmi
     - device_tracker.meta_alok
+
+  Devices:
     - device_tracker.pi_rashmiphone
     - device_tracker.rashmiappiphone
     - device_tracker.rashmisiphone

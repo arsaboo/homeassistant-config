@@ -48,152 +48,6 @@
           {%- for state in states if state.entity_id == trigger.entity_id -%}
             {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
           {%- endfor -%}
-- id: alok_away
-  alias: 'Alok Away'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: input_boolean.alokhome
-      state: 'on'
-    - condition: template
-      value_template: >
-        {%- if states.input_boolean.alokhome.last_changed -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.alokhome.last_changed)) > 300 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-  trigger:
-    - platform: state
-      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id: device_tracker.alokiosiphone, device_tracker.alok_alok
-      to: 'not_home'
-  action:
-    - service: homeassistant.turn_off
-      entity_id: input_boolean.alokhome
-    - service: logbook.log
-      data_template:
-        name: "Alok away: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is Away.
-          {%- endfor -%}
-
-- id: rashmi_away
-  alias: 'Rashmi Away'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: input_boolean.rashmihome
-      state: 'on'
-    - condition: template
-      value_template: >
-        {%- if states.input_boolean.rashmihome.last_changed -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.rashmihome.last_changed)) > 300 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-  trigger:
-    - platform: state
-      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id: device_tracker.rashmiappiphone, device_tracker.sonu_sonu
-      to: 'not_home'
-  action:
-    - service: homeassistant.turn_off
-      entity_id: input_boolean.rashmihome
-    - service: logbook.log
-      data_template:
-        name: "Rashmi away: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is Away.
-          {%- endfor -%}
-
-- id: alok_home
-  alias: 'Alok Home'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: input_boolean.alokhome
-      state: 'off'
-    - condition: template
-      value_template: >
-        {%- if states.input_boolean.alokhome.last_changed -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.alokhome.last_changed)) > 600 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-  trigger:
-    - platform: state
-      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone, device_tracker.alokiosiphone, device_tracker.elantrase, device_tracker.alok_alok
-      to: 'home'
-  action:
-    - service: homeassistant.turn_on
-      entity_id: input_boolean.alokhome
-    - service: logbook.log
-      data_template:
-        name: "Alok home: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is Home.
-          {%- endfor -%}
-
-- id: rashmi_home
-  alias: 'Rashmi Home'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: input_boolean.rashmihome
-      state: 'off'
-    - condition: template
-      value_template: >
-        {%- if states.input_boolean.rashmihome.last_changed -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.rashmihome.last_changed)) > 600 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-  trigger:
-    - platform: state
-      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone, device_tracker.rashmiappiphone, device_tracker.sonu_sonu
-      to: 'home'
-  action:
-    - service: homeassistant.turn_on
-      entity_id: input_boolean.rashmihome
-    - service: logbook.log
-      data_template:
-        name: "Rashmi home: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is Home.
-          {%- endfor -%}
-
-- id: mark_both_away_if_armed
-  alias: 'Mark both away if Abode armed'
-  initial_state: 'on'
-  condition:
-   - condition: or
-     conditions:
-      - condition: state
-        entity_id: input_boolean.rashmihome
-        state: 'on'
-      - condition: state
-        entity_id: input_boolean.alokhome
-        state: 'on'
-  trigger:
-    - platform: state
-      entity_id: input_select.abodestatus
-      to: 'away'
-  action:
-    - service: homeassistant.turn_off
-      entity_id: input_boolean.rashmihome
-    - service: homeassistant.turn_off
-      entity_id: input_boolean.alokhome
-
 #################################################################
 ## Security System
 #################################################################
@@ -211,13 +65,13 @@
   trigger:
    - platform: state
      entity_id: group.household
-     state: 'on'
+     state: 'home'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
 
-- id: garage_door_open
-  alias: 'Garage Door open'
+- id: close_garage_door_notification
+  alias: 'Close Garage Door Notification'
   initial_state: 'on'
   condition:
     condition: state
@@ -250,7 +104,9 @@
       state: 'on'
   trigger:
    - platform: state
-     entity_id: input_boolean.rashmihome, input_boolean.alokhome
+     entity_id:
+       - device_tracker.meta_rashmi
+       - device_tracker.meta_alok
      to: 'on'
   action:
     service: homeassistant.turn_on
@@ -294,7 +150,7 @@
     conditions:
      - condition: state
        entity_id: group.household
-       state: 'on'
+       state: 'home'
      - condition: time
        after: '08:15:00'
        before: '21:45:00'
@@ -370,7 +226,7 @@
   trigger:
     - platform: state
       entity_id: group.household
-      to: 'off'
+      to: 'not_home'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodeaway
@@ -386,7 +242,7 @@
        state: 'on'
      - condition: state
        entity_id: group.household
-       state: 'on'
+       state: 'home'
   trigger:
     platform: time
     at: '22:00:00'
@@ -402,7 +258,7 @@
     conditions:
      - condition: state
        entity_id: group.household
-       state: 'on'
+       state: 'home'
      - condition: state
        entity_id: input_boolean.abodeupdate
        state: 'on'
@@ -962,7 +818,9 @@
        {%- endif -%}
   trigger:
    - platform: state
-     entity_id: input_boolean.alokhome, input_boolean.rashmihome
+     entity_id:
+       - device_tracker.meta_rashmi
+       - device_tracker.meta_alok
      to: 'on'
   action:
     - service: switch.turn_on
