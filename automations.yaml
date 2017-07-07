@@ -413,8 +413,8 @@
          - thu
          - fri
      - condition: state
-       entity_id: input_boolean.alokhome
-       state: 'on'
+       entity_id: device_tracker.meta_alok
+       state: 'home'
   trigger:
     platform: numeric_state
     entity_id: sensor.morning_commute
@@ -445,8 +445,8 @@
          - thu
          - fri
      - condition: state
-       entity_id: input_boolean.alokhome
-       state: 'off'
+       entity_id: device_tracker.meta_alok
+       state: 'not_home'
   trigger:
     platform: numeric_state
     entity_id: sensor.evening_commute
