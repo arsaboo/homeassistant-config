@@ -76,7 +76,7 @@
     - sensor.time__date
     - sensor.hass_uptime
     - sensor.morning_commute
-    - sensor.evening_commute
+    - sensor.alok_to_home
     - sensor.plexspy
     - sensor.usd_inr
     - sensor.usd_eur

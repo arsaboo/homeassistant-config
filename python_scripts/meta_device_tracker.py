@@ -3,25 +3,30 @@
 # - service: python_script.meta_device_tracker
 #   data_template:
 #     entity_id: '{{trigger.entity_id}}'
-#     tracker: device_tracker.meta_alok
 
 # OPTIONS
-# Get the name of the tracker to be updated
-metatrackerName = data.get('tracker')
+# List the trackers for each individual
+RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.pi_rashmiphone', 'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu']
+AlokTrackers = ['device_tracker.myiphone', 'device_tracker.pi_alokphone', 'device_tracker.alokiosiphone', 'device_tracker.alok_alok', 'device_tracker.elantrase']
 # Get the entity that triggered the automation
 triggeredEntity = data.get('entity_id')
+
+# Set friendly name and the metatracker name based on the entity that triggered
+if triggeredEntity in AlokTrackers:
+    newFriendlyName = 'Alok Tracker'
+    metatrackerName = 'device_tracker.meta_alok'
+elif triggeredEntity in RashmiTrackers:
+    newFriendlyName = 'Rashmi Tracker'
+    metatrackerName = 'device_tracker.meta_rashmi'
+else:
+    newFriendlyName = None
+    metatrackerName = None
 # Get current & new state
 newState = hass.states.get(triggeredEntity)
 currentState = hass.states.get(metatrackerName)
 # Get New data
 newSource = newState.attributes.get('source_type')
 newFriendlyName_temp = newState.attributes.get('friendly_name')
-
-# If Rashmi in friendly_name, set friendly_name as Rashmi Tracker
-if "Rashmi" not in newFriendlyName_temp:
-    newFriendlyName = 'Alok Tracker'
-else:
-    newFriendlyName = 'Rashmi Tracker'
 
 # If GPS source, set new coordinates
 if newSource == 'gps':

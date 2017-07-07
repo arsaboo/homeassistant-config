@@ -62,6 +62,7 @@
     destination: !secret add_home
   - platform: google_travel_time
     name: Alok to Home
+    friendly_name: "Commute to Home"
     api_key: !secret google_key
     origin: device_tracker.alokiosiphone
     destination: !secret add_home

@@ -1,42 +1,37 @@
 ###############################################################
 ## Presence
 ################################################################
-- id: update_meta_alok
-  alias: "Update Alok Meta Tracker"
+- id: update_meta_tracker
+  alias: "Update Device Meta Tracker"
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone
+      entity_id:
+        - device_tracker.myiphone
+        - device_tracker.pi_alokphone
+        - device_tracker.rashmisiphone
+        - device_tracker.pi_rashmiphone
       to: 'not_home'
       for: '00:07:00'
     - platform: state
-      entity_id: device_tracker.alokiosiphone, device_tracker.alok_alok
+      entity_id:
+        - device_tracker.alokiosiphone
+        - device_tracker.alok_alok
+        - device_tracker.rashmiappiphone
+        - device_tracker.sonu_sonu
     - platform: state
-      entity_id: device_tracker.myiphone, device_tracker.pi_alokphone, device_tracker.elantrase
+      entity_id:
+        - device_tracker.myiphone
+        - device_tracker.pi_alokphone
+        - device_tracker.elantrase
+        - device_tracker.rashmisiphone
+        - device_tracker.pi_rashmiphone
       to: 'home'
   action:
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
-        tracker: device_tracker.meta_alok
-- id: update_meta_rashmi
-  alias: "Update Rashmi Meta Tracker"
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id: device_tracker.rashmiappiphone, device_tracker.sonu_sonu
-    - platform: state
-      entity_id: device_tracker.rashmisiphone, device_tracker.pi_rashmiphone
-      to: 'home'
-  action:
-    - service: python_script.meta_device_tracker
-      data_template:
-        entity_id: '{{trigger.entity_id}}'
-        tracker: device_tracker.meta_rashmi
+
 - id: debug_meta_trackers
   alias: "Check meta tracker"
   initial_state: 'on'

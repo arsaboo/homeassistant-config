@@ -380,6 +380,7 @@ recorder:
       - sensor.ads_blocked_today
       - sensor.ads_percentage_today
       - automation.populate_owntracks_data_from_life360
+      - automation.update_device_meta_tracker
       - image_processing.opencv_backyard
       - image_processing.opencv_patio
       - image_processing.opencv_driveway

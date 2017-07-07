@@ -124,8 +124,8 @@
 
      sensor.hoursslept:
        icon: mdi:sleep
-     sensor.google_travel_time:
-       friendly_name: 'Morning Commute'
+     sensor.alok_to_home:
+       friendly_name: 'Commute to Home'
        icon: mdi:car
      sensor.morning_commute:
        friendly_name: 'Morning Commute'
