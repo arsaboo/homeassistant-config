@@ -5,6 +5,7 @@
   alias: "Update Device Meta Tracker"
   initial_state: 'on'
   trigger:
+    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
         - device_tracker.myiphone

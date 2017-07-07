@@ -21,6 +21,7 @@ elif triggeredEntity in RashmiTrackers:
 else:
     newFriendlyName = None
     metatrackerName = None
+
 # Get current & new state
 newState = hass.states.get(triggeredEntity)
 currentState = hass.states.get(metatrackerName)
@@ -55,7 +56,7 @@ else:
 if newState.state is not None:
   newStatus = newState.state
 else:
-    newStatus = currentState.state
+  newStatus = currentState.state
 
 # Create device_tracker.meta entity
 hass.states.set(metatrackerName, newStatus, {
