@@ -444,9 +444,8 @@
          - wed
          - thu
          - fri
-     - condition: state
-       entity_id: device_tracker.meta_alok
-       state: 'not_home'
+     - condition: template
+       value_template: '{{ states.device_tracker.meta_alok.state != "home" }}'         
   trigger:
     platform: numeric_state
     entity_id: sensor.evening_commute
