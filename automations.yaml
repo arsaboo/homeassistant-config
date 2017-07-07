@@ -38,7 +38,9 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: device_tracker.meta_alok, device_tracker.meta_rashmi
+      entity_id:
+        - device_tracker.meta_alok
+        - device_tracker.meta_rashmi
       to: 'not_home'
   action:
     - service: logbook.log
@@ -107,7 +109,7 @@
      entity_id:
        - device_tracker.meta_rashmi
        - device_tracker.meta_alok
-     to: 'on'
+     to: 'home'
   action:
     service: homeassistant.turn_on
     entity_id: script.abodestandby
@@ -445,15 +447,14 @@
          - thu
          - fri
      - condition: template
-       value_template: '{{ states.device_tracker.meta_alok.state != "home" }}'         
+       value_template: '{{ states.device_tracker.meta_alok.state != "home" }}'
   trigger:
-    platform: numeric_state
-    entity_id: sensor.evening_commute
-    below: 43
+    platform: template
+    value_template: "{{(states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int) / (states.sensor.alok_to_home.attributes.duration.split(' ')[0]|int) < 1.25}}"
   action:
     service: notify.pushbullet
-    data:
-      message: Commute time is 43 minutes
+    data_template:
+      message: Commute time is {{states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int}} minutes
       title: Leave for Home
       target: device/myiPhone
 
@@ -820,7 +821,7 @@
      entity_id:
        - device_tracker.meta_rashmi
        - device_tracker.meta_alok
-     to: 'on'
+     to: 'home'
   action:
     - service: switch.turn_on
       entity_id: switch.garage_relay_switch
