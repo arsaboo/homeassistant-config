@@ -6,8 +6,11 @@
 
 # OPTIONS
 # List the trackers for each individual
-RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.pi_rashmiphone', 'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu']
-AlokTrackers = ['device_tracker.myiphone', 'device_tracker.pi_alokphone', 'device_tracker.alokiosiphone', 'device_tracker.alok_alok', 'device_tracker.elantrase']
+RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.pi_rashmiphone',
+                  'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu']
+AlokTrackers = ['device_tracker.myiphone', 'device_tracker.pi_alokphone',
+                'device_tracker.alokiosiphone', 'device_tracker.alok_alok',
+                'device_tracker.elantrase']
 # Get the entity that triggered the automation
 triggeredEntity = data.get('entity_id')
 
@@ -31,32 +34,32 @@ newFriendlyName_temp = newState.attributes.get('friendly_name')
 
 # If GPS source, set new coordinates
 if newSource == 'gps':
-  newLatitude = newState.attributes.get('latitude')
-  newLongitude = newState.attributes.get('longitude')
-  newgpsAccuracy = newState.attributes.get('gps_accuracy')
+    newLatitude = newState.attributes.get('latitude')
+    newLongitude = newState.attributes.get('longitude')
+    newgpsAccuracy = newState.attributes.get('gps_accuracy')
 # If not, keep last known coordinates
 elif currentState.attributes.get('latitude') is not None:
-  newLatitude = currentState.attributes.get('latitude')
-  newLongitude = currentState.attributes.get('longitude')
-  newgpsAccuracy = currentState.attributes.get('gps_accuracy')
+    newLatitude = currentState.attributes.get('latitude')
+    newLongitude = currentState.attributes.get('longitude')
+    newgpsAccuracy = currentState.attributes.get('gps_accuracy')
 # Otherwise return null
 else:
-  newLatitude = None
-  newLongitude = None
-  newgpsAccuracy = None
+    newLatitude = None
+    newLongitude = None
+    newgpsAccuracy = None
 
 # Get Battery
 if newState.attributes.get('battery') is not None:
-  newBattery = newState.attributes.get('battery')
+    newBattery = newState.attributes.get('battery')
 elif currentState.attributes.get('battery') is not None:
-  newBattery = currentState.attributes.get('battery')
+    newBattery = currentState.attributes.get('battery')
 else:
-  newBattery = None
+    newBattery = None
 
 if newState.state is not None:
-  newStatus = newState.state
+    newStatus = newState.state
 else:
-  newStatus = currentState.state
+    newStatus = currentState.state
 
 # Create device_tracker.meta entity
 hass.states.set(metatrackerName, newStatus, {
