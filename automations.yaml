@@ -32,24 +32,6 @@
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
-
-- id: debug_meta_trackers
-  alias: "Check meta tracker"
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - device_tracker.meta_alok
-        - device_tracker.meta_rashmi
-      to: 'not_home'
-  action:
-    - service: logbook.log
-      data_template:
-        name: "Status changed: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
-          {%- endfor -%}
 #################################################################
 ## Security System
 #################################################################
