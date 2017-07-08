@@ -219,6 +219,7 @@ logger:
   default: error
   logs:
     homeassistant.components.image_processing: error
+    homeassistant.components.python_script: info
 # Text to speech
 tts:
   - platform: google
@@ -343,7 +344,7 @@ history:
       - device_tracker.rashmisiphone
       - device_tracker.sonu_sonu
       - device_tracker.meta_rashmi
-      - device_tracker.meta_alok      
+      - device_tracker.meta_alok
       - input_select.abodestatus
       - media_player.panasonic_viera_tv
       - sensor.plexspy
