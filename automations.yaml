@@ -429,10 +429,20 @@
          - thu
          - fri
      - condition: template
-       value_template: '{{ states.device_tracker.meta_alok.state != "home" }}'
+       value_template: >
+         {%- if states.device_tracker.meta_alok.state -%}
+           {{ states.device_tracker.meta_alok.state != 'home' }}
+         {%- else -%}
+           false
+         {%- endif -%}
   trigger:
     platform: template
-    value_template: "{{(states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int) / (states.sensor.alok_to_home.attributes.duration.split(' ')[0]|int) < 1.25}}"
+    value_template: >
+      {%- if states.sensor.alok_to_home.attributes.duration_in_traffic -%}
+        {{(states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int) / (states.sensor.alok_to_home.attributes.duration.split(' ')[0]|int) < 1.25}}
+      {%- else -%}
+        false
+      {%- endif -%}
   action:
     service: notify.pushbullet
     data_template:
