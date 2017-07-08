@@ -66,7 +66,7 @@ else:
 # Create device_tracker.meta entity
 hass.states.set(metatrackerName, newStatus, {
     'friendly_name': newFriendlyName,
-    'entity_picture': newEntityPicture
+    'entity_picture': newEntityPicture,
     'source_type': newSource,
     'battery': newBattery,
     'gps_accuracy': newgpsAccuracy,
