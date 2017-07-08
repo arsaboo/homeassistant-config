@@ -798,11 +798,19 @@
        {%- else -%}
          true
        {%- endif -%}
+   - condition: template
+     value_template: >
+       {%- if states.automation.update_ha_after_startup.last_triggered -%}
+         {{ (as_timestamp(now()) - as_timestamp(states.automation.update_ha_after_startup.attributes.last_triggered)) > 120 }}
+       {%- else -%}
+         true
+       {%- endif -%}
   trigger:
    - platform: state
      entity_id:
        - device_tracker.meta_rashmi
        - device_tracker.meta_alok
+     from: 'not_home'
      to: 'home'
   action:
     - service: switch.turn_on
