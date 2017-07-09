@@ -219,7 +219,7 @@ logger:
   default: error
   logs:
     homeassistant.components.image_processing: error
-    homeassistant.components.python_script: info
+    homeassistant.components.python_script: warning
 # Text to speech
 tts:
   - platform: google
