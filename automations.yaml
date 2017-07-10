@@ -47,12 +47,12 @@
   trigger:
     - platform: time
       minutes: '/5'
-      seconds: 00
   action:
     - service: mqtt.publish
       data:
         topic: "owntracks/pi/alokphone/cmd"
         payload_template: '{"_type": "cmd","action": "reportLocation", "batt": %BATT}'
+        qos: 2
 
 - id: refresh_rashmi_owntracks
   alias: Refresh Rashmi Owntracks
@@ -68,12 +68,12 @@
   trigger:
     - platform: time
       minutes: '/5'
-      seconds: 00
   action:
     - service: mqtt.publish
       data:
         topic: "owntracks/pi/rashmiphone/cmd"
         payload_template: '{"_type": "cmd","action": "reportLocation", "batt": %BATT}'
+        qos: 2
 #################################################################
 ## Security System
 #################################################################
