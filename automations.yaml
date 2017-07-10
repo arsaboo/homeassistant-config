@@ -32,6 +32,48 @@
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
+
+- id: refresh_alok_owntracks
+  alias: Refresh Alok Owntracks
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {%- if states.device_tracker.pi_alokphone.attributes.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.device_tracker.pi_alokphone.last_updated)) > 600 }}
+        {%- else -%}
+          false
+        {%- endif -%}
+  trigger:
+    - platform: time
+      minutes: '/5'
+      seconds: 00
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "owntracks/pi/alokphone/cmd"
+        payload_template: '{"_type": "cmd","action": "reportLocation", "batt": %BATT}'
+
+- id: refresh_rashmi_owntracks
+  alias: Refresh Rashmi Owntracks
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {%- if states.device_tracker.pi_rashmiphone.attributes.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.device_tracker.pi_rashmiphone.last_updated)) > 600 }}
+        {%- else -%}
+          false
+        {%- endif -%}
+  trigger:
+    - platform: time
+      minutes: '/5'
+      seconds: 00
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "owntracks/pi/rashmiphone/cmd"
+        payload_template: '{"_type": "cmd","action": "reportLocation", "batt": %BATT}'
 #################################################################
 ## Security System
 #################################################################
