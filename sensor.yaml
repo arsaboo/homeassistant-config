@@ -64,7 +64,7 @@
     name: Alok to Home
     friendly_name: "Commute to Home"
     api_key: !secret google_key
-    origin: device_tracker.alokiosiphone
+    origin: device_tracker.meta_alok
     destination: !secret add_home
   - platform: wunderground
     api_key: !secret wunderground_key
