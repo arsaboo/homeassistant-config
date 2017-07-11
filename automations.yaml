@@ -479,7 +479,7 @@
          - fri
      - condition: template
        value_template: >
-         {%- if states.device_tracker.meta_alok.state -%}
+         {%- if states.device_tracker.meta_alok -%}
            {{ states.device_tracker.meta_alok.state != 'home' }}
          {%- else -%}
            false
