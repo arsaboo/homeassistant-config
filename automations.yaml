@@ -82,16 +82,23 @@
   alias: 'Disarm Abode from Away'
   initial_state: 'on'
   condition:
-   - condition: state
-     entity_id: input_select.abodestatus
-     state: 'away'
-   - condition: state
-     entity_id: input_boolean.abodeupdate
-     state: 'on'
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'away'
+    - condition: state
+      entity_id: input_boolean.abodeupdate
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.automation.arm_abode.attributes.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.arm_abode.attributes.last_triggered)) > 240 }}
+        {%- else -%}
+          true
+        {%- endif -%}
   trigger:
-   - platform: state
-     entity_id: group.household
-     state: 'home'
+    - platform: state
+      entity_id: group.household
+      state: 'home'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
@@ -581,76 +588,51 @@
      service: ifttt.trigger
      data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
 
-# - id: frontyard_lights
-#   alias: 'Turn on frontyard lights'
-#   initial_state: 'on'
-#   condition:
-#     - condition: state
-#       entity_id: sun.sun
-#       state: 'below_horizon'
-#   trigger:
-#    - platform: state
-#      entity_id:
-#        - binary_sensor.driveway_field_detection
-#        - binary_sensor.porch_field_detection
-#        - binary_sensor.driveway_line_crossing
-#        - binary_sensor.porch_line_crossing
-#      to: 'on'
-#   action:
-#     - service: switch.turn_on
-#       entity_id:
-#         - switch.driveway
-#         - switch.wemoporch
-#
-# - id: frontyard_lights_off
-#   alias: 'Turn off frontyard lights'
-#   initial_state: 'on'
-#   condition:
-#     - condition: template
-#       value_template: >
-#         {%- if states.binary_sensor.driveway_field_detection.last_changed -%}
-#           {{as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_field_detection.last_changed)}} >200
-#         {%- else -%}
-#           true
-#         {%- endif -%}
-#     - condition: template
-#       value_template: >
-#         {%- if states.binary_sensor.porch_field_detection.last_changed -%}
-#           {{as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_field_detection.last_changed)}} >200
-#         {%- else -%}
-#           true
-#         {%- endif -%}
-#     - condition: template
-#       value_template: >
-#         {%- if states.binary_sensor.driveway_line_crossing.last_changed -%}
-#           {{as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_line_crossing.last_changed)}} >200
-#         {%- else -%}
-#           true
-#         {%- endif -%}
-#     - condition: template
-#       value_template: >
-#         {%- if states.binary_sensor.porch_line_crossing.last_changed -%}
-#           {{as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_line_crossing.last_changed)}} >200
-#         {%- else -%}
-#           true
-#         {%- endif -%}
-#     - condition: or
-#       conditions:
-#         - condition: state
-#           entity_id: switch.driveway
-#           state: 'on'
-#         - condition: state
-#           entity_id: switch.wemoporch
-#           state: 'on'
-#   trigger:
-#    - platform: time
-#      minutes: '/5'
-#   action:
-#     - service: switch.turn_off
-#       entity_id:
-#         - switch.driveway
-#         - switch.wemoporch
+- id: frontyard_lights
+  alias: 'Turn on frontyard lights'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  trigger:
+   - platform: state
+     entity_id:
+       - binary_sensor.ring_front_door_motion
+     to: 'on'
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
 
+- id: frontyard_lights_off_after_ring
+  alias: 'Turn off frontyard lights after Ring'
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {%- if states.binary_sensor.ring_front_door_motion.last_changed -%}
+          {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.ring_front_door_motion.last_changed)) > 200}}
+        {%- else -%}
+          false
+        {%- endif -%}
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: switch.driveway
+          state: 'on'
+        - condition: state
+          entity_id: switch.wemoporch
+          state: 'on'
+  trigger:
+   - platform: time
+     minutes: '/5'
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.driveway
+        - switch.wemoporch
 
 - id: lifx_party_mode
   alias: "Turn Lifx Party Mode On"
@@ -787,7 +769,6 @@
     - service: switch.turn_on
       entity_id:
         - switch.driveway
-        - switch.wemoporch
 
 - id: outdoor_light_off
   alias: Outdoor light Off
@@ -800,7 +781,6 @@
     - service: switch.turn_off
       entity_id:
         - switch.driveway
-        - switch.wemoporch
 
 - id: driveway_light_off_during_the_day
   alias: Driveway light Off during the day
@@ -837,33 +817,40 @@
   alias: 'Open Garage door when someone home'
   initial_state: 'on'
   condition:
-   - condition: state
-     entity_id: binary_sensor.garagedoor
-     state: 'off'
-   - condition: state
-     entity_id: input_boolean.abodeupdate
-     state: 'on'
-   - condition: template
-     value_template: >
-       {%- if states.automation.open_garage_door_when_someone_home.attributes.last_triggered -%}
-         {{ (as_timestamp(now()) - as_timestamp(states.automation.open_garage_door_when_someone_home.attributes.last_triggered)) > 150 }}
-       {%- else -%}
-         true
-       {%- endif -%}
-   - condition: template
-     value_template: >
-       {%- if states.automation.update_ha_after_startup.last_triggered -%}
-         {{ (as_timestamp(now()) - as_timestamp(states.automation.update_ha_after_startup.attributes.last_triggered)) > 120 }}
-       {%- else -%}
-         true
-       {%- endif -%}
+    - condition: state
+      entity_id: binary_sensor.garagedoor
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.abodeupdate
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.automation.open_garage_door_when_someone_home.attributes.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.open_garage_door_when_someone_home.attributes.last_triggered)) > 150 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if states.automation.update_ha_after_startup.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.update_ha_after_startup.attributes.last_triggered)) > 120 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: >
+        {%- if states.automation.arm_abode.attributes.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.arm_abode.attributes.last_triggered)) > 240 }}
+        {%- else -%}
+          true
+        {%- endif -%}
   trigger:
-   - platform: state
-     entity_id:
-       - device_tracker.meta_rashmi
-       - device_tracker.meta_alok
-     from: 'not_home'
-     to: 'home'
+    - platform: state
+      entity_id:
+        - device_tracker.meta_rashmi
+        - device_tracker.meta_alok
+      from: 'not_home'
+      to: 'home'
   action:
     - service: switch.turn_on
       entity_id: switch.garage_relay_switch
@@ -872,27 +859,27 @@
   alias: 'Close garage door when Abode is Home or Away'
   initial_state: 'on'
   condition:
-   - condition: state
-     entity_id: binary_sensor.garagedoor
-     state: 'on'
-   - condition: template
-     value_template: >
-       {%- if states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered  -%}
-         {{(as_timestamp(now()) - as_timestamp(states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered)) > 60}}
-       {%- else -%}
-         true
-       {%- endif -%}
-   - condition: or
-     conditions:
-      - condition: state
-        entity_id: input_select.abodestatus
-        state: 'home'
-      - condition: state
-        entity_id: input_select.abodestatus
-        state: 'away'
+    - condition: state
+      entity_id: binary_sensor.garagedoor
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered  -%}
+          {{(as_timestamp(now()) - as_timestamp(states.automation.close_garage_door_when_abode_is_home_or_away.attributes.last_triggered)) > 60}}
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: or
+      conditions:
+       - condition: state
+         entity_id: input_select.abodestatus
+         state: 'home'
+       - condition: state
+         entity_id: input_select.abodestatus
+         state: 'away'
   trigger:
-   - platform: time
-     minutes: '/5'
+    - platform: time
+      minutes: '/5'
   action:
     - service: switch.turn_on
       entity_id: switch.garage_relay_switch
