@@ -820,6 +820,7 @@
     - condition: state
       entity_id: binary_sensor.garagedoor
       state: 'off'
+      for: '00:02:00'
     - condition: state
       entity_id: input_boolean.abodeupdate
       state: 'on'
@@ -841,13 +842,6 @@
       value_template: >
         {%- if states.automation.arm_abode.attributes.last_triggered -%}
           {{ (as_timestamp(now()) - as_timestamp(states.automation.arm_abode.attributes.last_triggered)) > 240 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-    - condition: template
-      value_template: >
-        {%- if states.automation.reset_garage_relay.last_triggered -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.automation.reset_garage_relay.attributes.last_triggered)) > 240 }}
         {%- else -%}
           true
         {%- endif -%}
