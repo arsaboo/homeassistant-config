@@ -2,7 +2,6 @@
 ## Input_boolean
 #################################################################
 
-
   abodeupdate:
     name: Abode Updates
     initial: on
@@ -35,7 +34,3 @@
     name: Party Mode
     initial: off
     icon: mdi:theme-light-dark
-  # alok360home:
-  #   name: Alok Life360
-  #   initial: on
-  #   icon: mdi:cellphone-iphone
