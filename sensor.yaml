@@ -133,8 +133,8 @@
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
         value_template: >-
-           {%- if states.binary_sensor.garage_door_tilt_sensor_sensor != None -%}
-             {{ states.binary_sensor.garage_door_tilt_sensor_sensor.attributes.battery_level }}
+           {%- if states.zwave.garage_door_tilt_sensor != None -%}
+             {{ states.zwave.garage_door_tilt_sensor.attributes.battery_level }}
            {%- else -%}
              unknown
            {%- endif -%}
@@ -279,17 +279,3 @@
           {% else %}
               Unknown
           {%- endif %}
-      # garagedoor:
-        # friendly_name: "Garage Door"
-        # value_template: >-
-           # {% if  states.sensor.garage_door_tilt_sensor_alarm_level_5.state == '255' %}
-              # Open
-           # {% elif states.sensor.garage_door_tilt_sensor_alarm_level_5.state == '0' %}
-              # Closed
-           # {% elif states.sensor.garage_door_tilt_sensor_alarm_level_5 != None %}
-              # unknown
-           # {% endif %}
-#      bloomsky_last_update:
-#        value_template: '{{ states.sensor.ars_bloom_temperature.last_updated.strftime("%H:%M, %Y-%m-%d") }} '
-#      timeutcnow:
-#        value_template: '{{ utcnow.strftime("%H:%M, %Y-%m-%d") }}'
