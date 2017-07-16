@@ -2,6 +2,10 @@
 ## Input_boolean
 #################################################################
 
+  dashbounty:
+    name: Dash Bounty
+    initial: off
+    icon: mdi:security
   abodeupdate:
     name: Abode Updates
     initial: on
