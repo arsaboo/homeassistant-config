@@ -16,6 +16,12 @@
       for: '00:07:00'
     - platform: state
       entity_id:
+        - device_tracker.pi_alokphone
+        - device_tracker.pi_rashmiphone
+      to: 'home'
+      for: '00:03:00'
+    - platform: state
+      entity_id:
         - device_tracker.alokiosiphone
         - device_tracker.alok_alok
         - device_tracker.rashmiappiphone
@@ -23,15 +29,20 @@
     - platform: state
       entity_id:
         - device_tracker.myiphone
-        - device_tracker.pi_alokphone
         - device_tracker.elantrase
         - device_tracker.rashmisiphone
-        - device_tracker.pi_rashmiphone
       to: 'home'
   action:
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
+    - service: logbook.log
+      data_template:
+        name: "Tracker updated: "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
+          {%- endfor -%}
 
 - id: refresh_alok_owntracks
   alias: Refresh Alok Owntracks
@@ -386,13 +397,13 @@
         name: "Motion detected: "
         message: >-
           {%- if trigger.entity_id == "binary_sensor.backyard_field_detection" or trigger.entity_id == "binary_sensor.backyard_line_crossing" -%}
-            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.backyard_motion.attributes.last_tripped_time))}} seconds ago.
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.backyard_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- elif trigger.entity_id == "binary_sensor.driveway_field_detection" or trigger.entity_id == "binary_sensor.driveway_line_crossing" -%}
-            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_motion.attributes.last_tripped_time))}} seconds ago.
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.driveway_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- elif trigger.entity_id == "binary_sensor.patio_field_detection" or trigger.entity_id == "binary_sensor.patio_line_crossing" -%}
-            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.patio_motion.attributes.last_tripped_time))}} seconds ago.
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.patio_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- elif trigger.entity_id == "binary_sensor.porch_field_detection" or trigger.entity_id == "binary_sensor.porch_line_crossing" -%}
-            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))}} seconds ago.
+            {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- endif -%}
 #################################################################
 ## HASS Related
