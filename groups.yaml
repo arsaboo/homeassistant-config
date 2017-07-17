@@ -17,7 +17,7 @@
   cameras:
     name: Cameras
     view: yes
-    icon: mdi:camera
+    icon: mdi:cctv
     entities:
       - camera.ars_bloom
       - camera.driveway
@@ -27,6 +27,8 @@
       - camera.door_camera
       - camera.door_camera_2
       - camera.door_camera_3
+      - camera.motoe
+      - camera.opencv_motoe
       - camera.wundergroundradar
 
   media:
