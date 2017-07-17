@@ -63,7 +63,53 @@ emulated_hue:
   expose_by_default: false
 # Enables the frontend
 frontend:
-
+  themes:
+    minimal:
+      dark-primary-color: "#192231"
+      primary-color: "#98878f"
+      light-primary-color: "#98878f"
+      paper-toggle-button-checked-ink-color: "#494e6b"
+      paper-toggle-button-checked-button-color: "#494e6b"
+      paper-toggle-button-checked-bar-color: "#494e6b"
+      paper-slider-knob-color: "#494e6b"
+      paper-slider-knob-start-color: "#494e6b"
+      paper-slider-pin-color: "#494e6b"
+      paper-slider-active-color: "#494e6b"
+    stormy_hues:
+      dark-primary-color: "#192231"
+      primary-color: "#98878f"
+      light-primary-color: "#98878f"
+      paper-toggle-button-checked-ink-color: "#494e6b"
+      paper-toggle-button-checked-button-color: "#494e6b"
+      paper-toggle-button-checked-bar-color: "#494e6b"
+      paper-slider-knob-color: "#494e6b"
+      paper-slider-knob-start-color: "#494e6b"
+      paper-slider-pin-color: "#494e6b"
+      paper-slider-active-color: "#494e6b"
+    vintage:
+      dark-primary-color: "#373f27"
+      primary-color: "#636b46"
+      light-primary-color: "#e9e7da"
+      paper-toggle-button-checked-ink-color: "#cda34f"
+      paper-toggle-button-checked-button-color: "#cda34f"
+      paper-toggle-button-checked-bar-color: "#cda34f"
+      paper-slider-knob-color: "#cda34f"
+      paper-slider-knob-start-color: "#cda34f"
+      paper-slider-pin-color: "#cda34f"
+      paper-slider-active-color: "#cda34f"
+    done1:
+      dark-primary-color: "#565656"
+      primary-color: "#C09F80"
+      light-primary-color: "#D7CEC7"
+      paper-toggle-button-checked-ink-color: "#76323F"
+      paper-toggle-button-checked-button-color: "#76323F"
+      paper-toggle-button-checked-bar-color: "#76323F"
+      paper-slider-knob-color: "#76323F"
+      paper-slider-knob-start-color: "#76323F"
+      paper-slider-pin-color: "#76323F"
+      paper-slider-active-color: "#76323F"
+      paper-slider-secondary-color: "#FFE0B2"
+media_extractor:
 # Enables configuration UI
 config:
 
@@ -98,6 +144,10 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
+  # - platform: opencv
+  #   camera: camera.motoe
+  #   processor: image_processing.opencv_motoe
+  #   name: OpenCV MotoE
   # - platform: opencv
   #   camera: camera.porch
   #   processor: image_processing.opencv_porch
@@ -134,21 +184,25 @@ bloomsky:
 ifttt:
   key: !secret ifttt_key
 
+# android_ip_webcam:
+#   - host: 192.168.2.176
+#     name: motoe
+#     scan_interval: 1
 # image_processing:
+#   - platform: dlib_face_detect
+#     keep_images_with_faces: True
+#     keep_images_without_faces: True
+#     source:
+#       - entity_id: camera.porch
+#       - entity_id: camera.motoe
 #   - platform: opencv
 #     name: OpenCV
 #     source:
 #       - entity_id: camera.porch
-#       - entity_id: camera.patio
-#       - entity_id: camera.backyard
-#       - entity_id: camera.driveway
+#       - entity_id: camera.motoe
 #     classifier:
-#       body: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
+#       body: /home/homeassistant/.homeassistant/classifier/haarcascade_frontalface_default.xml
 #       neighbors: 5
-#   - platform: dlib_face_detect
-#     source:
-#       - entity_id: camera.porch
-#       - entity_id: camera.patio
 
 sun:
 media_player:
