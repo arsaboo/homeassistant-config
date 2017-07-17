@@ -1,0 +1,9 @@
+#Create triggers in Action Rule and obtain the respective URLs. The format is:
+# ss_enable_home: 'http://IP_ADDRESS:5000/webapi/entry.cgi?api=SYNO.SurveillanceStation.ExternalEvent&method="Trigger"&version=1&eventId=1&eventName="This is external event1"&account="USER"&password="PASSWORD"'
+rest_command:
+  ss_enable_home:
+    url: !secret ss_enable_home
+    method: get
+  ss_disable_home:
+    url: !secret ss_disable_home
+    method: get
