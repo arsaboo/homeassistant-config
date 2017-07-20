@@ -182,7 +182,11 @@
        custom_ui_state_card: custom-ui
        state_card_mode: single-line
        stretch_slider: true
-
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: false
      climate.ecobee:
        max_temp: 90
        min_temp: 55
