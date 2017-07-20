@@ -188,13 +188,19 @@ ifttt:
 #   - host: 192.168.2.176
 #     name: motoe
 #     scan_interval: 1
-# image_processing:
-#   - platform: dlib_face_detect
-#     keep_images_with_faces: True
-#     keep_images_without_faces: True
-#     source:
-#       - entity_id: camera.porch
-#       - entity_id: camera.motoe
+image_processing:
+  - platform: dlib_face_detect
+    keep_faces: True
+    keep_no_faces: True
+    source:
+      - entity_id: camera.porch
+        name: "Face Detected porch"
+      - entity_id: camera.backyard
+        name: "Face Detected backyard"
+      - entity_id: camera.driveway
+        name: "Face Detected driveway"
+      - entity_id: camera.patio
+        name: "Face Detected patio"
 #   - platform: opencv
 #     name: OpenCV
 #     source:
