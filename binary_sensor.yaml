@@ -1,11 +1,5 @@
   - platform: template
     sensors:
-      abode:
-        friendly_name: "Abode"
-        value_template: "{{ is_state('device_tracker.dash_bounty', 'home') }}"
-        entity_id: device_tracker.dash_bounty
-  - platform: template
-    sensors:
       garagedoor:
         friendly_name: Garage Door Open
         sensor_class: opening
