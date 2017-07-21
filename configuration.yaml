@@ -56,12 +56,13 @@ light:
     optimistic: false
     qos: 0
 
-#Adds Amazon Echo support
+#Adds Google Home support
 emulated_hue:
   type: google_home
   host_ip: 192.168.2.212
   expose_by_default: false
   listen_port: 80
+#Adds Amazon Alexa support  
 emulated_hue 1:
   type: alexa
 # Enables the frontend
