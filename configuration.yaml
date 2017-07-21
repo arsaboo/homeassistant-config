@@ -58,9 +58,12 @@ light:
 
 #Adds Amazon Echo support
 emulated_hue:
-  type: alexa
+  type: google_home
   host_ip: 192.168.2.212
   expose_by_default: false
+  listen_port: 80
+emulated_hue 1:
+  type: alexa
 # Enables the frontend
 frontend:
   themes:
