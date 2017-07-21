@@ -187,19 +187,36 @@
          max: 255
          pin: true
          off_when_min: false
+     light.lifx3:
+       custom_ui_state_card: custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: false
+     light.lifxnrkitchen:
+       custom_ui_state_card: custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: false
+     light.lifxnrguest:
+       custom_ui_state_card: custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: false
      climate.ecobee:
        max_temp: 90
        min_temp: 55
-     zone.home:
-       track_ios: true
-      #  beacon:
-      #    uuid: 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6
-      #    major: 0
-      #    minor: 0
-     zone.buckhead:
-       track_ios: true
-     zone.downtown:
-       track_ios: true
      script.colorloop_start:
        icon: mdi:palette
      script.lifx_stop_effects:
