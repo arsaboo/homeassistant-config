@@ -69,7 +69,7 @@
         data_template:
           entity_id: remote.livingroom
           activity: PowerOff
-  sonos_say:
+  sonos_say_old:
     alias: "Sonos TTS script"
     sequence:
       - service: media_player.sonos_snapshot
@@ -86,10 +86,34 @@
         data_template:
           entity_id: "{{ sonos_entity }}"
           message: "{{ message }}"
-      - delay: "{{ delay }}"
+      - delay: "{{ delay|default('00:00:04') }}"
       - service: media_player.sonos_restore
         data_template:
           entity_id: "{{ sonos_entity }}"
+  sonos_say:
+    alias: "Sonos TTS script"
+    sequence:
+      - service: media_player.sonos_snapshot
+        data_template:
+          entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
+      - service: media_player.sonos_unjoin
+        data_template:
+          entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
+      - service: media_player.volume_set
+        data_template:
+          entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
+          volume_level: "{{ volume|default(0.5) }}"
+      - service: tts.google_say
+        data_template:
+          entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
+          message: "{{ message }}"
+      - wait_template: "{{ is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
+        timeout: '00:00:05'
+      - wait_template: "{{ not is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
+        timeout: '00:02:00'
+      - service: media_player.sonos_restore
+        data_template:
+          entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
   notificationgaragedoor:
     alias: 'Garage Door Open'
     sequence:
@@ -97,9 +121,7 @@
         data:
           sonos_entity: media_player.livingroomsonos
           volume: 0.7
-          delay: '00:00:04'
           message: 'Garage door is open, please check!'
-
   notificationleavework:
     alias: 'Leave for Work'
     sequence:
@@ -107,7 +129,6 @@
         data:
           sonos_entity: media_player.livingroomsonos
           volume: 0.6
-          delay: '00:00:05'
           message: 'Traffic has cleared, you can leave for work.'
   notificationalarm:
     alias: 'Notify that sensors changed when nobody is home'
@@ -123,7 +144,6 @@
         data:
           media_content_id: 'https://dl.dropboxusercontent.com/u/7457/HASS/Burglar_Alarm.mp3'
           media_content_type: 'music'
-      - delay: '00:01:28'
       - service: media_player.sonos_restore
         entity_id: media_player.livingroomsonos
 
