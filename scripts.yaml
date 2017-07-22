@@ -107,6 +107,7 @@
         data_template:
           entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
           message: "{{ message }}"
+      - delay: "{{ delay|default('00:00:00') }}"
       - wait_template: "{{ is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
         timeout: '00:00:05'
       - wait_template: "{{ not is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
@@ -121,6 +122,7 @@
         data:
           sonos_entity: media_player.livingroomsonos
           volume: 0.7
+          delay: '00:00:04'
           message: 'Garage door is open, please check!'
   notificationleavework:
     alias: 'Leave for Work'
@@ -129,6 +131,7 @@
         data:
           sonos_entity: media_player.livingroomsonos
           volume: 0.6
+          delay: '00:00:05'
           message: 'Traffic has cleared, you can leave for work.'
   notificationalarm:
     alias: 'Notify that sensors changed when nobody is home'
@@ -144,6 +147,7 @@
         data:
           media_content_id: 'https://dl.dropboxusercontent.com/u/7457/HASS/Burglar_Alarm.mp3'
           media_content_type: 'music'
+      - delay: '00:01:28'
       - service: media_player.sonos_restore
         entity_id: media_player.livingroomsonos
 
