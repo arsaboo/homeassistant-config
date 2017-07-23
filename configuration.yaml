@@ -289,10 +289,10 @@ tts:
   - platform: voicerss
     api_key: !secret voicerss_key
   - platform: amazon_polly
-    aws_access_key_id: !secret aws_access_key_ID
+    aws_access_key_id: !secret aws_access_key_id
     aws_secret_access_key: !secret aws_secret_access_key
     text_type: ssml
-    cache: True    
+    cache: True
 remote:
   - platform: harmony
     name: livingroom

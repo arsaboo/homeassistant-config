@@ -19,11 +19,11 @@
     view: yes
     icon: mdi:cctv
     entities:
-      - group.camera_ars_bloom
       - group.camera_driveway
       - group.camera_porch
       - group.camera_backyard
       - group.camera_patio
+      - group.camera_arsbloom
       - group.camera_foscam1
       - group.camera_foscam2
       - group.camera_foscam3
