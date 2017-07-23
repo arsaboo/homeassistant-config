@@ -37,7 +37,6 @@ zone 3:
   icon: mdi:school
 zwave:
   usb_path: /dev/ttyACM0
-  # new_entity_ids: true
   network_key: !secret zwave_network_key
 light:
   - platform: lifx
@@ -144,6 +143,9 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
+  # - platform: generic
+  #   still_image_url: !secret porch_camera_image_url
+  #   name: porch2
   # - platform: opencv
   #   camera: camera.motoe
   #   processor: image_processing.opencv_motoe
@@ -171,9 +173,7 @@ camera:
   # - platform: generic
   #   still_image_url: 'http://images.intellicast.com/WxImages/RadarLoop/prc_None_anim.gif'
   #   name: IntellicastRadar
-  # - platform: generic
-  #   still_image_url: !secret porch_camera_image_url
-  #   name: porch2
+
 
 ring:
   username: !secret ring_username
