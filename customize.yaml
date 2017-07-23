@@ -126,9 +126,6 @@
      sensor.usd_inr:
        friendly_name: USD/INR
        icon: mdi:currency-inr
-     sensor.usd_eur:
-       friendly_name: USD/EUR
-       icon: mdi:currency-eur
 
      sensor.hoursslept:
        icon: mdi:sleep
@@ -243,3 +240,19 @@
        order: 205
      group.camera_arsbloom:
        order: 206
+     group.entertainment:
+       order: 301
+     group.light_operations:
+       order: 302
+     group.media_player:
+       order: 303
+     group.household:
+       order: 401
+     group.devices:
+       order: 402
+     group.camera_sensors:
+       order: 403
+     group.network_details:
+       order: 404
+     group.camera_switches:
+       order: 405

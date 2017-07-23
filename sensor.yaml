@@ -28,7 +28,6 @@
     api_key: !secret currencylayer_key
     base: USD #optional
     quote:
-      - EUR
       - INR
 #Forecast.io weather sensors
   - platform: darksky

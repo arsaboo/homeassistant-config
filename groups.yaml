@@ -82,7 +82,7 @@
     icon: mdi:play-circle-outline
     entities:
       - group.entertainment
-      - group.network_details
+      - group.light_operations
       - group.media_player
 
   settings:
@@ -94,6 +94,7 @@
       - group.camera_sensors
       - group.camera_switches
       - group.household
+      - group.network_details
 
   Weather:
     - sensor.pws_weather
@@ -126,13 +127,10 @@
     - sensor.alok_to_home
     - sensor.plexspy
     - sensor.usd_inr
-    - sensor.usd_eur
     - binary_sensor.garagedoor
     - cover.garagedoor
     - sensor.ars_bloom_voltage
-    - sensor.steps
     - sensor.calories
-    - sensor.hoursslept
 
   Network Details:
     - sensor.transmission_down_speed
@@ -204,11 +202,11 @@
     - switch.driveway
     - switch.wemoporch
     - switch.wemoinsight
+  Light Operations:
     - input_boolean.partymode
     - script.colorloop_start
     - script.disco_party
     - script.lifx_stop_effects
-
   Household:
     - device_tracker.meta_rashmi
     - device_tracker.meta_alok
