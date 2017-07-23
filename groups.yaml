@@ -19,16 +19,60 @@
     view: yes
     icon: mdi:cctv
     entities:
+      - group.camera_ars_bloom
+      - group.camera_driveway
+      - group.camera_porch
+      - group.camera_backyard
+      - group.camera_patio
+      - group.camera_foscam1
+      - group.camera_foscam2
+      - group.camera_foscam3
+      - group.camera_motoe
+      - group.camera_opencv_motoe
+      - group.camera_wundergroundradar
+  camera_arsbloom:
+    name: BloomSky Camera
+    entities:
       - camera.ars_bloom
+  camera_driveway:
+    name: Driveway Camera
+    entities:
       - camera.driveway
+  camera_porch:
+    name: Porch Camera
+    entities:
       - camera.porch
+  camera_backyard:
+    name: Backyard Camera
+    entities:
       - camera.backyard
+  camera_patio:
+    name: Patio Camera
+    entities:
       - camera.patio
+  camera_foscam1:
+    name: Foscam Camera 1
+    entities:
       - camera.door_camera
+  camera_foscam2:
+    name: Foscam Camera 2
+    entities:
       - camera.door_camera_2
+  camera_foscam3:
+    name: Foscam Camera 3
+    entities:
       - camera.door_camera_3
+  camera_motoe:
+    name: MotoE Camera
+    entities:
       - camera.motoe
+  camera_opencv_motoe:
+    name: OpenCV MotoE Camera
+    entities:
       - camera.opencv_motoe
+  camera_wundergroundradar:
+    name: Wunderground Radar Camera
+    entities:
       - camera.wundergroundradar
 
   media:
