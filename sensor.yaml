@@ -11,7 +11,7 @@
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: transmission
-    host: 192.168.2.113
+    host: !secret synology_ip
     monitored_variables:
       - 'current_status'
       - 'download_speed'
@@ -43,7 +43,7 @@
       - 'time_date'
   - platform: plex
     name: PlexSpy
-    host: 192.168.2.212
+    host: !secret hass_ip
     port: 32400
     username: !secret plex_user
     password: !secret plex_password
