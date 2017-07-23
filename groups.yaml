@@ -19,6 +19,7 @@
     view: yes
     icon: mdi:cctv
     entities:
+      - group.camera_wundergroundradar
       - group.camera_driveway
       - group.camera_porch
       - group.camera_backyard
@@ -29,7 +30,7 @@
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_motoe
-      - group.camera_wundergroundradar
+
   camera_arsbloom:
     name: BloomSky Camera
     entities:

@@ -92,8 +92,18 @@
        friendly_name: 'Hourly Summary'
      group.weather:
        icon: mdi:weather-pouring
+       order: 1
+     group.thermostats:
+       order: 2
      group.information:
        icon: mdi:information-outline
+       order: 3
+     group.all_lights:
+       hidden: false
+       friendly_name: 'Lights'
+       order: 4
+     group.switches:
+       order: 5
      group.all_automations:
        hidden: false
        friendly_name: 'Automations'
@@ -103,9 +113,7 @@
      group.all_devices:
        hidden: false
        friendly_name: 'Devices'
-     group.all_lights:
-       hidden: false
-       friendly_name: 'Lights'
+
      group.all_switches:
        hidden: false
        friendly_name: 'Switches'
@@ -223,3 +231,15 @@
        icon: mdi:palette
      script.disco_party:
        icon: mdi:palette
+     group.camera_driveway:
+       order: 201
+     group.camera_porch:
+       order: 202
+     group.camera_backyard:
+       order: 203
+     group.camera_patio:
+       order: 204
+     group.camera_wundergroundradar:
+       order: 205
+     group.camera_arsbloom:
+       order: 206
