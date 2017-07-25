@@ -17,9 +17,8 @@
     - platform: state
       entity_id:
         - device_tracker.pi_alokphone
-        - device_tracker.pi_rashmiphone
       to: 'home'
-      for: '00:03:00'
+      for: '00:02:00'
     - platform: state
       entity_id:
         - device_tracker.alokiosiphone
@@ -31,6 +30,7 @@
         - device_tracker.myiphone
         - device_tracker.elantrase
         - device_tracker.rashmisiphone
+        - device_tracker.pi_rashmiphone        
       to: 'home'
   action:
     - service: python_script.meta_device_tracker
