@@ -143,6 +143,11 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
+    # obtain your URL from yr.no. Search for your location and view hour-by-hour results
+  - platform: generic
+    still_image_url: !secret meteogram_url
+    content_type: 'image/svg+xml'
+    name: Meteogram
   # - platform: generic
   #   still_image_url: !secret porch_camera_image_url
   #   name: porch2
@@ -440,6 +445,7 @@ recorder:
       - sensor.pollen_level
       - sensor.hass_uptime
       - sensor.time__date
+      - sensor.ssl_certificate_expiry
       - switch.pihole
       - sensor.dns_queries_today
       - sensor.domains_being_blocked
