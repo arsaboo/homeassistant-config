@@ -25,12 +25,16 @@
       - group.camera_backyard
       - group.camera_patio
       - group.camera_arsbloom
+      - group.camera_meteogram
       - group.camera_foscam1
       - group.camera_foscam2
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_motoe
 
+  camera_meteogram:
+    entities:
+      - camera.meteogram
   camera_arsbloom:
     name: BloomSky Camera
     entities:
@@ -123,6 +127,7 @@
   Information:
     - sensor.time__date
     - sensor.hass_uptime
+    - sensor.ssl_certificate_expiry
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy

@@ -240,6 +240,8 @@
        order: 205
      group.camera_arsbloom:
        order: 206
+     group.camera_meteogram:
+       order: 207   
      group.entertainment:
        order: 301
      group.light_operations:
