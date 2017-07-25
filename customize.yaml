@@ -219,6 +219,13 @@
          max: 255
          pin: true
          off_when_min: false
+     switch.wemoinsight:
+       custom_ui_state_card: custom-ui
+       extra_badge:
+         entity_id: sensor.wemopowerused  # Will take precedence over attribute and unit below.
+         attribute: power_consumption
+         unit: W
+         blacklist_states: 0
      climate.ecobee:
        max_temp: 90
        min_temp: 55
@@ -241,7 +248,7 @@
      group.camera_arsbloom:
        order: 206
      group.camera_meteogram:
-       order: 207   
+       order: 207
      group.entertainment:
        order: 301
      group.light_operations:
