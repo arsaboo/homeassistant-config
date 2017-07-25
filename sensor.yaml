@@ -1,3 +1,5 @@
+  - platform: cert_expiry
+    host: !secret ha_url
   - platform: speedtest
     hour:
       - 12
@@ -91,7 +93,7 @@
        Referer: "https://www.pollen.com"
   - platform: command_line
     name: "HASS Uptime"
-    command: echo "$(($(date +%s) - $(date -d "$(head -n1 /home/homeassistant/.homeassistant/home-assistant.log | cut -d' ' -f-2)" +%s)))"
+    command: echo "$(($(date +%s) - $(date --date="`systemctl show home-assistant.service -p ActiveEnterTimestamp | awk -F'=' '{print $2}'`" "+%s")))"
     scan_interval: 720
     value_template: >-
       {% set uptime = value | int %}
