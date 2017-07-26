@@ -99,6 +99,7 @@
       - group.camera_switches
       - group.household
       - group.network_details
+      - group.pi_hole
 
   Weather:
     - sensor.pws_weather

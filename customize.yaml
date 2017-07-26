@@ -265,3 +265,5 @@
        order: 404
      group.camera_switches:
        order: 405
+     group.pi_hole:
+       order: 406
