@@ -280,3 +280,10 @@
           {% else %}
               Unknown
           {%- endif %}
+      emulated_hue_names:
+        friendly_name: "Emulated Hue Names"
+        value_template: >-
+          {% for item in states if item.attributes.emulated_hue_name|length > 0-%}
+            {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
+            {{item.attributes.emulated_hue_name|title}}
+          {%- endfor -%}.
