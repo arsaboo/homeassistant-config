@@ -57,7 +57,7 @@ light:
 
 #Adds Alexa and Google Home support
 emulated_hue:
-  host_ip: !secret hass_ip
+  host_ip: 192.168.2.212
   expose_by_default: false
   listen_port: 80
 # Enables the frontend
@@ -457,6 +457,13 @@ recorder:
       - image_processing.opencv_patio
       - image_processing.opencv_driveway
       - image_processing.opencv_porch
+      - sensor.dns_queries_today
+      - sensor.domains_being_blocked
+      - sensor.ads_blocked_today
+      - sensor.ads_percentage_today
+      - sensor.unique_domains
+      - sensor.queries_forwarded
+      - sensor.queries_cached
 automation: !include automations.yaml
 group: !include groups.yaml
 script: !include scripts.yaml
