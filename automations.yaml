@@ -17,8 +17,9 @@
     - platform: state
       entity_id:
         - device_tracker.pi_alokphone
+        - device_tracker.pi_rashmiphone
       to: 'home'
-      for: '00:02:00'
+      for: '00:01:00'
     - platform: state
       entity_id:
         - device_tracker.alokiosiphone
@@ -30,7 +31,6 @@
         - device_tracker.myiphone
         - device_tracker.elantrase
         - device_tracker.rashmisiphone
-        - device_tracker.pi_rashmiphone        
       to: 'home'
   action:
     - service: python_script.meta_device_tracker
@@ -223,13 +223,26 @@
   alias: 'Arm Abode'
   initial_state: 'on'
   condition:
-    condition: state
-    entity_id: input_boolean.abodeupdate
-    state: 'on'
+    - condition: state
+      entity_id: input_boolean.abodeupdate
+      state: 'on'
+    - condition: template
+      value_template: >
+        {%- if states.automation.disarm_abode_from_away.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.disarm_abode_from_away.attributes.last_triggered)) > 240 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+    - condition: template
+      value_template: "{{ states.input_select.abodestatus.state != 'away' }}"
   trigger:
     - platform: state
       entity_id: group.household
       to: 'not_home'
+    - platform: state
+      entity_id: group.household
+      to: 'not_home'
+      for: '00:10:00'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodeaway
