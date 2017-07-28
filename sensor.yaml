@@ -1,3 +1,5 @@
+  - platform: cert_expiry
+    host: !secret ha_url
   - platform: speedtest
     hour:
       - 12
@@ -43,7 +45,7 @@
       - 'time_date'
   - platform: plex
     name: PlexSpy
-    host: !secret hass_ip
+    host: 192.168.2.212
     port: 32400
     username: !secret plex_user
     password: !secret plex_password
@@ -91,8 +93,8 @@
        Referer: "https://www.pollen.com"
   - platform: command_line
     name: "HASS Uptime"
-    command: echo "$(($(date +%s) - $(date --date="`systemctl show home-assistant.service -p ActiveEnterTimestamp | awk -F'=' '{print $2}'`" "+%s")))"
-    scan_interval: 720
+    command: echo "$(($(date +%s) - $(date -d "$(head -n1 /home/homeassistant/.homeassistant/home-assistant.log | cut -d' ' -f-2)" +%s)))"
+    scan_interval: 600
     value_template: >-
       {% set uptime = value | int %}
       {% set seconds = uptime % 60 %}
