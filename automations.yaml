@@ -68,7 +68,7 @@
   trigger:
     - platform: state
       entity_id: group.household
-      state: 'home'
+      to: 'home'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
