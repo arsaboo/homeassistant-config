@@ -197,6 +197,10 @@ class Life360SensorData(object):
                     msgPayload.Append(member['location']['battery'])
                     msgPayload.Append(",")
 
+                    msgPayload.Append("\"wifi\":")
+                    msgPayload.Append(member['location']['wifiState'])
+                    msgPayload.Append(",")
+
                     msgPayload.Append("\"charging\":")
                     msgPayload.Append(member['location']['charge'])
                     msgPayload.Append("}")
