@@ -471,46 +471,15 @@ recorder:
       - sensor.unique_domains
       - sensor.queries_forwarded
       - sensor.queries_cached
+alexa:
+apiai:
+intent_script: !include intent_script.yaml
 automation: !include automations.yaml
 group: !include groups.yaml
 script: !include scripts.yaml
 sensor: !include sensor.yaml
 switch: !include switches.yaml
 binary_sensor: !include binary_sensor.yaml
-alexa:
-apiai:
-intent_script:
-  HowIsTheTrafficIntent:
-    speech:
-      text: The fastest route to office takes about {{ states.sensor.morning_commute }} minutes.
-    card:
-      type: simple
-      title: Traffic Conditions
-      content: Ask Home Assistant about current traffic conditions
-  RunScriptIntent:
-    action:
-      service: script.turn_on
-      data_template:
-        entity_id: script.{{ Script | replace(" ", "_") }}
-    speech:
-      type: plaintext
-      text: OK
-    card:
-      type: simple
-      title: Run Script
-      content: Ask Home Assistant to run Script.
-  PlayRadioIntent:
-    action:
-      service: script.playradio
-      data_template:
-        station: "{{ Station | lower | replace(' ', '_') }}"
-    speech:
-      type: plain
-      text: OK
-    card:
-      type: simple
-      title: Play Music
-      content: Ask Home Assistant to play music.
 input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 input_slider: !include input_slider.yaml

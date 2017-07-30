@@ -1,0 +1,25 @@
+  HowIsTheTrafficIntent:
+    speech:
+      text:  The fastest route to office takes about {{ states("sensor.morning_commute") }} minutes.
+  Temperature:
+    speech:
+      text: Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}.
+  LocateIntent:
+    speech:
+      text: >
+        {%- if User.lower() == "alok" -%}
+          Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
+        {%- elif User.lower() == "rashmi" -%}
+          Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }}.
+        {%- else -%}
+          I am sorry, I do not know where {{ User }} is.
+        {%- endif -%}
+  WhereAreWeIntent:
+    speech:
+      text: >
+        {%- if is_state('device_tracker.meta_alok', 'home') and
+               is_state('device_tracker.meta_rashmi', 'home') -%}
+          You are both home, you silly
+        {%- else -%}
+          Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
+        {% endif %}
