@@ -9,6 +9,41 @@
            {% else %}
              unknown
            {% endif %}
+        entity_id:
+          - sensor.garage_door_tilt_sensor_alarm_level
+      garagentrydoor:
+        friendly_name: Garage Entry Door
+        sensor_class: opening
+        value_template: >-
+           {% if states.input_boolean.garageentrydoor != None %}
+             {{ is_state('input_boolean.garageentrydoor', 'on') }}
+           {% else %}
+             unknown
+           {% endif %}
+        entity_id:
+          - input_boolean.garageentrydoor
+      frontdoor:
+        friendly_name: Front Door
+        sensor_class: opening
+        value_template: >-
+           {% if states.input_boolean.frontdoor != None %}
+             {{ is_state('input_boolean.frontdoor', 'on') }}
+           {% else %}
+             unknown
+           {% endif %}
+        entity_id:
+          - input_boolean.frontdoor
+      backdoor:
+        friendly_name: Back Door
+        sensor_class: opening
+        value_template: >-
+           {% if states.input_boolean.backdoor != None %}
+             {{ is_state('input_boolean.backdoor', 'on') }}
+           {% else %}
+             unknown
+           {% endif %}
+        entity_id:
+          - input_boolean.backdoor           
   - platform: hikvision
     host: 192.168.2.91
     name: Porch

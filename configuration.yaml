@@ -471,6 +471,9 @@ recorder:
       - sensor.unique_domains
       - sensor.queries_forwarded
       - sensor.queries_cached
+      - input_boolean.frontdoor
+      - input_boolean.backdoor
+      - input_boolean.garageentrydoor      
 alexa:
 apiai:
 intent_script: !include intent_script.yaml
