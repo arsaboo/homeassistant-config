@@ -185,6 +185,9 @@ class Life360SensorData(object):
                     msgPayload.Append("\"alt\":\"0\"")
                     msgPayload.Append(",")
 
+                    msgPayload.Append("\"_cp\":\"false\"")
+                    msgPayload.Append(",")
+
                     msgPayload.Append("\"lon\":")
                     msgPayload.Append(member['location']['longitude'])
                     msgPayload.Append(",")
@@ -197,8 +200,12 @@ class Life360SensorData(object):
                     msgPayload.Append(member['location']['battery'])
                     msgPayload.Append(",")
 
-                    msgPayload.Append("\"wifi\":")
-                    msgPayload.Append(member['location']['wifiState'])
+                    if str(member['location']['wifiState']) == "1":
+                        msgPayload.Append("\"conn\":\"w\"")
+                        msgPayload.Append(",")
+
+                    msgPayload.Append("\"vel\":")
+                    msgPayload.Append(str(member['location']['speed']))
                     msgPayload.Append(",")
 
                     msgPayload.Append("\"charging\":")
@@ -210,7 +217,7 @@ class Life360SensorData(object):
             else:
                 self.value = CONST_STATE_ERROR
 
-        except:
+        except Exception as e:
             self.value = CONST_STATE_ERROR
 
     def exec_shell_command( self, command ):
