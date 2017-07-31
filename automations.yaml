@@ -228,7 +228,7 @@
       state: 'on'
     - condition: template
       value_template: >
-        {%- if states.automation.disarm_abode_from_away.last_triggered -%}
+        {%- if states.automation.disarm_abode_from_away.attributes.last_triggered -%}
           {{ (as_timestamp(now()) - as_timestamp(states.automation.disarm_abode_from_away.attributes.last_triggered)) > 240 }}
         {%- else -%}
           true
