@@ -36,13 +36,13 @@
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
-    - service: logbook.log
-      data_template:
-        name: "Tracker updated: "
-        message: >-
-          {%- for state in states if state.entity_id == trigger.entity_id -%}
-            {{ state.attributes.friendly_name }} is {{ trigger.to_state.state }}.
-          {%- endfor -%}
+    - service: script.turn_on
+      entity_id: script.updatetracker
+      data:
+        variables:
+          entity: '{{trigger.entity_id}}'
+          fromstate: '{{ trigger.from_state.state }}'
+          tostate: '{{ trigger.to_state.state }}'
 
 #################################################################
 ## Security System
