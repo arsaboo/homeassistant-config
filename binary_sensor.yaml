@@ -11,7 +11,7 @@
            {% endif %}
         entity_id:
           - sensor.garage_door_tilt_sensor_alarm_level
-      garagentrydoor:
+      garageentrydoor:
         friendly_name: Garage Entry Door
         sensor_class: opening
         value_template: >-
@@ -43,7 +43,7 @@
              unknown
            {% endif %}
         entity_id:
-          - input_boolean.backdoor           
+          - input_boolean.backdoor
   - platform: hikvision
     host: 192.168.2.91
     name: Porch
