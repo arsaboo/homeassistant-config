@@ -1,9 +1,29 @@
   HowIsTheTrafficIntent:
     speech:
       text:  The fastest route to office takes about {{ states("sensor.morning_commute") }} minutes.
+    card:
+      type: simple
+      title: Traffic Conditions
+      content: Ask Home Assistant about current traffic conditions
   Temperature:
     speech:
       text: Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}.
+    card:
+      type: simple
+      title: Temperature
+      content: Ask Home Assistant about current temperature
+  TempHumidity:
+    speech:
+      text: >
+        {%- if SensorType.lower() == "temperature" -%}
+          Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}..
+        {%- elif SensorType.lower() == "humidity" -%}
+          Temperature in the living room is {{ states.sensor.downstairs_humidity.state }} degrees and upstairs temperature is {{ states.sensor.upstairs_humidity.state }}.
+        {%- endif -%}
+    card:
+      type: simple
+      title: Location queried
+      content: Ask Home Assistant about {{ SensorType }}
   LocateIntent:
     speech:
       text: >
@@ -14,6 +34,10 @@
         {%- else -%}
           I am sorry, I do not know where {{ User }} is.
         {%- endif -%}
+    card:
+      type: simple
+      title: Location queried
+      content: Ask Home Assistant about user location
   WhereAreWeIntent:
     speech:
       text: >
@@ -23,3 +47,7 @@
         {%- else -%}
           Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
         {% endif %}
+    card:
+      type: simple
+      title: Where are We?
+      content: Ask Home Assistant about where everyone is
