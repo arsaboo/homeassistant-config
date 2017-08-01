@@ -110,6 +110,9 @@ frontend:
       paper-slider-active-color: "#76323F"
       paper-slider-secondary-color: "#FFE0B2"
 media_extractor:
+  customize:
+    media_player.livingroomsonos:
+      music: bestaudio[ext=mp3]  
 # Enables configuration UI
 config:
 
@@ -473,7 +476,7 @@ recorder:
       - sensor.queries_cached
       - input_boolean.frontdoor
       - input_boolean.backdoor
-      - input_boolean.garageentrydoor      
+      - input_boolean.garageentrydoor
 alexa:
 apiai:
 intent_script: !include intent_script.yaml

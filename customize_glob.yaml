@@ -1,27 +1,3 @@
-'media_player.snapcast_group_*':
-  hidden: true
-
-'automation.*':
-  icon: mdi:arrow-right-drop-circle
-  
-'automation.*watchdog*':
-  icon: mdi:timer
-  
-'automation.night_*':
-  icon: mdi:weather-night
-
-'automation.morning_*':
-  icon: mdi:weather-sunset
-
-'automation.evening_*':
-  icon: mdi:weather-sunset-down
-  
-'automation.tv_*':
-  icon: mdi:television
-
-'sensor.device_tracker_*':
-  icon: mdi:desktop-tower
-
 'sensor.dark_sky_*':
   homebridge_hidden: true
 
