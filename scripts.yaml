@@ -226,3 +226,14 @@
           rgb_color: [255, 255, 255]
           brightness: 250
           color_temp: 285
+
+  updatetracker:
+    alias: 'Update tracker'
+    sequence:
+      - condition: template
+        value_template: '{{fromstate != tostate}}'
+      - service: logbook.log
+        data_template:
+          name: "Tracker updated: "
+          message: >-
+            {{ entity }} is {{ tostate }}.

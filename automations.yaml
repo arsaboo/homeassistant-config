@@ -36,13 +36,11 @@
     - service: python_script.meta_device_tracker
       data_template:
         entity_id: '{{trigger.entity_id}}'
-    - service: script.turn_on
-      entity_id: script.updatetracker
-      data:
-        variables:
-          entity: '{{trigger.entity_id}}'
-          fromstate: '{{ trigger.from_state.state }}'
-          tostate: '{{ trigger.to_state.state }}'
+    - service: script.updatetracker
+      data_template:
+        entity: '{{ trigger.to_state.attributes.friendly_name }}'
+        fromstate: '{{trigger.from_state.state}}'
+        tostate: '{{trigger.to_state.state}}'
 
 #################################################################
 ## Security System
