@@ -19,7 +19,7 @@
         - device_tracker.pi_alokphone
         - device_tracker.pi_rashmiphone
       to: 'home'
-      for: '00:01:00'
+      for: '00:00:30'
     - platform: state
       entity_id:
         - device_tracker.alokiosiphone
@@ -33,12 +33,9 @@
         - device_tracker.rashmisiphone
       to: 'home'
   action:
-    - service: python_script.meta_device_tracker
-      data_template:
-        entity_id: '{{trigger.entity_id}}'
     - service: script.updatetracker
       data_template:
-        entity: '{{ trigger.to_state.attributes.friendly_name }}'
+        entityid: '{{trigger.entity_id}}'
         fromstate: '{{trigger.from_state.state}}'
         tostate: '{{trigger.to_state.state}}'
 
@@ -1098,26 +1095,10 @@
     platform: homeassistant
     event: start
   action:
-    - delay:
-        minutes: 1
-    - service_template: "homeassistant.turn_{{ 'on' if states.media_player.panasonic_viera_tv.state == 'on' else 'off' }}"
-      entity_id:
-        - input_boolean.tv
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.livingroomharmony
-        option: "{{states.sensor.living_room.state}}"
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.hdmiswitcher
-        option: >
-          {%- if states.remote.livingroom.attributes.current_activity == "Watch Apple TV" -%}
-            AppleTV
-          {%- elif states.remote.livingroom.attributes.current_activity == "Watch Fire TV" -%}
-            FireTV
-          {%- else -%}
-            Shield
-          {%- endif -%}
+    - delay: '00:00:10'
+    - service: homeassistant.turn_on
+      entity_id: script.initialize_hass
+
 - id: change_hdmi_switcher
   alias: "Change HDMI Switcher"
   initial_state: 'on'

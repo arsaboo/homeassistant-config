@@ -230,10 +230,47 @@
   updatetracker:
     alias: 'Update tracker'
     sequence:
+      - service: python_script.meta_device_tracker
+        data_template:
+          entity_id: '{{entityid}}'
       - condition: template
         value_template: '{{fromstate != tostate}}'
       - service: logbook.log
         data_template:
           name: "Tracker updated: "
           message: >-
-            {{ entity }} is {{ tostate }}.
+            {%- for state in states if state.entity_id == entityid -%}
+             {{ state.attributes.friendly_name }} is {{ tostate }}.
+            {%- endfor -%}
+
+  initialize_hass:
+    alias: 'Initialize HASS after restart'
+    sequence:
+      - service: script.updatetracker
+        data_template:
+          entityid: 'device_tracker.sonu_sonu'
+          fromstate: '{{states.device_tracker.sonu_sonu.state}}'
+          tostate: '{{states.device_tracker.sonu_sonu.state}}'
+      - service: script.updatetracker
+        data_template:
+          entityid: 'device_tracker.alok_alok'
+          fromstate: '{{states.device_tracker.alok_alok.state}}'
+          tostate: '{{states.device_tracker.alok_alok.state}}'
+      - service_template: "homeassistant.turn_{{ 'on' if states.media_player.panasonic_viera_tv.state == 'on' else 'off' }}"
+        entity_id:
+          - input_boolean.tv
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.livingroomharmony
+          option: "{{states.sensor.living_room.state}}"
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.hdmiswitcher
+          option: >
+            {%- if states.remote.livingroom.attributes.current_activity == "Watch Apple TV" -%}
+              AppleTV
+            {%- elif states.remote.livingroom.attributes.current_activity == "Watch Fire TV" -%}
+              FireTV
+            {%- else -%}
+              Shield
+            {%- endif -%}
