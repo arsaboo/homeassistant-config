@@ -1,66 +1,36 @@
-################################################################
-## #!secret_example
-#pi_hole_url: http://192.168.2.22/admin/api.php
-################################################################
 homeassistant:
   customize:
 
-    sensor.ads_percentage_today:
+    sensor.pihole_ads_percentage_blocked_today:
       friendly_name: Percentage of Ad Traffic Blocked
       unit_of_measurement: '%'
       icon: mdi:ticket-percent
 
-    sensor.domains_being_blocked:
+    sensor.pihole_domains_blocked:
       friendly_name: Total Domains Blocked
       icon: mdi:do-not-disturb
 
-    sensor.ads_blocked_today:
-      friendly_name: Ads Blocked Today
-      icon: mdi:do-not-disturb
-
-    sensor.dns_queries_today:
+    sensor.pihole_dns_queries_today:
       friendly_name: DNS Queries Today
       icon: mdi:note-text
 
-    sensor.unique_domains:
+    sensor.pihole_dns_unique_domains:
       friendly_name: Unique Domains
       icon: mdi:approval
 
 group:
   Pi Hole:
     entities:
-      - sensor.dns_queries_today
-      - sensor.domains_being_blocked
-      - sensor.ads_blocked_today
-      - sensor.ads_percentage_today
-      - sensor.unique_domains
+      - sensor.pihole_dns_queries_today
+      - sensor.pihole_domains_blocked
+      - sensor.pihole_ads_percentage_blocked_today
+      - sensor.pihole_dns_unique_domains
 
-
-###############################################################################
-#  Sensors
-###############################################################################
 sensor:
-  - platform: rest
-    name: dns_queries_today
-    resource: !secret pi_hole_url
-    value_template: '{{ value_json.dns_queries_today }}'
-
-  - platform: rest
-    name: domains_being_blocked
-    resource: !secret pi_hole_url
-    value_template: '{{ value_json.domains_being_blocked }}'
-
-  - platform: rest
-    name: ads_blocked_today
-    resource: !secret pi_hole_url
-    value_template: '{{ value_json.ads_blocked_today }}'
-
-  - platform: rest
-    name: ads_percentage_today
-    resource: !secret pi_hole_url
-    value_template: '{{ value_json.ads_percentage_today | round(3) }}'
-
-  - platform: rest
-    name: unique_domains
-    resource: !secret pi_hole_url
-    value_template: '{{ value_json.unique_domains }}'
+  - platform: pi_hole
+    host: 192.168.2.3
+    monitored_conditions:
+      - ads_percentage_today
+      - unique_domains
+      - dns_queries_today
+      - domains_being_blocked

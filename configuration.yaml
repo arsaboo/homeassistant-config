@@ -112,7 +112,7 @@ frontend:
 media_extractor:
   customize:
     media_player.livingroomsonos:
-      music: bestaudio[ext=mp3]  
+      music: bestaudio[ext=mp3]
 # Enables configuration UI
 config:
 
@@ -467,13 +467,10 @@ recorder:
       - image_processing.opencv_patio
       - image_processing.opencv_driveway
       - image_processing.opencv_porch
-      - sensor.dns_queries_today
-      - sensor.domains_being_blocked
-      - sensor.ads_blocked_today
-      - sensor.ads_percentage_today
-      - sensor.unique_domains
-      - sensor.queries_forwarded
-      - sensor.queries_cached
+      - sensor.pihole_dns_queries_today
+      - sensor.pihole_domains_blocked
+      - sensor.pihole_ads_percentage_blocked_today
+      - sensor.pihole_dns_unique_domains
       - input_boolean.frontdoor
       - input_boolean.backdoor
       - input_boolean.garageentrydoor
