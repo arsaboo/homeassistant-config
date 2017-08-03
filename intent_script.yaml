@@ -1,23 +1,16 @@
-  Temperature:
-    speech:
-      text: Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}.
-    card:
-      type: simple
-      title: Temperature
-      content: Ask Home Assistant about current temperature
   GetInfofromHASS:
     speech:
       text: >
         {%- if SensorType.lower() == "temperature" -%}
           Temperature in the living room is {{ states('sensor.downstairs_temperature') }} degrees and upstairs temperature is {{ states('sensor.upstairs_temperature') }}.
         {%- elif SensorType.lower() == "humidity" -%}
-          Temperature in the living room is {{ states.sensor.downstairs_humidity.state }} degrees and upstairs temperature is {{ states.sensor.upstairs_humidity.state }}.
+          Humidity in the living room is {{ states.sensor.downstairs_humidity.state }} degrees and upstairs humidity is {{ states.sensor.upstairs_humidity.state }}.
         {%- elif SensorType.lower() == "traffic" or SensorType.lower() == "commute" -%}
           The fastest route to office takes about {{ states("sensor.morning_commute") }} minutes.
         {%- endif -%}
     card:
       type: simple
-      title: Sensor information queried
+      title: Get {{ SensorType }} information
       content: Ask Home Assistant about {{ SensorType }}
   LocateIntent:
     speech:
@@ -46,3 +39,80 @@
       type: simple
       title: Where are We?
       content: Ask Home Assistant about where everyone is
+  RunScriptIntent:
+    action:
+      service: script.turn_on
+      data_template:
+        entity_id: script.{{ Script | replace(" ", "_") }}
+    speech:
+      type: plaintext
+      text: OK
+    card:
+      type: simple
+      title: Run Script
+      content: Ask Home Assistant to run {{ Script }}.
+  PlayRadioIntent:
+    action:
+      service: script.playradio
+      data_template:
+        station: "{{ Station | lower | replace(' ', '_') }}"
+    speech:
+      type: plaintext
+      text: OK
+    card:
+      type: simple
+      title: Play Music
+      content: Ask Home Assistant to play music.
+  TurnLights:
+    speech:
+      text: Turning {{ Room }} lights {{ OnOff }}
+    card:
+      type: simple
+      title: Turn lights {{ OnOff }}
+      content: Ask Home Assistant to turn {{ Room }} lights {{ OnOff }}
+    action:
+      - service_template: >
+          {%- if OnOff == 'on' -%}
+            homeassistant.turn_on
+          {%- else -%}
+            homeassistant.turn_off
+          {%- endif -%}
+        data_template:
+          entity_id: >
+            {%- if Room.lower() in ['kitchen'] -%}
+              light.
+            {%- elif Room.lower() in ['living room'] -%}
+              group.
+            {%- elif Room.lower() in ['driveway', 'porch'] -%}
+              switch.
+            {%- endif -%}
+            {%- if Room.lower() in ['kitchen'] -%}
+              kitchen_lights
+            {%- elif Room.lower() in ['living room'] -%}
+              living_room_lights
+            {%- elif Room.lower() in ['driveway'] -%}
+              driveway
+            {%- elif Room.lower() in ['porch'] -%}
+              wemoporch
+            {%- endif -%}
+  TurnDeviceIntent:
+    speech:
+      text: Turning {{ Devices }} {{ OnOff }}
+    card:
+      type: simple
+      title: Turn {{ Devices }} {{ OnOff }}
+      content: Ask Home Assistant to turn {{ Devices }} {{ OnOff }}
+    action:
+      - service: remote.turn_on
+        data_template:
+          entity_id: remote.livingroom
+          activity: >
+            {%- if Devices.lower() in ['television', 'plex', 'shield', 'tv', 'kodi'] and OnOff == 'on'-%}
+              18032761
+            {%- elif Devices.lower() in ['apple tv'] and OnOff == 'on' -%}
+              23043915
+            {%- elif Devices.lower() in ['fire tv', 'amazon fire', 'amazon fire tv'] and OnOff == 'on' -%}
+              17230861
+            {%- elif OnOff == 'off' -%}
+              -1
+            {%- endif -%}
