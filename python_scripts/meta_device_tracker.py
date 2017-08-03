@@ -58,6 +58,14 @@ elif currentState.attributes.get('battery') is not None:
 else:
     newBattery = None
 
+# Get velocity
+if newState.attributes.get('velocity') is not None:
+    newVelocity = newState.attributes.get('velocity')
+elif currentState.attributes.get('velocity') is not None:
+    newVelocity = currentState.attributes.get('velocity')
+else:
+    newVelocity = None
+
 if newState.state is not None:
     newStatus = newState.state
 else:
@@ -72,5 +80,6 @@ hass.states.set(metatrackerName, newStatus, {
     'gps_accuracy': newgpsAccuracy,
     'latitude': newLatitude,
     'longitude': newLongitude,
+    'velocity': newVelocity,
     'update_source': triggeredEntity
 })
