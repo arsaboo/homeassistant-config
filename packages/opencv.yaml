@@ -10,6 +10,14 @@ homeassistant:
       camera: camera.driveway
     image_processing.opencv_porch:
       camera: camera.porch
+    image_processing.face_detected_backyard:
+      camera: camera.backyard
+    image_processing.face_detected_patio:
+      camera: camera.patio
+    image_processing.face_detected_driveway:
+      camera: camera.driveway
+    image_processing.face_detected_porch:
+      camera: camera.porch
 automation:
   - id: log_opencv
     alias: 'OpenCV detection'
@@ -43,6 +51,33 @@ automation:
                   {{ states.sensor.secrets.attributes.base_url ~ states.camera[camera].attributes.entity_picture }}
                 caption: >-
                   {{ trigger.to_state.attributes.matches.Face }}
+  - id: dlib_person_detected
+    alias: Dlib person detected
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type:
+        - image_processing.face_detected_backyard
+        - image_processing.face_detected_driveway
+        - image_processing.face_detected_patio
+        - image_processing.face_detected_porch
+    action:
+      - service: logbook.log
+        data_template:
+          name: "Person Detected: "
+          message: >-
+            {{ dict(trigger.to_state.attributes)|tojson }}
+      - service: notify.telegram
+        data_template:
+          title: "Person Detected: "
+          message: >-
+            {{ dict(trigger.to_state.attributes)|tojson }}
+          data:
+            photo:
+              - url: >-
+                  {% set camera = trigger.to_state.attributes.camera.split('.')[1] %}
+                  {{ states.sensor.secrets.attributes.base_url ~ states.camera[camera].attributes.entity_picture }}
+
 sensor:
   - platform: template
     sensors:
