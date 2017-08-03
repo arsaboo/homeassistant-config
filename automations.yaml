@@ -1095,7 +1095,7 @@
     platform: homeassistant
     event: start
   action:
-    - delay: '00:00:10'
+    - delay: '00:00:05'
     - service: homeassistant.turn_on
       entity_id: script.initialize_hass
 
