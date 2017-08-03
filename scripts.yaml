@@ -233,6 +233,11 @@
       - service: python_script.meta_device_tracker
         data_template:
           entity_id: '{{entityid}}'
+      - service: logbook.log
+        data_template:
+          name: "Tracker updated test: "
+          message: >-
+            {{ states[entityid.split('.')[0]][entityid.split('.')[1]].name }} is {{ tostate }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
       - condition: template
         value_template: '{{fromstate != tostate}}'
       - service: logbook.log
