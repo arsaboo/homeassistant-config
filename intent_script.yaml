@@ -86,6 +86,7 @@
             {%- elif Room.lower() in ['driveway', 'porch'] -%}
               switch.
             {%- endif -%}
+            
             {%- if Room.lower() in ['kitchen'] -%}
               kitchen_lights
             {%- elif Room.lower() in ['living room'] -%}
