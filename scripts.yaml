@@ -239,7 +239,7 @@
         data_template:
           name: "Tracker updated: "
           message: >-
-            {{ states["device_tracker"][entityid.split('.')[1]|string].attributes.friendly_name }} is {{ tostate }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
+            {{ states["device_tracker"][entityid.split('.')[1]|string].attributes.name }} is {{ tostate }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
 
   initialize_hass:
     alias: 'Initialize HASS after restart'
