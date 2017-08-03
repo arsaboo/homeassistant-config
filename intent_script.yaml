@@ -12,6 +12,7 @@
       type: simple
       title: Get {{ SensorType }} information
       content: Ask Home Assistant about {{ SensorType }}
+
   LocateIntent:
     speech:
       text: >
@@ -26,6 +27,7 @@
       type: simple
       title: Location queried
       content: Ask Home Assistant about user location
+
   WhereAreWeIntent:
     speech:
       text: >
@@ -39,6 +41,7 @@
       type: simple
       title: Where are We?
       content: Ask Home Assistant about where everyone is
+
   RunScriptIntent:
     action:
       service: script.turn_on
@@ -51,6 +54,7 @@
       type: simple
       title: Run Script
       content: Ask Home Assistant to run {{ Script }}.
+
   PlayRadioIntent:
     action:
       service: script.playradio
@@ -63,6 +67,7 @@
       type: simple
       title: Play Music
       content: Ask Home Assistant to play music.
+
   TurnLights:
     speech:
       text: Turning {{ Room }} lights {{ OnOff }}
@@ -86,7 +91,7 @@
             {%- elif Room.lower() in ['driveway', 'porch'] -%}
               switch.
             {%- endif -%}
-            
+
             {%- if Room.lower() in ['kitchen'] -%}
               kitchen_lights
             {%- elif Room.lower() in ['living room'] -%}
@@ -96,6 +101,7 @@
             {%- elif Room.lower() in ['porch'] -%}
               wemoporch
             {%- endif -%}
+
   TurnDeviceIntent:
     speech:
       text: Turning {{ Devices }} {{ OnOff }}
@@ -117,3 +123,29 @@
             {%- elif OnOff == 'off' -%}
               -1
             {%- endif -%}
+
+  GarageDoorIntent:
+    speech:
+      text: >
+        {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "off") -%}
+          OK, opening the garage door.
+        {%- elif OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "on") -%}
+          The garage door is already open.
+        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "on") -%}
+          OK, closing the garage door.
+        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "off") -%}
+          The garage door is already closed.
+        {%- endif -%}
+    card:
+      type: simple
+      title: Garage door {{ OpenClose }}
+      content: Ask Home Assistant to {{ OpenClose }} garage door.
+    action:
+      - service_template: >
+          {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "off") -%}
+            switch.turn_on
+          {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "on") -%}
+            switch.turn_on
+          {%- endif -%}
+        data_template:
+          entity_id: switch.garage_relay_switch
