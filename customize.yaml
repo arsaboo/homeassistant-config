@@ -191,7 +191,7 @@
          min: 0
          max: 255
          pin: true
-         off_when_min: false
+         off_when_min: true
      light.lifx3:
        custom_ui_state_card: custom-ui
        state_card_mode: single-line
@@ -200,7 +200,7 @@
          min: 0
          max: 255
          pin: true
-         off_when_min: false
+         off_when_min: true
      light.lifxnrkitchen:
        custom_ui_state_card: custom-ui
        state_card_mode: single-line
@@ -209,7 +209,7 @@
          min: 0
          max: 255
          pin: true
-         off_when_min: false
+         off_when_min: true
      light.lifxnrguest:
        custom_ui_state_card: custom-ui
        state_card_mode: single-line
@@ -218,7 +218,7 @@
          min: 0
          max: 255
          pin: true
-         off_when_min: false
+         off_when_min: true
      switch.wemoinsight:
        custom_ui_state_card: custom-ui
        extra_badge:
