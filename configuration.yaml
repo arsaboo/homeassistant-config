@@ -199,8 +199,6 @@ ifttt:
 #     scan_interval: 1
 image_processing:
   - platform: dlib_face_detect
-    keep_faces: True
-    keep_no_faces: False
     source:
       - entity_id: camera.porch
         name: "Face Detected porch"
