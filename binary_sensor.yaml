@@ -1,6 +1,6 @@
   - platform: template
     sensors:
-      networkoffline:
+      networkstatus:
         friendly_name: Network Status
         sensor_class: connectivity
         value_template: >-
