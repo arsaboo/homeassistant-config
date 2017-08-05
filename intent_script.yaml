@@ -48,7 +48,7 @@
       data_template:
         entity_id: script.{{ Script | replace(" ", "_") }}
     speech:
-      type: plaintext
+      type: plain
       text: OK
     card:
       type: simple
@@ -61,7 +61,7 @@
       data_template:
         station: "{{ Station | lower | replace(' ', '_') }}"
     speech:
-      type: plaintext
+      type: plain
       text: OK
     card:
       type: simple
