@@ -147,8 +147,8 @@ exit;
 ```
 Switch to homeassistant user:
 ```bash
-sudo su -s /bin/bash hass
-source /srv/hass/hass_venv/bin/activate
+sudo su -s /bin/bash homeassistant
+source /srv/homeassistant/bin/activate
 pip3 install --upgrade mysqlclient
 exit
 ```
