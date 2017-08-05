@@ -472,7 +472,7 @@ recorder:
       - sensor.pihole_dns_unique_domains
       - input_boolean.frontdoor
       - input_boolean.backdoor
-      - input_boolean.garageentrydoor      - 
+      - binary_sensor.garageentrydoor
 alexa:
 apiai:
 intent_script: !include intent_script.yaml
