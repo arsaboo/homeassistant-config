@@ -459,6 +459,7 @@ recorder:
       - sensor.pws_wind_string
       - sensor.downstairsthermoper
       - sensor.upstairsthermostatoperation
+      - sensor.emulated_hue_names
       - automation.populate_owntracks_data_from_life360
       - automation.update_device_meta_tracker
       - image_processing.opencv_backyard
@@ -471,7 +472,7 @@ recorder:
       - sensor.pihole_dns_unique_domains
       - input_boolean.frontdoor
       - input_boolean.backdoor
-      - input_boolean.garageentrydoor
+      - input_boolean.garageentrydoor      - 
 alexa:
 apiai:
 intent_script: !include intent_script.yaml
