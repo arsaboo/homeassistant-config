@@ -231,9 +231,9 @@ media_player:
     host: 192.168.2.128
     port: 55000
     name: Panasonic Viera TV
-  - platform: spotify
-    client_id: !secret spotify_client_id
-    client_secret: !secret spotify_client_secret
+  # - platform: spotify
+  #   client_id: !secret spotify_client_id
+  #   client_secret: !secret spotify_client_secret
   # - platform: plex
   #   host: 192.168.2.212
   # - platform: apple_tv
