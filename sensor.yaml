@@ -200,7 +200,11 @@
           {%- endif -%}
       sonos_volume:
         value_template: >-
-          {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) |int }}
+          {%- if states.media_player.livingroomsonos.attributes.volume_level != None -%}
+            {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) |int }}
+          {%- else -%}
+            NA
+          {%- endif -%}
         friendly_name: 'Sonos Volume'
       leeotemp:
         friendly_name: "Leeo Temperature"
