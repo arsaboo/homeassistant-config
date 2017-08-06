@@ -139,7 +139,7 @@
     - sensor.calories
 
   Network Details:
-    - binary_sensor.networkstatus
+    - binary_sensor.pihole
     - sensor.transmission_down_speed
     - sensor.transmission_status
     - sensor.transmission_up_speed

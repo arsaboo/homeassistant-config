@@ -1,17 +1,8 @@
+  - platform: ping
+    host: 192.168.2.3
+    name: PiHole
   - platform: template
     sensors:
-      networkstatus:
-        friendly_name: Network Status
-        sensor_class: connectivity
-        value_template: >-
-           {% if states.device_tracker.logitechharmony != None or states.device_tracker.echodot != None%}
-             {{ states.device_tracker.logitechharmony.state == 'home' or states.device_tracker.echodot.state == 'home'}}
-           {% else %}
-             unknown
-           {% endif %}
-        entity_id:
-          - device_tracker.logitechharmony
-          - device_tracker.echodot
       garagedoor:
         friendly_name: Garage Door Open
         sensor_class: opening
