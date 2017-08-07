@@ -121,7 +121,7 @@
        state: 'standby'
      - condition: time
        after: '22:15:00'
-       before: '07:30:00'
+       before: '07:00:00'
      - condition: state
        entity_id: input_boolean.abodeupdate
        state: 'on'
@@ -275,7 +275,7 @@
        state: 'on'
   trigger:
     platform: time
-    at: '07:45:00'
+    at: '07:20:00'
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
