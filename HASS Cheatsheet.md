@@ -12,6 +12,55 @@ Default AIO installation does not allow editing the configuration files in WinSC
 1. Obtain the SFTP by running `grep sftp /etc/ssh/sshd_config` at the `pi` shell. You will get something like, `Subsystem sftp /usr/lib/openssh/sftp-server`.
 2. Now, set the sftp server to: `sudo su -c /usr/lib/openssh/sftp-server` (note that the `/usr/lib/openssh/sftp-server` is the same path obtained from the previous step) and set Shell to `sudo -s`.
 
+# Install Homebridge on a Pi
+You can install Homebridge on a Pi using the following commands:
+1. Make sure your Pi is updated.
+2. Install all the dependencies
+  ```
+  sudo apt-get install git make
+  curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+  sudo apt-get install -y nodejs
+  sudo apt-get install libavahi-compat-libdnssd-dev
+  ```
+3. Install both Homebridge and Homebridge-Homeassistant plugin using:
+  ```
+  sudo npm install -g --unsafe-perm homebridge
+  sudo npm install -g homebridge-homeassistant
+  ```
+4. You need to modify the config.json (located at `/home/pi/.homebridge/config.json`). Here's what I'm using (Homebridge on Pi connects to my HA on a NUC):
+
+  ```json
+  {
+    "bridge": {
+      "name": "Homebridge",
+      "username": "CC:22:3D:E3:CE:34",
+      "port": 51826,
+      "pin": "031-45-155"
+    },
+
+    "description": "This is the main Homebridge configuration file for Home Assistant. This will bridge Home Assistant and HomeKit together!",
+
+    "accessories": [
+    ],
+    "platforms": [
+      {
+        "platform": "HomeAssistant",
+        "name": "HomeAssistant",
+        "host": "https://192.168.X.Y:8123",
+        "password": "",
+        "supported_types": ["group", "binary_sensor", "climate", "cover", "device_tracker", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
+        "logging": true,
+        "verify_ssl": false
+      }
+    ]
+  }
+
+  ```
+5. Follow the instructions [here](https://timleland.com/setup-homebridge-to-start-on-bootup/) to boot Homebridge on startup.
+6. If you get an error "Couldn't add Homebridge" on your iOS Home App, please make sure that there are only less than 100 Homebridge entities enabled.
+7. For remote access to Homebridge devices, you will need to enable 2FA on your iOS devices. If you are not able to [remotely access](https://github.com/nfarina/homebridge/issues/1212) your Homebridge
+devices, you may have to sign out, restart, and sign back in to your Apple TV.
+
 # Mosquitto operations
 I am using the default AIO username/password, replace them with yours
 
