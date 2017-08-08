@@ -1,0 +1,48 @@
+################################################################
+## Package / Homebridge
+################################################################
+
+################################################
+## Customize
+################################################
+
+homeassistant:
+  customize_domain:
+    binary_sensor:
+      homebridge_hidden: true
+
+    climate:
+      homebridge_hidden: true
+
+    cover:
+      homebridge_hidden: false
+
+    device_tracker:
+      homebridge_hidden: true
+
+    fan:
+      homebridge_hidden: true
+
+    group:
+      homebridge_hidden: true
+
+    input_boolean:
+      homebridge_hidden: true
+
+    light:
+      homebridge_hidden: true
+
+    lock:
+      homebridge_hidden: false
+
+    media_player:
+      homebridge_hidden: true
+
+    scene:
+      homebridge_hidden: true
+
+    sensor:
+      homebridge_hidden: true
+
+    switch:
+      homebridge_hidden: true

@@ -133,7 +133,6 @@
     - sensor.alok_to_home
     - sensor.plexspy
     - sensor.usd_inr
-    - binary_sensor.garagedoor
     - cover.garagedoor
     - sensor.ars_bloom_voltage
     - sensor.calories
@@ -158,31 +157,35 @@
     - media_player.apple_tv
 
   Home Security:
-    - input_select.abodestatus
-    - binary_sensor.frontdoor
-    - binary_sensor.backdoor
-    - binary_sensor.garageentrydoor
-    - input_boolean.abodeupdate
-    - input_boolean.startrecording
-    - sensor.leeoalarmstatus
-    - sensor.leeotemp
-    - sensor.leeohumid
-    - sensor.leeouptemp
-    - sensor.leeouphumid
+    control: hidden
+    entities:
+      - input_select.abodestatus
+      - binary_sensor.frontdoor
+      - binary_sensor.backdoor
+      - binary_sensor.garageentrydoor
+      - input_boolean.abodeupdate
+      - input_boolean.startrecording
+      - sensor.leeoalarmstatus
+      - sensor.leeotemp
+      - sensor.leeohumid
+      - sensor.leeouptemp
+      - sensor.leeouphumid
 
   Camera Sensors:
-    - binary_sensor.backyard_motion
-    - binary_sensor.backyard_field_detection
-    - binary_sensor.backyard_line_crossing
-    - binary_sensor.driveway_motion
-    - binary_sensor.driveway_field_detection
-    - binary_sensor.driveway_line_crossing
-    - binary_sensor.patio_motion
-    - binary_sensor.patio_field_detection
-    - binary_sensor.patio_line_crossing
-    - binary_sensor.porch_field_detection
-    - binary_sensor.porch_line_crossing
-    - binary_sensor.porch_motion
+    control: hidden
+    entities:
+      - binary_sensor.backyard_motion
+      - binary_sensor.backyard_field_detection
+      - binary_sensor.backyard_line_crossing
+      - binary_sensor.driveway_motion
+      - binary_sensor.driveway_field_detection
+      - binary_sensor.driveway_line_crossing
+      - binary_sensor.patio_motion
+      - binary_sensor.patio_field_detection
+      - binary_sensor.patio_line_crossing
+      - binary_sensor.porch_field_detection
+      - binary_sensor.porch_line_crossing
+      - binary_sensor.porch_motion
 
   Camera Switches:
     - switch.backyardmotion
@@ -196,15 +199,17 @@
     - light.lifxnrkitchen
 
   Entertainment:
-    - sensor.living_room
-    - input_select.livingroomharmony
-    - input_select.hdmiswitcher
-    - input_select.hdmiinput
-    - input_slider.harmonyvolume
-    - input_boolean.tv
-    - input_boolean.tvtime
-    - sensor.total_tv_time
-    - script.tv_off
+    control: hidden
+    entities:
+      - sensor.living_room
+      - input_select.livingroomharmony
+      - input_select.hdmiswitcher
+      - input_select.hdmiinput
+      - input_slider.harmonyvolume
+      - input_boolean.tv
+      - input_boolean.tvtime
+      - sensor.total_tv_time
+      - script.tv_off
 
   Switches:
     - switch.wemoswitch

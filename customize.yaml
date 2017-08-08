@@ -90,6 +90,7 @@
        friendly_name: 'Daily Summary'
      sensor.dark_sky_hourly_summary:
        friendly_name: 'Hourly Summary'
+
      group.weather:
        icon: mdi:weather-pouring
        order: 1
@@ -168,10 +169,12 @@
        emulated_hue: true
        emulated_hue_name: "Driveway Light"
        friendly_name: "Driveway Light"
+       homebridge_hidden: false
      switch.wemoporch:
        emulated_hue: true
        emulated_hue_name: "Porch Lights"
        friendly_name: "Porch Lights"
+       homebridge_hidden: false
      switch.garage_relay_switch:
        emulated_hue: true
        emulated_hue_name: "Garage Door"
@@ -179,7 +182,13 @@
      group.living_room_lights:
        emulated_hue: true
        emulated_hue_name: "Living room lights"
+       homebridge_hidden: false
        friendly_name: Living room lights
+     input_boolean.tv:
+       homebridge_hidden: false
+     cover.garagedoor:
+       homebridge_cover_type: garage_door
+
      light.kitchen_lights:
        emulated_hue: true
        emulated_hue_name: "Kitchen lights"
@@ -235,6 +244,7 @@
        icon: mdi:palette
      script.disco_party:
        icon: mdi:palette
+       homebridge_hidden: false
      group.camera_driveway:
        order: 201
      group.camera_porch:
