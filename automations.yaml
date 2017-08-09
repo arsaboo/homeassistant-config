@@ -73,8 +73,8 @@
   initial_state: 'on'
   condition:
     condition: state
-    entity_id: sensor.garagedoor
-    state: 'Open'
+    entity_id: cover.garagedoor
+    state: 'open'
   trigger:
     - platform: state
       entity_id: input_select.abodestatus
