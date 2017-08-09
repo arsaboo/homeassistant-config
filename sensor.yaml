@@ -93,7 +93,7 @@
        Referer: "https://www.pollen.com"
   - platform: command_line
     name: "HASS Uptime"
-    command: echo "$(($(date +%s) - $(date -d "$(head -n1 /home/homeassistant/.homeassistant/home-assistant.log | cut -d' ' -f-2)" +%s)))"
+    command: ps -o etimes= -p $(pidof /srv/homeassistant/bin/python3 /srv/homeassistant/bin/hass -c /home/homeassistant/.homeassistant)
     scan_interval: 600
     value_template: >-
       {% set uptime = value | int %}
@@ -110,6 +110,7 @@
         {{ ', ' }}
       {%- endif -%}
       {{ '%02d' % hours }}:{{ '%02d' % minutes }}
+
   - platform: template
     sensors:
       wemopowerused:
