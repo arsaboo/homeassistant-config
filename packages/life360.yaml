@@ -27,19 +27,11 @@ automation:
     alias: Alert Life360 Sensor Error
     initial_state: true
     hide_entity: true
-    condition:
-      - condition: template
-        value_template: >
-          {%- if states.automation.parse_life360_data.attributes.last_triggered -%}
-            {{ (as_timestamp(now()) - as_timestamp(states.automation.parse_life360_data.attributes.last_triggered)) > 500 }}
-          {%- else -%}
-            true
-          {%- endif -%}
     trigger:
       platform: state
       entity_id: sensor.life360_sensor
-      from: 'running'
       to: 'error'
+      for: '00:05:00'
     action:
       - service: notify.pushbullet
         data:
