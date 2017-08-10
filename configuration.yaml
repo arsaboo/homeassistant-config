@@ -281,6 +281,9 @@ ecobee:
   api_key: !secret ecobee_key
   hold_temp: True
 
+lyric:
+  client_id: !secret lyric_client_id
+  client_secret: !secret lyric_client_secret
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
