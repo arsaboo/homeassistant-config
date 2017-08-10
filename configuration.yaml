@@ -288,11 +288,12 @@ lyric:
 logger:
   default: error
   logs:
-    homeassistant.components.image_processing: error
+    homeassistant.components.image_processing: critical
     homeassistant.components.python_script: warning
     homeassistant.components.camera.synology: critical
     homeassistant.components.sensor.cert_expiry: critical
     pychromecast.socket_client: critical
+    aiohttp.access: critical
 # Text to speech
 tts:
   - platform: google
