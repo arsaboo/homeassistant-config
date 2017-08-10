@@ -7,6 +7,9 @@
      climate.upstairs:
        friendly_name: EcobeeUp
        entity_picture: /local/Ecobee.png
+     climate.lyricmaster:
+       entity_picture: /local/lyric.png
+
 #devices
 
      device_tracker.myiphone:
