@@ -19,6 +19,19 @@
         data:
           entity_id: climate.upstairs
           away_mode: 'True'
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.lyricmaster
+          temperature: >-
+            {%- if states.sensor.pws_temp_f.state|int > 75 -%}
+              83
+            {%- else -%}
+              66
+            {%- endif -%}
+      - service: climate.set_hold_mode
+        data:
+          entity_id: climate.lyricmaster
+          away_mode: 'PermanentHold'
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
 
@@ -49,6 +62,9 @@
         data:
           entity_id: climate.downstairs
           away_mode: 'False'
+      - service: climate.lyric_resume_program
+        data:
+          entity_id: climate.lyricmaster
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: homeassistant.turn_off
