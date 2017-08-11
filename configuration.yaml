@@ -294,6 +294,8 @@ logger:
     homeassistant.components.sensor.cert_expiry: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
+    custom_components.lyric: debug
+    custom_components.climate.lyric: debug    
 # Text to speech
 tts:
   - platform: google
