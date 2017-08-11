@@ -9,8 +9,8 @@ from os import path
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 """
-replace custom_components.lyric with 
-homeassistant.components.lyric when not 
+replace custom_components.lyric with
+homeassistant.components.lyric when not
 placed in custom components
 """
 from custom_components.lyric import DATA_LYRIC
@@ -65,6 +65,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         """Resume the program on the target thermostats."""
         entity_id = service.data.get(ATTR_ENTITY_ID)
 
+        _LOGGER.debug('resume_program_set_service entity_id: %s' % entity_id)
+
         if entity_id:
             target_thermostats = [device for device in devices
                                   if device.entity_id in entity_id]
@@ -72,6 +74,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             target_thermostats = devices
 
         for thermostat in target_thermostats:
+            _LOGGER.debug('resume_program_set_service thermostat: %s' % thermostat)
             thermostat.set_hold_mode('NoHold')
 
     descriptions = load_yaml_config_file(
@@ -233,13 +236,7 @@ class LyricThermostat(ClimateDevice):
     def set_hold_mode(self, hold_mode):
         """Set hold mode (PermanentHold, HoldUntil, NoHold,
         VacationHold, etc.)."""
-        hold = self.current_hold_mode
-
-        if hold == hold_mode:
-            # no change, so no action required
-            return
-        else:
-            self.device.thermostatSetpointStatus = hold_mode
+        self.device.thermostatSetpointStatus = hold_mode
 
     @property
     def current_fan_mode(self):
@@ -269,7 +266,7 @@ class LyricThermostat(ClimateDevice):
     def max_temp(self):
         """Identify max_temp in Lyric API or defaults if not available."""
         return self._max_temperature
-    
+
     @property
     def device_state_attributes(self):
         """Return device specific state attributes."""
