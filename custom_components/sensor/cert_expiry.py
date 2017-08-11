@@ -14,7 +14,7 @@ import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_PORT,
-    EVENT_HOMEASSISTANT_START)
+                                 EVENT_HOMEASSISTANT_START)
 from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,16 +37,17 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up certificate expiry sensor."""
     def run_setup(event):
         """Wait until Home Assistant is fully initialized before creating.
+
         Delay the setup until Home Assistant is fully initialized.
-        This allows any entities to be created already
         """
         server_name = config.get(CONF_HOST)
         server_port = config.get(CONF_PORT)
         sensor_name = config.get(CONF_NAME)
 
-        add_devices([SSLCertificate(sensor_name, server_name, server_port)], True)
+        add_devices([SSLCertificate(sensor_name, server_name, server_port)],
+                    True)
 
-    # Wait until start event is sent to load this component.
+    # To allow checking of the HA certificate we must first be running.
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, run_setup)
 
 
