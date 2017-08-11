@@ -31,7 +31,7 @@
       - service: climate.set_hold_mode
         data:
           entity_id: climate.lyricmaster
-          away_mode: 'PermanentHold'
+          hold_mode: 'PermanentHold'
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
 
