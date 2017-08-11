@@ -13,7 +13,7 @@ replace custom_components.lyric with
 homeassistant.components.lyric when not
 placed in custom components
 """
-from custom_components.lyric import DATA_LYRIC
+from custom_components.lyric import DATA_LYRIC, CONF_FAN, CONF_AWAY_PERIODS
 from homeassistant.components.climate import (
     ATTR_TARGET_TEMP_HIGH, ATTR_TARGET_TEMP_LOW, DOMAIN,
     ClimateDevice, PLATFORM_SCHEMA, STATE_AUTO,
@@ -27,21 +27,17 @@ from homeassistant.config import load_yaml_config_file
 DEPENDENCIES = ['lyric']
 _LOGGER = logging.getLogger(__name__)
 
-CONF_FAN = 'fan'
-DEFAULT_FAN = False
-
 SERVICE_RESUME_PROGRAM = 'lyric_resume_program'
+STATE_HEAT_COOL = 'heat-cool'
+HOLD_NO_HOLD = 'NoHold'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_SCAN_INTERVAL):
-        vol.All(vol.Coerce(int), vol.Range(min=1)),
-    vol.Optional(CONF_FAN, default=DEFAULT_FAN): vol.Boolean
+        vol.All(vol.Coerce(int), vol.Range(min=1))
 })
 
-STATE_HEAT_COOL = 'heat-cool'
-
 RESUME_PROGRAM_SCHEMA = vol.Schema({
-    vol.Optional(ATTR_ENTITY_ID): cv.entity_ids,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_ids
 })
 
 
@@ -51,12 +47,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
+    _LOGGER.debug("discovery_info: %s" % discovery_info)
+    _LOGGER.debug("config: %s" % config)
+
     temp_unit = hass.config.units.temperature_unit
     has_fan = config.get(CONF_FAN)
+    away_periods = config.get(CONF_AWAY_PERIODS, [])
 
     _LOGGER.debug('Set up Lyric climate platform')
 
-    devices = [LyricThermostat(location, device, temp_unit, has_fan)
+    devices = [LyricThermostat(location, device, temp_unit, has_fan, away_periods)
                for location, device in hass.data[DATA_LYRIC].thermostats()]
 
     add_devices(devices, True)
@@ -75,7 +75,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         for thermostat in target_thermostats:
             _LOGGER.debug('resume_program_set_service thermostat: %s' % thermostat)
-            thermostat.set_hold_mode('NoHold')
+            thermostat.set_hold_mode(HOLD_NO_HOLD)
 
     descriptions = load_yaml_config_file(
         path.join(path.dirname(__file__), 'services.yaml'))
@@ -89,11 +89,15 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class LyricThermostat(ClimateDevice):
     """Representation of a Lyric thermostat."""
 
-    def __init__(self, location, device, temp_unit, has_fan):
+    def __init__(self, location, device, temp_unit, has_fan, away_periods):
         """Initialize the thermostat."""
         self._unit = temp_unit
         self.location = location
         self.device = device
+
+        self._away_periods = away_periods
+
+        _LOGGER.debug("away periods: %s" % away_periods)
 
         # Not all lyric devices support cooling and heating remove unused
         self._operation_list = [STATE_OFF]
@@ -190,7 +194,10 @@ class LyricThermostat(ClimateDevice):
     @property
     def is_away_mode_on(self):
         """Return if away mode is on."""
-        return self._away
+        if ((self._scheduleType == 'Timed') & (len(self._away_periods) > 0)):
+            return self._currentSchedulePeriod in self._away_periods
+        else:
+            return self._away
 
     def set_temperature(self, **kwargs):
         """Set new target temperature."""
@@ -220,13 +227,13 @@ class LyricThermostat(ClimateDevice):
         """List of available operation modes."""
         return self._operation_list
 
-    def turn_away_mode_on(self):
-        """Turn away on."""
-        #  self.device.away = True
+#    def turn_away_mode_on(self):
+#        """Turn away on."""
+#        self.device.away = True
 
-    def turn_away_mode_off(self):
-        """Turn away off."""
-        # self.device.away = False
+#    def turn_away_mode_off(self):
+#        """Turn away off."""
+#        self.device.away = False
 
     @property
     def current_hold_mode(self):
@@ -274,8 +281,8 @@ class LyricThermostat(ClimateDevice):
             "schedule": self._scheduleType,
             "schedule_sub": self._scheduleSubType,
             "vacation": self._vacationHold,
-            "currentScheduleDay": self._currentSchedulePeriodDay,
-            "currentSchedulePeriod": self._currentSchedulePeriod
+            "current_schedule_day": self._currentSchedulePeriodDay,
+            "current_schedule_period": self._currentSchedulePeriod
         }
 
     def update(self):

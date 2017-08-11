@@ -10,7 +10,7 @@ import asyncio
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers import discovery
-from homeassistant.const import (CONF_FILENAME, HTTP_BAD_REQUEST, HTTP_OK)
+from homeassistant.const import (HTTP_BAD_REQUEST, HTTP_OK)
 from homeassistant.loader import get_component
 from homeassistant.components.http import HomeAssistantView
 
@@ -22,7 +22,7 @@ DEPENDENCIES = ['http']
 REQUIREMENTS = [
     'https://github.com/bramkragten/python-lyric'
     '/archive/master.zip'
-    '#python-lyric==0.0.8']
+    '#python-lyric==0.0.9']
 
 DOMAIN = 'lyric'
 
@@ -33,13 +33,20 @@ CONF_CLIENT_ID = 'client_id'
 CONF_CLIENT_SECRET = 'client_secret'
 CONF_REDIRECT_URI = 'redirect_uri'
 CONF_LOCATIONS = 'locations'
+CONF_FAN = 'fan'
+CONF_AWAY_PERIODS = 'away_periods'
+
+DEFAULT_FAN = False
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_CLIENT_ID): cv.string,
         vol.Required(CONF_CLIENT_SECRET): cv.string,
         vol.Optional(CONF_REDIRECT_URI): cv.string,
-        vol.Optional(CONF_LOCATIONS): vol.All(cv.ensure_list, cv.string)
+        vol.Optional(CONF_LOCATIONS): vol.All(cv.ensure_list, cv.string),
+        vol.Optional(CONF_FAN, default=DEFAULT_FAN): vol.Boolean,
+        vol.Optional(CONF_AWAY_PERIODS):
+            vol.All(cv.ensure_list, cv.string)
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -116,7 +123,7 @@ def setup(hass, config):
     conf = config[DOMAIN]
     client_id = conf[CONF_CLIENT_ID]
     client_secret = conf[CONF_CLIENT_SECRET]
-    filename = config.get(CONF_FILENAME, LYRIC_CONFIG_FILE)
+    filename = LYRIC_CONFIG_FILE
     token_cache_file = hass.config.path(filename)
     redirect_uri = conf.get(CONF_REDIRECT_URI, hass.config.api.base_url +
                             '/api/lyric/authenticate')
