@@ -79,9 +79,10 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         return self._state
 
     @property
-    def state(self):
+    def update(self):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
+        _LOGGER.info("Status returned %s", status)
         if status == 'standby':
             state = ALARM_STATE_STANDBY
         elif status == 'home':
@@ -90,8 +91,10 @@ class AbodeAlarm(alarm.AlarmControlPanel):
             state = ALARM_STATE_AWAY
         else:
             state = STATE_UNKNOWN
-        return state
+
         self._state = state
+
+
 
     def alarm_disarm(self):
         """Send disarm command."""
