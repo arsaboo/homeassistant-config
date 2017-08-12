@@ -36,14 +36,14 @@ def get_abode_mode(uname, passwd):
     abode_mode_command = 'python3 /home/arsaboo/abodepy/abodecl.py --username ' + '{}'.format(uname) + ' --password ' + '{}'.format(passwd) + ' --mode'
     res = os.popen(abode_mode_command).readline()
     mode = res.split(" ")
-    return mode[1]
+    return mode[1].strip()
 
 def set_abode_mode(uname, passwd, mode):
     """Set Abode mode."""
     abode_mode_command = 'python3 /home/arsaboo/abodepy/abodecl.py --username ' + '{}'.format(uname) + ' --password ' + '{}'.format(passwd) + ' --arm ' + '{}'.format(mode)
     res = os.popen(abode_mode_command).readline()
     mode = res.split(" ")
-    return mode[3]
+    return mode[3].strip()
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Abode platform."""
@@ -95,17 +95,17 @@ class AbodeAlarm(alarm.AlarmControlPanel):
 
 
 
-    def alarm_disarm(self):
+    def alarm_disarm(self, code=None):
         """Send disarm command."""
         status = set_abode_mode(self._username, self._password, ALARM_STATE_STANDBY)
         _LOGGER.info("Abode mode changed to %s", status)
 
-    def alarm_arm_home(self):
+    def alarm_arm_home(self, code=None):
         """Send arm home command."""
         status = set_abode_mode(self._username, self._password, ALARM_STATE_HOME)
         _LOGGER.info("Abode mode changed to %s", status)
 
-    def alarm_arm_away(self):
+    def alarm_arm_away(self, code=None):
         """Send arm away command."""
         status = set_abode_mode(self._username, self._password, ALARM_STATE_AWAY)
         _LOGGER.info("Abode mode changed to %s", status)
