@@ -78,7 +78,6 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         """Return the state of the device."""
         return self._state
 
-    @property
     def update(self):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
