@@ -1,3 +1,6 @@
+  # - platform: abode
+  #   username: !secret abode_username
+  #   password: !secret abode_password
   - platform: cert_expiry
     host: !secret ha_url
   - platform: speedtest
