@@ -22,7 +22,7 @@ DEPENDENCIES = ['http']
 REQUIREMENTS = [
     'https://github.com/bramkragten/python-lyric'
     '/archive/master.zip'
-    '#python-lyric==0.0.9']
+    '#python-lyric==0.0.12']
 
 DOMAIN = 'lyric'
 
@@ -104,7 +104,7 @@ def setup_lyric(hass, lyric, config, url=None):
     _LOGGER.debug(hass.data[DATA_LYRIC].lyric._locations)
     _LOGGER.debug("proceeding with discovery of platforms")
 
-    discovery.load_platform(hass, 'climate', DOMAIN, {}, config)
+    discovery.load_platform(hass, 'climate', DOMAIN, conf, config)
 #    discovery.load_platform(hass, 'sensor', DOMAIN, {}, config)
 #    discovery.load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
 #    discovery.load_platform(hass, 'camera', DOMAIN, {}, config)

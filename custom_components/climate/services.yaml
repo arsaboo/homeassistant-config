@@ -126,3 +126,11 @@ lyric_resume_program:
     entity_id:
       description: Name(s) of entities to change
       example: 'climate.kitchen'
+
+lyric_reset_away:
+  description: Reset a overridden away mode
+
+  fields:
+    entity_id:
+      description: Name(s) of entities to change
+      example: 'climate.kitchen'

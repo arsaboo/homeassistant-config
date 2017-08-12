@@ -9,8 +9,8 @@ from os import path
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 """
-replace custom_components.lyric with
-homeassistant.components.lyric when not
+replace custom_components.lyric with 
+homeassistant.components.lyric when not 
 placed in custom components
 """
 from custom_components.lyric import DATA_LYRIC, CONF_FAN, CONF_AWAY_PERIODS
@@ -28,6 +28,7 @@ DEPENDENCIES = ['lyric']
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_RESUME_PROGRAM = 'lyric_resume_program'
+SERVICE_RESET_AWAY = 'lyric_reset_away'
 STATE_HEAT_COOL = 'heat-cool'
 HOLD_NO_HOLD = 'NoHold'
 
@@ -40,6 +41,9 @@ RESUME_PROGRAM_SCHEMA = vol.Schema({
     vol.Optional(ATTR_ENTITY_ID): cv.entity_ids
 })
 
+RESET_AWAY_SCHEMA = vol.Schema({
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_ids
+})
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Lyric thermostat."""
@@ -47,19 +51,34 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    _LOGGER.debug("discovery_info: %s" % discovery_info)
-    _LOGGER.debug("config: %s" % config)
+    _LOGGER.debug("climate discovery_info: %s" % discovery_info)   
+    _LOGGER.debug("climate config: %s" % config)
 
     temp_unit = hass.config.units.temperature_unit
-    has_fan = config.get(CONF_FAN)
-    away_periods = config.get(CONF_AWAY_PERIODS, [])
+    has_fan = discovery_info.get(CONF_FAN)
+    away_periods = discovery_info.get(CONF_AWAY_PERIODS, [])
 
     _LOGGER.debug('Set up Lyric climate platform')
 
-    devices = [LyricThermostat(location, device, temp_unit, has_fan, away_periods)
+    devices = [LyricThermostat(location, device, hass, temp_unit, has_fan, away_periods)
                for location, device in hass.data[DATA_LYRIC].thermostats()]
 
     add_devices(devices, True)
+
+    def restore_away_mode(service):
+        """Resume the program on the target thermostats."""
+        entity_id = service.data.get(ATTR_ENTITY_ID)
+
+        _LOGGER.debug('restore_away_mode entity_id: %s' % entity_id)
+
+        if entity_id:
+            target_thermostats = [device for device in devices
+                                  if device.entity_id in entity_id]
+        else:
+            target_thermostats = devices
+
+        for thermostat in target_thermostats:
+            thermostat._away_override = False
 
     def resume_program_set_service(service):
         """Resume the program on the target thermostats."""
@@ -74,7 +93,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             target_thermostats = devices
 
         for thermostat in target_thermostats:
-            _LOGGER.debug('resume_program_set_service thermostat: %s' % thermostat)
             thermostat.set_hold_mode(HOLD_NO_HOLD)
 
     descriptions = load_yaml_config_file(
@@ -85,20 +103,26 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         descriptions.get(SERVICE_RESUME_PROGRAM),
         schema=RESUME_PROGRAM_SCHEMA)
 
+    hass.services.register(
+        DOMAIN, SERVICE_RESET_AWAY, restore_away_mode,
+        descriptions.get(SERVICE_RESET_AWAY),
+        schema=RESET_AWAY_SCHEMA)
+
 
 class LyricThermostat(ClimateDevice):
     """Representation of a Lyric thermostat."""
 
-    def __init__(self, location, device, temp_unit, has_fan, away_periods):
+    def __init__(self, location, device, hass, temp_unit, has_fan, away_periods):
         """Initialize the thermostat."""
         self._unit = temp_unit
         self.location = location
         self.device = device
+        self._hass = hass
 
         self._away_periods = away_periods
 
         _LOGGER.debug("away periods: %s" % away_periods)
-
+       
         # Not all lyric devices support cooling and heating remove unused
         self._operation_list = [STATE_OFF]
 
@@ -116,8 +140,8 @@ class LyricThermostat(ClimateDevice):
         self._has_fan = has_fan
         if (self._has_fan):
             self._fan_list = self.device.settings["fan"]["allowedModes"]
-		# else:
-		#    self._fan_list = None
+        # else:
+        #    self._fan_list = None
 
         # data attributes
         self._away = None
@@ -140,7 +164,9 @@ class LyricThermostat(ClimateDevice):
         self._scheduleSubType = None
         self._scheduleCapabilities = None
         self._currentSchedulePeriod = None
+        self._currentSchedulePeriodDay = None
         self._vacationHold = None
+        self._away_override = False
 
     @property
     def name(self):
@@ -194,7 +220,9 @@ class LyricThermostat(ClimateDevice):
     @property
     def is_away_mode_on(self):
         """Return if away mode is on."""
-        if ((self._scheduleType == 'Timed') & (len(self._away_periods) > 0)):
+        if self._away_override:
+            return self._away
+        elif self._scheduleType == 'Timed' and self._away_periods:
             return self._currentSchedulePeriod in self._away_periods
         else:
             return self._away
@@ -227,14 +255,21 @@ class LyricThermostat(ClimateDevice):
         """List of available operation modes."""
         return self._operation_list
 
-#    def turn_away_mode_on(self):
-#        """Turn away on."""
-#        self.device.away = True
+    def turn_away_mode_on(self):
+        """Turn away on."""
+        self._away = True
+        self._away_override = True
+        self._hass.bus.fire('override_away_on', {
+                                'entity_id': self.entity_id
+                           })
 
-#    def turn_away_mode_off(self):
-#        """Turn away off."""
-#        self.device.away = False
-
+    def turn_away_mode_off(self):
+        """Turn away off."""
+        self._away = False
+        self._away_override = True
+        self._hass.bus.fire('override_away_off', {
+                                'entity_id': self.entity_id
+                           })
     @property
     def current_hold_mode(self):
         """Return current hold mode."""
@@ -273,17 +308,20 @@ class LyricThermostat(ClimateDevice):
     def max_temp(self):
         """Identify max_temp in Lyric API or defaults if not available."""
         return self._max_temperature
-
+    
     @property
     def device_state_attributes(self):
         """Return device specific state attributes."""
-        return {
-            "schedule": self._scheduleType,
-            "schedule_sub": self._scheduleSubType,
-            "vacation": self._vacationHold,
-            "current_schedule_day": self._currentSchedulePeriodDay,
-            "current_schedule_period": self._currentSchedulePeriod
-        }
+        attrs = {"schedule": self._scheduleType}
+        if self._scheduleSubType:
+            attrs["schedule_sub"] = self._scheduleSubType
+        if self._vacationHold:
+            attrs["vacation"] = self._vacationHold
+        if self._currentSchedulePeriodDay:
+            attrs["current_schedule_day"] = self._currentSchedulePeriodDay
+        if self._currentSchedulePeriod:
+            attrs["current_schedule_period"] = self._currentSchedulePeriod
+        return attrs
 
     def update(self):
         """Cache value from python-lyric."""
@@ -298,7 +336,8 @@ class LyricThermostat(ClimateDevice):
         self._target_temp_cool = self.device.coolSetpoint
         self._dualSetpoint = self.device.hasDualSetpointStatus
         self._fan = self.device.fanMode
-        self._away = self.device.away
+        if self._away_override == False:
+            self._away = self.device.away
         self._min_temperature = self.device.minSetpoint
         self._max_temperature = self.device.maxSetpoint
         # self._changeableValues = self.device.changeableValues
@@ -306,8 +345,11 @@ class LyricThermostat(ClimateDevice):
         self._scheduleSubType = self.device.scheduleSubType
         # self._scheduleCapabilities = self.device.scheduleCapabilities
         self._vacationHold = self.device.vacationHold
-        self._currentSchedulePeriod = self.device.currentSchedulePeriod['period']
-        self._currentSchedulePeriodDay = self.device.currentSchedulePeriod['day']
+        if self.device.currentSchedulePeriod:
+            if 'period' in  self.device.currentSchedulePeriod:
+                self._currentSchedulePeriod = self.device.currentSchedulePeriod['period']
+            if 'day' in  self.device.currentSchedulePeriod:
+                self._currentSchedulePeriod = self.device.currentSchedulePeriod['day']
 
         if self.device.units == 'Celsius':
             self._temperature_scale = TEMP_CELSIUS
