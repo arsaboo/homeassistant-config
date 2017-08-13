@@ -2,7 +2,7 @@
 Interfaces with Abode Home Security System.
 
 """
-import os
+
 import logging
 import abodepy
 from datetime import datetime, timedelta
