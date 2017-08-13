@@ -5,7 +5,7 @@
     sensors:
       garagedoor:
         friendly_name: Garage Door Open
-        sensor_class: opening
+        device_class: opening
         value_template: >-
            {% if states.sensor.garage_door_tilt_sensor_alarm_level != None %}
              {{ is_state('sensor.garage_door_tilt_sensor_alarm_level', '255') }}
@@ -16,7 +16,7 @@
           - sensor.garage_door_tilt_sensor_alarm_level
       garageentrydoor:
         friendly_name: Garage Entry Door
-        sensor_class: opening
+        device_class: opening
         value_template: >-
            {% if states.input_boolean.garageentrydoor != None %}
              {{ is_state('input_boolean.garageentrydoor', 'on') }}
@@ -27,7 +27,7 @@
           - input_boolean.garageentrydoor
       frontdoor:
         friendly_name: Front Door
-        sensor_class: opening
+        device_class: opening
         value_template: >-
            {% if states.input_boolean.frontdoor != None %}
              {{ is_state('input_boolean.frontdoor', 'on') }}
@@ -38,7 +38,7 @@
           - input_boolean.frontdoor
       backdoor:
         friendly_name: Back Door
-        sensor_class: opening
+        device_class: opening
         value_template: >-
            {% if states.input_boolean.backdoor != None %}
              {{ is_state('input_boolean.backdoor', 'on') }}
