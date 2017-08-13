@@ -5,12 +5,9 @@
   abodeaway:
     alias: 'Abode Arm'
     sequence:
-      - service: input_select.select_option
+      - service: alarm_control_panel.alarm_arm_away
         data:
-          entity_id: input_select.abodestatus
-          option: 'away'
-      - service: ifttt.trigger
-        data: {"event":"AbodeAway", "value1":"Arm Abode"}
+          entity_id: alarm_control_panel.abode
       - service: climate.set_away_mode
         data:
           entity_id: climate.downstairs
@@ -34,26 +31,24 @@
           hold_mode: 'PermanentHold'
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
+      # - service: ifttt.trigger
+      #   data: {"event":"AbodeAway", "value1":"Arm Abode"}
 
   abodehome:
     alias: 'Abode Home'
     sequence:
-      - service: input_select.select_option
+      - service: alarm_control_panel.alarm_arm_home
         data:
-          entity_id: input_select.abodestatus
-          option: 'home'
-      - service: ifttt.trigger
-        data: {"event":"AbodeHome", "value1":"Abode Home"}
+          entity_id: alarm_control_panel.abode
+      # - service: ifttt.trigger
+      #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
   abodestandby:
     alias: 'Abode Standby'
     sequence:
-      - service: input_select.select_option
+      - service: alarm_control_panel.alarm_disarm
         data:
-          entity_id: input_select.abodestatus
-          option: 'standby'
-      - service: ifttt.trigger
-        data: {"event":"AbodeStandby", "value1":"Abode Standby"}
+          entity_id: alarm_control_panel.abode
       - service: climate.set_away_mode
         data:
           entity_id: climate.upstairs
@@ -67,6 +62,8 @@
           entity_id: climate.lyricmaster
       - service: light.turn_off
         entity_id: group.living_room_lights
+      # - service: ifttt.trigger
+      #   data: {"event":"AbodeStandby", "value1":"Abode Standby"}
       # - service: homeassistant.turn_off
       #   entity_id: input_boolean.startrecording
 
