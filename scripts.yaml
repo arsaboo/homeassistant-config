@@ -105,8 +105,6 @@
       - delay: "{{ delay|default('00:00:00') }}"
       - wait_template: "{{ is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
         timeout: '00:00:05'
-      # - wait_template: "{{ not is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
-      #   timeout: '00:02:00'
       - service: media_player.sonos_restore
         data_template:
           entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
