@@ -27,7 +27,7 @@ ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
 ICON = 'mdi:security'
-SCAN_INTERVAL = timedelta(hours=1)
+SCAN_INTERVAL = timedelta(minutes=5)
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
