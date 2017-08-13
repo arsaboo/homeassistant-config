@@ -45,7 +45,6 @@ def get_abode_mode(uname, passwd):
 def set_abode_mode(uname, passwd, mode):
     """Set Abode mode."""
     abode(uname, passwd).get_alarm().set_mode(mode)
-    _LOGGER.info("Abode mode changed to %s", mode)
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Abode platform."""
