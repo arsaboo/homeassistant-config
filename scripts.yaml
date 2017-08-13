@@ -85,27 +85,6 @@
         data_template:
           entity_id: remote.livingroom
           activity: PowerOff
-  sonos_say_old:
-    alias: "Sonos TTS script"
-    sequence:
-      - service: media_player.sonos_snapshot
-        data_template:
-          entity_id: "{{ sonos_entity }}"
-      - service: media_player.sonos_unjoin
-        data_template:
-          entity_id: "{{ sonos_entity }}"
-      - service: media_player.volume_set
-        data_template:
-          entity_id: "{{ sonos_entity }}"
-          volume_level: "{{ volume }}"
-      - service: tts.google_say
-        data_template:
-          entity_id: "{{ sonos_entity }}"
-          message: "{{ message }}"
-      - delay: "{{ delay|default('00:00:04') }}"
-      - service: media_player.sonos_restore
-        data_template:
-          entity_id: "{{ sonos_entity }}"
   sonos_say:
     alias: "Sonos TTS script"
     sequence:
