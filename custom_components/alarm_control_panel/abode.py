@@ -5,6 +5,7 @@ Interfaces with Abode Home Security System.
 import os
 import logging
 import abodepy
+from datetime import datetime, timedelta
 
 import voluptuous as vol
 
@@ -25,14 +26,13 @@ DOMAIN = 'abode'
 ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=600)
+SCAN_INTERVAL = timedelta(hours=1)
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_PASSWORD): cv.string,
     vol.Required(CONF_USERNAME): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.positive_int
+    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string
 })
 
 def abode(uname, passwd):
@@ -53,7 +53,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
-
     add_devices([AbodeAlarm(name, username, password)],True)
 
 
@@ -80,7 +79,7 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         """Return the state of the device."""
         return self._state
 
-    @Throttle(CONF_SCAN_INTERVAL)
+    @Throttle(SCAN_INTERVAL)
     def update(self):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
@@ -99,11 +98,20 @@ class AbodeAlarm(alarm.AlarmControlPanel):
     def alarm_disarm(self, code=None):
         """Send disarm command."""
         set_abode_mode(self._username, self._password, ALARM_STATE_STANDBY)
+        self._state = ALARM_STATE_STANDBY
+        self.schedule_update_ha_state()
+        _LOGGER.info("Abode security disarmed")
 
     def alarm_arm_home(self, code=None):
         """Send arm home command."""
         set_abode_mode(self._username, self._password, ALARM_STATE_HOME)
+        self._state = ALARM_STATE_HOME
+        self.schedule_update_ha_state()
+        _LOGGER.info("Abode security home")
 
     def alarm_arm_away(self, code=None):
         """Send arm away command."""
         set_abode_mode(self._username, self._password, ALARM_STATE_AWAY)
+        self._state = ALARM_STATE_AWAY
+        self.schedule_update_ha_state()
+        _LOGGER.info("Abode security armed")
