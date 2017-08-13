@@ -55,7 +55,10 @@ light:
     retain: true
     optimistic: false
     qos: 0
-
+alarm_control_panel:
+  platform: abode
+  username: !secret abode_username
+  password: !secret abode_password
 #Adds Alexa and Google Home support
 emulated_hue:
   host_ip: 192.168.2.212
