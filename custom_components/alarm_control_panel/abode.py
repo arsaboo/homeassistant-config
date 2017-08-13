@@ -26,6 +26,7 @@ DOMAIN = 'abode'
 ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
+ICON = 'mdi:security'
 SCAN_INTERVAL = timedelta(hours=1)
 
 
@@ -72,6 +73,11 @@ class AbodeAlarm(alarm.AlarmControlPanel):
             return self._name
         else:
             return 'Abode'
+
+    @property
+    def icon(self):
+        """Return icon."""
+        return ICON
 
     @property
     def state(self):
