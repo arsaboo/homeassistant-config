@@ -53,7 +53,7 @@ envisalink_alarm_keypress:
       description: 'String to send to the alarm panel (1-6 characters)'
       example: '*71'
 
-refresh_abode_state:
+abode_refresh_state:
   description: Refresh Alarm status
 
   fields:

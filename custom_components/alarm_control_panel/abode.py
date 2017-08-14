@@ -11,7 +11,7 @@ import voluptuous as vol
 
 import homeassistant.components.alarm_control_panel as alarm
 from homeassistant.util import Throttle
-from homeassistant.components.alarm_control_panel import PLATFORM_SCHEMA
+from homeassistant.components.alarm_control_panel import PLATFORM_SCHEMA, DOMAIN
 from homeassistant.const import (CONF_SCAN_INTERVAL,
     CONF_PASSWORD, CONF_USERNAME, STATE_UNKNOWN, CONF_NAME)
 import homeassistant.helpers.config_validation as cv
@@ -21,6 +21,7 @@ REQUIREMENTS = ['abodepy==0.5.1']
 
 _LOGGER = logging.getLogger(__name__)
 
+SERVICE_ABODE_REFRESH_STATE='abode_refresh_state'
 DEFAULT_NAME = 'Abode'
 DOMAIN = 'abode'
 ALARM_STATE_HOME = 'home'
@@ -65,7 +66,8 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         self._username = username
         self._password = password
         self._state = STATE_UNKNOWN
-
+        self.hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, self.abode_refresh_state)
+        
     @property
     def name(self):
         """Return the name of the device."""
@@ -120,7 +122,7 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         self.schedule_update_ha_state()
         _LOGGER.info("Abode security armed")
 
-    def refresh_abode_state(self):
+    def abode_refresh_state(self):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
         if status == 'standby':
