@@ -46,6 +46,14 @@
 - id: update_abode_status
   alias: 'Update Abode Status'
   initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {%- if states.automation.update_abode_status.attributes.last_triggered -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.update_abode_status.attributes.last_triggered)) > 240 }}
+        {%- else -%}
+          true
+        {%- endif -%}
   trigger:
     - platform: state
       entity_id: alarm_control_panel.abode
@@ -54,24 +62,45 @@
       data_template:
         entity_id: input_select.abodestatus
         option: '{{ trigger.to_state.state }}'
+    - service: logbook.log
+      data_template:
+        name: "Abode mode changed from "
+        message: >-
+          {%- for state in states if state.entity_id == trigger.entity_id -%}
+            {{ trigger.from_state.state }} to {{ trigger.to_state.state }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
+          {%- endfor -%}
 
-- id: change_abode_status
-  alias: 'Change Abode Status'
+- id: sync_abode_status
+  alias: 'Sync Abode Status'
   initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: '{{states.input_select.abodestatus.state != states.alarm_control_panel.abode.state}}'
   trigger:
-    - platform: state
-      entity_id: input_select.abodestatus
+   - platform: time
+     minutes: '/1'
+     seconds: 00
   action:
-    - service_template: >-
-        {% if trigger.to_state.state == 'home' %}
-          alarm_control_panel.alarm_arm_home
-        {% elif trigger.to_state.state == 'standby' %}
-          alarm_control_panel.disarm
-        {% elif trigger.to_state.state == 'away' %}
-          alarm_control_panel.alarm_arm_away
-        {% endif %}
-      data:
-        entity_id: alarm_control_panel.abode
+     service: alarm_control_panel.abode_refresh_state
+     data: alarm_control_panel.abode
+
+# - id: change_abode_status
+#   alias: 'Change Abode Status'
+#   initial_state: 'on'
+#   trigger:
+#     - platform: state
+#       entity_id: input_select.abodestatus
+#   action:
+#     - service_template: >-
+#         {% if trigger.to_state.state == 'home' %}
+#           alarm_control_panel.alarm_arm_home
+#         {% elif trigger.to_state.state == 'standby' %}
+#           alarm_control_panel.disarm
+#         {% elif trigger.to_state.state == 'away' %}
+#           alarm_control_panel.alarm_arm_away
+#         {% endif %}
+#       data:
+#         entity_id: alarm_control_panel.abode
 
 
 - id: disarm_abode_from_away
@@ -604,6 +633,9 @@
     - condition: state
       entity_id: sun.sun
       state: 'below_horizon'
+    - condition: sun
+      before: sunrise
+      before_offset: '00:45:00'
   trigger:
    - platform: state
      entity_id:
