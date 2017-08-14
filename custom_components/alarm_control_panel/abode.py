@@ -27,7 +27,7 @@ ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
 ICON = 'mdi:security'
-SCAN_INTERVAL = timedelta(minutes=2)
+SCAN_INTERVAL = timedelta(minutes=60)
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -53,20 +53,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
-    add_devices([AbodeAlarm(hass, name, username, password)],True)
+    alarm=AbodeAlarm(name, username, password)
+    hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, alarm.abode_refresh_state)
+    add_devices([alarm],True)
 
 
 class AbodeAlarm(alarm.AlarmControlPanel):
     """Representation a Abode alarm."""
 
-    def __init__(self, hass, name, username, password):
+    def __init__(self, name, username, password):
         """Initialize the Abode alarm."""
-        self._hass = hass
         self._name = name
         self._username = username
         self._password = password
         self._state = STATE_UNKNOWN
-        self._hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, self.abode_refresh_state)
 
     @property
     def name(self):
@@ -125,7 +125,6 @@ class AbodeAlarm(alarm.AlarmControlPanel):
     def abode_refresh_state(self):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
-        _LOGGER.info("Abode status is %s", status)
         if status == 'standby':
             state = ALARM_STATE_STANDBY
         elif status == 'home':
