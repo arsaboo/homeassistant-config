@@ -122,9 +122,10 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         self.schedule_update_ha_state()
         _LOGGER.info("Abode security armed")
 
-    def abode_refresh_state(self):
+    def abode_refresh_state(self, code=None):
         """Return the state of the device."""
         status = get_abode_mode(self._username, self._password)
+        _LOGGER.debug("Abode status is %s", status)
         if status == 'standby':
             state = ALARM_STATE_STANDBY
         elif status == 'home':
