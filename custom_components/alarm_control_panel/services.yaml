@@ -53,8 +53,6 @@ envisalink_alarm_keypress:
       description: 'String to send to the alarm panel (1-6 characters)'
       example: '*71'
 
-# Describes the format for available Abode services
-
 refresh_abode_state:
   description: Refresh Alarm status
 
