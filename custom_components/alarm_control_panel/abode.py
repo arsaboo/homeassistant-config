@@ -23,7 +23,6 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_ABODE_REFRESH_STATE='abode_refresh_state'
 DEFAULT_NAME = 'Abode'
-DOMAIN = 'abode'
 ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
@@ -67,7 +66,7 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         self._password = password
         self._state = STATE_UNKNOWN
         self.hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, self.abode_refresh_state)
-        
+
     @property
     def name(self):
         """Return the name of the device."""
