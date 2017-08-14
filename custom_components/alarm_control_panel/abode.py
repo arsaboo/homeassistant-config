@@ -53,20 +53,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
-    alarm=AbodeAlarm(name, username, password)
-    hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, alarm.abode_refresh_state)
-    add_devices([alarm],True)
+    add_devices([AbodeAlarm(hass, name, username, password)],True)
 
 
 class AbodeAlarm(alarm.AlarmControlPanel):
     """Representation a Abode alarm."""
 
-    def __init__(self, name, username, password):
+    def __init__(self, hass, name, username, password):
         """Initialize the Abode alarm."""
+        self._hass = hass
         self._name = name
         self._username = username
         self._password = password
         self._state = STATE_UNKNOWN
+        self._hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, self.abode_refresh_state)
 
     @property
     def name(self):
