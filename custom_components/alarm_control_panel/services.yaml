@@ -1,0 +1,9 @@
+# Describes the format for available Abode services
+
+refresh_abode_state:
+  description: Refresh Alarm status
+
+  fields:
+    entity_id:
+      description: Name(s) of entities to refresh
+      example: 'alarm_control_panel.abode'
