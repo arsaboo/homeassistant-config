@@ -294,4 +294,5 @@ input_boolean: !include input_boolean.yaml
 input_slider: !include input_slider.yaml
 frontend: !include frontend.yaml
 recorder: !include recorder.yaml
+logbook: !include logbook.yaml
 history: !include history.yaml
