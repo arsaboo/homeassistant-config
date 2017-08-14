@@ -293,3 +293,4 @@ input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 input_slider: !include input_slider.yaml
 frontend: !include frontend.yaml
+history: !include history.yaml
