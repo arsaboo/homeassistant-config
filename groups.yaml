@@ -162,9 +162,6 @@
     entities:
       - alarm_control_panel.abode
       - input_select.abodestatus
-      - binary_sensor.frontdoor
-      - binary_sensor.backdoor
-      - binary_sensor.garageentrydoor
       - input_boolean.abodeupdate
       - input_boolean.startrecording
       - sensor.leeoalarmstatus

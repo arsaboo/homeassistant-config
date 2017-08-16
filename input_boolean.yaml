@@ -38,15 +38,3 @@
     name: Party Mode
     initial: off
     icon: mdi:theme-light-dark
-  frontdoor:
-    name: Front Door
-    initial: off
-    icon: mdi:glassdoor
-  backdoor:
-    name: Back Door
-    initial: off
-    icon: mdi:glassdoor
-  garageentrydoor:
-    name: Garage Entry Door
-    initial: off
-    icon: mdi:glassdoor
