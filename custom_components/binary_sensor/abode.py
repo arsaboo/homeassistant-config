@@ -38,7 +38,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     sensors = []
     for sensor in data.devices:
         _LOGGER.debug('Sensor type %s', sensor.type)
-        if sensor.type in [ SENSOR_TYPES.keys() ]:
+        if sensor.type in ['Door Contact', 'Motion Camera']:
             sensors.append(AbodeBinarySensor(hass, data, sensor))
 
     _LOGGER.debug('Adding %d sensors', len(sensors))
@@ -54,7 +54,7 @@ class AbodeBinarySensor(BinarySensorDevice):
         super(AbodeBinarySensor, self).__init__()
         self._device = device
 
-        data.events.register(device, self.refresh)
+        data.abode.register(device, self.refresh)
 
     @property
     def should_poll(self):

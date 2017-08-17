@@ -42,10 +42,13 @@ def setup(hass, config):
     password = conf.get(CONF_PASSWORD)
 
     try:
-        hass.data[DATA_ABODE] = AbodeData(hass, username, password)
+        data = AbodeData(hass, username, password)
+        hass.data[DATA_ABODE] = data
 
         for component in ['binary_sensor', 'alarm_control_panel']:
             discovery.load_platform(hass, component, DOMAIN, {}, config)
+
+        data.abode.start_listener()
 
     except (ConnectTimeout, HTTPError) as ex:
         _LOGGER.error("Unable to connect to Abode: %s", str(ex))
@@ -66,7 +69,6 @@ class AbodeData:
 
         self.abode = abodepy.Abode(username, password)
         self.devices = self.abode.get_devices()
-        self.events = abodepy.AbodeEvents()
 
         _LOGGER.debug("Abode Security set up with %s devices",
                       len(self.devices))

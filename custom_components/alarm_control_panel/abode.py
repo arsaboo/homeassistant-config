@@ -47,7 +47,7 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         self._device = device
         self._name = "{0}".format(DEFAULT_NAME)
 
-        data.events.register(device, self.refresh)
+        data.abode.register(device, self.refresh)
 
     @property
     def should_poll(self):
