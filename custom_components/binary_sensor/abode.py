@@ -36,10 +36,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return False
 
     sensors = []
-    for sensor in data.abode.get_devices():
+    for sensor in data.devices:
         _LOGGER.debug('Sensor type %s', sensor.type)
         if sensor.type in [ SENSOR_TYPES.keys() ]:
             sensors.append(AbodeBinarySensor(hass, data, sensor))
+
+    _LOGGER.debug('Adding %d sensors', len(sensors))
     add_devices(sensors)
     return True
 
@@ -52,7 +54,7 @@ class AbodeBinarySensor(BinarySensorDevice):
         super(AbodeBinarySensor, self).__init__()
         self._device = device
 
-        data.events.register(sensor, self.refresh)
+        data.events.register(device, self.refresh)
 
     @property
     def should_poll(self):
@@ -62,7 +64,7 @@ class AbodeBinarySensor(BinarySensorDevice):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return = "{0} {1}".format(self._device.type, self._device.name)
+        return "{0} {1}".format(self._device.type, self._device.name)
 
     @property
     def is_on(self):

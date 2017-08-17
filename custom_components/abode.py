@@ -54,14 +54,15 @@ class AbodeData:
         try:
             import abodepy
 
-            self.abode = abodepy.Abode(username, password, get_devices=True)
+            self.abode = abodepy.Abode(username, password)
             if self.abode._token is None:
                 return False
 
+            self.devices = self.abode.get_devices()
             self.events = abodepy.AbodeEvents()
 
             _LOGGER.debug("Abode Security set up with %s devices",
-                          len(abode._devices))
+                          len(self.devices))
 
         except (ConnectTimeout, HTTPError) as ex:
             _LOGGER.error("Unable to connect to Abode: %s", str(ex))
