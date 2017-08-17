@@ -1,80 +1,61 @@
 """
-Interfaces with Abode Home Security System.
+This component provides HA alarm_control_panel support for Abode System.
+
+For more details about this platform, please refer to the documentation at
 
 """
-
 import logging
-import abodepy
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-import voluptuous as vol
-
-import homeassistant.components.alarm_control_panel as alarm
-from homeassistant.util import Throttle
-from homeassistant.components.alarm_control_panel import PLATFORM_SCHEMA, DOMAIN
-from homeassistant.const import (CONF_SCAN_INTERVAL,
-    CONF_PASSWORD, CONF_USERNAME, STATE_UNKNOWN, CONF_NAME)
 import homeassistant.helpers.config_validation as cv
-import homeassistant.loader as loader
 
-REQUIREMENTS = ['abodepy==0.5.1']
+from homeassistant.util import Throttle
+from custom_components.abode import (DATA_ABODE, DEFAULT_NAME)
+from homeassistant.components.alarm_control_panel import DOMAIN
+#from homeassistant.components.abode import (CONF_ATTRIBUTION, DATA_ABODE)
+from homeassistant.const import (STATE_UNKNOWN)
+import homeassistant.components.alarm_control_panel as alarm
+
+DEPENDENCIES = ['abode']
 
 _LOGGER = logging.getLogger(__name__)
 
-SERVICE_ABODE_REFRESH_STATE='abode_refresh_state'
-DEFAULT_NAME = 'Abode'
+SCAN_INTERVAL = timedelta(minutes=5)
 ALARM_STATE_HOME = 'home'
 ALARM_STATE_STANDBY = 'standby'
 ALARM_STATE_AWAY = 'away'
+SERVICE_ABODE_REFRESH_STATE = 'abode_refresh_state'
 ICON = 'mdi:security'
-SCAN_INTERVAL = timedelta(minutes=60)
 
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_PASSWORD): cv.string,
-    vol.Required(CONF_USERNAME): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string
-})
-
-def abode(uname, passwd):
-    return abodepy.Abode(username=uname, password=passwd, get_devices=True)
-
-def get_abode_mode(uname, passwd):
-    """Get Abode mode."""
-    return abode(uname, passwd).get_alarm().mode
-
-def set_abode_mode(uname, passwd, mode):
-    """Set Abode mode."""
-    abode(uname, passwd).get_alarm().set_mode(mode)
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up the Abode platform."""
+    """Set up a sensor for an Abode device."""
+    abode = hass.data.get(DATA_ABODE)
+    if not abode:
+        _LOGGER.debug('No DATA_ABODE')
+        return False
 
-    name = config.get(CONF_NAME)
-    username = config.get(CONF_USERNAME)
-    password = config.get(CONF_PASSWORD)
-    alarm=AbodeAlarm(name, username, password)
-    hass.services.register(DOMAIN, SERVICE_ABODE_REFRESH_STATE, alarm.abode_refresh_state)
-    add_devices([alarm],True)
+    alarm = AbodeAlarm(hass, abode)
+    hass.services.register(
+        DOMAIN, SERVICE_ABODE_REFRESH_STATE, alarm.abode_refresh_state)
+    add_devices([alarm], True)
+    return True
 
 
 class AbodeAlarm(alarm.AlarmControlPanel):
-    """Representation a Abode alarm."""
+    """An alarm_control_panel implementation for Abode."""
 
-    def __init__(self, name, username, password):
-        """Initialize the Abode alarm."""
-        self._name = name
-        self._username = username
-        self._password = password
+    def __init__(self, hass, data):
+        """Initialize a alarm control panel for Abode."""
+        super(AbodeAlarm, self).__init__()
+        self._data = data
+        self._name = "{0}".format(DEFAULT_NAME)
         self._state = STATE_UNKNOWN
 
     @property
     def name(self):
-        """Return the name of the device."""
-        if self._name is not None:
-            return self._name
-        else:
-            return 'Abode'
+        """Return the name of the sensor."""
+        return self._name
 
     @property
     def icon(self):
@@ -86,10 +67,10 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         """Return the state of the device."""
         return self._state
 
-    @Throttle(SCAN_INTERVAL)
     def update(self):
         """Return the state of the device."""
-        status = get_abode_mode(self._username, self._password)
+        status = self._data.get_alarm().mode
+        _LOGGER.debug("Abode status is %s", status)
         if status == 'standby':
             state = ALARM_STATE_STANDBY
         elif status == 'home':
@@ -99,32 +80,32 @@ class AbodeAlarm(alarm.AlarmControlPanel):
         else:
             state = STATE_UNKNOWN
         self._state = state
-
+        self._data.get_devices()
 
     def alarm_disarm(self, code=None):
         """Send disarm command."""
-        set_abode_mode(self._username, self._password, ALARM_STATE_STANDBY)
+        self._data.get_alarm().set_mode(mode=ALARM_STATE_STANDBY)
         self._state = ALARM_STATE_STANDBY
         self.schedule_update_ha_state()
-        _LOGGER.info("Abode security disarmed")
+        _LOGGER.debug("Abode security disarmed")
 
     def alarm_arm_home(self, code=None):
         """Send arm home command."""
-        set_abode_mode(self._username, self._password, ALARM_STATE_HOME)
+        self._data.get_alarm().set_mode(mode=ALARM_STATE_HOME)
         self._state = ALARM_STATE_HOME
         self.schedule_update_ha_state()
-        _LOGGER.info("Abode security home")
+        _LOGGER.debug("Abode security home")
 
     def alarm_arm_away(self, code=None):
         """Send arm away command."""
-        set_abode_mode(self._username, self._password, ALARM_STATE_AWAY)
+        self._data.get_alarm().set_mode(mode=ALARM_STATE_AWAY)
         self._state = ALARM_STATE_AWAY
         self.schedule_update_ha_state()
-        _LOGGER.info("Abode security armed")
+        _LOGGER.debug("Abode security armed")
 
     def abode_refresh_state(self, code=None):
         """Return the state of the device."""
-        status = get_abode_mode(self._username, self._password)
+        status = self._data.get_alarm().mode
         _LOGGER.debug("Abode status is %s", status)
         if status == 'standby':
             state = ALARM_STATE_STANDBY
@@ -136,3 +117,4 @@ class AbodeAlarm(alarm.AlarmControlPanel):
             state = STATE_UNKNOWN
         self._state = state
         self.schedule_update_ha_state()
+        self._data.get_devices()
