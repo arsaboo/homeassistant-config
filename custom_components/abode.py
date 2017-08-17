@@ -40,10 +40,21 @@ def setup(hass, config):
     conf = config[DOMAIN]
     username = conf.get(CONF_USERNAME)
     password = conf.get(CONF_PASSWORD)
-    hass.data[DATA_ABODE] = AbodeData(hass, username, password)
 
-    for component in ['binary_sensor', 'alarm_control_panel']:
-        discovery.load_platform(hass, component, DOMAIN, {}, config)
+    try:
+        hass.data[DATA_ABODE] = AbodeData(hass, username, password)
+
+        for component in ['binary_sensor', 'alarm_control_panel']:
+            discovery.load_platform(hass, component, DOMAIN, {}, config)
+
+    except (ConnectTimeout, HTTPError) as ex:
+        _LOGGER.error("Unable to connect to Abode: %s", str(ex))
+        hass.components.persistent_notification.create(
+            'Error: {}<br />'
+            'You will need to restart hass after fixing.'
+            ''.format(ex),
+            title=NOTIFICATION_TITLE,
+            notification_id=NOTIFICATION_ID)
 
     return True
 
@@ -51,25 +62,11 @@ class AbodeData:
     """Shared Abode data."""
 
     def __init__(self, hass, username, password):
-        try:
-            import abodepy
+        import abodepy
 
-            self.abode = abodepy.Abode(username, password)
-            if self.abode._token is None:
-                return False
+        self.abode = abodepy.Abode(username, password)
+        self.devices = self.abode.get_devices()
+        self.events = abodepy.AbodeEvents()
 
-            self.devices = self.abode.get_devices()
-            self.events = abodepy.AbodeEvents()
-
-            _LOGGER.debug("Abode Security set up with %s devices",
-                          len(self.devices))
-
-        except (ConnectTimeout, HTTPError) as ex:
-            _LOGGER.error("Unable to connect to Abode: %s", str(ex))
-            hass.components.persistent_notification.create(
-                'Error: {}<br />'
-                'You will need to restart hass after fixing.'
-                ''.format(ex),
-                title=NOTIFICATION_TITLE,
-                notification_id=NOTIFICATION_ID)
-            return False
+        _LOGGER.debug("Abode Security set up with %s devices",
+                      len(self.devices))
