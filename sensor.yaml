@@ -202,7 +202,7 @@
       sonos_volume:
         value_template: >-
           {%- if states.media_player.livingroomsonos.attributes.volume_level != None -%}
-            {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) |int }}
+            {{ (states.media_player.livingroomsonos.attributes.volume_level|default(0) * 100) |int }}
           {%- else -%}
             NA
           {%- endif -%}
