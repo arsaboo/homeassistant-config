@@ -82,7 +82,8 @@
      seconds: 00
   action:
      service: alarm_control_panel.abode_refresh_state
-     data: alarm_control_panel.abode
+     data:
+       entity_id: alarm_control_panel.abode
 
 # - id: change_abode_status
 #   alias: 'Change Abode Status'
