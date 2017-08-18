@@ -18,7 +18,7 @@
           away_mode: 'True'
       - service: climate.set_temperature
         data_template:
-          entity_id: climate.lyricmaster
+          entity_id: climate.lyric_t5_thermostat
           temperature: >-
             {%- if states.sensor.pws_temp_f.state|int > 75 -%}
               83
@@ -27,7 +27,7 @@
             {%- endif -%}
       - service: climate.set_hold_mode
         data:
-          entity_id: climate.lyricmaster
+          entity_id: climate.lyric_t5_thermostat
           hold_mode: 'PermanentHold'
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording

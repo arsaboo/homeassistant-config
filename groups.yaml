@@ -124,6 +124,7 @@
     - sensor.upstairs_humidity
     - sensor.upstairs_temperature
     - input_boolean.thermo_away_upstairs
+    - climate.lyric_t5_thermostat
     - climate.lyricmaster
 
   Information:
