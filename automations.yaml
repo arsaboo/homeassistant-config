@@ -463,6 +463,17 @@
           Home Assistant {{ states('updater.updater') }} is available, please [update](https://home-assistant.io/getting-started/installation-raspberry-pi-all-in-one/#upgrading).
         notification_id: "update_available"
 
+- id: change_current_theme
+  alias: 'Change Current Theme'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_select.current_theme
+  action:
+    - service: frontend.set_theme
+      data_template:
+        name: '{{states.input_select.current_theme.state}}'
+
 #################################################################
 ## Commute Times
 #################################################################

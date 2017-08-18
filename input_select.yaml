@@ -38,3 +38,13 @@
       - InputHdmi4
     initial: InputHdmi4
     icon: mdi:remote
+
+  current_theme:
+    name: 'Current Theme'
+    options:
+     - 'default'
+     - 'teal'
+     - 'darkorange'
+     - 'darkred'
+    initial: 'default'
+    icon: 'mdi:palette'
