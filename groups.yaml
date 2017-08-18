@@ -138,6 +138,7 @@
     - cover.garagedoor
     - sensor.ars_bloom_voltage
     - sensor.calories
+    - input_select.current_theme
 
   Network Details:
     - binary_sensor.pihole
