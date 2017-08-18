@@ -38,7 +38,7 @@
       - sensor.usd_eur
       - sensor.sonos_volume
       - sensor.downstairsthermoper
-      - sensor.upstairsthermostatoperation
+      - sensor.upstairsthermoper
       - group.abode_status
       - group.device_location
       - group.information

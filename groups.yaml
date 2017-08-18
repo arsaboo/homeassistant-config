@@ -118,14 +118,15 @@
     - sensor.downstairsthermoper
     - sensor.downstairs_humidity
     - sensor.living_room_temperature
-    - input_boolean.thermo_away_main
+    - switch.downstairs_away
     - climate.upstairs
-    - sensor.upstairsthermostatoperation
+    - sensor.upstairsthermoper
     - sensor.upstairs_humidity
     - sensor.upstairs_temperature
-    - input_boolean.thermo_away_upstairs
+    - switch.upstairs_away
     - climate.lyric_t5_thermostat
-    - climate.lyricmaster
+    - sensor.lyricthermoper
+    - switch.lyric_hold
 
   Information:
     - sensor.time__date

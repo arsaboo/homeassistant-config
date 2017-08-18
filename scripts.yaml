@@ -8,27 +8,11 @@
       - service: alarm_control_panel.alarm_arm_away
         data:
           entity_id: alarm_control_panel.abode
-      - service: climate.set_away_mode
-        data:
-          entity_id: climate.downstairs
-          away_mode: 'True'
-      - service: climate.set_away_mode
-        data:
-          entity_id: climate.upstairs
-          away_mode: 'True'
-      - service: climate.set_temperature
-        data_template:
-          entity_id: climate.lyric_t5_thermostat
-          temperature: >-
-            {%- if states.sensor.pws_temp_f.state|int > 75 -%}
-              83
-            {%- else -%}
-              66
-            {%- endif -%}
-      - service: climate.set_hold_mode
-        data:
-          entity_id: climate.lyric_t5_thermostat
-          hold_mode: 'PermanentHold'
+      - service: switch.turn_on
+        entity_id:
+          - switch.downstairs_away
+          - switch.upstairs_away
+          - switch.lyric_hold
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
       # - service: ifttt.trigger
@@ -49,23 +33,41 @@
       - service: alarm_control_panel.alarm_disarm
         data:
           entity_id: alarm_control_panel.abode
-      - service: climate.set_away_mode
-        data:
-          entity_id: climate.upstairs
-          away_mode: 'False'
-      - service: climate.set_away_mode
-        data:
-          entity_id: climate.downstairs
-          away_mode: 'False'
-      - service: climate.lyric_resume_program
-        data:
-          entity_id: climate.lyric_t5_thermostat
+      - service: switch.turn_off
+        entity_id:
+          - switch.downstairs_away
+          - switch.upstairs_away
+          - switch.lyric_hold
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: ifttt.trigger
       #   data: {"event":"AbodeStandby", "value1":"Abode Standby"}
       # - service: homeassistant.turn_off
       #   entity_id: input_boolean.startrecording
+
+  lyric_hold_on:
+    alias: 'Lyric hold on'
+    sequence:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.lyric_t5_thermostat
+          temperature: >-
+            {%- if states.sensor.pws_temp_f.state|int > 75 -%}
+              83
+            {%- else -%}
+              66
+            {%- endif -%}
+      - service: climate.set_hold_mode
+        data:
+          entity_id: climate.lyric_t5_thermostat
+          hold_mode: 'PermanentHold'
+
+  lyric_hold_off:
+    alias: 'Lyric hold off'
+    sequence:
+      - service: climate.lyric_resume_program
+        data:
+          entity_id: climate.lyric_t5_thermostat
 
   tv_off:
     alias: 'Turn Television off'

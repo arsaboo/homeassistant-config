@@ -14,14 +14,6 @@
     name: Camera Recording
     initial: off
     icon: mdi:record-rec
-  thermo_away_main:
-    name: Downstairs Away Mode
-    initial: off
-    icon: mdi:home
-  thermo_away_upstairs:
-    name: Upstairs Away Mode
-    initial: off
-    icon: mdi:home
   tv:
     name: TV
     initial: off

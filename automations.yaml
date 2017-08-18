@@ -243,37 +243,27 @@
   alias: 'Adjust settings changed by Abode'
   initial_state: 'on'
   condition:
-    condition: and
-    conditions:
-     - condition: or
-       conditions:
+    - condition: state
+      entity_id: group.thermostat_away
+      state: 'off'
+    - condition: or
+      conditions:
         - condition: state
           entity_id: input_select.abodestatus
           state: 'home'
         - condition: state
           entity_id: input_select.abodestatus
           state: 'standby'
-     - condition: or
-       conditions:
-        - condition: state
-          entity_id: input_boolean.thermo_away_main
-          state: 'on'
-        - condition: state
-          entity_id: input_boolean.thermo_away_upstairs
-          state: 'on'
   trigger:
    - platform: time
      minutes: '/10'
      seconds: 00
   action:
-     - service: climate.set_away_mode
-       data:
-         entity_id: climate.downstairs
-         away_mode: 'False'
-     - service: climate.set_away_mode
-       data:
-         entity_id: climate.upstairs
-         away_mode: 'False'
+    - service: switch.turn_on
+      entity_id:
+        - switch.downstairs_away
+        - switch.upstairs_away
+        - switch.lyric_hold
 
 - id: abode_arm
   alias: 'Arm Abode'
@@ -730,86 +720,6 @@
         rgb_color: [255, 255, 255]
         brightness: 250
         color_temp: 285
-
-- id: downstairs_thermostat_to_input_boolean
-  alias: Downstairs thermostat to Input_Boolean
-  initial_state: 'on'
-  trigger:
-    platform: state
-    entity_id: sensor.downstairsthermmode
-  action:
-    service_template: >
-      {%- if is_state('sensor.downstairsthermmode', 'Home') -%}
-        homeassistant.turn_off
-      {%- elif is_state('sensor.downstairsthermmode', 'Away') -%}
-        homeassistant.turn_on
-      {%- endif -%}
-    entity_id: input_boolean.thermo_away_main
-
-- id: change_downstairs_thermostat_mode
-  alias: Change downstairs Thermostat mode
-  initial_state: 'on'
-  condition:
-    condition: template
-    value_template: >
-      {%- if states.sensor.downstairsthermmode.last_changed -%}
-        {{ (as_timestamp(now()) - as_timestamp(states.sensor.downstairsthermmode.last_changed)) > 60 }}
-      {%- else -%}
-        true
-      {%- endif -%}
-  trigger:
-    platform: state
-    entity_id: input_boolean.thermo_away_main
-  action:
-     service: climate.set_away_mode
-     entity_id: climate.downstairs
-     data_template:
-       away_mode: >
-         {%- if is_state('input_boolean.thermo_away_main', 'off') -%}
-           off
-         {%- elif is_state('input_boolean.thermo_away_main', 'on') -%}
-           on
-         {%- endif -%}
-
-- id: upstairs_thermostat_to_input_boolean
-  alias: Upstairs thermostat to Input_Boolean
-  initial_state: 'on'
-  trigger:
-    platform: state
-    entity_id: sensor.upstairshermostatmode
-  action:
-    service_template: >
-      {%- if is_state('sensor.upstairshermostatmode', 'Home') -%}
-        homeassistant.turn_off
-      {%- elif is_state('sensor.upstairshermostatmode', 'Away') -%}
-        homeassistant.turn_on
-      {%- endif -%}
-    entity_id: input_boolean.thermo_away_upstairs
-
-- id: change_upstairs_thermostat_mode
-  alias: Change upstairs Thermostat mode
-  initial_state: 'on'
-  condition:
-    condition: template
-    value_template: >
-      {%- if states.sensor.upstairshermostatmode.last_changed -%}
-        {{ (as_timestamp(now()) - as_timestamp(states.sensor.upstairshermostatmode.last_changed)) > 60 }}
-      {%- else -%}
-        true
-      {%- endif -%}
-  trigger:
-    platform: state
-    entity_id: input_boolean.thermo_away_upstairs
-  action:
-    service: climate.set_away_mode
-    entity_id: climate.upstairs
-    data_template:
-      away_mode: >
-        {%- if is_state('input_boolean.thermo_away_upstairs', 'off') -%}
-          off
-        {%- elif is_state('input_boolean.thermo_away_upstairs', 'on') -%}
-          on
-        {%- endif -%}
 
 - id: outdoor_light_at_night
   alias: Outdoor lights at night
