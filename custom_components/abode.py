@@ -40,17 +40,16 @@ def setup(hass, config):
     conf = config[DOMAIN]
     username = conf.get(CONF_USERNAME)
     password = conf.get(CONF_PASSWORD)
-    for component in ['binary_sensor', 'alarm_control_panel']:
-        discovery.load_platform(hass, component, DOMAIN, {}, config)
-    try:
-        import abodepy as AbodePy
 
-        abode = AbodePy.Abode(username, password, get_devices=True)
-        if abode._token is None:
-            return False
-        _LOGGER.debug("Abode Security set up with %s devices",
-                      len(abode._devices))
-        hass.data[DATA_ABODE] = abode
+    try:
+        data = AbodeData(hass, username, password)
+        hass.data[DATA_ABODE] = data
+
+        for component in ['binary_sensor', 'alarm_control_panel']:
+            discovery.load_platform(hass, component, DOMAIN, {}, config)
+
+        data.abode.start_listener()
+
     except (ConnectTimeout, HTTPError) as ex:
         _LOGGER.error("Unable to connect to Abode: %s", str(ex))
         hass.components.persistent_notification.create(
@@ -59,5 +58,17 @@ def setup(hass, config):
             ''.format(ex),
             title=NOTIFICATION_TITLE,
             notification_id=NOTIFICATION_ID)
-        return False
+
     return True
+
+class AbodeData:
+    """Shared Abode data."""
+
+    def __init__(self, hass, username, password):
+        import abodepy
+
+        self.abode = abodepy.Abode(username, password)
+        self.devices = self.abode.get_devices()
+
+        _LOGGER.debug("Abode Security set up with %s devices",
+                      len(self.devices))
