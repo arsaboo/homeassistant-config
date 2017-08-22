@@ -162,7 +162,7 @@
   Home Security:
     control: hidden
     entities:
-      - alarm_control_panel.abode
+      - alarm_control_panel.abode_alarm
       - input_select.abodestatus
       - binary_sensor.door_contact_back_door
       - binary_sensor.door_contact_front_door

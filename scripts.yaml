@@ -7,7 +7,7 @@
     sequence:
       - service: alarm_control_panel.alarm_arm_away
         data:
-          entity_id: alarm_control_panel.abode
+          entity_id: alarm_control_panel.abode_alarm
       - service: switch.turn_on
         entity_id:
           - switch.downstairs_away
@@ -23,7 +23,7 @@
     sequence:
       - service: alarm_control_panel.alarm_arm_home
         data:
-          entity_id: alarm_control_panel.abode
+          entity_id: alarm_control_panel.abode_alarm
       # - service: ifttt.trigger
       #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
@@ -32,7 +32,7 @@
     sequence:
       - service: alarm_control_panel.alarm_disarm
         data:
-          entity_id: alarm_control_panel.abode
+          entity_id: alarm_control_panel.abode_alarm
       - service: switch.turn_off
         entity_id:
           - switch.downstairs_away
@@ -267,4 +267,4 @@
       - service: input_select.select_option
         data_template:
           entity_id: input_select.abodestatus
-          option: "{{states.alarm_control_panel.abode.state|default('standby')}}"
+          option: "{{states.alarm_control_panel.abode_alarm.state|default('standby')}}"

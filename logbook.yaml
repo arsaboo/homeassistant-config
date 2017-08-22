@@ -65,7 +65,6 @@
       - automation.update_tv_status_in_ha
       - automation.plex_spy_notification
       - automation.reset_garage_relay
-      - automation.open_garage_door_when_someone_home
       - automation.rashmi_home
       - automation.alok_home
       - automation.notify_camera_pictures

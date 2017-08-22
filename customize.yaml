@@ -163,7 +163,7 @@
        icon: mdi:water-percent
      sensor.upstairshermostatmode:
        icon: mdi:home
-     alarm_control_panel.abode:
+     alarm_control_panel.abode_alarm:
        entity_picture: /local/Abode.jpg
 
  #Emulated_Hue Devices

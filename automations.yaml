@@ -46,17 +46,9 @@
 - id: update_abode_status
   alias: 'Update Abode Status'
   initial_state: 'on'
-  condition:
-    - condition: template
-      value_template: >
-        {%- if states.automation.update_abode_status.attributes.last_triggered -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.automation.update_abode_status.attributes.last_triggered)) > 240 }}
-        {%- else -%}
-          true
-        {%- endif -%}
   trigger:
     - platform: state
-      entity_id: alarm_control_panel.abode
+      entity_id: alarm_control_panel.abode_alarm
   action:
     - service: input_select.select_option
       data_template:
@@ -70,20 +62,20 @@
             {{ trigger.from_state.state }} to {{ trigger.to_state.state }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
           {%- endfor -%}
 
-- id: sync_abode_status
-  alias: 'Sync Abode Status'
-  initial_state: 'on'
-  condition:
-    - condition: template
-      value_template: '{{states.input_select.abodestatus.state != states.alarm_control_panel.abode.state}}'
-  trigger:
-   - platform: time
-     minutes: '/1'
-     seconds: 00
-  action:
-     service: alarm_control_panel.abode_refresh_state
-     data:
-       entity_id: alarm_control_panel.abode
+# - id: sync_abode_status
+#   alias: 'Sync Abode Status'
+#   initial_state: 'on'
+#   condition:
+#     - condition: template
+#       value_template: '{{states.input_select.abodestatus.state != states.alarm_control_panel.abode_alarm.state}}'
+#   trigger:
+#    - platform: time
+#      minutes: '/1'
+#      seconds: 00
+#   action:
+#      service: alarm_control_panel.abode_refresh_state
+#      data:
+#        entity_id: alarm_control_panel.abode_alarm
 
 # - id: change_abode_status
 #   alias: 'Change Abode Status'
@@ -93,15 +85,15 @@
 #       entity_id: input_select.abodestatus
 #   action:
 #     - service_template: >-
-#         {% if trigger.to_state.state == 'home' %}
+#         {% if trigger.to_state.state == 'armed_home' %}
 #           alarm_control_panel.alarm_arm_home
-#         {% elif trigger.to_state.state == 'standby' %}
+#         {% elif trigger.to_state.state == 'disarmed' %}
 #           alarm_control_panel.disarm
-#         {% elif trigger.to_state.state == 'away' %}
+#         {% elif trigger.to_state.state == 'armed_away' %}
 #           alarm_control_panel.alarm_arm_away
 #         {% endif %}
 #       data:
-#         entity_id: alarm_control_panel.abode
+#         entity_id: alarm_control_panel.abode_alarm
 
 
 - id: disarm_abode_from_away
@@ -109,8 +101,8 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: input_select.abodestatus
-      state: 'away'
+      entity_id: alarm_control_panel.abode_alarm
+      state: 'armed_away'
     - condition: state
       entity_id: input_boolean.abodeupdate
       state: 'on'
@@ -138,11 +130,11 @@
     state: 'open'
   trigger:
     - platform: state
-      entity_id: input_select.abodestatus
-      to: 'home'
+      entity_id: alarm_control_panel.abode_alarm
+      to: 'armed_home'
     - platform: state
-      entity_id: input_select.abodestatus
-      to: 'away'
+      entity_id: alarm_control_panel.abode_alarm
+      to: 'armed_away'
   action:
     - service: notify.pushbullet
       data:
@@ -156,8 +148,8 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: input_select.abodestatus
-      state: 'home'
+      entity_id: alarm_control_panel.abode_alarm
+      state: 'armed_home'
     - condition: state
       entity_id: input_boolean.abodeupdate
       state: 'on'
@@ -178,8 +170,8 @@
     condition: and
     conditions:
      - condition: state
-       entity_id: input_select.abodestatus
-       state: 'standby'
+       entity_id: alarm_control_panel.abode_alarm
+       state: 'disarmed'
      - condition: time
        after: '22:15:00'
        before: '07:00:00'
@@ -188,8 +180,8 @@
        state: 'on'
      - condition: template
        value_template: >
-         {%- if states.input_select.abodestatus.last_changed -%}
-           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
+         {%- if states.alarm_control_panel.abode_alarm.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.alarm_control_panel.abode_alarm.last_changed)) > 300 }}
          {%- else -%}
            true
          {%- endif -%}
@@ -218,19 +210,19 @@
        state: 'on'
      - condition: template
        value_template: >
-         {%- if states.input_select.abodestatus.last_changed -%}
-           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
+         {%- if states.alarm_control_panel.abode_alarm.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.alarm_control_panel.abode_alarm.last_changed)) > 300 }}
          {%- else -%}
            true
          {%- endif -%}
      - condition: or
        conditions:
         - condition: state
-          entity_id: input_select.abodestatus
-          state: 'home'
+          entity_id: alarm_control_panel.abode_alarm
+          state: 'armed_home'
         - condition: state
-          entity_id: input_select.abodestatus
-          state: 'away'
+          entity_id: alarm_control_panel.abode_alarm
+          state: 'armed_away'
   trigger:
    - platform: time
      minutes: '/10'
@@ -249,11 +241,11 @@
     - condition: or
       conditions:
         - condition: state
-          entity_id: input_select.abodestatus
-          state: 'home'
+          entity_id: alarm_control_panel.abode_alarm
+          state: 'armed_home'
         - condition: state
-          entity_id: input_select.abodestatus
-          state: 'standby'
+          entity_id: alarm_control_panel.abode_alarm
+          state: 'disarmed'
   trigger:
    - platform: time
      minutes: '/10'
@@ -280,7 +272,7 @@
           true
         {%- endif -%}
     - condition: template
-      value_template: "{{ states.input_select.abodestatus.state != 'away' }}"
+      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
   trigger:
     - platform: state
       entity_id: group.household
@@ -358,8 +350,8 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: input_select.abodestatus
-      state: 'away'
+      entity_id: alarm_control_panel.abode_alarm
+      state: 'armed_away'
     - condition: template
       value_template: >
         {%- if states.automation.notify_camera_pictures.attributes.last_triggered -%}
@@ -836,11 +828,11 @@
     - condition: or
       conditions:
        - condition: state
-         entity_id: input_select.abodestatus
-         state: 'home'
+         entity_id: alarm_control_panel.abode_alarm
+         state: 'armed_home'
        - condition: state
-         entity_id: input_select.abodestatus
-         state: 'away'
+         entity_id: alarm_control_panel.abode_alarm
+         state: 'armed_away'
   trigger:
     - platform: time
       minutes: '/5'
@@ -853,8 +845,8 @@
   initial_state: 'on'
   condition:
     condition: state
-    entity_id: input_select.abodestatus
-    state: 'away'
+    entity_id: alarm_control_panel.abode_alarm
+    state: 'armed_away'
     for:
       minutes: 10
   trigger:
@@ -882,8 +874,8 @@
   initial_state: 'on'
   condition:
     condition: state
-    entity_id: input_select.abodestatus
-    state: 'away'
+    entity_id: alarm_control_panel.abode_alarm
+    state: 'armed_away'
   trigger:
     platform: sun
     event: sunset
@@ -898,8 +890,8 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: input_select.abodestatus
-      state: 'away'
+      entity_id: alarm_control_panel.abode_alarm
+      state: 'armed_away'
     - condition: state
       entity_id: group.living_room_lights
       state: 'on'
