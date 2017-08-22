@@ -172,22 +172,6 @@
           {%- else -%}
             mdi:fan
           {%- endif -%}
-      lyricthermoper:
-        friendly_name: "Lyric Thermostat"
-        value_template: >-
-           {%- if states.climate.lyric_t5_thermostat != None -%}
-             {{ states.climate.lyric_t5_thermostat.attributes.operation_mode }}
-           {%- else -%}
-             unknown
-           {%- endif -%}
-        icon_template: >-
-          {%- if states.climate.lyric_t5_thermostat.attributes.operation_mode == "heat" -%}
-            mdi:fire
-          {%- elif states.climate.lyric_t5_thermostat.attributes.operation_mode == "cool" -%}
-            mdi:snowflake
-          {%- else -%}
-            mdi:fan
-          {%- endif -%}
       living_room:
         value_template: >-
           {%- if states.states.remote.livingroom != None -%}

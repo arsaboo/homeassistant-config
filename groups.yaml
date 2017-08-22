@@ -125,7 +125,6 @@
     - sensor.upstairs_temperature
     - switch.upstairs_away
     - climate.lyric_t5_thermostat
-    - sensor.lyricthermoper
     - switch.lyric_hold
 
   Information:
