@@ -2,60 +2,37 @@
 This component provides HA alarm_control_panel support for Abode System.
 
 For more details about this platform, please refer to the documentation at
-
+https://home-assistant.io/components/alarm_control_panel.abode/
 """
 import logging
-from datetime import timedelta
 
-import homeassistant.helpers.config_validation as cv
-
-from homeassistant.util import Throttle
-from custom_components.abode import (DATA_ABODE, DEFAULT_NAME)
-from homeassistant.components.alarm_control_panel import DOMAIN
-#from homeassistant.components.abode import (CONF_ATTRIBUTION, DATA_ABODE)
-from homeassistant.const import (STATE_UNKNOWN)
-import homeassistant.components.alarm_control_panel as alarm
+from custom_components.abode import (
+    AbodeDevice, ABODE_CONTROLLER, DEFAULT_NAME)
+from homeassistant.const import (STATE_ALARM_ARMED_AWAY,
+                                 STATE_ALARM_ARMED_HOME, STATE_ALARM_DISARMED)
+from homeassistant.components.alarm_control_panel import (AlarmControlPanel)
 
 DEPENDENCIES = ['abode']
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(minutes=5)
-ALARM_STATE_HOME = 'home'
-ALARM_STATE_STANDBY = 'standby'
-ALARM_STATE_AWAY = 'away'
-SERVICE_ABODE_REFRESH_STATE = 'abode_refresh_state'
 ICON = 'mdi:security'
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up a sensor for an Abode device."""
-    abode = hass.data.get(DATA_ABODE)
-    if not abode:
-        _LOGGER.debug('No DATA_ABODE')
-        return False
 
-    alarm = AbodeAlarm(hass, abode)
-    hass.services.register(
-        DOMAIN, SERVICE_ABODE_REFRESH_STATE, alarm.abode_refresh_state)
-    add_devices([alarm], True)
-    return True
+    add_devices(
+        [AbodeAlarm(hass, ABODE_CONTROLLER, ABODE_CONTROLLER.get_alarm())])
 
 
-class AbodeAlarm(alarm.AlarmControlPanel):
+class AbodeAlarm(AbodeDevice, AlarmControlPanel):
     """An alarm_control_panel implementation for Abode."""
 
-    def __init__(self, hass, data):
-        """Initialize a alarm control panel for Abode."""
-        super(AbodeAlarm, self).__init__()
-        self._data = data
+    def __init__(self, hass, controller, device):
+        """Initialize the alarm control panel."""
+        AbodeDevice.__init__(self, hass, controller, device)
         self._name = "{0}".format(DEFAULT_NAME)
-        self._state = STATE_UNKNOWN
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
 
     @property
     def icon(self):
@@ -65,56 +42,33 @@ class AbodeAlarm(alarm.AlarmControlPanel):
     @property
     def state(self):
         """Return the state of the device."""
-        return self._state
-
-    def update(self):
-        """Return the state of the device."""
-        status = self._data.get_alarm().mode
-        _LOGGER.debug("Abode status is %s", status)
-        if status == 'standby':
-            state = ALARM_STATE_STANDBY
-        elif status == 'home':
-            state = ALARM_STATE_HOME
-        elif status == 'away':
-            state = ALARM_STATE_AWAY
+        if self._device.mode == "standby":
+            state = STATE_ALARM_DISARMED
+        elif self._device.mode == "away":
+            state = STATE_ALARM_ARMED_AWAY
+        elif self._device.mode == "home":
+            state = STATE_ALARM_ARMED_HOME
         else:
-            state = STATE_UNKNOWN
-        self._state = state
-        self._data.get_devices()
+            state = None
+        return state
 
     def alarm_disarm(self, code=None):
         """Send disarm command."""
-        self._data.get_alarm().set_mode(mode=ALARM_STATE_STANDBY)
-        self._state = ALARM_STATE_STANDBY
-        self.schedule_update_ha_state()
-        _LOGGER.debug("Abode security disarmed")
+        self._device.set_standby()
 
     def alarm_arm_home(self, code=None):
         """Send arm home command."""
-        self._data.get_alarm().set_mode(mode=ALARM_STATE_HOME)
-        self._state = ALARM_STATE_HOME
-        self.schedule_update_ha_state()
-        _LOGGER.debug("Abode security home")
+        self._device.set_home()
 
     def alarm_arm_away(self, code=None):
         """Send arm away command."""
-        self._data.get_alarm().set_mode(mode=ALARM_STATE_AWAY)
-        self._state = ALARM_STATE_AWAY
-        self.schedule_update_ha_state()
-        _LOGGER.debug("Abode security armed")
+        self._device.set_away()
 
-    def abode_refresh_state(self, code=None):
-        """Return the state of the device."""
-        status = self._data.get_alarm().mode
-        _LOGGER.debug("Abode status is %s", status)
-        if status == 'standby':
-            state = ALARM_STATE_STANDBY
-        elif status == 'home':
-            state = ALARM_STATE_HOME
-        elif status == 'away':
-            state = ALARM_STATE_AWAY
-        else:
-            state = STATE_UNKNOWN
-        self._state = state
-        self.schedule_update_ha_state()
-        self._data.get_devices()
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        self._attrs = super().device_state_attributes
+        self._attrs['battery_backup'] = self._device.battery
+        self._attrs['cellular_backup'] = self._device.is_cellular
+
+        return self._attrs

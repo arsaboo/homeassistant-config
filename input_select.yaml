@@ -5,10 +5,10 @@
   abodestatus:
     name: Abode status
     options:
-      - standby
-      - home
-      - away
-    initial: standby
+      - disarmed
+      - armed_home
+      - armed_away
+    initial: disarmed
     icon: mdi:security
   livingroomharmony:
     name: Harmony Activity
