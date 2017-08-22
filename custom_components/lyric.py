@@ -22,7 +22,7 @@ DEPENDENCIES = ['http']
 REQUIREMENTS = [
     'https://github.com/bramkragten/python-lyric'
     '/archive/master.zip'
-    '#python-lyric==0.0.12']
+    '#python-lyric==0.0.16']
 
 DOMAIN = 'lyric'
 
@@ -146,6 +146,10 @@ class LyricDevice(object):
         self.hass = hass
         self.lyric = lyric
 
+        if not lyric.locations:
+            _LOGGER.error("No locations found.")
+            return
+
         if CONF_LOCATIONS not in conf:
             self._location = [location.name for location in lyric.locations]
         else:
@@ -161,7 +165,7 @@ class LyricDevice(object):
                 else:
                     _LOGGER.debug("Ignoring location %s, not in %s",
                                   location.name, self._location)
-        except socket.error:
+        except TypeError:
             _LOGGER.error(
                 "Connection error logging into the Lyric web service.")
 
@@ -175,7 +179,7 @@ class LyricDevice(object):
                 else:
                     _LOGGER.debug("Ignoring location %s, not in %s",
                                   location.name, self._location)
-        except socket.error:
+        except TypeError:
             _LOGGER.error(
                 "Connection error logging into the Lyric web service.")
 
