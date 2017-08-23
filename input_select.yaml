@@ -2,14 +2,6 @@
 ## Input_select
 #################################################################
 
-  abodestatus:
-    name: Abode status
-    options:
-      - disarmed
-      - armed_home
-      - armed_away
-    initial: disarmed
-    icon: mdi:security
   livingroomharmony:
     name: Harmony Activity
     options:
