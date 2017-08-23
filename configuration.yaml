@@ -253,9 +253,12 @@ logger:
     homeassistant.components.python_script: warning
     homeassistant.components.camera.synology: critical
     homeassistant.components.camera.generic: critical
+    homeassistant.components.sensor.wunderground: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical
+    custom_components.abode: info
+    custom_components.alarm_control_panel.abode: info
     #homeassistant.components.sensor.cert_expiry: critical
 # Text to speech
 tts:
