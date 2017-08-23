@@ -10,7 +10,7 @@ import asyncio
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers import discovery
-from homeassistant.const import (HTTP_BAD_REQUEST, HTTP_OK)
+from homeassistant.const import (CONF_SCAN_INTERVAL, HTTP_BAD_REQUEST, HTTP_OK)
 from homeassistant.loader import get_component
 from homeassistant.components.http import HomeAssistantView
 
@@ -19,10 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ['http']
 
-REQUIREMENTS = [
-    'https://github.com/bramkragten/python-lyric'
-    '/archive/master.zip'
-    '#python-lyric==0.0.16']
+REQUIREMENTS = ['python-lyric==1.0.0']
 
 DOMAIN = 'lyric'
 
@@ -43,6 +40,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Required(CONF_CLIENT_ID): cv.string,
         vol.Required(CONF_CLIENT_SECRET): cv.string,
         vol.Optional(CONF_REDIRECT_URI): cv.string,
+        vol.Optional(CONF_SCAN_INTERVAL, default=270): cv.positive_int,
         vol.Optional(CONF_LOCATIONS): vol.All(cv.ensure_list, cv.string),
         vol.Optional(CONF_FAN, default=DEFAULT_FAN): vol.Boolean,
         vol.Optional(CONF_AWAY_PERIODS):
@@ -103,7 +101,8 @@ def setup_lyric(hass, lyric, config, url=None):
 
     _LOGGER.debug(hass.data[DATA_LYRIC].lyric._locations)
     _LOGGER.debug("proceeding with discovery of platforms")
-
+    conf.pop(CONF_CLIENT_ID)
+    conf.pop(CONF_CLIENT_SECRET)
     discovery.load_platform(hass, 'climate', DOMAIN, conf, config)
 #    discovery.load_platform(hass, 'sensor', DOMAIN, {}, config)
 #    discovery.load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
@@ -123,6 +122,7 @@ def setup(hass, config):
     conf = config[DOMAIN]
     client_id = conf[CONF_CLIENT_ID]
     client_secret = conf[CONF_CLIENT_SECRET]
+    cache_ttl = conf[CONF_SCAN_INTERVAL]
     filename = LYRIC_CONFIG_FILE
     token_cache_file = hass.config.path(filename)
     redirect_uri = conf.get(CONF_REDIRECT_URI, hass.config.api.base_url +
@@ -131,7 +131,8 @@ def setup(hass, config):
     lyric = lyric.Lyric(
         token_cache_file=token_cache_file,
         client_id=client_id, client_secret=client_secret,
-        app_name='Home Assistant', redirect_uri=redirect_uri)
+        app_name='Home Assistant', redirect_uri=redirect_uri,
+        cache_ttl=cache_ttl)
 
     setup_lyric(hass, lyric, config)
 
