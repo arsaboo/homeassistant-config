@@ -163,10 +163,9 @@
     control: hidden
     entities:
       - alarm_control_panel.abode_alarm
-      - input_select.abodestatus
-      - binary_sensor.door_contact_back_door
-      - binary_sensor.door_contact_front_door
-      - binary_sensor.door_contact_garage_door
+      - binary_sensor.back_door
+      - binary_sensor.front_door
+      - binary_sensor.garage_entry_door
       - input_boolean.abodeupdate
       - input_boolean.startrecording
       - sensor.leeoalarmstatus

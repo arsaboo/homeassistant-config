@@ -252,12 +252,11 @@ logger:
     homeassistant.components.image_processing: critical
     homeassistant.components.python_script: warning
     homeassistant.components.camera.synology: critical
-    homeassistant.components.sensor.cert_expiry: critical
+    homeassistant.components.camera.generic: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
-    custom_components.alarm_control_panel.abode: debug
-    custom_components.lyric: debug
-    custom_components.climate.lyric: debug
+    aiohttp.server: critical
+    #homeassistant.components.sensor.cert_expiry: critical
 # Text to speech
 tts:
   - platform: google
