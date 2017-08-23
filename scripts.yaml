@@ -264,7 +264,3 @@
             {%- else -%}
               Shield
             {%- endif -%}
-      - service: input_select.select_option
-        data_template:
-          entity_id: input_select.abodestatus
-          option: "{{states.alarm_control_panel.abode_alarm.state|default('standby')}}"
