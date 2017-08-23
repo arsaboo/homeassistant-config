@@ -2,13 +2,13 @@
 This component provides HA cover support for Abode Security System.
 
 For more details about this platform, please refer to the documentation at
-https://home-assistant.io/components/switch.abode/
+https://home-assistant.io/components/cover.abode/
 """
 import logging
 
-from custom_components.abode import (
-    AbodeDevice, ABODE_CONTROLLER)
+from custom_components.abode import AbodeDevice, DATA_ABODE
 from homeassistant.components.cover import CoverDevice
+
 
 DEPENDENCIES = ['abode']
 
@@ -19,14 +19,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up Abode cover devices."""
     import abodepy.helpers.constants as CONST
 
+    abode = hass.data[DATA_ABODE]
+
     sensors = []
+    for sensor in abode.get_devices(type_filter=(CONST.DEVICE_SECURE_BARRIER)):
+        sensors.append(AbodeCover(hass, abode, sensor))
 
-    for sensor in ABODE_CONTROLLER.get_devices(
-            type_filter=(CONST.DEVICE_SECURE_BARRIER)):
-        sensors.append(AbodeCover(hass, ABODE_CONTROLLER, sensor))
-        _LOGGER.debug('Added Cover %s', sensor.name)
-
-    _LOGGER.debug('Adding %d Covers', len(sensors))
     add_devices(sensors)
 
 
