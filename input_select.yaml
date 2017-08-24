@@ -38,5 +38,6 @@
      - 'teal'
      - 'darkorange'
      - 'darkred'
+     - 'darkcyan'
     initial: 'default'
     icon: 'mdi:palette'
