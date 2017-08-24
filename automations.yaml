@@ -9,8 +9,8 @@
     - platform: state
       entity_id:
         - device_tracker.myiphone
-        - device_tracker.pi_alokphone
         - device_tracker.rashmisiphone
+        - device_tracker.pi_alokphone
         - device_tracker.pi_rashmiphone
       to: 'not_home'
       for: '00:07:00'
