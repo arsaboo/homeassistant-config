@@ -1,13 +1,8 @@
-#################################################################
-## Input_select
-#################################################################
-
   livingroomharmony:
     name: Harmony Activity
     options:
       - PowerOff
       - Watch Fire TV
-      - Chromecast
       - Youtube
       - SATV
       - Watch Apple TV

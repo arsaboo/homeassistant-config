@@ -145,8 +145,6 @@
        icon: mdi:car
      sensor.garagedoor:
        icon: mdi:glassdoor
-     media_player.castlivingroom:
-       friendly_name: Chromecast
      media_player.shieldtv:
        friendly_name: ShieldTV Cast
      media_player.my_shield_android_tv:
