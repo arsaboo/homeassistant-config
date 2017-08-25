@@ -1019,7 +1019,7 @@
     platform: homeassistant
     event: start
   action:
-    - delay: '00:00:05'
+    - delay: '00:00:01'
     - service: homeassistant.turn_on
       entity_id: script.initialize_hass
 
