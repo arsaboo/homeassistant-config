@@ -56,14 +56,10 @@ light:
     optimistic: false
     qos: 0
 
-# alarm_control_panel:
-#   platform: abode
-#   username: !secret abode_username
-#   password: !secret abode_password
-
 abode:
   username: !secret abode_username
   password: !secret abode_password
+
 #Adds Alexa and Google Home support
 emulated_hue:
   host_ip: 192.168.2.212
@@ -254,12 +250,12 @@ logger:
     homeassistant.components.camera.synology: critical
     homeassistant.components.camera.generic: critical
     homeassistant.components.sensor.wunderground: critical
+    homeassistant.components.sensor.pi_hole: critical
+    homeassistant.components.sensor.transmission: critical
+    homeassistant.components.media_player.plex: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical
-    custom_components.abode: info
-    custom_components.alarm_control_panel.abode: info
-    #homeassistant.components.sensor.cert_expiry: critical
 # Text to speech
 tts:
   - platform: google
