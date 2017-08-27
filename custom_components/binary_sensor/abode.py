@@ -23,7 +23,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     sensors = []
     for sensor in abode.get_devices(type_filter=device_types):
-        sensors.append(AbodeBinarySensor(hass, abode, sensor))
+        sensors.append(AbodeBinarySensor(abode, sensor))
 
     add_devices(sensors)
 
@@ -37,7 +37,7 @@ def map_abode_device_class():
         CONST.DEVICE_KEYPAD: 'connectivity',
         CONST.DEVICE_DOOR_CONTACT: 'opening',
         CONST.DEVICE_STATUS_DISPLAY: 'connectivity',
-        CONST.DEVICE_MOTION_CAMERA: 'motion',
+        CONST.DEVICE_MOTION_CAMERA: 'connectivity',
         CONST.DEVICE_WATER_SENSOR: 'moisture'
     }
 
@@ -45,17 +45,14 @@ def map_abode_device_class():
 class AbodeBinarySensor(AbodeDevice, BinarySensorDevice):
     """A binary sensor implementation for Abode device."""
 
-    def __init__(self, hass, controller, device):
+    def __init__(self, controller, device):
         """Initialize a sensor for Abode device."""
-        AbodeDevice.__init__(self, hass, controller, device)
+        AbodeDevice.__init__(self, controller, device)
         self._device_class = map_abode_device_class().get(self._device.type)
 
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
-        if self.device_class == 'motion':
-            return self._device.get_value('motion_event') == '1'
-
         return self._device.is_on
 
     @property

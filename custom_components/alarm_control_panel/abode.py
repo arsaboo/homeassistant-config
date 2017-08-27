@@ -24,15 +24,15 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up a sensor for an Abode device."""
     abode = hass.data[DATA_ABODE]
 
-    add_devices([AbodeAlarm(hass, abode, abode.get_alarm())])
+    add_devices([AbodeAlarm(abode, abode.get_alarm())])
 
 
 class AbodeAlarm(AbodeDevice, AlarmControlPanel):
     """An alarm_control_panel implementation for Abode."""
 
-    def __init__(self, hass, controller, device):
+    def __init__(self, controller, device):
         """Initialize the alarm control panel."""
-        AbodeDevice.__init__(self, hass, controller, device)
+        AbodeDevice.__init__(self, controller, device)
         self._name = "{0}".format(DEFAULT_NAME)
 
     @property
@@ -71,7 +71,6 @@ class AbodeAlarm(AbodeDevice, AlarmControlPanel):
         return {
             ATTR_ATTRIBUTION: CONF_ATTRIBUTION,
             'device_id': self._device.device_id,
-            'battery_low': self._device.battery_low,
             'battery_backup': self._device.battery,
             'cellular_backup': self._device.is_cellular
         }

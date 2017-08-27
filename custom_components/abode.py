@@ -14,9 +14,10 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  CONF_USERNAME, CONF_PASSWORD,
-                                 CONF_NAME, EVENT_HOMEASSISTANT_STOP)
+                                 CONF_NAME, EVENT_HOMEASSISTANT_STOP,
+                                 EVENT_HOMEASSISTANT_START)
 
-REQUIREMENTS = ['abodepy==0.8.3']
+REQUIREMENTS = ['abodepy==0.9.0']
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,26 +52,12 @@ def setup(hass, config):
     password = conf.get(CONF_PASSWORD)
 
     try:
-        abode = abodepy.Abode(username, password)
-        hass.data[DATA_ABODE] = abode
+        hass.data[DATA_ABODE] = abode = abodepy.Abode(username, password)
 
         devices = abode.get_devices()
 
         _LOGGER.info("Logged in to Abode and found %s devices",
                      len(devices))
-
-        for platform in ABODE_PLATFORMS:
-            discovery.load_platform(hass, platform, DOMAIN, {}, config)
-
-        def logout(event):
-            """Logout of Abode."""
-            abode.stop_listener()
-            abode.logout()
-            _LOGGER.info("Logged out of Abode")
-
-        hass.bus.listen(EVENT_HOMEASSISTANT_STOP, logout)
-
-        abode.start_listener()
 
     except (ConnectTimeout, HTTPError) as ex:
         _LOGGER.error("Unable to connect to Abode: %s", str(ex))
@@ -82,13 +69,30 @@ def setup(hass, config):
             notification_id=NOTIFICATION_ID)
         return False
 
+    for platform in ABODE_PLATFORMS:
+        discovery.load_platform(hass, platform, DOMAIN, {}, config)
+
+    def logout(event):
+        """Logout of Abode."""
+        abode.stop_listener()
+        abode.logout()
+        _LOGGER.info("Logged out of Abode")
+
+    hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, logout)
+
+    def startup(event):
+        """Listen for push events."""
+        abode.start_listener()
+
+    hass.bus.listen_once(EVENT_HOMEASSISTANT_START, startup)
+
     return True
 
 
 class AbodeDevice(Entity):
     """Representation of an Abode device."""
 
-    def __init__(self, hass, controller, device):
+    def __init__(self, controller, device):
         """Initialize a sensor for Abode device."""
         self._controller = controller
         self._device = device
@@ -96,7 +100,10 @@ class AbodeDevice(Entity):
     @asyncio.coroutine
     def async_added_to_hass(self):
         """Subscribe Abode events."""
-        self._controller.register(self._device, self._update_callback)
+        self.hass.async_add_job(
+            self._controller.register, self._device,
+            self._update_callback
+        )
 
     @property
     def should_poll(self):
@@ -114,7 +121,8 @@ class AbodeDevice(Entity):
         return {
             ATTR_ATTRIBUTION: CONF_ATTRIBUTION,
             'device_id': self._device.device_id,
-            'battery_low': self._device.battery_low
+            'battery_low': self._device.battery_low,
+            'no_response': self._device.no_response
         }
 
     def _update_callback(self, device):
