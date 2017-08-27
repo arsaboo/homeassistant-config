@@ -223,6 +223,7 @@
     - switch.driveway
     - switch.wemoporch
     - switch.wemoinsight
+    - switch.aeon_switch
   Light Operations:
     - input_boolean.partymode
     - script.colorloop_start
