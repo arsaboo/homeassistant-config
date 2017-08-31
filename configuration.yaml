@@ -260,6 +260,7 @@ logger:
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical
+    pywemo.ouimeaux_device: critical
 # Text to speech
 tts:
   - platform: google
