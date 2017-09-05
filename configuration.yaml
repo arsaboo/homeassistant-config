@@ -257,6 +257,7 @@ logger:
     homeassistant.components.sensor.pi_hole: critical
     homeassistant.components.sensor.transmission: critical
     homeassistant.components.media_player.plex: critical
+    homeassistant.components.telegram_bot: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical
