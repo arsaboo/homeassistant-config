@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ['http']
 
-REQUIREMENTS = ['python-lyric==1.0.0']
+REQUIREMENTS = ['python-lyric==1.1.4']
 
 DOMAIN = 'lyric'
 
@@ -146,11 +146,11 @@ class LyricDevice(object):
         """Init Lyric devices."""
         self.hass = hass
         self.lyric = lyric
-
+        
         if not lyric.locations:
             _LOGGER.error("No locations found.")
             return
-
+        
         if CONF_LOCATIONS not in conf:
             self._location = [location.name for location in lyric.locations]
         else:
