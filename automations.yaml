@@ -516,7 +516,7 @@
           {%- if states.sensor.plexspy.attributes -%}
             {% set space = joiner(' ') %}
             {%- for attr in states.sensor.plexspy.attributes -%}
-             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" -%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
               {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
@@ -530,7 +530,7 @@
           {%- if states.sensor.plexspy.attributes -%}
             {% set space = joiner(' ') %}
             {%- for attr in states.sensor.plexspy.attributes -%}
-             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" -%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
               {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
@@ -848,9 +848,9 @@
     - platform: state
       entity_id:
         - binary_sensor.garagedoor
-        - binary_sensor.downstairs_occupancy
-        - binary_sensor.living_room_occupancy
-        - binary_sensor.upstairs_occupancy
+        - binary_sensor.back_door
+        - binary_sensor.garage_entry_door
+        - binary_sensor.front_door
       from: 'off'
       to: 'on'
   action:

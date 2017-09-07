@@ -27,12 +27,16 @@
       - group.camera_arsbloom
       - group.camera_meteogram
       - group.camera_usps
+      - camera.abode_living_room
       - group.camera_foscam1
       - group.camera_foscam2
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_motoe
 
+  camera.abode_living_room:
+    entities:
+      - camera.living_room
   camera_usps:
     entities:
       - camera.usps_mail
