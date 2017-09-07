@@ -540,6 +540,30 @@
 ## Home Automation Related
 #################################################################
 
+- id: kitchen_light_on_morning
+  alias: 'Turn on kitchen lights in the morning'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_occupancy
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
+    - condition: time
+      after: '06:00:00'
+      before: '07:45:00'
+    - condition: state
+      entity_id: light.kitchen_lights
+      state: 'off'
+  action:
+     service: light.turn_on
+     data:
+       entity_id: light.kitchen_lights
+       brightness: 200
+
 - id: kitchen_light_brightness
   alias: 'Kitchen light brightness'
   initial_state: 'on'
@@ -599,9 +623,8 @@
     - condition: state
       entity_id: sun.sun
       state: 'below_horizon'
-    - condition: sun
-      before: sunrise
-      before_offset: '00:45:00'
+    - condition: time
+      before: '05:00:00'
   trigger:
    - platform: state
      entity_id:
