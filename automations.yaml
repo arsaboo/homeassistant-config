@@ -43,6 +43,27 @@
 ## Security System
 #################################################################
 
+- id: abode_ios_notifications
+  alias: Abode Actionable Notification
+  trigger:
+    - platform: event
+      event_type: abode_alarm
+  action:
+    - service: notify.ios_alokiosiphone
+      data:
+        message: 'Abode alarm triggered!'
+        data:
+          push:
+            badge: 0
+            category: "ABODE_ALARM"
+    - service: notify.ios_rashmiappiphone
+      data:
+        message: 'Abode alarm triggered!'
+        data:
+          push:
+            badge: 0
+            category: "ABODE_ALARM"
+
 - id: disarm_abode_from_away
   alias: 'Disarm Abode from Away'
   initial_state: 'on'
@@ -64,6 +85,10 @@
     - platform: state
       entity_id: group.household
       to: 'home'
+    - platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: DISARM_ABODE
   action:
      service: homeassistant.turn_on
      entity_id: script.abodestandby
@@ -813,6 +838,21 @@
       data_template:
         title: "Alarm!"
         message: "The {{ trigger.to_state.name }} was changed to {{ trigger.to_state.state }} while no one is home - {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p %d-%b-%Y', true) }}"
+    - service: homeassistant.turn_on
+      entity_id: script.notificationalarm
+
+- id: sound_abode_alarm_notification
+  alias: 'Sound alarm using notifications'
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: SOUND_ALARM
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: group.all_lights
     - service: homeassistant.turn_on
       entity_id: script.notificationalarm
 

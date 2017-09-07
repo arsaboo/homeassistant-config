@@ -280,6 +280,24 @@ remote:
     name: livingroom
     host: 192.168.2.152
 ios:
+  push:
+    categories:
+      - name: Abode Alarm
+        identifier: 'ABODE_ALARM'
+        actions:
+          - identifier: 'SOUND_ALARM'
+            title: 'Sound Alarm'
+            activationMode: 'background'
+            authenticationRequired: yes
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'DISARM_ABODE'
+            title: 'Disarm Abode'
+            activationMode: 'background'
+            authenticationRequired: yes
+            destructive: no
+            behavior: 'default'
+
 scene:
   platform: lifx_cloud
   token: !secret lifx_key
