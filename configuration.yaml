@@ -262,6 +262,8 @@ logger:
     aiohttp.access: critical
     aiohttp.server: critical
     pywemo.ouimeaux_device: critical
+    pywemo.ssdp: critical
+    homeassistant.helpers.entity: critical
 # Text to speech
 tts:
   - platform: google
