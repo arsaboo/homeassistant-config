@@ -203,32 +203,6 @@
      service: homeassistant.turn_on
      entity_id: script.abodestandby
 
-- id: adjust_settings_changed_by_abode
-  alias: 'Adjust settings changed by Abode'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: group.thermostat_away
-      state: 'off'
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.abode_alarm
-          state: 'armed_home'
-        - condition: state
-          entity_id: alarm_control_panel.abode_alarm
-          state: 'disarmed'
-  trigger:
-   - platform: time
-     minutes: '/10'
-     seconds: 00
-  action:
-    - service: switch.turn_on
-      entity_id:
-        - switch.downstairs_away
-        - switch.upstairs_away
-        - switch.lyric_hold
-
 - id: abode_arm
   alias: 'Arm Abode'
   initial_state: 'on'
@@ -316,6 +290,61 @@
   action:
     service: switch.turn_off
     entity_id: switch.foscam_record
+
+- id: disable_thermostat_away_mode
+  alias: 'Disable thermostat away'
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: >
+        {{states.alarm_control_panel.abode_alarm.state == 'disarmed' and states.group.thermostats.state == 'on'}}
+  trigger:
+   - platform: time
+     minutes: '/5'
+     seconds: 00
+  action:
+    service: homeassistant.turn_on
+    data_template:
+      entity_id: >
+        {%- if states.switch.downstairs_away.state == 'on' -%}
+          switch.downstairs_away
+        {%- elif states.switch.upstairs_away.state == 'on' -%}
+          switch.upstairs_away
+        {%- elif states.switch.lyric_hold.state == 'on' -%}
+          switch.lyric_hold
+        {%- endif -%}
+
+- id: enable_thermostat_away_mode
+  alias: 'Enable thermostat away'
+  initial_state: 'on'
+  condition:
+    - condition: or
+      conditions:
+        - condition: template
+          value_template: >
+            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.downstairs_away.state == 'off'}}
+        - condition: template
+          value_template: >
+            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.upstairs_away.state == 'off'}}
+        - condition: template
+          value_template: >
+            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.lyric_hold.state == 'off'}}
+  trigger:
+   - platform: time
+     minutes: '/5'
+     seconds: 00
+  action:
+    service: homeassistant.turn_off
+    data_template:
+      entity_id: >
+        {%- if states.switch.downstairs_away.state == 'off' -%}
+          switch.downstairs_away
+        {%- elif states.switch.upstairs_away.state == 'off' -%}
+          switch.upstairs_away
+        {%- elif states.switch.lyric_hold.state == 'off' -%}
+          switch.lyric_hold
+        {%- endif -%}
+
 
 - id: notify_camera_pictures
   alias: 'Notify camera pictures'

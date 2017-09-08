@@ -68,6 +68,8 @@
       - automation.rashmi_home
       - automation.alok_home
       - automation.notify_camera_pictures
+      - automation.disable_thermostat_away
+      - automation.enable_thermostat_away
       - zwave.garage_relay
       - zwave.aeotec_zw090_zstick_gen5
       - zwave.garage_door_tilt_sensor
