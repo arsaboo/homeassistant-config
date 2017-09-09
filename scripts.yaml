@@ -52,7 +52,7 @@
         data_template:
           entity_id: climate.lyric_t5_thermostat
           temperature: >-
-            {%- if states.sensor.pws_temp_f.state|int > 75 -%}
+            {%- if states.sensor.season == 'Summer' -%}
               83
             {%- else -%}
               66

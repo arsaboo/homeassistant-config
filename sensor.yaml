@@ -1,3 +1,4 @@
+  - platform: season
   - platform: cert_expiry
     host: !secret ha_url
   - platform: speedtest
