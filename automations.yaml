@@ -653,6 +653,7 @@
       entity_id: sun.sun
       state: 'below_horizon'
     - condition: time
+      after: '19:00:00'
       before: '05:00:00'
   trigger:
    - platform: state
