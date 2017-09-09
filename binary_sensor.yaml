@@ -1,3 +1,28 @@
+  - platform: 'bayesian'
+    prior: 0.25
+    name: 'Rashmi Home'
+    probability_threshold: 0.95
+    observations:
+      - entity_id: 'device_tracker.pi_rashmiphone'
+        prob_given_true: 0.8
+        prob_given_false: 0.6
+        platform: 'state'
+        to_state: 'home'
+      - entity_id: 'device_tracker.rashmiappiphone'
+        prob_given_true: 0.99
+        prob_given_false: 0.99
+        platform: 'state'
+        to_state: 'home'
+      - entity_id: 'device_tracker.rashmisiphone'
+        prob_given_true: 0.9
+        prob_given_false: 0.6
+        platform: 'state'
+        to_state: 'home'
+      - entity_id: 'device_tracker.sonu_sonu'
+        prob_given_true: 0.99
+        prob_given_false: 0.99
+        platform: 'state'
+        to_state: 'home'
   - platform: ping
     host: 192.168.2.3
     name: PiHole
