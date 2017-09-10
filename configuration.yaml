@@ -15,7 +15,15 @@ homeassistant:
   customize: !include customize.yaml
   #customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
+
 python_script:
+
+customizer:
+  custom_ui: hosted
+  hide_attributes:
+    - node_id
+    - value_index
+
 zone:
   name: Home
   latitude: !secret latitude_home

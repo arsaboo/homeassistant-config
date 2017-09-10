@@ -107,7 +107,7 @@
       paper-listbox-background-color: "#202020"
       paper-listbox-color: "#FFFFFF"
       primary-background-color: "#303030"
-      primary-text-color: "#cfcfcf"      
+      primary-text-color: "#cfcfcf"
       secondary-background-color: "#2b2b2b"
       secondary-text-color: "#04a7bc"
     # Colors based on variables, see above
