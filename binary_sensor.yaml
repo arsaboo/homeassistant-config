@@ -14,13 +14,12 @@
         platform: 'state'
         to_state: 'home'
       - entity_id: 'device_tracker.rashmisiphone'
-        prob_given_true: 0.95
+        prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'
         to_state: 'home'
       - entity_id: 'device_tracker.sonu_sonu'
-        prob_given_true: 0.99
-        prob_given_false: 0.1
+        prob_given_true: 1
         platform: 'state'
         to_state: 'home'
   - platform: 'bayesian'
@@ -39,7 +38,7 @@
         platform: 'state'
         to_state: 'home'
       - entity_id: 'device_tracker.myiphone'
-        prob_given_true: 0.95
+        prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'
         to_state: 'home'
