@@ -247,3 +247,4 @@
     - device_tracker.myiphone
     - device_tracker.alok_alok
     - binary_sensor.rashmi_home
+    - binary_sensor.alok_home
