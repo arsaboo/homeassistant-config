@@ -84,6 +84,7 @@
   trigger:
     - platform: state
       entity_id: group.household
+      from: 'not_home'
       to: 'home'
     - platform: event
       event_type: ios.notification_action_fired
@@ -130,6 +131,7 @@
      entity_id:
        - device_tracker.meta_rashmi
        - device_tracker.meta_alok
+     from: 'not_home'
      to: 'home'
   action:
     service: homeassistant.turn_on
@@ -386,6 +388,7 @@
        - binary_sensor.driveway_line_crossing
        - binary_sensor.patio_line_crossing
        - binary_sensor.porch_line_crossing
+     from: 'off'
      to: 'on'
   action:
     - service: notify.ios
@@ -601,6 +604,7 @@
   trigger:
    - platform: state
      entity_id: light.kitchen_lights
+     from: 'off'
      to: 'on'
   condition:
     - condition: template
@@ -661,6 +665,7 @@
    - platform: state
      entity_id:
        - binary_sensor.ring_front_door_motion
+     from: 'off'
      to: 'on'
   action:
     - service: switch.turn_on
@@ -1032,6 +1037,7 @@
   trigger:
     platform: state
     entity_id: media_player.panasonic_viera_tv
+    from: 'off'
     to: 'on'
   condition:
     - condition: state
