@@ -222,9 +222,11 @@
   trigger:
     - platform: state
       entity_id: group.household
+      from: 'home'
       to: 'not_home'
     - platform: state
       entity_id: group.household
+      from: 'home'
       to: 'not_home'
       for: '00:10:00'
   action:
@@ -303,7 +305,7 @@
      minutes: '/5'
      seconds: 00
   action:
-    service: homeassistant.turn_on
+    service: homeassistant.turn_off
     data_template:
       entity_id: >
         {%- if states.switch.downstairs_away.state == 'on' -%}
@@ -334,7 +336,7 @@
      minutes: '/5'
      seconds: 00
   action:
-    service: homeassistant.turn_off
+    service: homeassistant.turn_on
     data_template:
       entity_id: >
         {%- if states.switch.downstairs_away.state == 'off' -%}
