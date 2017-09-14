@@ -47,10 +47,6 @@
         prob_given_false: 0.1
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.elantrase'
-        prob_given_true: 1
-        platform: 'state'
-        to_state: 'home'
   - platform: ping
     host: 192.168.2.3
     name: PiHole

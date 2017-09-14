@@ -41,6 +41,9 @@ homeassistant:
     scene:
       homebridge_hidden: true
 
+    remote:
+      homebridge_hidden: true
+
     sensor:
       homebridge_hidden: true
 
