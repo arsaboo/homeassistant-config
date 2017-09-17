@@ -267,6 +267,7 @@ logger:
     homeassistant.components.media_player.plex: critical
     homeassistant.components.telegram_bot: critical
     homeassistant.components.scene.lifx_cloud: critical
+    homeassistant.components.sensor.darksky: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical

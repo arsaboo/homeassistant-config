@@ -13,4 +13,6 @@
       - device_tracker.meta_alok
       - alarm_control_panel.abode_alarm
       - media_player.panasonic_viera_tv
+      - binary_sensor.alok_home
+      - binary_sensor.rashmi_home
       - sensor.plexspy
