@@ -574,6 +574,24 @@
 ## Home Automation Related
 #################################################################
 
+- id: prevent_overcharging
+  alias: 'Prevent overcharging'
+  initial_state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.wemopowerused
+      below: 0.5
+  condition:
+    - condition: state
+      entity_id: switch.wemoinsight
+      state: 'on'
+    - condition: template
+      value_template: '{{states.switch.wemoinsight.attributes.on_latest_time.split(" ")[2][:-1]|int > 5}}'
+  action:
+     service: switch.turn_off
+     data:
+       entity_id: switch.wemoinsight
+
 - id: kitchen_light_on_morning
   alias: 'Turn on kitchen lights in the morning'
   initial_state: 'on'
