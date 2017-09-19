@@ -274,6 +274,10 @@ logger:
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
+    abodepy: info
+    abodepy.event_controller: info
+    custom_components.abode: info
+    custom_components.alarm_control_panel.abode: info
 # Text to speech
 tts:
   - platform: google

@@ -580,13 +580,13 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.wemopowerused
-      below: 0.5
+      below: 2
   condition:
     - condition: state
       entity_id: switch.wemoinsight
       state: 'on'
-    - condition: template
-      value_template: '{{states.switch.wemoinsight.attributes.on_latest_time.split(" ")[2][:-1]|int > 5}}'
+    # - condition: template
+    #   value_template: '{{states.switch.wemoinsight.attributes.on_latest_time.split(" ")[2][:-1]|int > 5}}'
   action:
      service: switch.turn_off
      data:
