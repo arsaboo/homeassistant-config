@@ -276,8 +276,7 @@ logger:
     homeassistant.helpers.entity: critical
     abodepy: info
     abodepy.event_controller: info
-    custom_components.abode: info
-    custom_components.alarm_control_panel.abode: info
+    custom_components.sensor.life360: critical
 # Text to speech
 tts:
   - platform: google
