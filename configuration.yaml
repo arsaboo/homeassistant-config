@@ -299,7 +299,7 @@ ios:
   push:
     categories:
       - name: Abode Alarm
-        identifier: 'ABODE_ALARM'
+        identifier: 'abode_alarm'
         actions:
           - identifier: 'SOUND_ALARM'
             title: 'Sound Alarm'

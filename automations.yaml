@@ -55,14 +55,14 @@
         data:
           push:
             badge: 0
-            category: "ABODE_ALARM"
+            category: "abode_alarm"
     - service: notify.ios_rashmiappiphone
       data:
         message: 'Abode alarm triggered!'
         data:
           push:
             badge: 0
-            category: "ABODE_ALARM"
+            category: "abode_alarm"
 
 - id: disarm_abode_from_away
   alias: 'Disarm Abode from Away'
