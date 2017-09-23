@@ -67,9 +67,9 @@ light:
 abode:
   username: !secret abode_username
   password: !secret abode_password
-usps:
-  username: !secret usps_username
-  password: !secret usps_password
+# usps:
+#   username: !secret usps_username
+#   password: !secret usps_password
 #Adds Alexa and Google Home support
 emulated_hue:
   host_ip: 192.168.2.212
@@ -119,8 +119,8 @@ camera:
     still_image_url: !secret meteogram_url
     content_type: 'image/svg+xml'
     name: Meteogram
-  - platform: usps
-    scan_interval: 30
+  # - platform: usps
+  #   scan_interval: 30
   # - platform: generic
   #   still_image_url: !secret porch_camera_image_url
   #   name: porch2
