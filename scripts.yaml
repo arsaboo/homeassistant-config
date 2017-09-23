@@ -52,10 +52,10 @@
         data_template:
           entity_id: climate.lyric_t5_thermostat
           temperature: >-
-            {%- if states.sensor.season == 'Summer' -%}
-              83
-            {%- else -%}
+            {%- if states.sensor.season == 'Winter' -%}
               66
+            {%- else -%}
+              83
             {%- endif -%}
       - service: climate.set_hold_mode
         data:
