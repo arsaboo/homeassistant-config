@@ -8,6 +8,9 @@
 
 homeassistant:
   customize_domain:
+    alarm_control_panel:
+      homebridge_hidden: false
+
     binary_sensor:
       homebridge_hidden: true
 
