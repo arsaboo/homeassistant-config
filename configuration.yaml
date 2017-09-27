@@ -274,9 +274,10 @@ logger:
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
-    abodepy: info
-    abodepy.event_controller: info
+    abodepy: debug
+    abodepy.event_controller: debug
     custom_components.sensor.life360: critical
+    homeassistant.components.http.ban: warning
 # Text to speech
 tts:
   - platform: google
