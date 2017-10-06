@@ -33,7 +33,11 @@
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_motoe
+      - group.camera_ring_doorbell
 
+  camera_ring_doorbell:
+    entities:
+      - camera.front_door
   camera_abode_living_room:
     entities:
       - camera.living_room
