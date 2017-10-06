@@ -64,6 +64,10 @@ light:
     optimistic: false
     qos: 0
 
+wemo:
+updater:
+  include_used_components: true
+
 xiaomi_aqara:
   gateways:
     - mac:
@@ -74,6 +78,17 @@ abode:
 usps:
   username: !secret usps_username
   password: !secret usps_password
+ring:
+  username: !secret ring_username
+  password: !secret ring_password
+bloomsky:
+  api_key: !secret bloomsky_key
+ecobee:
+  api_key: !secret ecobee_key
+  hold_temp: True
+lyric:
+  client_id: !secret lyric_client_id
+  client_secret: !secret lyric_client_secret
 #Adds Alexa and Google Home support
 emulated_hue:
   host_ip: 192.168.2.212
@@ -101,9 +116,7 @@ http:
 discovery:
   ignore:
     - apple_tv
-wemo:
-updater:
-  include_used_components: true
+
 
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
@@ -114,6 +127,7 @@ camera:
   - platform: generic
     still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
     name: WundergroundRadar
+  - platform: ring
   - platform: synology
     url: http://192.168.2.113:5000/
     username: !secret synology_username
@@ -156,12 +170,8 @@ camera:
   #   still_image_url: 'http://images.intellicast.com/WxImages/RadarLoop/prc_None_anim.gif'
   #   name: IntellicastRadar
 
+ffmpeg:
 
-ring:
-  username: !secret ring_username
-  password: !secret ring_password
-bloomsky:
-  api_key: !secret bloomsky_key
 
 ifttt:
   key: !secret ifttt_key
@@ -250,13 +260,6 @@ notify:
       - service: ios_alokiosiphone
       - service: ios_rashmiappiphone
 
-ecobee:
-  api_key: !secret ecobee_key
-  hold_temp: True
-
-lyric:
-  client_id: !secret lyric_client_id
-  client_secret: !secret lyric_client_secret
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
@@ -278,8 +281,6 @@ logger:
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
-    abodepy: debug
-    abodepy.event_controller: debug
     custom_components.sensor.life360: critical
     homeassistant.components.http.ban: warning
 # Text to speech
