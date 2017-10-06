@@ -146,6 +146,7 @@
     - cover.garagedoor
     - sensor.ars_bloom_voltage
     - sensor.calories
+    - sensor.illumination_34ce00813670
     - input_select.current_theme
 
   Network Details:

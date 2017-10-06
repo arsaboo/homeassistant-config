@@ -193,6 +193,18 @@
      cover.garagedoor:
        homebridge_cover_type: garage_door
 
+     light.gateway_light_34ce00813670:
+       friendly_name: Xiaomi lights
+       custom_ui_state_card: state-card-custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: true
+     sensor.illumination_34ce00813670:
+       friendly_name: Living Room Brightness
      light.kitchen_lights:
        emulated_hue: true
        emulated_hue_name: "Kitchen lights"

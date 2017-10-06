@@ -64,6 +64,10 @@ light:
     optimistic: false
     qos: 0
 
+xiaomi_aqara:
+  gateways:
+    - mac:
+      key: !secret xiaomikey
 abode:
   username: !secret abode_username
   password: !secret abode_password
