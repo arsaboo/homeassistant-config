@@ -39,6 +39,7 @@
       - sensor.sonos_volume
       - sensor.downstairsthermoper
       - sensor.upstairsthermoper
+      - sensor.illumination_34ce00813670
       - group.abode_status
       - group.device_location
       - group.information
