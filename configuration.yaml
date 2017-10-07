@@ -131,6 +131,7 @@ camera:
     url: http://192.168.2.113:5000/
     username: !secret synology_username
     password: !secret synology_password
+    verify_ssl: False
     # obtain your URL from yr.no. Search for your location and view hour-by-hour results
   - platform: generic
     still_image_url: !secret meteogram_url
@@ -337,7 +338,7 @@ switch: !include switches.yaml
 binary_sensor: !include binary_sensor.yaml
 input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
-input_slider: !include input_slider.yaml
+input_number: !include input_number.yaml
 frontend: !include frontend.yaml
 recorder: !include recorder.yaml
 logbook: !include logbook.yaml
