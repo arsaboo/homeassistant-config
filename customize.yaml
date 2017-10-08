@@ -276,6 +276,15 @@
        order: 206
      group.camera_meteogram:
        order: 207
+     group.camera_ring_doorbell:
+       order: 208
+     group.camera_usps:
+       order: 209
+     group.camera_abode_living_room:
+       order: 210
+     group.camera_opencv_porch:
+       order: 211
+
      group.entertainment:
        order: 301
      group.light_operations:
