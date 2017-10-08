@@ -10,10 +10,10 @@
       - binary_sensor.patio_motion
       - binary_sensor.porch_motion
       - group.camera_sensors
-      - input_slider.leeotemperature
-      - input_slider.leeohumidity
-      - input_slider.leeoupstairstemp
-      - input_slider.leeoupstairshumidity
+      - input_number.leeotemperature
+      - input_number.leeohumidity
+      - input_number.leeoupstairstemp
+      - input_number.leeoupstairshumidity
       - input_select.livingroomharmony
       - sensor.living_room
       - zwave.garage_door_tilt_sensor

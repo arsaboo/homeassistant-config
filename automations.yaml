@@ -1043,9 +1043,9 @@
         entity_id: input_select.livingroomharmony
         option: >
           {{ states.remote.livingroom.attributes.current_activity }}
-    - service: input_slider.select_value
+    - service: input_number.select_value
       data_template:
-        entity_id: input_slider.harmonyvolume
+        entity_id: input_number.harmonyvolume
         value: >
             {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) | int }}
     - service: input_select.select_option
@@ -1109,13 +1109,13 @@
   initial_state: 'on'
   trigger:
     platform: state
-    entity_id: input_slider.harmonyvolume
+    entity_id: input_number.harmonyvolume
   action:
     - service: media_player.volume_set
       data_template:
         entity_id: media_player.livingroomsonos
         volume_level: >
-          {{states.input_slider.harmonyvolume.state | int / 100}}
+          {{states.input_number.harmonyvolume.state | int / 100}}
 
 - id: start_harmony_activity_from_input_select
   alias: "Start Harmony activity from input_select"
@@ -1210,8 +1210,8 @@
     - platform: state
       entity_id: sensor.sonos_volume
   action:
-    - service: input_slider.select_value
+    - service: input_number.select_value
       data_template:
-        entity_id: input_slider.harmonyvolume
+        entity_id: input_number.harmonyvolume
         value: >-
           {{ (states.media_player.livingroomsonos.attributes|default({})).volume_level|default(0) * 100 }}

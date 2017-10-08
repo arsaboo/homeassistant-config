@@ -192,8 +192,8 @@
         friendly_name: "Leeo Temperature"
         unit_of_measurement: '°F'
         value_template: >-
-          {%- if states.input_slider.leeotemperature.state != None -%}
-            {{ states.input_slider.leeotemperature.state }}
+          {%- if states.input_number.leeotemperature.state != None -%}
+            {{ states.input_number.leeotemperature.state }}
           {%- else -%}
             NA
           {%- endif -%}
@@ -201,8 +201,8 @@
         friendly_name: "Leeo Humidity"
         unit_of_measurement: '%'
         value_template: >-
-          {%- if states.input_slider.leeohumidity.state != None -%}
-            {{ states.input_slider.leeohumidity.state }}
+          {%- if states.input_number.leeohumidity.state != None -%}
+            {{ states.input_number.leeohumidity.state }}
           {%- else -%}
             NA
           {%- endif -%}
@@ -210,8 +210,8 @@
         friendly_name: "Leeo Upstairs Temperature"
         unit_of_measurement: '°F'
         value_template: >-
-          {%- if states.input_slider.leeoupstairstemp.state != None -%}
-            {{ states.input_slider.leeoupstairstemp.state }}
+          {%- if states.input_number.leeoupstairstemp.state != None -%}
+            {{ states.input_number.leeoupstairstemp.state }}
           {%- else -%}
             NA
           {%- endif -%}
@@ -219,8 +219,8 @@
         friendly_name: "Leeo Upstairs Humidity"
         unit_of_measurement: '%'
         value_template: >-
-          {%- if states.input_slider.leeoupstairshumidity.state != None -%}
-            {{ states.input_slider.leeoupstairshumidity.state }}
+          {%- if states.input_number.leeoupstairshumidity.state != None -%}
+            {{ states.input_number.leeoupstairshumidity.state }}
           {%- else -%}
             NA
           {%- endif -%}

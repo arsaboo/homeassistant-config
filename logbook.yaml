@@ -74,7 +74,7 @@
       - zwave.garage_relay
       - zwave.aeotec_zw090_zstick_gen5
       - zwave.garage_door_tilt_sensor
-      - input_slider.harmonyvolume
+      - input_number.harmonyvolume
       - input_boolean.leeoalarm
       - input_boolean.thermo_away_main
       - input_boolean.thermo_away_upstairs
