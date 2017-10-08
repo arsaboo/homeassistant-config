@@ -32,7 +32,7 @@
       - group.camera_foscam2
       - group.camera_foscam3
       - group.camera_motoe
-      - group.camera_opencv_motoe
+      - group.camera_opencv_porch
       - group.camera_ring_doorbell
 
   camera_ring_doorbell:
@@ -83,10 +83,10 @@
     name: MotoE Camera
     entities:
       - camera.motoe
-  camera_opencv_motoe:
-    name: OpenCV MotoE Camera
+  camera_opencv_porch:
+    name: OpenCV Porch
     entities:
-      - camera.opencv_motoe
+      - camera.opencv_porch
   camera_wundergroundradar:
     name: Wunderground Radar Camera
     entities:
