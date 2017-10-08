@@ -166,25 +166,25 @@
 
  #Emulated_Hue Devices
      input_boolean.abodeupdate:
-       emulated_hue: true
+       emulated_hue_hidden: false
      input_boolean.startrecording:
-       emulated_hue: true
+       emulated_hue_hidden: false
      switch.driveway:
-       emulated_hue: true
+       emulated_hue_hidden: false
        emulated_hue_name: "Driveway Light"
        friendly_name: "Driveway Light"
        homebridge_hidden: false
      switch.wemoporch:
-       emulated_hue: true
+       emulated_hue_hidden: false
        emulated_hue_name: "Porch Lights"
        friendly_name: "Porch Lights"
        homebridge_hidden: false
      switch.garage_relay_switch:
-       emulated_hue: true
+       emulated_hue_hidden: false
        emulated_hue_name: "Garage Door"
        friendly_name: Garage Door Switch
      group.living_room_lights:
-       emulated_hue: true
+       emulated_hue_hidden: false
        emulated_hue_name: "Living room lights"
        homebridge_hidden: false
        friendly_name: Living room lights
@@ -206,7 +206,7 @@
      sensor.illumination_34ce00813670:
        friendly_name: Living Room Brightness
      light.kitchen_lights:
-       emulated_hue: true
+       emulated_hue_hidden: false
        emulated_hue_name: "Kitchen lights"
        homebridge_hidden: false
        friendly_name: Kitchen lights
