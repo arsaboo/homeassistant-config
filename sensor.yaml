@@ -19,14 +19,14 @@
       - 'current_status'
       - 'download_speed'
       - 'upload_speed'
-  - platform: fitbit
-    monitored_resources:
-      - "activities/calories"
-      - "activities/distance"
-      - "activities/steps"
-      - "sleep/minutesAsleep"
-      - "sleep/minutesAwake"
-      - "sleep/startTime"
+  # - platform: fitbit
+  #   monitored_resources:
+  #     - "activities/calories"
+  #     - "activities/distance"
+  #     - "activities/steps"
+  #     - "sleep/minutesAsleep"
+  #     - "sleep/minutesAwake"
+  #     - "sleep/startTime"
   - platform: currencylayer
     api_key: !secret currencylayer_key
     base: USD #optional
