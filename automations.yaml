@@ -585,8 +585,6 @@
     - condition: state
       entity_id: switch.wemoinsight
       state: 'on'
-    # - condition: template
-    #   value_template: '{{states.switch.wemoinsight.attributes.on_latest_time.split(" ")[2][:-1]|int > 5}}'
   action:
      service: switch.turn_off
      data:

@@ -65,6 +65,12 @@ light:
     qos: 0
 
 wemo:
+  static:
+    - 192.168.2.104
+    - 192.168.2.130
+    - 192.168.2.206
+    - 192.168.2.237
+
 updater:
   include_used_components: true
 
