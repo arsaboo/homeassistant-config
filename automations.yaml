@@ -1041,7 +1041,7 @@
         entity_id: input_select.livingroomharmony
         option: >
           {{ states.remote.livingroom.attributes.current_activity }}
-    - service: input_number.select_value
+    - service: input_number.set_value
       data_template:
         entity_id: input_number.harmonyvolume
         value: >
@@ -1208,8 +1208,7 @@
     - platform: state
       entity_id: sensor.sonos_volume
   action:
-    - service: input_number.select_value
+    - service: input_number.set_value
       data_template:
         entity_id: input_number.harmonyvolume
-        value: >-
-          {{ (states.media_player.livingroomsonos.attributes|default({})).volume_level|default(0) * 100 }}
+        value: '{{ trigger.to_state.state }}'
