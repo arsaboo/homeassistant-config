@@ -180,6 +180,8 @@
       - binary_sensor.garage_entry_door
       - input_boolean.abodeupdate
       - input_boolean.startrecording
+      - binary_sensor.motion_sensor_158d00016daecc
+      - binary_sensor.water_leak_sensor_158d0001d77800
       - sensor.leeoalarmstatus
       - sensor.leeotemp
       - sensor.leeohumid

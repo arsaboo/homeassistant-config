@@ -2,9 +2,21 @@
     domains:
       - sun
     entities:
-      - sensor.pws_weather
-      - sensor.pws_temp_f
-      - sensor.pws_relative_humidity
+      - automation.update_volume_slider
+      - automation.heal_zwave_network
+      - automation.set_volume
+      - automation.turn_tv_onoff
+      - automation.start_harmony_activity_from_input_select
+      - automation.update_ha_if_harmony_activity_changes
+      - automation.update_tv_status_in_ha
+      - automation.plex_spy_notification
+      - automation.reset_garage_relay
+      - automation.rashmi_home
+      - automation.alok_home
+      - automation.notify_camera_pictures
+      - automation.disable_thermostat_away
+      - automation.enable_thermostat_away
+      - automation.change_xiaomi_color
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
       - binary_sensor.garage_door_tilt_sensor_sensor
@@ -18,6 +30,9 @@
       - binary_sensor.driveway_line_crossing
       - binary_sensor.patio_line_crossing
       - binary_sensor.porch_line_crossing
+      - binary_sensor.motion_sensor_158d00016daecc
+      - binary_sensor.ring_front_door_ding
+      - binary_sensor.ring_front_door_motion
       - sensor.ars_bloom_uvindex
       - sensor.pws_wind_dir
       - sensor.pws_wind_string
@@ -40,6 +55,15 @@
       - sensor.downstairsthermoper
       - sensor.upstairsthermoper
       - sensor.illumination_34ce00813670
+      - sensor.ring_front_door_last_activity
+      - sensor.ring_front_door_last_ding
+      - sensor.ring_front_door_last_motion
+      - sensor.transmission_down_speed
+      - sensor.transmission_status
+      - sensor.transmission_up_speed
+      - sensor.pws_weather
+      - sensor.pws_temp_f
+      - sensor.pws_relative_humidity
       - group.abode_status
       - group.device_location
       - group.information
@@ -57,20 +81,6 @@
       - media_player.livingroomsonos
       - media_player.plex_web_chrome_2
       - media_player.plex_web_chrome
-      - automation.update_volume_slider
-      - automation.heal_zwave_network
-      - automation.set_volume
-      - automation.turn_tv_onoff
-      - automation.start_harmony_activity_from_input_select
-      - automation.update_ha_if_harmony_activity_changes
-      - automation.update_tv_status_in_ha
-      - automation.plex_spy_notification
-      - automation.reset_garage_relay
-      - automation.rashmi_home
-      - automation.alok_home
-      - automation.notify_camera_pictures
-      - automation.disable_thermostat_away
-      - automation.enable_thermostat_away
       - zwave.garage_relay
       - zwave.aeotec_zw090_zstick_gen5
       - zwave.garage_door_tilt_sensor
@@ -78,11 +88,7 @@
       - input_boolean.leeoalarm
       - input_boolean.thermo_away_main
       - input_boolean.thermo_away_upstairs
-      - binary_sensor.ring_front_door_ding
-      - binary_sensor.ring_front_door_motion
-      - sensor.ring_front_door_last_activity
-      - sensor.ring_front_door_last_ding
-      - sensor.ring_front_door_last_motion
-      - sensor.transmission_down_speed
-      - sensor.transmission_status
-      - sensor.transmission_up_speed
+      - camera.backyard
+      - camera.porch
+      - camera.patio
+      - camera.driveway

@@ -206,6 +206,14 @@
          off_when_min: true
      sensor.illumination_34ce00813670:
        friendly_name: Living Room Brightness
+     binary_sensor.cube_158d0001035aa7:
+       friendly_name: MiCube
+     binary_sensor.motion_sensor_158d00016daecc:
+       friendly_name: Living Room Occupancy
+       homebridge_hidden: false
+     binary_sensor.water_leak_sensor_158d0001d77800:
+       friendly_name: Laundry Water Leak
+       homebridge_hidden: false
      light.kitchen_lights:
        emulated_hue_hidden: false
        emulated_hue_name: "Kitchen lights"

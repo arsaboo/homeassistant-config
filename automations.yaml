@@ -574,6 +574,51 @@
 ## Home Automation Related
 #################################################################
 
+- alias: MiCube event test
+  trigger:
+    platform: event
+    event_type: cube_action
+    event_data:
+      entity_id: binary_sensor.cube_158d0001035aa7
+  action:
+    - service: logbook.log
+      data_template:
+        name: "MiCube event: "
+        message: >
+          {%- if trigger.event.data.action_value -%}
+            {{trigger.event.data.action_type}} and {{trigger.event.data.action_value}}
+          {%- else -%}
+            {{trigger.event.data.action_type}}
+          {%- endif -%}
+- id: micube_volume
+  alias: "Cube rotate - Volume livingroom home"
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: media_player.livingroomsonos
+      state: 'playing'
+  trigger:
+    platform: event
+    event_type: cube_action
+    event_data:
+      entity_id: binary_sensor.cube_158d0001035aa7
+      action_type: rotate
+  action:
+    - service: media_player.volume_set
+      data_template:
+        entity_id: media_player.livingroomsonos
+        volume_level: >
+              {% set state = states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90 -%}
+              {%-  if state > 1 -%}
+                 {%- set state  = 1 -%}
+              {%-  elif state < 0 -%}
+                 {%- set state  = 0 -%}
+              {%- endif %}
+              {{ state }}
+    - service: logbook.log
+      data_template:
+        name: "Volume changed: "
+        message: "{{ states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90 }}"
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
   initial_state: 'on'
