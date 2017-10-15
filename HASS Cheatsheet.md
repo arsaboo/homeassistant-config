@@ -222,5 +222,6 @@ Some useful commands:
   sudo dd if=/dev/mmcblk0 of=/dev/null bs=8M count=100
   sudo hdparm -t /dev/mmcblk0
   ```
+* Many of the problems with Pi are related to faulty power supply. You can use `vcgencmd get_throttled` to check if your Pi is getting adequate power supply. You want that to return `throttled=0x0`. If not it means that the Raspberry is throttling itself due to low voltage, or other factors. 
 * Test Write speed (will create 200MB file in /home/pi/testfile) using `dd if=/dev/zero of=/home/pi/testfile bs=8M count=25`
 * To check which files are using up all the space on your SD card, run `sudo du | sort -n`. You can delete the culprits using something like `sudo rm -rf ./.pm2/logs/` (will recursively delete folder /logs/).
