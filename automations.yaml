@@ -608,13 +608,22 @@
       data_template:
         entity_id: media_player.livingroomsonos
         volume_level: >
-              {% set state = states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90 -%}
+              {% set state = (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) -%}
               {%-  if state > 1 -%}
                  {%- set state  = 1 -%}
               {%-  elif state < 0 -%}
                  {%- set state  = 0 -%}
               {%- endif %}
               {{ state }}
+    - service: notify.shield
+      data_template:
+        title: "Home Assistant"
+        message: >
+          {%- if trigger.event.data.action_value > 0 -%}
+            Volume increased to {{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
+          {%- else -%}
+            Volume lowered to {{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
+          {%- endif -%}
     - service: logbook.log
       data_template:
         name: "Volume changed: "
