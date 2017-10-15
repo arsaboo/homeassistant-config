@@ -263,7 +263,9 @@ notify:
     services:
       - service: ios_alokiosiphone
       - service: ios_rashmiappiphone
-
+  - platform: nfandroidtv
+    name: Shield
+    host: 192.168.2.28
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
@@ -282,6 +284,7 @@ logger:
     pychromecast.socket_client: critical
     aiohttp.access: critical
     aiohttp.server: critical
+    haffmpeg.core: critical
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
