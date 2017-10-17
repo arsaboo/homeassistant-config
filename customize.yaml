@@ -193,41 +193,6 @@
      cover.garagedoor:
        homebridge_cover_type: garage_door
 
-     light.gateway_light_34ce00813670:
-       emulated_hue_hidden: false
-       friendly_name: Xiaomi lights
-       custom_ui_state_card: state-card-custom-ui
-       state_card_mode: single-line
-       stretch_slider: true
-       slider_theme:
-         min: 0
-         max: 255
-         pin: true
-         off_when_min: true
-     sensor.illumination_34ce00813670:
-       friendly_name: Living Room Brightness
-     binary_sensor.cube_158d0001035aa7:
-       friendly_name: MiCube
-     binary_sensor.motion_sensor_158d00016daecc:
-       friendly_name: Living Room Occupancy
-       homebridge_hidden: false
-     sensor.illumination_158d00016612af:
-       friendly_name: Upstairs Brightness
-     binary_sensor.motion_sensor_158d00016612af:
-       friendly_name: Upstairs Occupancy
-       homebridge_hidden: false
-     sensor.illumination_158d00016daecc:
-       friendly_name: Living Room Occupancy Sensor Brightness
-       homebridge_hidden: false
-     binary_sensor.water_leak_sensor_158d0001d77800:
-       friendly_name: Laundry Water Leak
-       homebridge_hidden: false
-     sensor.humidity_158d0001ab7d20:
-       friendly_name:  Attic Humidity
-     sensor.pressure_158d0001ab7d20:
-       friendly_name:  Attic Pressure
-     sensor.temperature_158d0001ab7d20:
-       friendly_name:  Attic Temperature
      light.kitchen_lights:
        emulated_hue_hidden: false
        emulated_hue_name: "Kitchen lights"
@@ -285,6 +250,44 @@
      script.disco_party:
        icon: mdi:palette
        homebridge_hidden: false
+
+# Xiaomi Aqara Devices
+     light.gateway_light_34ce00813670:
+       emulated_hue_hidden: false
+       friendly_name: Xiaomi lights
+       custom_ui_state_card: state-card-custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: true
+     sensor.illumination_34ce00813670:
+       friendly_name: Living Room Brightness
+     binary_sensor.cube_158d0001035aa7:
+       friendly_name: MiCube
+     binary_sensor.motion_sensor_158d00016daecc:
+       friendly_name: Living Room Occupancy
+       homebridge_hidden: false
+     sensor.illumination_158d00016daecc:
+       friendly_name: Living Room Occupancy Sensor Brightness
+     sensor.illumination_158d00016612af:
+       friendly_name: Upstairs Brightness
+     binary_sensor.motion_sensor_158d00016612af:
+       friendly_name: Upstairs Occupancy
+       homebridge_hidden: false
+     binary_sensor.water_leak_sensor_158d0001d77800:
+       friendly_name: Laundry Water Leak
+       homebridge_hidden: false
+     sensor.humidity_158d0001ab7d20:
+       friendly_name:  Attic Humidity
+     sensor.pressure_158d0001ab7d20:
+       friendly_name:  Attic Pressure
+     sensor.temperature_158d0001ab7d20:
+       friendly_name:  Attic Temperature
+
+
      group.camera_driveway:
        order: 201
      group.camera_porch:
