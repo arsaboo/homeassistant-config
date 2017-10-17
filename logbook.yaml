@@ -31,6 +31,7 @@
       - binary_sensor.patio_line_crossing
       - binary_sensor.porch_line_crossing
       - binary_sensor.motion_sensor_158d00016daecc
+      - binary_sensor.motion_sensor_158d00016612af
       - binary_sensor.ring_front_door_ding
       - binary_sensor.ring_front_door_motion
       - sensor.ars_bloom_uvindex
@@ -55,6 +56,11 @@
       - sensor.downstairsthermoper
       - sensor.upstairsthermoper
       - sensor.illumination_34ce00813670
+      - sensor.illumination_158d00016daecc
+      - sensor.humidity_158d0001ab7d20
+      - sensor.pressure_158d0001ab7d20
+      - sensor.temperature_158d0001ab7d20
+      - sensor.illumination_158d00016612af
       - sensor.ring_front_door_last_activity
       - sensor.ring_front_door_last_ding
       - sensor.ring_front_door_last_motion

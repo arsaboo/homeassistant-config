@@ -181,12 +181,14 @@
       - input_boolean.abodeupdate
       - input_boolean.startrecording
       - binary_sensor.motion_sensor_158d00016daecc
+      - binary_sensor.motion_sensor_158d00016612af
       - binary_sensor.water_leak_sensor_158d0001d77800
       - sensor.leeoalarmstatus
-      - sensor.leeotemp
-      - sensor.leeohumid
-      - sensor.leeouptemp
-      - sensor.leeouphumid
+      - sensor.illumination_158d00016612af
+      - sensor.humidity_158d0001ab7d20
+      - sensor.pressure_158d0001ab7d20
+      - sensor.temperature_158d0001ab7d20
+
 
   Camera Sensors:
     control: hidden

@@ -211,9 +211,23 @@
      binary_sensor.motion_sensor_158d00016daecc:
        friendly_name: Living Room Occupancy
        homebridge_hidden: false
+     sensor.illumination_158d00016612af:
+       friendly_name: Upstairs Brightness
+     binary_sensor.motion_sensor_158d00016612af:
+       friendly_name: Upstairs Occupancy
+       homebridge_hidden: false
+     sensor.illumination_158d00016daecc:
+       friendly_name: Living Room Occupancy Sensor Brightness
+       homebridge_hidden: false
      binary_sensor.water_leak_sensor_158d0001d77800:
        friendly_name: Laundry Water Leak
        homebridge_hidden: false
+     sensor.humidity_158d0001ab7d20:
+       friendly_name:  Attic Humidity
+     sensor.pressure_158d0001ab7d20:
+       friendly_name:  Attic Pressure
+     sensor.temperature_158d0001ab7d20:
+       friendly_name:  Attic Temperature
      light.kitchen_lights:
        emulated_hue_hidden: false
        emulated_hue_name: "Kitchen lights"
