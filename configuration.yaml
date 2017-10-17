@@ -185,16 +185,6 @@ ifttt:
 #     name: motoe
 #     scan_interval: 1
 image_processing:
-  - platform: dlib_face_detect
-    source:
-      - entity_id: camera.porch
-        name: "Face Detected porch"
-      - entity_id: camera.backyard
-        name: "Face Detected backyard"
-      - entity_id: camera.driveway
-        name: "Face Detected driveway"
-      - entity_id: camera.patio
-        name: "Face Detected patio"
   - platform: opencv
     name: OpenCV
     source:
@@ -202,7 +192,17 @@ image_processing:
     classifier:
       body:
         file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
-        neighbors: 5
+        neighbors: 4
+  # - platform: dlib_face_detect
+  #   source:
+  #     - entity_id: camera.porch
+  #       name: "Face Detected porch"
+  #     - entity_id: camera.backyard
+  #       name: "Face Detected backyard"
+  #     - entity_id: camera.driveway
+  #       name: "Face Detected driveway"
+  #     - entity_id: camera.patio
+  #       name: "Face Detected patio"
 
 sun:
 media_player:
