@@ -68,6 +68,7 @@ components
 deps
 tts
 www
+downloads
 icloud
 dlib_faces
 dlib_nofaces
