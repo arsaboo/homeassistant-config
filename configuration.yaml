@@ -107,7 +107,9 @@ media_extractor:
       music: bestaudio[ext=mp3]
 # Enables configuration UI
 config:
-
+#map:
+downloader:
+  download_dir: downloads
 http:
   api_password: !secret http_password
   ssl_certificate: !secret ssl_certificate
