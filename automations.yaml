@@ -650,7 +650,7 @@
     - service: logbook.log
       data_template:
         name: "Volume changed: "
-        message: "{{ states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90 }}"
+        message: "{{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
   initial_state: 'on'
@@ -707,6 +707,17 @@
      data:
        entity_id: light.kitchen_lights
        brightness: 200
+
+- id: turn_off_xiaomi
+  alias: 'Turn off Xiaomi Gateway light'
+  initial_state: 'on'
+  trigger:
+   - platform: numeric_state
+     entity_id: sensor.illumination_34ce00813670
+     above: 600
+  action:
+    - service: light.turn_off
+      entity_id: light.gateway_light_34ce00813670
 
 - id: change_xiaomi_color
   alias: 'Change Xiaomi color'
