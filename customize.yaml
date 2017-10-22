@@ -254,7 +254,7 @@
 # Xiaomi Aqara Devices
      light.gateway_light_34ce00813670:
        emulated_hue_hidden: false
-       friendly_name: Xiaomi lights
+       friendly_name: Gateway lights
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
        stretch_slider: true
