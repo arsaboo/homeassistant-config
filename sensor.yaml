@@ -92,6 +92,14 @@
     scan_interval: 21600
     headers:
        Referer: "https://www.pollen.com"
+  - platform: mqtt
+    state_topic: "owntracks/pi/rashmiphone/step"
+    name: "Steps Rashmi"
+    value_template: '{{ value_json.steps }}'
+  - platform: mqtt
+    state_topic: "owntracks/pi/alokphone/step"
+    name: "Steps Alok"
+    value_template: '{{ value_json.steps }}'
   - platform: command_line
     name: "HASS Uptime"
     command: ps -o etimes= -p $(pidof /srv/homeassistant/bin/python3 /srv/homeassistant/bin/hass -c /home/homeassistant/.homeassistant)
