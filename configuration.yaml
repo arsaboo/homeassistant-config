@@ -100,6 +100,12 @@ emulated_hue:
   host_ip: 192.168.2.212
   expose_by_default: false
   listen_port: 80
+google_assistant:
+  project_id: !secret google_project_id
+  client_id: !secret google_client_id
+  access_token: !secret google_access_token
+  expose_by_default: false
+
 
 media_extractor:
   customize:
@@ -107,7 +113,7 @@ media_extractor:
       music: bestaudio[ext=mp3]
 # Enables configuration UI
 config:
-#map:
+map:
 downloader:
   download_dir: downloads
 http:
