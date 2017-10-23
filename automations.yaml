@@ -431,8 +431,7 @@
       state: 'armed_away'
   trigger:
    - platform: state
-     entity_id:
-       - camera.front_door
+     entity_id: sensor.ringvideourl
   action:
     - service: notify.ios
       data_template:
@@ -440,9 +439,9 @@
         data:
           push:
             category: camera
-          entity_id: "{{ trigger.entity_id }}"
+          entity_id: camera.front_door
           attachment:
-            url: "{{ states[trigger.entity_id].attributes.video_url }}"
+            url: "{{ states.camera.front_door.attributes.video_url }}"
 
 #################################################################
 ## HASS Related

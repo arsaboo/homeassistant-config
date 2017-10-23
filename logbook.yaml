@@ -35,6 +35,7 @@
       - binary_sensor.ring_front_door_ding
       - binary_sensor.ring_front_door_motion
       - sensor.ars_bloom_uvindex
+      - sensor.ringvideourl
       - sensor.pws_wind_dir
       - sensor.pws_wind_string
       - sensor.dark_sky_cloud_coverage

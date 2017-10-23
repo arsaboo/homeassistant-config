@@ -131,6 +131,14 @@
            {%- else -%}
              0
            {%- endif -%}
+      ringvideourl:
+        friendly_name: "Ring Video URL"
+        value_template: >-
+           {%- if states.camera.front_door.attributes.video_url != None -%}
+             {{ states.camera.front_door.attributes.video_url|truncate(200) }}
+           {%- else -%}
+             unknown
+           {%- endif -%}
       hoursslept:
         friendly_name: "Hours Slept"
         unit_of_measurement: "hrs"
