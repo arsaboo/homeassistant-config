@@ -132,6 +132,8 @@
        friendly_name: USD/INR
        icon: mdi:currency-inr
 
+     sensor.hassuptime:
+       icon: mdi:clock
      sensor.hoursslept:
        icon: mdi:sleep
      sensor.alok_to_home:

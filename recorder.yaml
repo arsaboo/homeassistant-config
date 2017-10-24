@@ -23,7 +23,8 @@
       - group.ring_doorbell
       - sensor.pollen
       - sensor.pollen_level
-      - sensor.hass_uptime
+      - sensor.hassuptime
+      - sensor.uptime
       - sensor.time__date
       - sensor.ssl_certificate_expiry
       - switch.pihole

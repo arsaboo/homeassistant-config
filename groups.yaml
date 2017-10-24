@@ -141,7 +141,7 @@
 
   Information:
     - sensor.time__date
-    - sensor.hass_uptime
+    - sensor.hassuptime
     - sensor.ssl_certificate_expiry
     - sensor.morning_commute
     - sensor.alok_to_home

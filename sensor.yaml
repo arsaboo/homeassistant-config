@@ -1,3 +1,6 @@
+  - platform: version
+  - platform: uptime
+    unit_of_measurement: minutes
   - platform: season
   - platform: cert_expiry
     host: !secret ha_url
@@ -101,27 +104,26 @@
     name: "Steps Alok"
     value_template: '{{ value_json.steps }}'
   - platform: command_line
-    name: "HASS Uptime"
-    command: ps -o etimes= -p $(pidof /srv/homeassistant/bin/python3 /srv/homeassistant/bin/hass -c /home/homeassistant/.homeassistant)
-    scan_interval: 600
-    value_template: >-
-      {% set uptime = value | int %}
-      {% set seconds = uptime % 60 %}
-      {% set minutes = ((uptime % 3600) / 60) | int %}
-      {% set hours = ((uptime % 86400) / 3600) | int %}
-      {% set days = (uptime / 86400) | int %}
-      {%- if days > 0 -%}
-        {%- if days == 1 -%}
-          1 day
-        {%- else -%}
-          {{ days }} days
-        {%- endif -%}
-        {{ ', ' }}
-      {%- endif -%}
-      {{ '%02d' % hours }}:{{ '%02d' % minutes }}
-
+    name: "PyPi HASS Version"
+    command: python3 -c "import requests; print(requests.get('https://pypi.python.org/pypi/homeassistant/json').json()['info']['version'])"
   - platform: template
     sensors:
+      hassuptime:
+        friendly_name: "HASS Uptime"
+        value_template: >-
+          {% set uptime = states.sensor.uptime.state | round %}
+          {% set minutes = (uptime % 60) | int %}
+          {% set hours = (uptime / 60) | int %}
+          {% set days = (uptime / 1440) | int %}
+          {%- if days > 0 -%}
+            {%- if days == 1 -%}
+              1 day
+            {%- else -%}
+              {{ days }} days
+            {%- endif -%}
+            {{ ', ' }}
+          {%- endif -%}
+          {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
       wemopowerused:
         friendly_name: "Wemo Current Power"
         unit_of_measurement: "w"
