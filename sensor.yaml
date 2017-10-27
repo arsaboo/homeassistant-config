@@ -108,12 +108,22 @@
     command: python3 -c "import requests; print(requests.get('https://pypi.python.org/pypi/homeassistant/json').json()['info']['version'])"
   - platform: template
     sensors:
+      battery_status:
+        friendly_name: "Battery Status"
+        value_template: >-
+          {%- set threshold = 25 -%}
+          {%- set domains = ['light', 'switch', 'sensor', 'zwave', 'binary_sensor'] -%}
+          {%- for domain in domains -%}
+          {%- for item in states[domain] if ((item.attributes.battery_low is defined and item.attributes['battery_low'] == true) or (item.attributes.battery_level is defined and item.attributes['battery_level'] | int < threshold)) -%}
+              {{ item.name }}{%- if not loop.last %}, {% endif -%}
+          {%- endfor -%}
+          {%- endfor -%}
       hassuptime:
         friendly_name: "HASS Uptime"
         value_template: >-
           {% set uptime = states.sensor.uptime.state | round %}
           {% set minutes = (uptime % 60) | int %}
-          {% set hours = (uptime / 60) | int %}
+          {% set hours = ((uptime / 60) % 24) | int %}
           {% set days = (uptime / 1440) | int %}
           {%- if days > 0 -%}
             {%- if days == 1 -%}

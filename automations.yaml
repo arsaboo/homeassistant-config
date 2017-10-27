@@ -447,6 +447,25 @@
 ## HASS Related
 #################################################################
 
+- id: battery_alert
+  alias: 'Battery Alert'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: sensor.battery_status
+  action:
+    - service: persistent_notification.create
+      data_template:
+        title: Low Battery levels
+        notification_id: low-battery-alert
+        message: >
+          Check battery: {{ states.sensor.battery_status.state }}
+    - service: notify.pushbullet
+      data_template:
+        title: "Battery status"
+        message: >
+          Check battery: {{ states.sensor.battery_status.state }}
+
 - id: heal_zwave_network
   alias: Heal Z-Wave Network
   initial_state: 'on'
@@ -460,18 +479,18 @@
   alias: "Update Available Notification"
   initial_state: 'on'
   trigger:
-    platform: state
-    entity_id: updater.updater
+    platform: template
+    value_template: "{{states.sensor.pypi_hass_version.state == states.sensor.current_version.state}}"
   action:
     - service: notify.pushbullet
       data:
-        message: "HomeAssistant {{ states('updater.updater') }} is now available"
+        message: "HomeAssistant {{ states('states.sensor.pypi_hass_version.state') }} is now available"
         title: "Update HASS"
     - service: persistent_notification.create
       data:
         title: "Update Available"
         message: >
-          Home Assistant {{ states('updater.updater') }} is available, please [update](https://home-assistant.io/getting-started/installation-raspberry-pi-all-in-one/#upgrading).
+          Home Assistant {{ states('states.sensor.pypi_hass_version.state') }} is available, please update.
         notification_id: "update_available"
 
 - id: change_current_theme
@@ -596,7 +615,9 @@
 ## Home Automation Related
 #################################################################
 
-- alias: MiCube event test
+- id: micube_test
+  alias: MiCube event test
+  initial_state: 'on'
   trigger:
     platform: event
     event_type: cube_action
@@ -1112,6 +1133,7 @@
 
 - id: get_iphone_steps
   alias: Get steps from iPhone
+  initial_state: 'on'
   trigger:
     - platform: time
       minutes: 30
