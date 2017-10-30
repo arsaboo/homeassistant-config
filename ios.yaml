@@ -1,0 +1,27 @@
+
+  push:
+    categories:
+      - name: Abode Alarm
+        identifier: 'abode_alarm'
+        actions:
+          - identifier: 'SOUND_ALARM'
+            title: 'Sound Alarm'
+            activationMode: 'background'
+            authenticationRequired: yes
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'DISARM_ABODE'
+            title: 'Disarm Abode'
+            activationMode: 'background'
+            authenticationRequired: yes
+            destructive: no
+            behavior: 'default'
+      - name: Abode Updates
+        identifier: 'abode_updates'
+        actions:
+          - identifier: 'ENABLE_ABODE_UPDATES'
+            title: 'Enable Abode Updates'
+            activationMode: 'background'
+            authenticationRequired: yes
+            destructive: yes
+            behavior: 'default'
