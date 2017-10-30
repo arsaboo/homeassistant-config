@@ -271,6 +271,16 @@ notify:
     services:
       - service: ios_alokiosiphone
       - service: ios_rashmiappiphone
+  - platform: group
+    name: ios_abode_updates
+    services:
+      - service: ios_alokiosiphone
+        data:
+          message: 'Enable Abode updates?'
+          data:
+            push:
+              badge: 0
+              category: "abode_updates"
   - platform: nfandroidtv
     name: Shield
     host: 192.168.2.28
@@ -315,24 +325,6 @@ remote:
   - platform: harmony
     name: livingroom
     host: 192.168.2.152
-ios:
-  push:
-    categories:
-      - name: Abode Alarm
-        identifier: 'abode_alarm'
-        actions:
-          - identifier: 'SOUND_ALARM'
-            title: 'Sound Alarm'
-            activationMode: 'background'
-            authenticationRequired: yes
-            destructive: yes
-            behavior: 'default'
-          - identifier: 'DISARM_ABODE'
-            title: 'Disarm Abode'
-            activationMode: 'background'
-            authenticationRequired: yes
-            destructive: no
-            behavior: 'default'
 
 scene:
   platform: lifx_cloud
@@ -347,6 +339,8 @@ mqtt:
 alexa:
 apiai:
 intent_script: !include intent_script.yaml
+ios: !include ios.yaml
+alert: !include alert.yaml
 automation: !include automations.yaml
 group: !include groups.yaml
 script: !include scripts.yaml
