@@ -1,0 +1,11 @@
+
+  abode_updates:
+    name: Abode updates are off
+    done_message: Abode updates enabled
+    entity_id: input_boolean.abodeupdate
+    state: 'off'
+    repeat: 30
+    can_acknowledge: True
+    skip_first: False
+    notifiers:
+      - ios_abode_updates
