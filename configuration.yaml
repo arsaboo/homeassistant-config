@@ -266,8 +266,8 @@ notify:
     chat_id: !secret telegram_chatID_Alok
   - platform: ecobee
     name: ecobee
-  - name: iOS
-    platform: group
+  - platform: group
+    name: iOS
     services:
       - service: ios_alokiosiphone
       - service: ios_rashmiappiphone

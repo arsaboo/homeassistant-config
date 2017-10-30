@@ -1054,25 +1054,26 @@
     - service: homeassistant.turn_on
       entity_id: script.notificationalarm
 
-# - id: abode_update_ios_notification
-#   alias: Abode Update Actionable Notification
-#   trigger:
-#     - platform: state
-#       entity_id: input_boolean.abodeupdate
-#       to: 'off'
-#       for: '00:30:00'
-#     - platform: state
-#       entity_id: input_boolean.abodeupdate
-#       to: 'off'
-#       for: '01:00:00'
-#   action:
-#     - service: notify.ios_alokiosiphone
-#       data:
-#         message: 'Enable Abode updates?'
-#         data:
-#           push:
-#             badge: 0
-#             category: "abode_updates"
+- id: abode_update_ios_notification
+  alias: Abode Update Actionable Notification
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.abodeupdate
+      to: 'off'
+      for: '00:30:00'
+    - platform: state
+      entity_id: input_boolean.abodeupdate
+      to: 'off'
+      for: '01:00:00'
+  action:
+    - service: notify.ios_alokiosiphone
+      data:
+        message: 'Enable Abode updates?'
+        data:
+          push:
+            badge: 0
+            category: "abode_updates"
 
 - id: turn_on_abode_updates
   alias: 'Turn on Abode updates'
