@@ -6,6 +6,6 @@
     state: 'off'
     repeat: 30
     can_acknowledge: True
-    skip_first: False
+    skip_first: True
     notifiers:
       - ios_abode_updates

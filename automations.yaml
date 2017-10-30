@@ -49,14 +49,7 @@
     - platform: event
       event_type: abode_alarm
   action:
-    - service: notify.ios_alokiosiphone
-      data:
-        message: 'Abode alarm triggered!'
-        data:
-          push:
-            badge: 0
-            category: "abode_alarm"
-    - service: notify.ios_rashmiappiphone
+    - service: notify.ios
       data:
         message: 'Abode alarm triggered!'
         data:
@@ -360,7 +353,7 @@
     - condition: template
       value_template: >
         {%- if states.automation.notify_camera_pictures.attributes.last_triggered -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.automation.notify_camera_pictures.attributes.last_triggered)) > 120 }}
+          {{ (as_timestamp(now()) - as_timestamp(states.automation.notify_camera_pictures.attributes.last_triggered)) > 300 }}
         {%- else -%}
           true
         {%- endif -%}
@@ -1060,6 +1053,38 @@
         entity_id: group.all_lights
     - service: homeassistant.turn_on
       entity_id: script.notificationalarm
+
+# - id: abode_update_ios_notification
+#   alias: Abode Update Actionable Notification
+#   trigger:
+#     - platform: state
+#       entity_id: input_boolean.abodeupdate
+#       to: 'off'
+#       for: '00:30:00'
+#     - platform: state
+#       entity_id: input_boolean.abodeupdate
+#       to: 'off'
+#       for: '01:00:00'
+#   action:
+#     - service: notify.ios_alokiosiphone
+#       data:
+#         message: 'Enable Abode updates?'
+#         data:
+#           push:
+#             badge: 0
+#             category: "abode_updates"
+
+- id: turn_on_abode_updates
+  alias: 'Turn on Abode updates'
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: ENABLE_ABODE_UPDATES
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.abodeupdate
 
 - id: turn_on_lights_randomly
   alias: Turn lights on randomly
