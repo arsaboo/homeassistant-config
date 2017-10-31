@@ -81,9 +81,9 @@ xiaomi_aqara:
 abode:
   username: !secret abode_username
   password: !secret abode_password
-usps:
-  username: !secret usps_username
-  password: !secret usps_password
+# usps:
+#   username: !secret usps_username
+#   password: !secret usps_password
 ring:
   username: !secret ring_username
   password: !secret ring_password
