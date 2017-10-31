@@ -276,7 +276,7 @@ notify:
     services:
       - service: ios_alokiosiphone
         data:
-          message: 'Enable Abode updates?'
+          title: 'Enable Abode updates?'
           data:
             push:
               badge: 0
