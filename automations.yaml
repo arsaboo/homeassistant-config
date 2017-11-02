@@ -626,6 +626,7 @@
           {%- else -%}
             {{trigger.event.data.action_type}}
           {%- endif -%}
+
 - id: micube_volume
   alias: "Cube rotate - Volume livingroom home"
   initial_state: 'on'
@@ -679,6 +680,48 @@
      service: switch.turn_off
      data:
        entity_id: switch.wemoinsight
+
+- id: garage_lights_on
+  alias: 'Turn on garage lights when door opened'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.garage_entry_door
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
+    - condition: state
+      entity_id: cover.garagedoor
+      state: 'state'
+  action:
+     service: light.turn_on
+     data:
+       entity_id: light.lifx5
+       brightness: 255
+
+- id: garage_lights_off
+  alias: 'Turn off garage lights'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.garage_entry_door
+      to: 'off'
+      for: '00:00:30'
+  condition:
+    - condition: template
+      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
+    - condition: state
+      entity_id: cover.garagedoor
+      state: 'state'
+  action:
+     service: light.turn_on
+     data:
+       entity_id: light.lifx5
+       brightness: 255
 
 - id: kitchen_light_on_morning
   alias: 'Turn on kitchen lights in the morning'

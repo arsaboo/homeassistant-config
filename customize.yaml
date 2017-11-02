@@ -212,6 +212,20 @@
          max: 255
          pin: true
          off_when_min: true
+     light.lifx5:
+       emulated_hue_hidden: false
+       emulated_hue_name: "Garage Lights"
+       homebridge_hidden: false
+       friendly_name: Garage lights
+       google_assistant: true
+       custom_ui_state_card: state-card-custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: true
      light.lifx3:
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
