@@ -435,6 +435,7 @@
           entity_id: camera.front_door
           attachment:
             url: "{{ states.camera.front_door.attributes.video_url }}"
+    - service: python_script.ring_download
 
 #################################################################
 ## HASS Related
