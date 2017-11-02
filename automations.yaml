@@ -690,11 +690,9 @@
       from: 'off'
       to: 'on'
   condition:
-    - condition: template
-      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
     - condition: state
       entity_id: cover.garagedoor
-      state: 'state'
+      state: 'closed'
   action:
      service: light.turn_on
      data:
@@ -710,16 +708,12 @@
       to: 'off'
       for: '00:00:30'
   condition:
-    - condition: template
-      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
     - condition: state
-      entity_id: cover.garagedoor
-      state: 'state'
+      entity_id: light.lifx5
+      state: 'on'
   action:
      service: light.turn_off
-     data:
-       entity_id: light.lifx5
-
+     entity_id: light.lifx5
 
 - id: kitchen_light_on_morning
   alias: 'Turn on kitchen lights in the morning'
@@ -744,6 +738,7 @@
      data:
        entity_id: light.kitchen_lights
        brightness: 200
+       transition: 3600
 
 - id: kitchen_light_brightness
   alias: 'Kitchen light brightness'
