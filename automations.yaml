@@ -686,8 +686,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id:
-        - binary_sensor.garage_entry_door
+      entity_id: binary_sensor.garage_entry_door
       from: 'off'
       to: 'on'
   condition:
@@ -707,8 +706,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id:
-        - binary_sensor.garage_entry_door
+      entity_id: binary_sensor.garage_entry_door
       to: 'off'
       for: '00:00:30'
   condition:
@@ -718,10 +716,10 @@
       entity_id: cover.garagedoor
       state: 'state'
   action:
-     service: light.turn_on
+     service: light.turn_off
      data:
        entity_id: light.lifx5
-       brightness: 255
+
 
 - id: kitchen_light_on_morning
   alias: 'Turn on kitchen lights in the morning'
