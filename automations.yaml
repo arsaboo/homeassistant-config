@@ -443,7 +443,12 @@
    - platform: state
      entity_id: sensor.ringvideourl
   action:
-    - service: python_script.ring_download
+    - service: downloader.download_file
+      data_template:
+        url: "{{ states.camera.front_door.attributes.video_url }}"
+        subdir: "{{'ring_{}'.format(states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_'))}}"
+        overwrite: True
+        filename: "{{states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')}}"
 #################################################################
 ## HASS Related
 #################################################################
