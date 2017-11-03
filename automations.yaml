@@ -618,7 +618,7 @@
 
 - id: micube_test
   alias: MiCube event test
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     platform: event
     event_type: cube_action
@@ -636,7 +636,7 @@
           {%- endif -%}
 
 - id: micube_volume
-  alias: "Cube rotate - Volume livingroom home"
+  alias: "MiCube rotate - Volume livingroom home"
   initial_state: 'on'
   condition:
     - condition: state
@@ -722,31 +722,6 @@
   action:
      service: light.turn_off
      entity_id: light.lifx5
-
-- id: kitchen_light_on_morning
-  alias: 'Turn on kitchen lights in the morning'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.living_room_occupancy
-      from: 'off'
-      to: 'on'
-  condition:
-    - condition: template
-      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
-    - condition: time
-      after: '06:00:00'
-      before: '07:45:00'
-    - condition: state
-      entity_id: light.kitchen_lights
-      state: 'off'
-  action:
-     service: light.turn_on
-     data:
-       entity_id: light.kitchen_lights
-       brightness: 200
-       transition: 3600
 
 - id: kitchen_light_brightness
   alias: 'Kitchen light brightness'
