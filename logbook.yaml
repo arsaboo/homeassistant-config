@@ -17,6 +17,8 @@
       - automation.disable_thermostat_away
       - automation.enable_thermostat_away
       - automation.change_xiaomi_color
+      - automation.get_steps_from_iphone
+      - automation.micube_event_test
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
       - binary_sensor.garage_door_tilt_sensor_sensor
