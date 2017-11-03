@@ -435,8 +435,15 @@
           entity_id: camera.front_door
           attachment:
             url: "{{ states.camera.front_door.attributes.video_url }}"
-    - service: python_script.ring_download
 
+- id: ring_download_video
+  alias: 'Ring download video'
+  initial_state: 'on'
+  trigger:
+   - platform: state
+     entity_id: sensor.ringvideourl
+  action:
+    - service: python_script.ring_download
 #################################################################
 ## HASS Related
 #################################################################
