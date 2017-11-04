@@ -337,7 +337,7 @@ mqtt:
   password: !secret mqtt_password
 
 alexa:
-apiai:
+dialogflow:
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml
 alert: !include alert.yaml
