@@ -415,40 +415,6 @@
             {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- endif -%}
 
-- id: ring_camera_notification
-  alias: 'Notify Ring camera'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: alarm_control_panel.abode_alarm
-      state: 'armed_away'
-  trigger:
-   - platform: state
-     entity_id: sensor.ringvideourl
-  action:
-    - service: notify.ios
-      data_template:
-        message: "Check Ring camera."
-        data:
-          push:
-            category: camera
-          entity_id: camera.front_door
-          attachment:
-            url: "{{ states.camera.front_door.attributes.video_url }}"
-
-- id: ring_download_video
-  alias: 'Ring download video'
-  initial_state: 'on'
-  trigger:
-   - platform: state
-     entity_id: sensor.ringvideourl
-  action:
-    - service: downloader.download_file
-      data_template:
-        url: "{{ states.camera.front_door.attributes.video_url }}"
-        subdir: "{{'ring_' + states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')}}"
-        overwrite: True
-        filename: "{{states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')}}"
 #################################################################
 ## HASS Related
 #################################################################
