@@ -1,3 +1,4 @@
+  - platform: ring
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
@@ -143,6 +144,20 @@
            {%- else -%}
              0
            {%- endif -%}
+      hvacmode:
+        friendly_name: "HVAC Mode"
+        value_template: >-
+          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
+            heat
+          {%- else -%}
+            cool
+          {%- endif -%}
+        icon_template: >-
+          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
+            mdi:fire
+          {%- else -%}
+            mdi:snowflake
+          {%- endif -%}
       ringvideourl:
         friendly_name: "Ring Video URL"
         value_template: >-
