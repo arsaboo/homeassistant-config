@@ -6,11 +6,11 @@
     view: yes
     icon: mdi:home
     entities:
+      - group.weather
+      - group.thermostats
       - group.all_lights
       - group.switches
       - group.home_security
-      - group.weather
-      - group.thermostats
       - group.information
       - group.ring_doorbell
 
@@ -19,11 +19,11 @@
     view: yes
     icon: mdi:cctv
     entities:
-      - group.camera_wundergroundradar
       - group.camera_driveway
-      - group.camera_porch
       - group.camera_backyard
+      - group.camera_porch      
       - group.camera_patio
+      - group.camera_wundergroundradar
       - group.camera_arsbloom
       - group.camera_meteogram
       - group.camera_usps
