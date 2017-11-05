@@ -1,4 +1,3 @@
-  - platform: ring
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes

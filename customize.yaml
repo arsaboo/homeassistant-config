@@ -104,7 +104,9 @@
      group.all_devices:
        hidden: false
        friendly_name: 'Devices'
-
+     group.all_lights:
+       hidden: false
+       friendly_name: 'Lights'
      group.all_switches:
        hidden: false
        friendly_name: 'Switches'
@@ -272,6 +274,7 @@
          off_when_min: true
      sensor.illumination_34ce00813670:
        friendly_name: Living Room Brightness
+       icon: mdi:brightness-7
      binary_sensor.cube_158d0001035aa7:
        friendly_name: MiCube
      binary_sensor.motion_sensor_158d00016daecc:
@@ -279,8 +282,10 @@
        homebridge_hidden: false
      sensor.illumination_158d00016daecc:
        friendly_name: Living Room Occupancy Sensor Brightness
+       icon: mdi:brightness-7
      sensor.illumination_158d00016612af:
        friendly_name: Upstairs Brightness
+       icon: mdi:brightness-7
      binary_sensor.motion_sensor_158d00016612af:
        friendly_name: Upstairs Occupancy
        homebridge_hidden: false
@@ -293,3 +298,9 @@
        friendly_name:  Attic Pressure
      sensor.temperature_158d0001ab7d20:
        friendly_name:  Attic Temperature
+     sensor.humidity_158d0001ab3b2b:
+       friendly_name:  Study Humidity
+     sensor.pressure_158d0001ab3b2b:
+       friendly_name:  Study Pressure
+     sensor.temperature_158d0001ab3b2b:
+       friendly_name:  Study Temperature

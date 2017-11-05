@@ -4,15 +4,25 @@
 
   default_view:
     view: yes
-    icon: mdi:home
+    icon: mdi:home-assistant
+    entities:
+      - group.information
+      - group.all_lights
+      - group.home_security
+      - group.switches
+      - group.ring_doorbell
+
+  temperature:
+    name: Temperature Sensors
+    view: yes
+    icon: mdi:weather-cloudy
     entities:
       - group.weather
       - group.thermostats
-      - group.all_lights
-      - group.switches
-      - group.home_security
-      - group.information
-      - group.ring_doorbell
+      - group.room_sensors
+      - group.camera_wundergroundradar
+      - group.camera_meteogram
+      - weather.weather      
 
   cameras:
     name: Cameras
@@ -21,11 +31,10 @@
     entities:
       - group.camera_driveway
       - group.camera_backyard
-      - group.camera_porch      
+      - group.camera_porch
       - group.camera_patio
-      - group.camera_wundergroundradar
+      - group.camera_ring_doorbell
       - group.camera_arsbloom
-      - group.camera_meteogram
       - group.camera_usps
       - group.camera_abode_living_room
       - group.camera_foscam1
@@ -33,7 +42,29 @@
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_porch
-      - group.camera_ring_doorbell
+
+
+  media:
+    name: Media
+    view: yes
+    icon: mdi:play-circle-outline
+    entities:
+      - group.entertainment
+      - group.light_operations
+      - group.media_player
+
+  settings:
+    name: Settings
+    view: yes
+    icon: mdi:settings
+    entities:
+      - group.household
+      - group.devices
+      - group.camera_sensors
+      - group.camera_switches
+      - group.network_details
+      - group.pi_hole
+      - group.hass_details
 
   camera_ring_doorbell:
     entities:
@@ -92,26 +123,11 @@
     entities:
       - camera.wundergroundradar
 
-  media:
-    name: Media
-    view: yes
-    icon: mdi:play-circle-outline
-    entities:
-      - group.entertainment
-      - group.light_operations
-      - group.media_player
-
-  settings:
-    name: Settings
-    view: yes
-    icon: mdi:settings
-    entities:
-      - group.devices
-      - group.camera_sensors
-      - group.camera_switches
-      - group.household
-      - group.network_details
-      - group.pi_hole
+  HASS Details:
+    - sensor.time__date
+    - sensor.hassuptime
+    - sensor.ssl_certificate_expiry
+    - input_select.current_theme
 
   Weather:
     - sensor.pws_weather
@@ -124,6 +140,18 @@
     - sensor.pollen_level
     - sensor.dark_sky_hourly_summary
     - sensor.dark_sky_daily_summary
+
+  Room Sensors:
+    - sensor.illumination_158d00016612af
+    - sensor.humidity_158d0001ab7d20
+    - sensor.pressure_158d0001ab7d20
+    - sensor.temperature_158d0001ab7d20
+    - sensor.humidity_158d0001ab3b2b
+    - sensor.pressure_158d0001ab3b2b
+    - sensor.temperature_158d0001ab3b2b
+    - sensor.illumination_34ce00813670
+    - binary_sensor.water_leak_sensor_158d0001d77800
+    - sensor.leeoalarmstatus
 
   Thermostats:
     - climate.downstairs
@@ -140,18 +168,10 @@
     - switch.lyric_hold
 
   Information:
-    - sensor.time__date
-    - sensor.hassuptime
-    - sensor.ssl_certificate_expiry
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy
     - sensor.usd_inr
-    - cover.garagedoor
-    - sensor.ars_bloom_voltage
-    - sensor.calories
-    - sensor.illumination_34ce00813670
-    - input_select.current_theme
 
   Network Details:
     - binary_sensor.pihole
@@ -175,20 +195,14 @@
     control: hidden
     entities:
       - alarm_control_panel.abode_alarm
+      - cover.garagedoor
+      - input_boolean.abodeupdate
       - binary_sensor.back_door
       - binary_sensor.front_door
       - binary_sensor.garage_entry_door
-      - input_boolean.abodeupdate
       - input_boolean.startrecording
       - binary_sensor.motion_sensor_158d00016daecc
       - binary_sensor.motion_sensor_158d00016612af
-      - binary_sensor.water_leak_sensor_158d0001d77800
-      - sensor.leeoalarmstatus
-      - sensor.illumination_158d00016612af
-      - sensor.humidity_158d0001ab7d20
-      - sensor.pressure_158d0001ab7d20
-      - sensor.temperature_158d0001ab7d20
-
 
   Camera Sensors:
     control: hidden
@@ -237,6 +251,7 @@
     - switch.wemoporch
     - switch.wemoinsight
     - switch.aeon_switch
+
   Light Operations:
     - input_boolean.partymode
     - script.colorloop_start
@@ -257,3 +272,10 @@
     - device_tracker.alok_alok
     - binary_sensor.rashmi_home
     - binary_sensor.alok_home
+
+  Ring Doorbell:
+    - binary_sensor.ring_front_door_ding
+    - binary_sensor.ring_front_door_motion
+    - sensor.ring_front_door_last_activity
+    - sensor.ring_front_door_last_ding
+    - sensor.ring_front_door_last_motion

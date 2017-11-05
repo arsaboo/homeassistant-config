@@ -15,9 +15,14 @@ homeassistant:
   customize: !include customize.yaml
   #customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
+  whitelist_external_dirs:
+    - /tmp
 
 python_script:
-
+weather:
+  - platform: yweather
+    name: Weather
+    woeid: !secret woeid
 customizer:
   custom_ui: hosted
   hide_attributes:

@@ -64,6 +64,9 @@
       - sensor.pressure_158d0001ab7d20
       - sensor.temperature_158d0001ab7d20
       - sensor.illumination_158d00016612af
+      - sensor.pressure_158d0001ab3b2b
+      - sensor.temperature_158d0001ab3b2b
+      - sensor.illumination_34ce00813670
       - sensor.ring_front_door_last_activity
       - sensor.ring_front_door_last_ding
       - sensor.ring_front_door_last_motion
