@@ -660,6 +660,22 @@
      data:
        entity_id: switch.wemoinsight
 
+- id: ensure_switches_on
+  alias: 'Ensure smart-switches are on'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - device_tracker.lifx5
+        - device_tracker.lifx3
+      to: 'not_home'
+  action:
+    - service: notify.pushbullet
+      data_template:
+        title: "Check {{ trigger.to_state.name }} Switch"
+        message: >
+          Check switch: {{ trigger.to_state.name }}
+
 - id: garage_lights_on
   alias: 'Turn on garage lights when door opened'
   initial_state: 'on'
