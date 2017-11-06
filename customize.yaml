@@ -294,12 +294,14 @@
        homebridge_hidden: false
      sensor.humidity_158d0001ab7d20:
        friendly_name:  Attic Humidity
+       icon: mdi:water-percent
      sensor.pressure_158d0001ab7d20:
        friendly_name:  Attic Pressure
      sensor.temperature_158d0001ab7d20:
        friendly_name:  Attic Temperature
      sensor.humidity_158d0001ab3b2b:
        friendly_name:  Study Humidity
+       icon: mdi:water-percent
      sensor.pressure_158d0001ab3b2b:
        friendly_name:  Study Pressure
      sensor.temperature_158d0001ab3b2b:
