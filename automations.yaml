@@ -720,9 +720,14 @@
       from: 'off'
       to: 'on'
   condition:
-    - condition: state
-      entity_id: cover.garagedoor
-      state: 'closed'
+    - condition: or
+      conditions:
+       - condition: state
+         entity_id: cover.garagedoor
+         state: 'closed'
+       - condition: state
+         entity_id: sun.sun
+         state: 'below_horizon'    
   action:
      service: light.turn_on
      data:
