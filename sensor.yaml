@@ -161,7 +161,7 @@
         friendly_name: "Ring Video URL"
         value_template: >-
            {%- if states.camera.front_door.attributes.video_url != None -%}
-             {{ states.camera.front_door.attributes.video_url|truncate(200) }}
+             {{ states.camera.front_door.attributes.video_url[:255] }}
            {%- else -%}
              unknown
            {%- endif -%}

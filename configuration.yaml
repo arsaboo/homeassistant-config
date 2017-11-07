@@ -159,6 +159,7 @@ camera:
   - platform: usps
     scan_interval: 30
   - platform: ring
+    ffmpeg_arguments: -pred 1 -q:v 2
   - platform: opencv
     camera: camera.porch
     processor: image_processing.opencv_porch
