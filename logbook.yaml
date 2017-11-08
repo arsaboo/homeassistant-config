@@ -70,9 +70,6 @@
       - sensor.ring_front_door_last_activity
       - sensor.ring_front_door_last_ding
       - sensor.ring_front_door_last_motion
-      - sensor.transmission_down_speed
-      - sensor.transmission_status
-      - sensor.transmission_up_speed
       - sensor.pws_weather
       - sensor.pws_temp_f
       - sensor.pws_relative_humidity

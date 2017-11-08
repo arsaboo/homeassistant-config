@@ -16,12 +16,6 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-  - platform: transmission
-    host: !secret synology_ip
-    monitored_variables:
-      - 'current_status'
-      - 'download_speed'
-      - 'upload_speed'
   # - platform: fitbit
   #   monitored_resources:
   #     - "activities/calories"

@@ -176,10 +176,6 @@
 
   Network Details:
     - binary_sensor.pihole
-    - sensor.transmission_down_speed
-    - sensor.transmission_status
-    - sensor.transmission_up_speed
-    - switch.transmission_turtle_mode
     - sensor.speedtest_download
 
   Media Player:

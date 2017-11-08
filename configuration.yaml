@@ -249,7 +249,7 @@ device_tracker:
     username: !secret unifi_username
     password: !secret unifi_password
     verify_ssl: False
-  - platform: geofency    
+  - platform: geofency
   # - platform: asuswrt
   #   host: 192.168.2.1
   #   protocol: telnet
@@ -301,7 +301,6 @@ logger:
     homeassistant.components.camera.generic: critical
     homeassistant.components.sensor.wunderground: critical
     homeassistant.components.sensor.pi_hole: critical
-    homeassistant.components.sensor.transmission: critical
     homeassistant.components.media_player.plex: critical
     homeassistant.components.telegram_bot: critical
     homeassistant.components.scene.lifx_cloud: critical

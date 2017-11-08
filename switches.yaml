@@ -1,8 +1,6 @@
 #################################################################
 ## Switches
 #################################################################
-  - platform: transmission
-    host: !secret synology_ip
   - platform: hikvisioncam
     host: 192.168.2.91
     name: PorchMotion
