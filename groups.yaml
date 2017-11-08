@@ -18,11 +18,11 @@
     icon: mdi:weather-cloudy
     entities:
       - group.weather
-      - group.thermostats
       - group.room_sensors
-      - group.camera_wundergroundradar
+      - group.thermostats
       - group.camera_meteogram
-      - weather.weather      
+      - group.camera_wundergroundradar
+      - weather.weather
 
   cameras:
     name: Cameras
@@ -166,6 +166,7 @@
     - switch.upstairs_away
     - climate.lyric_t5_thermostat
     - switch.lyric_hold
+    - sensor.hvacmode
 
   Information:
     - sensor.morning_commute
@@ -270,6 +271,7 @@
     - device_tracker.alokiosiphone
     - device_tracker.myiphone
     - device_tracker.alok_alok
+    - device_tracker.6b00226793104872afb9248f8a45f957
     - binary_sensor.rashmi_home
     - binary_sensor.alok_home
 
