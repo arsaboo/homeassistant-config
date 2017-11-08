@@ -249,6 +249,7 @@ device_tracker:
     username: !secret unifi_username
     password: !secret unifi_password
     verify_ssl: False
+  - platform: geofency    
   # - platform: asuswrt
   #   host: 192.168.2.1
   #   protocol: telnet
