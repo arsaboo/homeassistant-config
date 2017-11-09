@@ -7,10 +7,11 @@
 # OPTIONS
 # List the trackers for each individual
 RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.pi_rashmiphone',
-                  'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu']
+                  'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu',
+                  'device_tracker.3a196aa7e85e4ab5bee4e3d3af667a09']
 AlokTrackers = ['device_tracker.myiphone', 'device_tracker.pi_alokphone',
                 'device_tracker.alokiosiphone', 'device_tracker.alok_alok',
-                'device_tracker.elantrase']
+                'device_tracker.elantrase', 'device_tracker.6b00226793104872afb9248f8a45f957']
 # Get the entity that triggered the automation
 triggeredEntity = data.get('entity_id')
 
