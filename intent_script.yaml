@@ -7,6 +7,8 @@
           Humidity in the living room is {{ states.sensor.downstairs_humidity.state }} degrees and upstairs humidity is {{ states.sensor.upstairs_humidity.state }}.
         {%- elif SensorType.lower() == "traffic" or SensorType.lower() == "commute" -%}
           The fastest route to office takes about {{ states("sensor.morning_commute") }} minutes.
+        {%- elif SensorType.lower() in ["evening traffic", "evening commute", "traffic to home"] -%}
+          The fastest route to home takes about {{ states("sensor.alok_to_home") }} minutes.
         {%- endif -%}
     card:
       type: simple
