@@ -60,11 +60,11 @@
     entities:
       - group.household
       - group.devices
+      - group.hass_details
       - group.camera_sensors
       - group.camera_switches
       - group.network_details
-      - group.pi_hole
-      - group.hass_details
+
 
   camera_ring_doorbell:
     entities:
@@ -177,6 +177,10 @@
   Network Details:
     - binary_sensor.pihole
     - sensor.speedtest_download
+    - sensor.pihole_dns_queries_today
+    - sensor.pihole_domains_blocked
+    - sensor.pihole_ads_percentage_blocked_today
+    - sensor.pihole_dns_unique_domains
 
   Media Player:
     - media_player.livingroomsonos
@@ -263,7 +267,7 @@
     - device_tracker.rashmiappiphone
     - device_tracker.rashmisiphone
     - device_tracker.sonu_sonu
-    - device_tracker.3a196aa7e85e4ab5bee4e3d3af667a09    
+    - device_tracker.3a196aa7e85e4ab5bee4e3d3af667a09
     - device_tracker.pi_alokphone
     - device_tracker.alokiosiphone
     - device_tracker.myiphone

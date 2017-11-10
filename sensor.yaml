@@ -142,7 +142,7 @@
         value_template: >-
           {%- if states.climate.upstairs.attributes.operation == "heat" -%}
             heat
-          {%- else -%}
+          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
             cool
           {%- endif -%}
         icon_template: >-
