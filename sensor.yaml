@@ -148,7 +148,7 @@
         icon_template: >-
           {%- if states.climate.upstairs.attributes.operation == "heat" -%}
             mdi:fire
-          {%- else -%}
+          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
             mdi:snowflake
           {%- endif -%}
       ringvideourl:
