@@ -22,6 +22,11 @@
         prob_given_true: 1
         platform: 'state'
         to_state: 'home'
+      - entity_id: 'device_tracker.3a196aa7e85e4ab5bee4e3d3af667a09'
+        prob_given_true: 0.99
+        prob_given_false: 0.1
+        platform: 'state'
+        to_state: 'home'
   - platform: 'bayesian'
     prior: 0.25
     name: 'Alok Home'
@@ -47,6 +52,12 @@
         prob_given_false: 0.1
         platform: 'state'
         to_state: 'home'
+      - entity_id: 'device_tracker.6b00226793104872afb9248f8a45f957'
+        prob_given_true: 0.99
+        prob_given_false: 0.1
+        platform: 'state'
+        to_state: 'home'
+
   - platform: ping
     host: 192.168.2.3
     name: PiHole
