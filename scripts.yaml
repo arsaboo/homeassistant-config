@@ -64,7 +64,7 @@
         data_template:
           entity_id: climate.lyric_t5_thermostat
           temperature: >-
-            {%- if states.climate.lyric_t5_thermostat.attributes.operation_mode == 'heat' -%}
+            {%- if states.input_select.hvacmode.state == 'heat' -%}
               66
             {%- else -%}
               83

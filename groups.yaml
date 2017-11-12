@@ -166,7 +166,7 @@
     - switch.upstairs_away
     - climate.lyric_t5_thermostat
     - switch.lyric_hold
-    - sensor.hvacmode
+    - input_select.hvacmode
 
   Information:
     - sensor.morning_commute
