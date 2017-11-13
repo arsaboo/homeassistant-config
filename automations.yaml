@@ -64,7 +64,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       state: 'armed_away'
     - condition: state
       entity_id: input_boolean.abodeupdate
@@ -98,10 +98,10 @@
     state: 'open'
   trigger:
     - platform: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       to: 'armed_home'
     - platform: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       to: 'armed_away'
   action:
     - service: notify.pushbullet
@@ -116,7 +116,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       state: 'armed_home'
     - condition: state
       entity_id: input_boolean.abodeupdate
@@ -139,7 +139,7 @@
     condition: and
     conditions:
      - condition: state
-       entity_id: alarm_control_panel.abode_alarm
+       entity_id: input_select.abodestatus
        state: 'disarmed'
      - condition: time
        after: '22:15:00'
@@ -149,8 +149,8 @@
        state: 'on'
      - condition: template
        value_template: >
-         {%- if states.alarm_control_panel.abode_alarm.last_changed -%}
-           {{ (as_timestamp(now()) - as_timestamp(states.alarm_control_panel.abode_alarm.last_changed)) > 300 }}
+         {%- if states.input_select.abodestatus.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
          {%- else -%}
            true
          {%- endif -%}
@@ -179,18 +179,18 @@
        state: 'on'
      - condition: template
        value_template: >
-         {%- if states.alarm_control_panel.abode_alarm.last_changed -%}
-           {{ (as_timestamp(now()) - as_timestamp(states.alarm_control_panel.abode_alarm.last_changed)) > 300 }}
+         {%- if states.input_select.abodestatus.last_changed -%}
+           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
          {%- else -%}
            true
          {%- endif -%}
      - condition: or
        conditions:
         - condition: state
-          entity_id: alarm_control_panel.abode_alarm
+          entity_id: input_select.abodestatus
           state: 'armed_home'
         - condition: state
-          entity_id: alarm_control_panel.abode_alarm
+          entity_id: input_select.abodestatus
           state: 'armed_away'
   trigger:
    - platform: time
@@ -215,7 +215,7 @@
           true
         {%- endif -%}
     - condition: template
-      value_template: "{{ states.alarm_control_panel.abode_alarm.state != 'armed_away' }}"
+      value_template: "{{ states.input_select.abodestatus.state != 'armed_away' }}"
   trigger:
     - platform: state
       entity_id: group.household
@@ -296,7 +296,7 @@
   condition:
     - condition: template
       value_template: >
-        {{states.alarm_control_panel.abode_alarm.state == 'disarmed' and states.group.thermostats.state == 'on'}}
+        {{states.input_select.abodestatus.state == 'disarmed' and states.group.thermostats.state == 'on'}}
   trigger:
    - platform: time
      minutes: '/5'
@@ -321,13 +321,13 @@
       conditions:
         - condition: template
           value_template: >
-            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.downstairs_away.state == 'off'}}
+            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.downstairs_away.state == 'off'}}
         - condition: template
           value_template: >
-            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.upstairs_away.state == 'off'}}
+            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.upstairs_away.state == 'off'}}
         - condition: template
           value_template: >
-            {{states.alarm_control_panel.abode_alarm.state == 'armed_away' and states.switch.lyric_hold.state == 'off'}}
+            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.lyric_hold.state == 'off'}}
   trigger:
    - platform: time
      minutes: '/5'
@@ -350,7 +350,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       state: 'armed_away'
     - condition: template
       value_template: >
@@ -422,7 +422,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       state: 'armed_away'
   trigger:
    - platform: state
@@ -976,6 +976,21 @@
         - switch.driveway
         - switch.wemoporch
 
+- id: set_hvac_mode
+  alias: 'Set HVAC Mode'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: sensor.hvacmode
+      to: 'heat'
+    - platform: state
+      entity_id: sensor.hvacmode
+      to: 'cool'
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.hvacmode
+        option: '{{ trigger.to_state.state }}'
 - id: reset_garage_relay
   alias: 'Reset Garage Relay'
   initial_state: 'on'
@@ -1050,10 +1065,10 @@
     - condition: or
       conditions:
        - condition: state
-         entity_id: alarm_control_panel.abode_alarm
+         entity_id: input_select.abodestatus
          state: 'armed_home'
        - condition: state
-         entity_id: alarm_control_panel.abode_alarm
+         entity_id: input_select.abodestatus
          state: 'armed_away'
   trigger:
     - platform: time
@@ -1067,7 +1082,7 @@
   initial_state: 'on'
   condition:
     condition: state
-    entity_id: alarm_control_panel.abode_alarm
+    entity_id: input_select.abodestatus
     state: 'armed_away'
     for:
       minutes: 10
@@ -1078,6 +1093,8 @@
         - binary_sensor.back_door
         - binary_sensor.garage_entry_door
         - binary_sensor.front_door
+        - binary_sensor.motion_sensor_158d00016daecc
+        - binary_sensor.motion_sensor_158d00016612af
       from: 'off'
       to: 'on'
   action:
@@ -1143,7 +1160,7 @@
   initial_state: 'on'
   condition:
     condition: state
-    entity_id: alarm_control_panel.abode_alarm
+    entity_id: input_select.abodestatus
     state: 'armed_away'
   trigger:
     platform: sun
@@ -1159,7 +1176,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: alarm_control_panel.abode_alarm
+      entity_id: input_select.abodestatus
       state: 'armed_away'
     - condition: state
       entity_id: group.living_room_lights

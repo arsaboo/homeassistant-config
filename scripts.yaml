@@ -11,7 +11,7 @@
       - service: input_select.select_option
         data:
           entity_id: input_select.abodestatus
-          option: "armed_away"
+          option: armed_away
       - service: switch.turn_on
         entity_id:
           - switch.downstairs_away
@@ -31,7 +31,7 @@
       - service: input_select.select_option
         data:
           entity_id: input_select.abodestatus
-          option: "armed_home"
+          option: armed_home
       # - service: ifttt.trigger
       #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
@@ -44,7 +44,7 @@
       - service: input_select.select_option
         data:
           entity_id: input_select.abodestatus
-          option: "disarmed"
+          option: disarmed
       - service: switch.turn_off
         entity_id:
           - switch.downstairs_away
@@ -261,6 +261,10 @@
       - service_template: "homeassistant.turn_{{ 'on' if states.media_player.panasonic_viera_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.abodestatus
+          option: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: input_select.select_option
         data_template:
           entity_id: input_select.livingroomharmony
