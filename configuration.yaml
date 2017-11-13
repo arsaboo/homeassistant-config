@@ -118,6 +118,14 @@ media_extractor:
       music: bestaudio[ext=mp3]
 # Enables configuration UI
 config:
+
+cloud:
+  mode: development
+  cognito_client_id: !secret cloud_client_id
+  user_pool_id: !secret cloud_user_pool
+  region: 'us-east-1'
+  relayer: !secret cloud_relayer
+
 map:
 downloader:
   download_dir: downloads
