@@ -73,6 +73,12 @@
       - temp_f
       - wind_string
       - relative_humidity
+  - platform: gearbest
+    items:
+      - url: https://www.gearbest.com/alarm-systems/pp_659226.html
+        name: Xiaomi Aqara Human Body Sensor
+      - url: https://www.gearbest.com/access-control/pp_626702.html
+        name: Xiaomi Aqara Temperature Humidity Sensor
 # Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
   - platform: rest
     name: pollen
