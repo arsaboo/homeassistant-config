@@ -74,6 +74,7 @@
       - wind_string
       - relative_humidity
   - platform: gearbest
+    currency: USD
     items:
       - url: https://www.gearbest.com/alarm-systems/pp_659226.html
         name: Xiaomi Aqara Human Body Sensor
@@ -157,14 +158,14 @@
           {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
             mdi:snowflake
           {%- endif -%}
-      ringvideourl:
-        friendly_name: "Ring Video URL"
-        value_template: >-
-           {%- if states.camera.front_door.attributes.video_url != None -%}
-             {{states.camera.front_door.attributes.video_url.split('?')[0]}}
-           {%- else -%}
-             unknown
-           {%- endif -%}
+      # ringvideourl:
+      #   friendly_name: "Ring Video URL"
+      #   value_template: >-
+      #      {%- if states.camera.front_door.attributes.video_url != None -%}
+      #        {{states.camera.front_door.attributes.video_url.split('?')[0]}}
+      #      {%- else -%}
+      #        unknown
+      #      {%- endif -%}
       hoursslept:
         friendly_name: "Hours Slept"
         unit_of_measurement: "hrs"
