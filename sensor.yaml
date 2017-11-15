@@ -16,17 +16,9 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-  # - platform: fitbit
-  #   monitored_resources:
-  #     - "activities/calories"
-  #     - "activities/distance"
-  #     - "activities/steps"
-  #     - "sleep/minutesAsleep"
-  #     - "sleep/minutesAwake"
-  #     - "sleep/startTime"
   - platform: currencylayer
     api_key: !secret currencylayer_key
-    base: USD #optional
+    base: USD
     quote:
       - INR
 #Forecast.io weather sensors
