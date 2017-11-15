@@ -169,6 +169,9 @@ camera:
     camera: camera.porch
     processor: image_processing.opencv_porch
     name: OpenCV Porch
+  - platform: generic
+    name: worldtime
+    still_image_url: https://imgs.xkcd.com/comics/now.png    
   # - platform: usps
   #   scan_interval: 30
   # - platform: generic

@@ -11,6 +11,7 @@
       - group.home_security
       - group.switches
       - group.ring_doorbell
+      - group.prices
 
   temperature:
     name: Temperature Sensors
@@ -42,7 +43,7 @@
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_porch
-
+      - camera.worldtime
 
   media:
     name: Media
@@ -283,3 +284,7 @@
     - sensor.ring_front_door_last_activity
     - sensor.ring_front_door_last_ding
     - sensor.ring_front_door_last_motion
+
+  Prices:
+    - sensor.xiaomi_aqara_human_body_sensor
+    - sensor.xiaomi_aqara_temperature_humidity_sensor
