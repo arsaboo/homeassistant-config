@@ -1,7 +1,17 @@
 #################################################################
-## Input_slider
+## Input_number
 #################################################################
 
+  portfoliovalue:
+    icon: mdi:currency-usd
+    name: Portfolio Value
+    min: 1
+    max: 5000000
+  portfolioreturn:
+    icon: mdi:chart-line-variant
+    name: Portfolio Return
+    min: 1
+    max: 25
   harmonyvolume:
     icon: mdi:volume-high
     name: Volume
