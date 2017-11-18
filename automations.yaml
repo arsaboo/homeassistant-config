@@ -703,16 +703,22 @@
   trigger:
     - platform: state
       entity_id:
-        - device_tracker.lifx5
-        - device_tracker.lifx3
-      to: 'not_home'
+        - light.lifx5
+        - group.living_room_lights
+      to: 'unavailable'
   action:
     - service: notify.pushbullet
       data_template:
-        title: "Check {{ trigger.to_state.name }} Switch"
+        title: "Check {{ trigger.to_state.name }} switch"
         message: >
           Check switch: {{ trigger.to_state.name }}
-
+    - service: notify.ios
+      data_template:
+        message: "Check {{ trigger.to_state.name }} switch"
+        data:
+          subtitle: "Looks like {{ trigger.to_state.name }} switch is turned off"
+          push:
+            badge: 0
 - id: garage_lights_on
   alias: 'Turn on garage lights when door opened'
   initial_state: 'on'

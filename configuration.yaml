@@ -165,13 +165,13 @@ camera:
     content_type: 'image/svg+xml'
     name: Meteogram
   - platform: ring
-  - platform: opencv
-    camera: camera.porch
-    processor: image_processing.opencv_porch
-    name: OpenCV Porch
   - platform: generic
     name: worldtime
-    still_image_url: https://imgs.xkcd.com/comics/now.png    
+    still_image_url: https://imgs.xkcd.com/comics/now.png
+  # - platform: opencv
+  #   camera: camera.porch
+  #   processor: image_processing.opencv_porch
+  #   name: OpenCV Porch
   # - platform: usps
   #   scan_interval: 30
   # - platform: generic
@@ -208,15 +208,15 @@ ifttt:
 #   - host: 192.168.2.176
 #     name: motoe
 #     scan_interval: 1
-image_processing:
-  - platform: opencv
-    name: OpenCV
-    source:
-      - entity_id: camera.porch
-    classifier:
-      body:
-        file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
-        neighbors: 4
+# image_processing:
+#   - platform: opencv
+#     name: OpenCV
+#     source:
+#       - entity_id: camera.porch
+#     classifier:
+#       body:
+#         file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
+#         neighbors: 4
   # - platform: dlib_face_detect
   #   source:
   #     - entity_id: camera.porch
