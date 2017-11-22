@@ -109,8 +109,9 @@ google_assistant:
   project_id: !secret google_project_id
   client_id: !secret google_client_id
   access_token: !secret google_access_token
+  agent_user_id: !secret google_agent_user_id
+  api_key: !secret google_project_api_key
   expose_by_default: false
-
 
 media_extractor:
   customize:
@@ -125,6 +126,19 @@ cloud:
   user_pool_id: !secret cloud_user_pool
   region: 'us-east-1'
   relayer: !secret cloud_relayer
+  alexa:
+    filter:
+      include_entities:
+        - group.living_room_lights
+        - input_boolean.abodeupdate
+        - light.gateway_light_34ce00813670
+        - light.kitchen_lights
+        - light.lifx5
+        - switch.driveway
+        - switch.garage_relay_switch
+        - switch.wemoporch
+      include_domains:
+        - cover
 
 map:
 downloader:
