@@ -17,6 +17,8 @@ homeassistant:
   packages: !include_dir_named packages
   whitelist_external_dirs:
     - '/home/homeassistant/.homeassistant/downloads'
+updater:
+  include_used_components: true
 
 python_script:
 weather:
@@ -75,9 +77,11 @@ wemo:
     - 192.168.2.130
     - 192.168.2.206
     - 192.168.2.237
-
-updater:
-  include_used_components: true
+arlo:
+  username: !secret arlo_user
+  password: !secret arlo_password
+alarm_control_panel:
+  - platform: arlo
 
 xiaomi_aqara:
   gateways:
@@ -182,6 +186,8 @@ camera:
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
+  - platform: arlo
+    ffmpeg_arguments: '-pred 1 -q:v 2'
   # - platform: opencv
   #   camera: camera.porch
   #   processor: image_processing.opencv_porch

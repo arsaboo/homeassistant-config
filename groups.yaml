@@ -43,7 +43,8 @@
       - group.camera_foscam3
       - group.camera_motoe
       - group.camera_opencv_porch
-      - camera.worldtime
+      - group.camera_worldtime
+      - group.camera_arlolivingroom
 
   media:
     name: Media
@@ -66,7 +67,12 @@
       - group.camera_switches
       - group.network_details
 
-
+  camera_arlolivingroom:
+    entities:
+      - camera.arlolivingroom
+  camera_worldtime:
+    entities:
+      - camera.worldtime
   camera_ring_doorbell:
     entities:
       - camera.front_door
@@ -197,6 +203,7 @@
     control: hidden
     entities:
       - alarm_control_panel.abode_alarm
+      - alarm_control_panel.arlohome
       - input_select.abodestatus
       - cover.garagedoor
       - input_boolean.abodeupdate

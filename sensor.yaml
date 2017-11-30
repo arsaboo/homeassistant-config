@@ -21,6 +21,7 @@
     base: USD
     quote:
       - INR
+  - platform: arlo     
 #Forecast.io weather sensors
   - platform: darksky
     api_key: !secret darksky_key

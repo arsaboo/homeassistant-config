@@ -154,7 +154,8 @@
        icon: mdi:home
      alarm_control_panel.abode_alarm:
        entity_picture: /local/Abode.jpg
-
+     alarm_control_panel.arlohome:
+       entity_picture: /local/arlo.png
  #Emulated_Hue Devices
      input_boolean.abodeupdate:
        emulated_hue_hidden: false

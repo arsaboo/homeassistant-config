@@ -703,9 +703,10 @@
   trigger:
     - platform: state
       entity_id:
-        - light.lifx5
         - group.living_room_lights
+        - light.lifx5
       to: 'unavailable'
+      for: '00:05:00'
   action:
     - service: notify.pushbullet
       data_template:
