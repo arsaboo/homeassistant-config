@@ -7,8 +7,6 @@ https://home-assistant.io/ecosystem/ios/
 import asyncio
 import logging
 import datetime
-import json
-from typing import Union, List, Dict
 
 import voluptuous as vol
 # from voluptuous.humanize import humanize_error
@@ -20,8 +18,7 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import discovery
-from homeassistant.util.json import load_json
-from homeassistant.remote import JSONEncoder
+from homeassistant.util.json import load_json, save_json
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -203,21 +200,6 @@ def device_name_for_push_id(push_id):
             return device_name
     return None
 
-def save_json(filename: str, config: Union[List, Dict]):
-    try:
-        data = json.dumps(config, sort_keys=True, indent=4, cls=JSONEncoder)
-        with open(filename, 'w', encoding='utf-8') as fdesc:
-            fdesc.write(data)
-            return True
-    except TypeError as error:
-        _LOGGER.exception('Failed to serialize to JSON: %s',
-                          filename)
-        raise HomeAssistantError(error)
-    except OSError as error:
-        _LOGGER.exception('Saving JSON file failed: %s',
-                          filename)
-        raise HomeAssistantError(error)
-    return False
 
 def setup(hass, config):
     """Set up the iOS component."""
@@ -282,7 +264,7 @@ class iOSIdentifyDeviceView(HomeAssistantView):
         #     return self.json_message(humanize_error(request.json, ex),
         #                              HTTP_BAD_REQUEST)
 
-        data[ATTR_LAST_SEEN_AT] = datetime.datetime.now()
+        data[ATTR_LAST_SEEN_AT] = datetime.datetime.now().isoformat()
 
         name = data.get(ATTR_DEVICE_ID)
 
