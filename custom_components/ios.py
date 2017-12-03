@@ -7,6 +7,7 @@ https://home-assistant.io/ecosystem/ios/
 import asyncio
 import logging
 import datetime
+from typing import Union, List, Dict
 
 import voluptuous as vol
 # from voluptuous.humanize import humanize_error
