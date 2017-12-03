@@ -998,6 +998,10 @@
       data_template:
         entity_id: input_select.hvacmode
         option: '{{ trigger.to_state.state }}'
+    - service: logbook.log
+      data_template:
+        name: "HVAC Mode changed to: "
+        message: '{{ trigger.to_state.state }}'
 - id: reset_garage_relay
   alias: 'Reset Garage Relay'
   initial_state: 'on'
@@ -1054,7 +1058,10 @@
   action:
     - service: switch.turn_on
       entity_id: switch.garage_relay_switch
-
+    - service: logbook.log
+      data_template:
+        name: "Garage door opened for: "
+        message: "{{trigger.to_state.name.split(' ')[0]}}"
 - id: close_garage_door_when_abode_is_home_or_away
   alias: 'Close garage door when Abode is Home or Away'
   initial_state: 'on'

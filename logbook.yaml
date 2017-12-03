@@ -19,6 +19,7 @@
       - automation.change_xiaomi_color
       - automation.get_steps_from_iphone
       - automation.micube_event_test
+      - automation.set_hvac_mode
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
       - binary_sensor.garage_door_tilt_sensor_sensor
@@ -36,6 +37,7 @@
       - binary_sensor.motion_sensor_158d00016612af
       - binary_sensor.ring_front_door_ding
       - binary_sensor.ring_front_door_motion
+      - input_select.hvacmode
       - sensor.ars_bloom_uvindex
       - sensor.ringvideourl
       - sensor.pws_wind_dir
