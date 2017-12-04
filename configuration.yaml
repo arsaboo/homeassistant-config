@@ -82,6 +82,8 @@ arlo:
   password: !secret arlo_password
 alarm_control_panel:
   - platform: arlo
+    home_mode_name: Disarmed
+
 
 xiaomi_aqara:
   gateways:
@@ -182,7 +184,6 @@ camera:
     still_image_url: !secret meteogram_url
     content_type: 'image/svg+xml'
     name: Meteogram
-  - platform: ring
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
