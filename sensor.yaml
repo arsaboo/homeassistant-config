@@ -21,7 +21,7 @@
     base: USD
     quote:
       - INR
-  - platform: arlo     
+  - platform: arlo
 #Forecast.io weather sensors
   - platform: darksky
     api_key: !secret darksky_key
@@ -151,14 +151,14 @@
           {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
             mdi:snowflake
           {%- endif -%}
-      # ringvideourl:
-      #   friendly_name: "Ring Video URL"
-      #   value_template: >-
-      #      {%- if states.camera.front_door.attributes.video_url != None -%}
-      #        {{states.camera.front_door.attributes.video_url.split('?')[0]}}
-      #      {%- else -%}
-      #        unknown
-      #      {%- endif -%}
+      ringvideourl:
+        friendly_name: "Ring Video URL"
+        value_template: >-
+           {%- if states.camera.front_door.attributes.video_url != None -%}
+             {{states.camera.front_door.attributes.video_url.split('?')[0]}}
+           {%- else -%}
+             unknown
+           {%- endif -%}
       hoursslept:
         friendly_name: "Hours Slept"
         unit_of_measurement: "hrs"
