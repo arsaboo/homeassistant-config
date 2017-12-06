@@ -450,7 +450,7 @@
         url: "{{ states.camera.front_door.attributes.video_url }}"
         subdir: "{{'ring_' + states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')}}"
         overwrite: True
-        filename: "{{states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')}}"
+        filename: "{{states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')+ '.mp4'}}"
 
 #################################################################
 ## HASS Related
