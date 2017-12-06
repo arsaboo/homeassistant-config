@@ -17,6 +17,7 @@ homeassistant:
   packages: !include_dir_named packages
   whitelist_external_dirs:
     - '/home/homeassistant/.homeassistant/downloads'
+    - '/tmp'
 updater:
   include_used_components: true
 
