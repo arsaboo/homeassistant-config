@@ -66,6 +66,7 @@
       - group.camera_sensors
       - group.camera_switches
       - group.network_details
+      - group.arlo
 
   camera_arlolivingroom:
     entities:
@@ -292,8 +293,13 @@
     - sensor.ring_front_door_last_ding
     - sensor.ring_front_door_last_motion
 
+  Arlo:
+    - sensor.battery_level_arlolivingroom
+    - sensor.captured_today_arlolivingroom
+    - sensor.signal_strength_arlolivingroom
+
   Financial:
-    - input_number.portfoliovalue
-    - input_number.portfolioreturn
     - sensor.xiaomi_aqara_human_body_sensor
     - sensor.xiaomi_aqara_temperature_humidity_sensor
+    - sensor.xiaomi_yeelight_white
+    - sensor.xiaomi_door_window_sensor

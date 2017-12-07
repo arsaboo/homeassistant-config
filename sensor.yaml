@@ -73,6 +73,11 @@
         name: Xiaomi Aqara Human Body Sensor
       - url: https://www.gearbest.com/access-control/pp_626702.html
         name: Xiaomi Aqara Temperature Humidity Sensor
+      - url: https://www.gearbest.com/smart-light-bulb/pp_278478.html
+        name: Xiaomi Yeelight White
+      - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
+        name: Xiaomi Door Window Sensor
+
 # Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
   - platform: rest
     name: pollen
@@ -106,7 +111,7 @@
         friendly_name: "Battery Status"
         value_template: >-
           {%- set threshold = 25 -%}
-          {%- set domains = ['light', 'switch', 'sensor', 'zwave', 'binary_sensor'] -%}
+          {%- set domains = ['light', 'switch', 'sensor', 'zwave', 'binary_sensor', 'camera'] -%}
           {%- for domain in domains -%}
           {%- for item in states[domain] if ((item.attributes.battery_low is defined and item.attributes['battery_low'] == true) or (item.attributes.battery_level is defined and item.attributes['battery_level'] | int < threshold)) -%}
               {{ item.name }}{%- if not loop.last %}, {% endif -%}

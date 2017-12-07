@@ -940,7 +940,6 @@
       data:
         rgb_color: [255, 255, 255]
         brightness: 250
-        color_temp: 285
 
 - id: outdoor_light_at_night
   alias: Outdoor lights at night

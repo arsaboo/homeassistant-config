@@ -232,7 +232,6 @@
         data:
           rgb_color: [255, 255, 255]
           brightness: 250
-          color_temp: 285
 
   updatetracker:
     alias: 'Update tracker'
