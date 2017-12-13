@@ -68,69 +68,6 @@
       - group.network_details
       - group.arlo
 
-  camera_arlolivingroom:
-    entities:
-      - camera.arlolivingroom
-  camera_worldtime:
-    entities:
-      - camera.worldtime
-  camera_ring_doorbell:
-    entities:
-      - camera.front_door
-  camera_abode_living_room:
-    entities:
-      - camera.living_room
-  camera_usps:
-    entities:
-      - camera.usps_mail
-  camera_meteogram:
-    entities:
-      - camera.meteogram
-  camera_arsbloom:
-    name: BloomSky Camera
-    entities:
-      - camera.ars_bloom
-  camera_driveway:
-    name: Driveway Camera
-    entities:
-      - camera.driveway
-  camera_porch:
-    name: Porch Camera
-    entities:
-      - camera.porch
-  camera_backyard:
-    name: Backyard Camera
-    entities:
-      - camera.backyard
-  camera_patio:
-    name: Patio Camera
-    entities:
-      - camera.patio
-  camera_foscam1:
-    name: Foscam Camera 1
-    entities:
-      - camera.door_camera
-  camera_foscam2:
-    name: Foscam Camera 2
-    entities:
-      - camera.door_camera_2
-  camera_foscam3:
-    name: Foscam Camera 3
-    entities:
-      - camera.door_camera_3
-  camera_motoe:
-    name: MotoE Camera
-    entities:
-      - camera.motoe
-  camera_opencv_porch:
-    name: OpenCV Porch
-    entities:
-      - camera.opencv_porch
-  camera_wundergroundradar:
-    name: Wunderground Radar Camera
-    entities:
-      - camera.wundergroundradar
-
   HASS Details:
     - sensor.time__date
     - sensor.hassuptime
@@ -158,6 +95,7 @@
     - sensor.pressure_158d0001ab3b2b
     - sensor.temperature_158d0001ab3b2b
     - sensor.illumination_34ce00813670
+    - sensor.illumination_158d0001a1f2ab
     - binary_sensor.water_leak_sensor_158d0001d77800
     - sensor.leeoalarmstatus
 
@@ -214,6 +152,7 @@
       - input_boolean.startrecording
       - binary_sensor.motion_sensor_158d00016daecc
       - binary_sensor.motion_sensor_158d00016612af
+      - binary_sensor.motion_sensor_158d0001a1f2ab
 
   Camera Sensors:
     control: hidden
@@ -303,3 +242,66 @@
     - sensor.xiaomi_aqara_temperature_humidity_sensor
     - sensor.xiaomi_yeelight_white
     - sensor.xiaomi_door_window_sensor
+
+  camera_arlolivingroom:
+    entities:
+      - camera.arlolivingroom
+  camera_worldtime:
+    entities:
+      - camera.worldtime
+  camera_ring_doorbell:
+    entities:
+      - camera.front_door
+  camera_abode_living_room:
+    entities:
+      - camera.living_room
+  camera_usps:
+    entities:
+      - camera.usps_mail
+  camera_meteogram:
+    entities:
+      - camera.meteogram
+  camera_arsbloom:
+    name: BloomSky Camera
+    entities:
+      - camera.ars_bloom
+  camera_driveway:
+    name: Driveway Camera
+    entities:
+      - camera.driveway
+  camera_porch:
+    name: Porch Camera
+    entities:
+      - camera.porch
+  camera_backyard:
+    name: Backyard Camera
+    entities:
+      - camera.backyard
+  camera_patio:
+    name: Patio Camera
+    entities:
+      - camera.patio
+  camera_foscam1:
+    name: Foscam Camera 1
+    entities:
+      - camera.door_camera
+  camera_foscam2:
+    name: Foscam Camera 2
+    entities:
+      - camera.door_camera_2
+  camera_foscam3:
+    name: Foscam Camera 3
+    entities:
+      - camera.door_camera_3
+  camera_motoe:
+    name: MotoE Camera
+    entities:
+      - camera.motoe
+  camera_opencv_porch:
+    name: OpenCV Porch
+    entities:
+      - camera.opencv_porch
+  camera_wundergroundradar:
+    name: Wunderground Radar Camera
+    entities:
+      - camera.wundergroundradar

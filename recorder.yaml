@@ -28,6 +28,8 @@
       - sensor.time__date
       - sensor.ssl_certificate_expiry
       - switch.pihole
+      - switch.garage_relay_switch
+      - sensor.hvacmode
       - sensor.dns_queries_today
       - sensor.domains_being_blocked
       - sensor.ads_blocked_today

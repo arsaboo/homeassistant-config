@@ -23,6 +23,7 @@
       - binary_sensor.ars_bloom_rain
       - binary_sensor.ars_bloom_night
       - binary_sensor.garage_door_tilt_sensor_sensor
+      - binary_sensor.garagedoor
       - binary_sensor.upstairs_occupancy
       - binary_sensor.downstairs_occupancy
       - binary_sensor.porch_field_detection
