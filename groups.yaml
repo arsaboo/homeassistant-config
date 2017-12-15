@@ -45,6 +45,7 @@
       - group.camera_opencv_porch
       - group.camera_worldtime
       - group.camera_arlolivingroom
+      - group.camera_arlolivingroom2
 
   media:
     name: Media
@@ -236,6 +237,9 @@
     - sensor.battery_level_arlolivingroom
     - sensor.captured_today_arlolivingroom
     - sensor.signal_strength_arlolivingroom
+    - sensor.battery_level_livingroom2
+    - sensor.captured_today_livingroom2
+    - sensor.signal_strength_livingroom2
 
   Financial:
     - sensor.xiaomi_aqara_human_body_sensor
@@ -246,6 +250,9 @@
   camera_arlolivingroom:
     entities:
       - camera.arlolivingroom
+  camera_arlolivingroom2:
+    entities:
+      - camera.livingroom2
   camera_worldtime:
     entities:
       - camera.worldtime
