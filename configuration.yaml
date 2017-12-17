@@ -107,9 +107,9 @@ lyric:
   client_id: !secret lyric_client_id
   client_secret: !secret lyric_client_secret
 #Adds Alexa and Google Home support
-emulated_hue:
-  host_ip: 192.168.2.212
-  expose_by_default: false
+# emulated_hue:
+#   host_ip: 192.168.2.212
+#   expose_by_default: false
 #  listen_port: 80
 google_assistant:
   project_id: !secret google_project_id
@@ -127,11 +127,6 @@ media_extractor:
 config:
 
 cloud:
-  mode: development
-  cognito_client_id: !secret cloud_client_id
-  user_pool_id: !secret cloud_user_pool
-  region: 'us-east-1'
-  relayer: !secret cloud_relayer
   alexa:
     filter:
       include_entities:
