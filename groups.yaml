@@ -138,6 +138,7 @@
     - media_player.shield_android_tv
     - media_player.spotify
     - media_player.apple_tv
+    - media_player.plex_shield_android_tv
 
   Home Security:
     control: hidden
