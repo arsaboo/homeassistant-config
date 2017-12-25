@@ -1112,6 +1112,7 @@
         - binary_sensor.front_door
         - binary_sensor.motion_sensor_158d00016daecc
         - binary_sensor.motion_sensor_158d00016612af
+        - binary_sensor.motion_sensor_158d0001a1f2ab
       from: 'off'
       to: 'on'
   action:
