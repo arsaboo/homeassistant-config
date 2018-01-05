@@ -853,7 +853,7 @@
      data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
 
 - id: frontyard_lights
-  alias: 'Turn on frontyard lights'
+  alias: 'Frontyard lights on Motion'
   initial_state: 'on'
   condition:
     - condition: state
@@ -873,30 +873,7 @@
       entity_id:
         - switch.driveway
         - switch.wemoporch
-
-- id: frontyard_lights_off_after_ring
-  alias: 'Turn off frontyard lights after Ring'
-  initial_state: 'on'
-  condition:
-    - condition: template
-      value_template: >
-        {%- if states.binary_sensor.ring_front_door_motion.last_changed -%}
-          {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.ring_front_door_motion.last_changed)) > 200}}
-        {%- else -%}
-          false
-        {%- endif -%}
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: switch.driveway
-          state: 'on'
-        - condition: state
-          entity_id: switch.wemoporch
-          state: 'on'
-  trigger:
-   - platform: time
-     minutes: '/5'
-  action:
+    - delay: '00:05:00'
     - service: switch.turn_off
       entity_id:
         - switch.driveway
@@ -956,15 +933,7 @@
     - service: switch.turn_on
       entity_id:
         - switch.driveway
-
-- id: outdoor_light_off
-  alias: Outdoor light Off
-  initial_state: 'on'
-  trigger:
-    platform: sun
-    event: sunset
-    offset: "01:30:00"
-  action:
+    - delay: '00:45:00'
     - service: switch.turn_off
       entity_id:
         - switch.driveway
