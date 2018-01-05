@@ -179,12 +179,12 @@ camera:
     still_image_url: !secret meteogram_url
     content_type: 'image/svg+xml'
     name: Meteogram
-  - platform: ring
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
   - platform: arlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
+  # - platform: ring    
   # - platform: opencv
   #   camera: camera.porch
   #   processor: image_processing.opencv_porch
