@@ -53,41 +53,27 @@
             - url: !secret porch_camera_image_url
               caption: "Test"
 
-
-## Humidifier
-- id: turn_on_humidifier
-  alias: Turn on humidifier
+## Automate Christmas Lights
+- id: turn_on_christmas_light
+  alias: Turn Christmas Lights On At Sunset
   initial_state: 'on'
-  condition:
-     - condition: time
-       after: '08:15:00'
-       before: '21:45:00'
-     - condition: template
-       value_template: '{{ states.sensor.leeohumid.state | int < 30 }}'
-     - condition: state
-       entity_id: switch.wemoswitch
-       state: 'off'
   trigger:
-   - platform: time
-     minutes: '/10'
-     seconds: 00
+    platform: sun
+    event: sunset
   action:
     service: homeassistant.turn_on
     entity_id: switch.wemoswitch
 
-- id: turn_off_humidifier
-  alias: Turn off humidifier
+- id: turn_off_christmas_light
+  alias: Turn Christmas Lights Off At Midnight
   initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: switch.wemoswitch
-      state: 'on'
   trigger:
-    platform: template
-    value_template: '{{ states.sensor.leeohumid.state | int >= 30 }}'
+    platform: time
+    at: '23:30:00'
   action:
     service: homeassistant.turn_off
     entity_id: switch.wemoswitch
+
 
 - alias: 'Switch turned on when nobody is home v1'
   condition:
