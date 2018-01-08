@@ -1386,3 +1386,8 @@
       data_template:
         entity_id: input_number.harmonyvolume
         value: '{{ trigger.to_state.state }}'
+    - service: notify.shield
+      data_template:
+        title: "Home Assistant"
+        message: >
+            Volume changed to {{ trigger.to_state.state }}
