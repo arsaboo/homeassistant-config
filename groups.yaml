@@ -117,7 +117,7 @@
     - input_select.hvacmode
 
   Information:
-    - input_number.portfoliovalue    
+    - sensor.portfolioval
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy

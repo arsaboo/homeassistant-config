@@ -56,6 +56,7 @@
       - sensor.garagedoorbattery
       - sensor.phonebatteryalok
       - sensor.phonebatteryrashmi
+      - sensor.portfolioval
       - sensor.usd_inr
       - sensor.usd_eur
       - sensor.sonos_volume

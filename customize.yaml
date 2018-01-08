@@ -95,6 +95,8 @@
        friendly_name: 'Daily Summary'
      sensor.dark_sky_hourly_summary:
        friendly_name: 'Hourly Summary'
+     sensor.portfolioval:
+       icon: mdi:currency-usd    
 
      group.all_automations:
        hidden: false
