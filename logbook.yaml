@@ -57,6 +57,7 @@
       - sensor.phonebatteryalok
       - sensor.phonebatteryrashmi
       - sensor.portfolioval
+      - input_number.portfoliovalue
       - sensor.usd_inr
       - sensor.usd_eur
       - sensor.sonos_volume
@@ -105,3 +106,4 @@
       - camera.porch
       - camera.patio
       - camera.driveway
+      - device_tracker.beacon_home

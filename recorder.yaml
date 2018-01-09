@@ -14,7 +14,6 @@
       - input_number.leeohumidity
       - input_number.leeoupstairstemp
       - input_number.leeoupstairshumidity
-      - input_number.portfoliovalue
       - input_select.livingroomharmony
       - sensor.living_room
       - zwave.garage_door_tilt_sensor
