@@ -106,18 +106,7 @@ ecobee:
 lyric:
   client_id: !secret lyric_client_id
   client_secret: !secret lyric_client_secret
-#Adds Alexa and Google Home support
-# emulated_hue:
-#   host_ip: 192.168.2.212
-#   expose_by_default: false
-#  listen_port: 80
-google_assistant:
-  project_id: !secret google_project_id
-  client_id: !secret google_client_id
-  access_token: !secret google_access_token
-  agent_user_id: !secret google_agent_user_id
-  api_key: !secret google_project_api_key
-  expose_by_default: false
+
 
 media_extractor:
   customize:
@@ -140,6 +129,41 @@ cloud:
         - switch.wemoporch
       include_domains:
         - cover
+    entity_config:
+      light.gateway_light_34ce00813670:
+        name: Gateway Light
+        description: Xiaomi Gateway Light
+
+google_assistant:
+  project_id: !secret google_project_id
+  client_id: !secret google_client_id
+  access_token: !secret google_access_token
+  agent_user_id: !secret google_agent_user_id
+  api_key: !secret google_project_api_key
+  expose_by_default: false
+  exposed_domains:
+    - cover
+  entity_config:
+    light.gateway_light_34ce00813670:
+      expose: true
+      name: Gateway Light
+    group.living_room_lights:
+      expose: true
+      name: Living room lights
+    switch.driveway:
+      expose: true
+      name: Driveway Lights
+      # type: 'action.devices.types.LIGHT'
+    switch.wemoporch:
+      expose: true
+      name: Porch Lights
+      # type: 'action.devices.types.LIGHT'
+    light.kitchen_lights:
+      expose: true
+      name: Kitchen Light
+    light.lifx5:
+      expose: true
+      name: Garage Light
 
 map:
 downloader:
@@ -184,7 +208,7 @@ camera:
     still_image_url: https://imgs.xkcd.com/comics/now.png
   - platform: arlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
-  # - platform: ring    
+  # - platform: ring
   # - platform: opencv
   #   camera: camera.porch
   #   processor: image_processing.opencv_porch

@@ -96,7 +96,7 @@
      sensor.dark_sky_hourly_summary:
        friendly_name: 'Hourly Summary'
      sensor.portfolioval:
-       icon: mdi:currency-usd    
+       icon: mdi:currency-usd
 
      group.all_automations:
        hidden: false
@@ -168,13 +168,11 @@
        emulated_hue_name: "Driveway Light"
        friendly_name: "Driveway Light"
        homebridge_hidden: false
-       google_assistant: true
      switch.wemoporch:
        emulated_hue_hidden: false
        emulated_hue_name: "Porch Lights"
        friendly_name: "Porch Lights"
        homebridge_hidden: false
-       google_assistant: true
      switch.garage_relay_switch:
        emulated_hue_hidden: false
        emulated_hue_name: "Garage Door"
@@ -184,7 +182,6 @@
        emulated_hue_name: "Living room lights"
        homebridge_hidden: false
        friendly_name: Living room lights
-       google_assistant: true
      input_boolean.tv:
        homebridge_hidden: false
      cover.garagedoor:
@@ -194,7 +191,6 @@
        emulated_hue_hidden: false
        emulated_hue_name: "Kitchen lights"
        homebridge_hidden: false
-       google_assistant: true
        friendly_name: Kitchen lights
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
@@ -209,7 +205,6 @@
        emulated_hue_name: "Garage Lights"
        homebridge_hidden: false
        friendly_name: Garage lights
-       google_assistant: true
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
        stretch_slider: true
@@ -266,7 +261,6 @@
 # Xiaomi Aqara Devices
      light.gateway_light_34ce00813670:
        emulated_hue_hidden: false
-       google_assistant: true
        friendly_name: Gateway lights
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
