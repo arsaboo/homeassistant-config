@@ -38,8 +38,9 @@
     name: PlexSpy
     host: 192.168.2.212
     port: 32400
-    username: !secret plex_user
-    password: !secret plex_password
+    token: !secret plex_token
+    # username: !secret plex_user
+    # password: !secret plex_password
 #Morning Commute Google Travel Time Sensor
   - platform: google_travel_time
     name: Morning Commute
@@ -150,7 +151,7 @@
              {{states.input_number.portfoliovalue.state|default(0)|round(2)}}
            {%- else -%}
              0
-           {%- endif -%}      
+           {%- endif -%}
       hvacmode:
         friendly_name: "HVAC Mode"
         value_template: >-
