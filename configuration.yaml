@@ -26,6 +26,7 @@ weather:
   - platform: yweather
     name: Weather
     woeid: !secret woeid
+
 customizer:
   custom_ui: hosted
   hide_attributes:
@@ -146,24 +147,18 @@ google_assistant:
   entity_config:
     light.gateway_light_34ce00813670:
       expose: true
-      name: Gateway Light
     group.living_room_lights:
       expose: true
-      name: Living room lights
     switch.driveway:
       expose: true
-      name: Driveway Lights
-      # type: 'action.devices.types.LIGHT'
+      type: 'light'
     switch.wemoporch:
       expose: true
-      name: Porch Lights
-      # type: 'action.devices.types.LIGHT'
+      type: 'light'
     light.kitchen_lights:
       expose: true
-      name: Kitchen Light
     light.lifx5:
       expose: true
-      name: Garage Light
 
 map:
 downloader:
