@@ -72,8 +72,6 @@
            {% else %}
              unknown
            {% endif %}
-        entity_id:
-          - sensor.garage_door_tilt_sensor_alarm_level
   - platform: hikvision
     host: 192.168.2.91
     name: Porch

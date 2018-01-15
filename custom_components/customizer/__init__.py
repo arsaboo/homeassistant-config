@@ -30,6 +30,7 @@ CONF_HIDE_ATTRIBUTES = 'hide_attributes'
 
 CONF_ATTRIBUTE = 'attribute'
 CONF_VALUE = 'value'
+CONF_COLUMNS = 'columns'
 
 SERVICE_SET_ATTRIBUTE = 'set_attribute'
 SERVICE_SET_ATTRIBUTE_SCHEMA = vol.Schema({
@@ -41,6 +42,7 @@ SERVICE_SET_ATTRIBUTE_SCHEMA = vol.Schema({
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Optional(CONF_CUSTOM_UI): cv.string,
+        vol.Optional(CONF_COLUMNS): [int],
         vol.Optional(CONF_HIDE_ATTRIBUTES):
             vol.All(cv.ensure_list, [cv.string]),
     })
@@ -85,10 +87,6 @@ def async_setup(hass, config):
     component = EntityComponent(_LOGGER, DOMAIN, hass)
     yield from component.async_add_entity(CustomizerEntity(config[DOMAIN]))
 
-    descriptions = yield from hass.async_add_job(
-        load_yaml_config_file, os.path.join(
-            os.path.dirname(__file__), 'services.yaml'))
-
     @callback
     def set_attribute(call):
         """Set attribute override."""
@@ -109,10 +107,18 @@ def async_setup(hass, config):
             state_attributes[attribute] = value
         hass.states.async_set(entity_id, state.state, state_attributes)
 
-    hass.services.async_register(DOMAIN, SERVICE_SET_ATTRIBUTE,
-                                 set_attribute,
-                                 descriptions[SERVICE_SET_ATTRIBUTE],
-                                 SERVICE_SET_ATTRIBUTE_SCHEMA)
+    if MINOR_VERSION >= 61:
+        hass.services.async_register(DOMAIN, SERVICE_SET_ATTRIBUTE,
+                                     set_attribute,
+                                     SERVICE_SET_ATTRIBUTE_SCHEMA)
+    else:
+        descriptions = yield from hass.async_add_job(
+            load_yaml_config_file, os.path.join(
+                os.path.dirname(__file__), 'services.yaml'))
+        hass.services.async_register(DOMAIN, SERVICE_SET_ATTRIBUTE,
+                                     set_attribute,
+                                     descriptions[SERVICE_SET_ATTRIBUTE],
+                                     SERVICE_SET_ATTRIBUTE_SCHEMA)
 
     return True
 
@@ -123,6 +129,7 @@ class CustomizerEntity(Entity):
     def __init__(self, config):
         """Constructor that parses the config."""
         self.hide_attributes = config.get(CONF_HIDE_ATTRIBUTES)
+        self.columns = config.get(CONF_COLUMNS)
 
     @property
     def hidden(self):
@@ -140,4 +147,6 @@ class CustomizerEntity(Entity):
         result = {}
         if self.hide_attributes:
             result[CONF_HIDE_ATTRIBUTES] = self.hide_attributes
+        if self.columns:
+            result[CONF_COLUMNS] = self.columns
         return result
