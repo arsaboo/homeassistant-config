@@ -1,3 +1,4 @@
+  use_include_order: True
   include:
     entities:
       - binary_sensor.garagedoor
