@@ -9,8 +9,8 @@ from os import path
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 """
-replace custom_components.lyric with 
-homeassistant.components.lyric when not 
+replace custom_components.lyric with
+homeassistant.components.lyric when not
 placed in custom components
 """
 from custom_components.lyric import DATA_LYRIC, CONF_FAN, CONF_AWAY_PERIODS
@@ -24,7 +24,6 @@ from homeassistant.const import (
     ATTR_ENTITY_ID, ATTR_TEMPERATURE, CONF_SCAN_INTERVAL,
     STATE_ON, STATE_OFF, STATE_UNKNOWN, TEMP_CELSIUS,
     TEMP_FAHRENHEIT)
-from homeassistant.config import load_yaml_config_file
 
 DEPENDENCIES = ['lyric']
 _LOGGER = logging.getLogger(__name__)
@@ -53,7 +52,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    _LOGGER.debug("climate discovery_info: %s" % discovery_info)   
+    _LOGGER.debug("climate discovery_info: %s" % discovery_info)
     _LOGGER.debug("climate config: %s" % config)
 
     temp_unit = hass.config.units.temperature_unit
@@ -83,12 +82,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             thermostat.set_hold_mode(HOLD_NO_HOLD)
             thermostat.away_override = False
 
-    descriptions = load_yaml_config_file(
-        path.join(path.dirname(__file__), 'services.yaml'))
-
     hass.services.register(
         DOMAIN, SERVICE_RESUME_PROGRAM, resume_program_service,
-        descriptions.get(SERVICE_RESUME_PROGRAM),
         schema=RESUME_PROGRAM_SCHEMA)
 
 class LyricThermostat(ClimateDevice):
@@ -104,7 +99,7 @@ class LyricThermostat(ClimateDevice):
         self._away_periods = away_periods
 
         _LOGGER.debug("away periods: %s" % away_periods)
-       
+
         # Not all lyric devices support cooling and heating remove unused
         self._operation_list = [STATE_OFF]
 
@@ -159,7 +154,7 @@ class LyricThermostat(ClimateDevice):
     def supported_features(self):
         """Return the list of supported features."""
         return SUPPORT_FLAGS
-    
+
     @property
     def temperature_unit(self):
         """Return the unit of measurement."""
@@ -295,7 +290,7 @@ class LyricThermostat(ClimateDevice):
     def max_temp(self):
         """Identify max_temp in Lyric API or defaults if not available."""
         return self._max_temperature
-    
+
     @property
     def device_state_attributes(self):
         """Return device specific state attributes."""
@@ -338,7 +333,7 @@ class LyricThermostat(ClimateDevice):
                     self._currentSchedulePeriod = self.device.currentSchedulePeriod['period']
                 if 'day' in  self.device.currentSchedulePeriod:
                     self._currentSchedulePeriod = self.device.currentSchedulePeriod['day']
-    
+
             if self.device.units == 'Celsius':
                 self._temperature_scale = TEMP_CELSIUS
             else:
