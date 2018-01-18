@@ -16,11 +16,6 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-  - platform: currencylayer
-    api_key: !secret currencylayer_key
-    base: USD
-    quote:
-      - INR
   - platform: arlo
 #Forecast.io weather sensors
   - platform: darksky
@@ -78,7 +73,12 @@
         name: Xiaomi Yeelight White
       - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
         name: Xiaomi Door Window Sensor
-
+  - platform: alpha_vantage
+    api_key: !secret alphavantage_key
+    foreign_exchange:
+      - from: USD
+        to: INR
+        name: USDINR
 # Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
   - platform: rest
     name: pollen

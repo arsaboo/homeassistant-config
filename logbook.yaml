@@ -58,8 +58,7 @@
       - sensor.phonebatteryrashmi
       - sensor.portfolioval
       - input_number.portfoliovalue
-      - sensor.usd_inr
-      - sensor.usd_eur
+      - sensor.usdinr
       - sensor.sonos_volume
       - sensor.downstairsthermoper
       - sensor.upstairsthermoper

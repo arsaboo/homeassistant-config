@@ -121,7 +121,7 @@
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy
-    - sensor.usd_inr
+    - sensor.usdinr
 
   Network Details:
     - binary_sensor.pihole
