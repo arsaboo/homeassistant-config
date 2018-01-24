@@ -19,6 +19,7 @@
     icon: mdi:weather-cloudy
     entities:
       - group.weather
+      - group.weather_card_forecast
       - group.room_sensors
       - group.thermostats
       - group.camera_meteogram
