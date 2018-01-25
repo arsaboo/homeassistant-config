@@ -54,3 +54,10 @@
       - input_boolean.frontdoor
       - input_boolean.backdoor
       - binary_sensor.garageentrydoor
+      - sensor.forecast_1
+      - sensor.forecast_2
+      - sensor.forecast_3
+      - sensor.forecast_4
+      - sensor.forecast_5
+      - sensor.forecast_6
+      - sensor.forecast_7

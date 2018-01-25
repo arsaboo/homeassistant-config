@@ -282,3 +282,4 @@
             {%- else -%}
               Shield
             {%- endif -%}
+      - service: python_script.dark_sky_friendly_names

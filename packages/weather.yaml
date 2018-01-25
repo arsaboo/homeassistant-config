@@ -33,54 +33,66 @@ sensor:
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon.state ~ '.png'}}
 
-      forecast_first:
+      forecast_1:
         friendly_name: 'Tomorrow' #{{ (as_timestamp(now()) + (86400)) | timestamp_custom("%A", True) }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_1.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_1.state ~ '.png'}}
 
-      forecast_second:
+      forecast_2:
         friendly_name: 'Second' #{{ (as_timestamp(now()) + (86400) *2) | timestamp_custom("%A", True) }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_2.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_2.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_2.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_2.state ~ '.png'}}
 
-      forecast_third:
+      forecast_3:
         friendly_name: 'Third' #{{ (as_timestamp(now()) + (86400) *3) | timestamp_custom("%A", True) }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_3.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_3.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_3.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_3.state ~ '.png'}}
 
-      forecast_fourth:
+      forecast_4:
         friendly_name: 'Fourth' #{{ (as_timestamp(now()) + (86400) *4) | timestamp_custom("%A", True) }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_4.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_4.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_4.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_4.state ~ '.png'}}
 
-      forecast_fifth:
+      forecast_5:
         friendly_name: 'Fifth' #{{ (as_timestamp(now()) + (86400) *5) | timestamp_custom("%A", True) }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_5.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_5.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_5.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_5.state ~ '.png'}}
 
-      forecast_sixth:
+      forecast_6:
         friendly_name: 'Sixth' #{{ (as_timestamp(now()) + (86400) *6) | timestamp_custom("%A", True) }}
         value_template: >
             {{states.sensor.dark_sky_daily_high_temperature_6.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_6.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_6.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_6.state ~ '.png'}}
 
-      forecast_seventh:
+      forecast_7:
         friendly_name: 'Seventh' #{{ (as_timestamp(now()) + (86400) *7) | timestamp_custom("%A", True) }}
         value_template: >
             {{states.sensor.dark_sky_daily_high_temperature_7.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_7.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_7.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_7.state ~ '.png'}}
+
+automation:
+  - id: update_friendly_names
+    alias: Update friendly_names at night
+    initial_state: on
+    hide_entity: on
+    trigger:
+      platform: time
+      at: '00:10:00'
+    action:
+      - service: python_script.dark_sky_friendly_names
+
 
 group:
   weather_card_forecast:
@@ -88,10 +100,10 @@ group:
     view: no
     icon: mdi:sun
     entities:
-      - sensor.forecast_first
-      - sensor.forecast_second
-      - sensor.forecast_third
-      - sensor.forecast_fourth
-      - sensor.forecast_fifth
-      - sensor.forecast_sixth
-      - sensor.forecast_seventh
+      - sensor.forecast_1
+      - sensor.forecast_2
+      - sensor.forecast_3
+      - sensor.forecast_4
+      - sensor.forecast_5
+      - sensor.forecast_6
+      - sensor.forecast_7
