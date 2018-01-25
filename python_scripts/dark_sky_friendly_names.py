@@ -1,3 +1,9 @@
+###############################################################################
+# Author:      Alok R. Saboo
+# Description:  This script takes the dark_sky forecast sensors and updates
+#               their friendly_name to include the date and day.
+#               https://github.com/arsaboo/homeassistant-config/blob/master/packages/weather.yaml
+###############################################################################
 dark_sky_entities = ["sensor.forecast_1", "sensor.forecast_2", "sensor.forecast_3",
                      "sensor.forecast_4", "sensor.forecast_5", "sensor.forecast_6",
                      "sensor.forecast_7"]
