@@ -1,7 +1,6 @@
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
-  - platform: season
   - platform: cert_expiry
     host: !secret ha_url
   - platform: speedtest
@@ -17,14 +16,6 @@
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: arlo
-#Forecast.io weather sensors
-  - platform: darksky
-    api_key: !secret darksky_key
-    monitored_conditions:
-      - wind_speed
-      - cloud_cover
-      - hourly_summary
-      - daily_summary
 #Time and Date Sensor
   - platform: time_date
     display_options:
