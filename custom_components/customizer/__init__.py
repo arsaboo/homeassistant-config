@@ -85,7 +85,7 @@ def async_setup(hass, config):
                 .format(custom_ui))
 
     component = EntityComponent(_LOGGER, DOMAIN, hass)
-    yield from component.async_add_entity(CustomizerEntity(config[DOMAIN]))
+    yield from component.async_add_entities([CustomizerEntity(config[DOMAIN])])
 
     @callback
     def set_attribute(call):
