@@ -117,8 +117,8 @@ class LyricThermostat(ClimateDevice):
         self._has_fan = has_fan
         if (self._has_fan):
             self._fan_list = self.device.settings["fan"]["allowedModes"]
-        # else:
-        #    self._fan_list = None
+        else:
+           self._fan_list = None
 
         # data attributes
         self._away = None
