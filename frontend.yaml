@@ -1,6 +1,6 @@
   # extra_html_url:
   #   - /local/custom_ui/state-card-custom-ui.html
-  javascript_version: latest
+  # javascript_version: latest
   themes:
     teal:
       # Main Stuff #
