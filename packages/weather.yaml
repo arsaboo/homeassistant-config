@@ -31,49 +31,49 @@ sensor:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon.state ~ '.png'}}
 
       forecast_1:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_1.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_1.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_1.state ~ '.png'}}
 
       forecast_2:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_2.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_2.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_2.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_2.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_2.state ~ '.png'}}
 
       forecast_3:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_3.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_3.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_3.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_3.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_3.state ~ '.png'}}
 
       forecast_4:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_4.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_4.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_4.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_4.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_4.state ~ '.png'}}
 
       forecast_5:
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_5.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_5.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_5.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_5.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_5.state ~ '.png'}}
 
       forecast_6:
         value_template: >
             {{states.sensor.dark_sky_daily_high_temperature_6.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_6.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_6.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_6.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_6.state ~ '.png'}}
 
       forecast_7:
         value_template: >
             {{states.sensor.dark_sky_daily_high_temperature_7.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_7.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_7.state|round(0)}}%
         entity_picture_template: >-
-          {{ '/local/dark_sky/' ~ states.sensor.dark_sky_icon_7.state ~ '.png'}}
+          {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon_7.state ~ '.png'}}
 
 automation:
   - id: update_friendly_names

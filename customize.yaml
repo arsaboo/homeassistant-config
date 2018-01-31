@@ -3,13 +3,13 @@
 #################################################################
      climate.downstairs:
        friendly_name: EcobeeDown
-       entity_picture: /local/Ecobee.png
+       entity_picture: /local/icons/Ecobee.png
      climate.upstairs:
        friendly_name: EcobeeUp
-       entity_picture: /local/Ecobee.png
+       entity_picture: /local/icons/Ecobee.png
      climate.lyric_t5_thermostat:
        friendly_name: LyricMaster
-       entity_picture: /local/lyric.png
+       entity_picture: /local/icons/lyric.png
      input_select.hvacmode:
        icon: mdi:air-conditioner
 #devices
@@ -48,10 +48,10 @@
        friendly_name: BloomSky
        icon: mdi:compass-outline
      device_tracker.alok_alok:
-       entity_picture: /local/life360.png
+       entity_picture: /local/icons/life360.png
        friendly_name: Alok Life360
      device_tracker.sonu_sonu:
-       entity_picture: /local/life360.png
+       entity_picture: /local/icons/life360.png
        friendly_name: Rashmi Life360
 
  #weather
@@ -118,7 +118,7 @@
        icon: mdi:remote
      sensor.living_room:
        friendly_name: 'Harmony Activity'
-       entity_picture: /local/Harmony.png
+       entity_picture: /local/icons/Harmony.png
      sensor.usd_inr:
        friendly_name: USD/INR
        icon: mdi:currency-inr
@@ -155,9 +155,9 @@
      sensor.upstairshermostatmode:
        icon: mdi:home
      alarm_control_panel.abode_alarm:
-       entity_picture: /local/Abode.jpg
+       entity_picture: /local/icons/Abode.jpg
      alarm_control_panel.arlohome:
-       entity_picture: /local/arlo.png
+       entity_picture: /local/icons/arlo.png
  #Emulated_Hue Devices
      input_boolean.abodeupdate:
        emulated_hue_hidden: false
