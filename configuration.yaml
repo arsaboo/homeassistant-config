@@ -344,7 +344,6 @@ logger:
   default: error
   logs:
     homeassistant.components.image_processing: critical
-    homeassistant.components.python_script: warning
     homeassistant.components.camera.synology: critical
     homeassistant.components.camera.generic: critical
     homeassistant.components.sensor.wunderground: critical
@@ -362,6 +361,7 @@ logger:
     homeassistant.helpers.entity: critical
     custom_components.sensor.life360: critical
     homeassistant.components.http.ban: warning
+    homeassistant.components.python_script: warning
 # Text to speech
 tts:
   - platform: google
