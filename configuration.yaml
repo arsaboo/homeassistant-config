@@ -88,8 +88,8 @@ alarm_control_panel:
 
 xiaomi_aqara:
   gateways:
-    - mac:
-      key: !secret xiaomikey
+    - key: !secret xiaomikey
+      host: 192.168.2.82
 abode:
   username: !secret abode_username
   password: !secret abode_password
