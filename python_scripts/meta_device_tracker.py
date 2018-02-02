@@ -18,11 +18,11 @@ triggeredEntity = data.get('entity_id')
 # Set friendly name and the metatracker name based on the entity that triggered
 if triggeredEntity in AlokTrackers:
     newFriendlyName = 'Alok Tracker'
-    newEntityPicture = '/local/Alok.png'
+    newEntityPicture = '/local/icons/Alok.png'
     metatrackerName = 'device_tracker.meta_alok'
 elif triggeredEntity in RashmiTrackers:
     newFriendlyName = 'Rashmi Tracker'
-    newEntityPicture = '/local/Rashmi.png'
+    newEntityPicture = '/local/icons/Rashmi.png'
     metatrackerName = 'device_tracker.meta_rashmi'
 else:
     newFriendlyName = None

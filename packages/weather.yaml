@@ -1,5 +1,5 @@
 # Download the Dark Sky icons from https://www.dr-lex.be/software/download/DarkSky-icons.zip
-# and save them under /www/dark_sky/ in your configuration directory.
+# and save them under /www/icons/dark_sky/ in your configuration directory.
 
 sensor:
   - platform: darksky
@@ -93,7 +93,7 @@ automation:
       - service: python_script.dark_sky_friendly_names
         data_template:
           entityid: '{{trigger.entity_id}}'
-
+  
 group:
   weather_card_forecast:
     name: Forecast
