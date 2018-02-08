@@ -13,14 +13,25 @@ homeassistant:
   time_zone: America/New_York
   unit_system: imperial
   customize: !include customize.yaml
-  #customize_glob: !include customize_glob.yaml
+  customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
   whitelist_external_dirs:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
 updater:
   include_used_components: true
-
+influxdb:
+  host: 192.168.2.113
+  include:
+    entities:
+       - sensor.temperature_158d0001ab3b2b
+       - sensor.humidity_158d0001ab3b2b
+       - sensor.temperature_158d0001ab7d20
+       - sensor.humidity_158d0001ab7d20
+       - sensor.portfolioval
+       - sensor.pws_temp_f
+       - sensor.downstairsthermoper
+       - sensor.upstairsthermoper
 python_script:
 weather:
   - platform: yweather
