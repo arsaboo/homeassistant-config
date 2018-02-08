@@ -64,3 +64,11 @@
       - sensor.forecast_5
       - sensor.forecast_6
       - sensor.forecast_7
+      - sensor.dark_sky_icon
+      - sensor.dark_sky_icon_1
+      - sensor.dark_sky_icon_2
+      - sensor.dark_sky_icon_3
+      - sensor.dark_sky_icon_4
+      - sensor.dark_sky_icon_5
+      - sensor.dark_sky_icon_6
+      - sensor.dark_sky_icon_7

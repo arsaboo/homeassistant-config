@@ -77,7 +77,7 @@ sensor:
 
 automation:
   - id: update_friendly_names
-    alias: "Update friendly names"
+    alias: "Update Dark Sky friendly names"
     initial_state: 'on'
     trigger:
       - platform: state
@@ -93,7 +93,7 @@ automation:
       - service: python_script.dark_sky_friendly_names
         data_template:
           entityid: '{{trigger.entity_id}}'
-  
+
 group:
   weather_card_forecast:
     name: Forecast
