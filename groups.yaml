@@ -71,6 +71,7 @@
       - group.camera_switches
       - group.network_details
       - group.arlo
+      - group.all_automations
 
   HASS Details:
     - sensor.time__date
