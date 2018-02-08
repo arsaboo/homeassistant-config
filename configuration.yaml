@@ -214,6 +214,9 @@ camera:
     still_image_url: https://imgs.xkcd.com/comics/now.png
   - platform: arlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
+  - platform: local_file
+    name: Grafana_temperature
+    file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
   # - platform: ring
   # - platform: opencv
   #   camera: camera.porch
