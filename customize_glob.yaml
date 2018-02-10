@@ -9,6 +9,3 @@ automation.*:
     (t=Math.floor(s/60))?t+(t>1?" minutes":" minute"):
     (t=Math.floor(s))!==1?t+" seconds":" second"
     )+" ago";
-binary_sensor.*_home:
-  custom_ui_state_card: state-card-custom-ui
-  show_last_changed: true
