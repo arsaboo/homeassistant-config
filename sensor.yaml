@@ -1,3 +1,8 @@
+  - platform: pollen
+    zip_code: !secret home_zip
+    monitored_conditions:
+      - allergy_average_forecasted
+      - disease_average_forecasted
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
@@ -70,22 +75,6 @@
       - from: USD
         to: INR
         name: USDINR
-# Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
-  - platform: rest
-    name: pollen
-    resource: !secret pollen_url
-    value_template: "{{value_json.Location.periods[1].Index}}"
-    scan_interval: 21600
-    headers:
-       Referer: "https://www.pollen.com"
-# Add in your secrets.yaml file pollen_url: https://www.pollen.com/api/forecast/current/pollen/ZIPCODE
-  - platform: rest
-    name: cold_flu
-    resource: !secret cold_flu_url
-    value_template: "{{value_json.Location.periods[0].Index}}"
-    scan_interval: 21600
-    headers:
-       Referer: "https://www.pollen.com"
   - platform: mqtt
     state_topic: "owntracks/pi/rashmiphone/step"
     name: "Steps Rashmi"
@@ -283,35 +272,19 @@
       pollen_level:
         friendly_name: 'Pollen Level'
         value_template: >-
-          {%- if states.sensor.pollen.state|float <= 2.4 %}
-              Low
-          {%- elif states.sensor.pollen.state|float <= 4.8 %}
-              Medium-Low
-          {%- elif states.sensor.pollen.state|float <= 7.2 %}
-              Medium
-          {%- elif states.sensor.pollen.state|float <= 9.6 %}
-              Medium-High
-          {%- elif states.sensor.pollen.state|float <= 12.0 %}
-              High
-          {% else %}
-              Unknown
-          {%- endif %}
+          {%- if states.sensor.allergy_index_forecasted_average.state != None -%}
+            {{ states.sensor.allergy_index_forecasted_average.attributes.rating }}
+          {%- else -%}
+            NA
+          {%- endif -%}
       cold_flu_risk:
         friendly_name: 'Cold & Flu Risk'
         value_template: >-
-          {%- if states.sensor.cold_flu.state|float <= 2.4 %}
-              Low
-          {%- elif states.sensor.cold_flu.state|float <= 4.8 %}
-              Medium-Low
-          {%- elif states.sensor.cold_flu.state|float <= 7.2 %}
-              Medium
-          {%- elif states.sensor.cold_flu.state|float <= 9.6 %}
-              Medium-High
-          {%- elif states.sensor.cold_flu.state|float <= 12.0 %}
-              High
-          {% else %}
-              Unknown
-          {%- endif %}
+          {%- if states.sensor.cold__flu_forecasted_average.state != None -%}
+            {{ states.sensor.cold__flu_forecasted_average.attributes.rating }}
+          {%- else -%}
+            NA
+          {%- endif -%}
       emulated_hue_names:
         friendly_name: "Emulated Hue Names"
         value_template: >-
