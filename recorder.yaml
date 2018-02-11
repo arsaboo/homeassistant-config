@@ -20,7 +20,7 @@
       - automation.change_leeo_color
       - automation.change_leeo_upstairs_color
       - automation.parse_life360_data
-      - automation.update_friendly_names
+      - automation.update_dark_sky_friendly_names
       - automation.update_friendly_names_at_night
       - group.ring_doorbell
       - sensor.pollen
