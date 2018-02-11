@@ -277,6 +277,14 @@
           {%- else -%}
             NA
           {%- endif -%}
+        entity_picture_template: >-
+          {%- if 'high' in states.sensor.allergy_index_forecasted_average.attributes.rating|lower -%}
+            {{ '/local/icons/high.png'}}
+          {%- elif 'medium' in states.sensor.allergy_index_forecasted_average.attributes.rating|lower -%}
+            {{ '/local/icons/medium.png'}}
+          {%- else -%}
+            {{ '/local/icons/low.png'}}
+          {%- endif -%}
       cold_flu_risk:
         friendly_name: 'Cold & Flu Risk'
         value_template: >-
@@ -284,6 +292,14 @@
             {{ states.sensor.cold__flu_forecasted_average.attributes.rating }}
           {%- else -%}
             NA
+          {%- endif -%}
+        entity_picture_template: >-
+          {%- if 'high' in states.sensor.cold__flu_forecasted_average.attributes.rating|lower -%}
+            {{ '/local/icons/high.png'}}
+          {%- elif 'medium' in states.sensor.cold__flu_forecasted_average.attributes.rating|lower -%}
+            {{ '/local/icons/medium.png'}}
+          {%- else -%}
+            {{ '/local/icons/low.png'}}
           {%- endif -%}
       emulated_hue_names:
         friendly_name: "Emulated Hue Names"
