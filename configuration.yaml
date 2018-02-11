@@ -217,6 +217,11 @@ camera:
   - platform: local_file
     name: Grafana_temperature
     file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
+  - platform: generic
+    name: Grafana_2
+    still_image_url: 'http://192.168.2.113:3000/render/dashboard-solo/db/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
+    username: !secret grafana_user
+    password: !secret grafana_pass
   # - platform: ring
   # - platform: opencv
   #   camera: camera.porch
