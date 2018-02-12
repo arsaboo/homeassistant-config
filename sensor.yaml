@@ -223,42 +223,6 @@
             NA
           {%- endif -%}
         friendly_name: 'Sonos Volume'
-      leeotemp:
-        friendly_name: "Leeo Temperature"
-        unit_of_measurement: '°F'
-        value_template: >-
-          {%- if states.input_number.leeotemperature.state != None -%}
-            {{ states.input_number.leeotemperature.state }}
-          {%- else -%}
-            NA
-          {%- endif -%}
-      leeohumid:
-        friendly_name: "Leeo Humidity"
-        unit_of_measurement: '%'
-        value_template: >-
-          {%- if states.input_number.leeohumidity.state != None -%}
-            {{ states.input_number.leeohumidity.state }}
-          {%- else -%}
-            NA
-          {%- endif -%}
-      leeouptemp:
-        friendly_name: "Leeo Upstairs Temperature"
-        unit_of_measurement: '°F'
-        value_template: >-
-          {%- if states.input_number.leeoupstairstemp.state != None -%}
-            {{ states.input_number.leeoupstairstemp.state }}
-          {%- else -%}
-            NA
-          {%- endif -%}
-      leeouphumid:
-        friendly_name: "Leeo Upstairs Humidity"
-        unit_of_measurement: '%'
-        value_template: >-
-          {%- if states.input_number.leeoupstairshumidity.state != None -%}
-            {{ states.input_number.leeoupstairshumidity.state }}
-          {%- else -%}
-            NA
-          {%- endif -%}
       leeoalarmstatus:
         friendly_name: "Leeo Alarm"
         value_template: >-
