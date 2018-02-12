@@ -242,10 +242,14 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if 'high' in states.sensor.allergy_index_forecasted_average.attributes.rating|lower -%}
+          {%- if 'High' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
             {{ '/local/icons/high.png'}}
-          {%- elif 'medium' in states.sensor.allergy_index_forecasted_average.attributes.rating|lower -%}
+          {%- elif 'Medium/High' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+            {{ '/local/icons/medium-high.png'}}
+          {%- elif 'Medium' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
             {{ '/local/icons/medium.png'}}
+          {%- elif 'Medium/Low' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+            {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
           {%- endif -%}
@@ -258,10 +262,14 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if 'high' in states.sensor.cold__flu_forecasted_average.attributes.rating|lower -%}
+          {%- if 'High' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
             {{ '/local/icons/high.png'}}
-          {%- elif 'medium' in states.sensor.cold__flu_forecasted_average.attributes.rating|lower -%}
+          {%- elif 'Medium/High' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+            {{ '/local/icons/medium-high.png'}}
+          {%- elif 'Medium' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
             {{ '/local/icons/medium.png'}}
+          {%- elif 'Medium/Low' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+            {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
           {%- endif -%}
