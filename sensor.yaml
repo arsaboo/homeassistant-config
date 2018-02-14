@@ -242,13 +242,13 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if 'High' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+          {%- if states.sensor.allergy_index_forecasted_average.attributes.rating == 'High' -%}
             {{ '/local/icons/high.png'}}
-          {%- elif 'Medium/High' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium/High'  -%}
             {{ '/local/icons/medium-high.png'}}
-          {%- elif 'Medium' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium'  -%}
             {{ '/local/icons/medium.png'}}
-          {%- elif 'Medium/Low' in states.sensor.allergy_index_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium/Low' -%}
             {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
@@ -262,13 +262,13 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if 'High' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+          {%- if states.sensor.cold__flu_forecasted_average.attributes.rating == 'High' -%}
             {{ '/local/icons/high.png'}}
-          {%- elif 'Medium/High' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium/High'  -%}
             {{ '/local/icons/medium-high.png'}}
-          {%- elif 'Medium' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium'  -%}
             {{ '/local/icons/medium.png'}}
-          {%- elif 'Medium/Low' in states.sensor.cold__flu_forecasted_average.attributes.rating -%}
+          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium/Low' -%}
             {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
