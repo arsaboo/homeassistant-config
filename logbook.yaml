@@ -106,3 +106,6 @@
       - camera.patio
       - camera.driveway
       - device_tracker.beacon_home
+      - sensor.glances_cpu_load
+      - sensor.glances_disk_used
+      - sensor.glances_ram_used

@@ -135,6 +135,9 @@
     - sensor.pihole_domains_blocked
     - sensor.pihole_ads_percentage_blocked_today
     - sensor.pihole_dns_unique_domains
+    - sensor.glances_cpu_load
+    - sensor.glances_disk_used
+    - sensor.glances_ram_used
 
   Media Player:
     - media_player.livingroomsonos

@@ -8,6 +8,12 @@
     unit_of_measurement: minutes
   - platform: cert_expiry
     host: !secret ha_url
+  - platform: glances
+    host: 192.168.2.212
+    resources:
+      - 'disk_use_percent'
+      - 'memory_use_percent'
+      - 'processor_load'
   - platform: speedtest
     hour:
       - 12
