@@ -464,11 +464,6 @@ class PlexClient(MediaPlayerDevice):
     def unique_id(self):
         """Return a unique id."""
         return self._unique_id
-        
-    @property
-    def unique_id(self):
-        """Return the id of this plex client."""
-        return self.machine_identifier
 
     @property
     def name(self):
