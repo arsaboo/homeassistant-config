@@ -25,8 +25,7 @@
       - group.camera_meteogram
       - group.camera_wundergroundradar
       - weather.weather
-      - camera.grafana_temperature
-      - camera.grafana_2
+      - camera.livingroom_temperature
 
   cameras:
     name: Cameras
