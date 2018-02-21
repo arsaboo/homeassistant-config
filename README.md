@@ -34,7 +34,7 @@ docker create \
     * [OwnTracks](https://home-assistant.io/components/device_tracker.owntracks/),  [Geofency](https://home-assistant.io/components/device_tracker.geofency/), and Life360  [custom_component](/custom_components/sensor/life360.py) for tracking our iOS devices
     * [iOS app](https://itunes.apple.com/us/app/home-assistant-companion/id1099568401?mt=8)
   * Security
-    * [Abode home security](https://home-assistant.io/components/alarm_control_panel.abode/) that is almost entirely automated using presence along with presence sensors
+    * [Abode home security](https://home-assistant.io/components/alarm_control_panel.abode/) that is almost entirely automated using presence
     * Four [Hikvision DS-2CD2042WD-I](https://www.amazon.com/dp/B01M4MJECD/) cameras across the house integrated using [Synology Camera](https://home-assistant.io/components/camera.synology/) component
     * Three [Arlo cameras](https://home-assistant.io/components/arlo/) for indoor monitoring
     * [Ring](https://home-assistant.io/components/ring/) doorbell
