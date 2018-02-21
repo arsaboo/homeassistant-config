@@ -68,3 +68,6 @@ docker create \
     [DarkSky](https://darksky.net/dev/) for weather data and forecasts
     * [Yahoo Weather](https://home-assistant.io/components/weather.yweather/) for weather card
     * [Pollen](https://home-assistant.io/components/sensor.pollen/) sensor for allergy related
+
+## My Home Assistant dashboard
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/HA_screenshot_1.png" alt="Home Assistant dashboard" />
