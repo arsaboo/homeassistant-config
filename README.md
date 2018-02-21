@@ -31,7 +31,7 @@ docker create \
     * Also, using [Mi Magic Cube](https://www.aliexpress.com/item/Xiaomi-Mi-Magic-Cube-Controller-Zigbee-Version-Controlled-by-Six-Actions-For-Smart-Home-Device-work/32826737195.html) for volume and brightness automation.
   * Presence detection is the cornerstone for my setup and I use an elaborate approach as explained  [here](https://community.home-assistant.io/t/presence-detection-with-multiple-devices-multiple-trackers/4335). Currently, I combine the information from the following device trackers using a `python_script` and a Bayesian binary sensor. Here are the components that I use for presence:
     * [Unifi WAP](https://home-assistant.io/components/device_tracker.unifi/) for network-based device tracking
-    * [OwnTracks](https://home-assistant.io/components/device_tracker.owntracks/),  [Geofency](https://home-assistant.io/components/device_tracker.geofency/), and Life360 (using a [custom_component](/custom_components/sensor/life360.py)) for tracking our iOS devices
+    * [OwnTracks](https://home-assistant.io/components/device_tracker.owntracks/),  [Geofency](https://home-assistant.io/components/device_tracker.geofency/), and Life360  [custom_component](/custom_components/sensor/life360.py) for tracking our iOS devices
     * [iOS app](https://itunes.apple.com/us/app/home-assistant-companion/id1099568401?mt=8)
   * Security
     * [Abode home security](https://home-assistant.io/components/alarm_control_panel.abode/) that is almost entirely automated using presence along with presence sensors
@@ -67,7 +67,7 @@ docker create \
     * [Bloomsky](https://home-assistant.io/components/bloomsky/) weather station
     [DarkSky](https://darksky.net/dev/) for weather data and forecasts
     * [Yahoo Weather](https://home-assistant.io/components/weather.yweather/) for weather card
-    * [Pollen](https://home-assistant.io/components/sensor.pollen/) sensor for allergy related
+    * [Pollen](https://home-assistant.io/components/sensor.pollen/) sensor for allergy related information
 
 ## My Home Assistant dashboard
 <img src="https://github.com/arsaboo/homeassistant-config/blob/master/HA_screenshot_1.png" alt="Home Assistant dashboard" />
