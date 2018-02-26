@@ -26,6 +26,34 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
+  - platform: history_stats
+    name: Downstairs heat
+    entity_id: sensor.downstairsthermoper
+    state: 'heat'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Downstairs cool
+    entity_id: sensor.downstairsthermoper
+    state: 'cool'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Upstairs heat
+    entity_id: sensor.upstairsthermoper
+    state: 'heat'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Upstairs cool
+    entity_id: sensor.upstairsthermoper
+    state: 'cool'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
   - platform: arlo
 #Time and Date Sensor
   - platform: time_date
