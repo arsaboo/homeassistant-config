@@ -36,6 +36,25 @@
         overwrite: True
         filename: "{{states.camera.front_door.attributes.friendly_name.lower().replace(' ', '_')+ '.mp4'}}"
 
+# Call python_script.dark_sky_friendly_names
+- id: update_friendly_names
+  alias: "Update Dark Sky friendly names"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.forecast_1
+        - sensor.forecast_2
+        - sensor.forecast_3
+        - sensor.forecast_4
+        - sensor.forecast_5
+        - sensor.forecast_6
+        - sensor.forecast_7
+  action:
+    - service: python_script.dark_sky_friendly_names
+      data_template:
+        entityid: '{{trigger.entity_id}}'
+
 
 - id: notify_camera_pictures_telegram
   alias: 'Notify camera pictures using Telegram'
