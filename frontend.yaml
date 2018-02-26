@@ -128,6 +128,82 @@
       paper-toggle-button-checked-button-color: "var(--primary-color)"
       paper-toggle-button-checked-bar-color: "var(--light-primary-color)"
       paper-toggle-button-unchecked-bar-color: "var(--primary-text-color)"
+    carbon-green:
+      #Color List
+      make-light-carbon: "#93A5AB"
+      make-carbon: "#111924"
+      make-grey: "#DEE5E7"
+      make-green: "#C2DD08"
+      make-blue: "#00A3DA"
+      make-red: "#EC5D57"
+      make-yellow: "#FCF933"
+      make-orange: "#E49D64"
+      make-white: "#FFFFFF"
+      make-disable: "#bdbdbd"
+      light-primary-color: "var(make-light-carbon)"
+      background-color: "var(--make-grey)"
+      dark-primary-color: "var(-make-carbon)"
+      #Main Colors
+      primary-background-color: "var(--make-light-carbon)" #Background color settings
+      secondary-background-color: "var(--make-grey)" #Background tabs
+      primary-text-color: "var(--make-carbon)" #Primary Text
+      secondary-text-color: "var(--make-green)" #sub text etc.
+      disabled-text-color: "var(--make-disable)" #Deactivated Text
+      divider-color: "var(--make-green)" #Divider Linies
+      primary-color: "var(--make-carbon)" #Head of HA
+      #Labels
+      label-badge-red: "var(--make-red)"
+      label-badge-blue: "var(--make-blue)"
+      label-badge-green: "var(--make-green)"
+      label-badge-yellow: "var(--make-yellow)"
+      label-badge-grey: "var(--make-grey)"
+      label-badge-text-color: "var(--make-carbon)" #Text color sensors
+      label-badge-background-color: "var(--make-grey)" #Background sensors
+      #Google Loading
+      google-red-500: "var(--make-red)"
+      google-blue-500: "var(--make-blue)"
+      google-green-500:  "var(--make-green)"
+      google-yellow-500: "var(--make-yellow)"
+      #Frontend
+      paper-green-400: "var(--make-green)"
+      paper-blue-400: "var(--make-blue)"
+      paper-orange-400: "var(--make-orange)"
+      paper-grey-50: "var(--make-grey)"
+      paper-grey-200: "var(--make-green)"
+      paper-item-icon-color: "var(--make-grey)" #Color Icon off
+      paper-item-icon-active-color: "var(--make-green)" #Color Icon on
+      paper-button-ink-color: "var(--make-carbon)" #Color Button selected
+      paper-button-color: "var(--make-red)"
+      paper-toggle-button-checked-ink-color: "var(--make-green)"
+      paper-toggle-button-checked-button-color: "var(--make-green)"
+      paper-toggle-button-checked-bar-color: "var(--make-green)"
+      paper-toggle-button-unchecked-button-color: "var(--make-grey)"
+      paper-toggle-button-unchecked-bar-color: "var(--make-grey)"
+      paper-toggle-button-unchecked-ink-color: "var(--make-grey)"
+      paper-slider-knob-color: "var(--make-carbon)" #Slider dot on
+      paper-slider-knob-start-color: "var(--make-carbon)" #Slider dot off
+      paper-slider-pin-color: "var(--make-red)" #
+      paper-slider-active-color: "var(--make-carbon)" #Slider line active
+      paper-slider-secondary-color: "var(--make-red)" #
+      paper-slider-container-color: "var(--make-light-carbon)" #Slider line inactive
+      paper-listbox-color: "var(--make-carbon)"  #Text Dorpdown box
+      paper-listbox-background-color: "var(--make-grey)" #Background of Listen
+      paper-card-background-color: "var(--make-light-carbon)" #Background from cards in tabs
+      paper-card-header-color: "var(--make-carbon)" #Headline Color of tabs
+      paper-dialog-background-color: "var(--make-grey)" #Color Dialog Box
+      paper-item-selected_-_background-color: "var(--make-green)" #Selected Option in Dropdown
+      paper-tabs-selection-bar-color: "var(--make-red)" #
+      table-row-background-color: "var(--make-grey)" #Background color table
+      table-row-alternative-background-color: "var(--make-gery)" #second color table
+      #Font
+      primary-font-family: "Gill Sans"
+      paper-font-common-base_-_font-family: "var(--primary-font-family)"
+      paper-font-common-code_-_font-family: "var(--primary-font-family)"
+      paper-font-body1_-_font-family: "var(--primary-font-family)"
+      paper-font-subhead_-_font-family: "var(--primary-font-family)"
+      paper-font-headline_-_font-family: "var(--primary-font-family)"
+      paper-font-caption_-_font-family: "var(--primary-font-family)"
+      paper-font-title_-_font-family: "var(--primary-font-family)"      
     minimal:
       dark-primary-color: "#192231"
       primary-color: "#98878f"
