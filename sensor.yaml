@@ -109,6 +109,11 @@
       - from: USD
         to: INR
         name: USDINR
+  # - platform: currencylayer
+  #   api_key: !secret currencylayer_key
+  #   base: USD
+  #   quote:
+  #     - INR
   - platform: mqtt
     state_topic: "owntracks/pi/rashmiphone/step"
     name: "Steps Rashmi"
@@ -120,10 +125,10 @@
   - platform: command_line
     name: "PyPi HASS Version"
     command: python3 -c "import requests; print(requests.get('https://pypi.python.org/pypi/homeassistant/json').json()['info']['version'])"
-  - platform: command_line
-    name: "Download Grafana"
-    command: !secret grafana_temperature
-    scan_interval: 120
+  # - platform: command_line
+  #   name: "Download Grafana"
+  #   command: !secret grafana_temperature
+  #   scan_interval: 120
   - platform: template
     sensors:
       battery_status:

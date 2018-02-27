@@ -32,6 +32,8 @@ influxdb:
        - sensor.pws_temp_f
        - sensor.downstairsthermoper
        - sensor.upstairsthermoper
+       - climate.downstairs
+       - climate.upstairs
 python_script:
 weather:
   - platform: yweather
@@ -121,9 +123,7 @@ lyric:
 
 
 media_extractor:
-  customize:
-    media_player.livingroomsonos:
-      music: bestaudio[ext=mp3]
+
 # Enables configuration UI
 config:
 
@@ -258,6 +258,13 @@ camera:
 
 ifttt:
   key: !secret ifttt_key
+
+# image_processing:
+#   - platform: clarifai
+#     name: general_classifier
+#     api_key: !secret clarifai_api
+#     model_id: a403429f2ddf4b49b307e318f00e528b
+#     file_path: /home/homeassistant/.homeassistant/downloads/porch.jpg
 
 # android_ip_webcam:
 #   - host: 192.168.2.176

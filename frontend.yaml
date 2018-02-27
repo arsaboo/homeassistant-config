@@ -128,7 +128,7 @@
       paper-toggle-button-checked-button-color: "var(--primary-color)"
       paper-toggle-button-checked-bar-color: "var(--light-primary-color)"
       paper-toggle-button-unchecked-bar-color: "var(--primary-text-color)"
-    carbon-green:
+    carbongreen:
       #Color List
       make-light-carbon: "#93A5AB"
       make-carbon: "#111924"
@@ -203,7 +203,7 @@
       paper-font-subhead_-_font-family: "var(--primary-font-family)"
       paper-font-headline_-_font-family: "var(--primary-font-family)"
       paper-font-caption_-_font-family: "var(--primary-font-family)"
-      paper-font-title_-_font-family: "var(--primary-font-family)"      
+      paper-font-title_-_font-family: "var(--primary-font-family)"
     minimal:
       dark-primary-color: "#192231"
       primary-color: "#98878f"

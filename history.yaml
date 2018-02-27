@@ -1,6 +1,7 @@
   use_include_order: True
   include:
     entities:
+      - sensor.downstairsthermoper
       - binary_sensor.garagedoor
       - device_tracker.meta_rashmi
       - device_tracker.meta_alok
