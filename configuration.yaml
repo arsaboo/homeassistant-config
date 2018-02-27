@@ -415,6 +415,7 @@ intent_script: !include intent_script.yaml
 ios: !include ios.yaml
 alert: !include alert.yaml
 automation: !include automations.yaml
+cover: !include cover.yaml
 group: !include groups.yaml
 script: !include scripts.yaml
 sensor: !include sensor.yaml
