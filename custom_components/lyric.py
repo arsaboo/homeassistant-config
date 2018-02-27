@@ -41,7 +41,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_REDIRECT_URI): cv.string,
         vol.Optional(CONF_SCAN_INTERVAL, default=270): cv.positive_int,
         vol.Optional(CONF_LOCATIONS): vol.All(cv.ensure_list, cv.string),
-        vol.Optional(CONF_FAN, default=DEFAULT_FAN): vol.Boolean,
+        vol.Optional(CONF_FAN, default=DEFAULT_FAN): cv.boolean,
         vol.Optional(CONF_AWAY_PERIODS):
             vol.All(cv.ensure_list, cv.string)
     })
