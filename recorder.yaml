@@ -1,4 +1,4 @@
-  purge_keep_days: 3
+  purge_keep_days: 5
   purge_interval: 1
   db_url: !secret recorder_db_url
   exclude:
@@ -12,6 +12,7 @@
       - group.camera_sensors
       - input_select.livingroomharmony
       - sensor.living_room
+      - sensor.dark_sky_summary
       - zwave.garage_door_tilt_sensor
       - automation.change_leeo_color
       - automation.change_leeo_upstairs_color

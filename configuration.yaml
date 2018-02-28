@@ -188,6 +188,7 @@ http:
 discovery:
   ignore:
     - apple_tv
+    - panasonic_viera
 
 
 # Allows you to issue voice commands from the frontend in enabled browsers
