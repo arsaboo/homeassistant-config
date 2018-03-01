@@ -287,7 +287,7 @@
             {{ '/local/icons/medium-high.png'}}
           {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium'  -%}
             {{ '/local/icons/medium.png'}}
-          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium/Low' -%}
+          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Low/Medium' -%}
             {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
@@ -307,7 +307,7 @@
             {{ '/local/icons/medium-high.png'}}
           {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium'  -%}
             {{ '/local/icons/medium.png'}}
-          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium/Low' -%}
+          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Low/Medium' -%}
             {{ '/local/icons/low-medium.png'}}
           {%- else -%}
             {{ '/local/icons/low.png'}}
