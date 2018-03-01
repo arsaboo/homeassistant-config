@@ -49,6 +49,8 @@
       - sensor.dark_sky_daily_summary
       - sensor.time__date
       - sensor.bloomlastupdate
+      - sensor.sp_future
+      - sensor.sp_future_change
       - sensor.garage_door_tilt_sensor_alarm_level
       - sensor.garage_door_tilt_sensor_alarm_type
       - sensor.garage_door_tilt_sensor_burglar

@@ -129,8 +129,35 @@
   #   name: "Download Grafana"
   #   command: !secret grafana_temperature
   #   scan_interval: 120
+  - platform: scrape
+    resource: http://money.cnn.com/data/premarket/
+    name: Curr Future
+    # select: ".wsod_bold.wsod_aRight span"
+    select: ".wsod_bold.wsod_aRight"
   - platform: template
     sensors:
+      sp_future:
+        friendly_name: "S&P Future"
+        unit_of_measurement: " "
+        value_template: >-
+          {{ states.sensor.curr_future.state.split('\n')[1]|trim|float }}
+        entity_picture_template: >-
+          {%- if states.sensor.sp_future.state|float < 0 -%}
+            {{ '/local/icons/down.png'}}
+          {%- else -%}
+            {{ '/local/icons/up.png'}}
+          {%- endif -%}
+      sp_future_change:
+        friendly_name: "S&P Future Change"
+        unit_of_measurement: "%"
+        value_template: >-
+          {{ states.sensor.curr_future.state.split('\n')[3].split('%')[0]|trim|float }}
+        entity_picture_template: >-
+          {%- if states.sensor.sp_future_change.state|float < 0 -%}
+            {{ '/local/icons/down.png'}}
+          {%- else -%}
+            {{ '/local/icons/up.png'}}
+          {%- endif -%}
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-

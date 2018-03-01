@@ -122,6 +122,8 @@
 
   Information:
     - sensor.portfolioval
+    - sensor.sp_future
+    - sensor.sp_future_change
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy
