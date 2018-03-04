@@ -12,6 +12,7 @@
       - group.switches
       - group.ring_doorbell
       - group.financial
+      - group.investments
 
   temperature:
     name: Temperature Sensors
@@ -180,6 +181,18 @@
       - binary_sensor.porch_field_detection
       - binary_sensor.porch_line_crossing
       - binary_sensor.porch_motion
+
+  Investments:
+    - sensor.portfolioval
+    - sensor.dow_futures
+    - sensor.dow_futures_change
+    - sensor.dow_futures_change_pct
+    - sensor.nasdaq_futures
+    - sensor.nasdaq_futures_change
+    - sensor.nasdaq_futures_change_pct
+    - sensor.sp_futures
+    - sensor.sp_futures_change
+    - sensor.sp_futures_change_pct
 
   Camera Switches:
     - switch.backyardmotion

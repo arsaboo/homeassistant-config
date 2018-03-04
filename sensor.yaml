@@ -1,3 +1,14 @@
+  - platform: futures_cnn
+    resources:
+      - sp
+      - sp_change_pct
+      - sp_change
+      - dow
+      - dow_change_pct
+      - dow_change
+      - nasdaq
+      - nasdaq_change_pct
+      - nasdaq_change
   - platform: pollen
     zip_code: !secret home_zip
     monitored_conditions:

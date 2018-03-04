@@ -8,7 +8,7 @@
                 sudo apt-get install libxslt1.1 libxml2-dev
 """
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
 
 import voluptuous as vol
@@ -27,8 +27,8 @@ _RESOURCE = 'http://money.cnn.com/data/premarket/'
 CONF_ATTRIBUTION = "Data provided by CNN.com"
 DEFAULT_ICON = 'mdi:currency-usd'
 
-SCAN_INTERVAL = timedelta(seconds = 30)
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes = 1)
+SCAN_INTERVAL = timedelta(seconds=30)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=1)
 
 SENSOR_TYPES = {
     'sp': ['S&P Futures', ' '],
@@ -81,8 +81,10 @@ class CNNFuturesSensor(Entity):
             icon = DEFAULT_ICON
         elif self._state > 0:
             icon = 'mdi:arrow-up-bold-circle'
+        elif self._state < 0:
+            icon = 'mdi:arrow-down-bold-circle'
         else:
-            icon = 'mdi:arrow-up-bold-circle'
+            icon = DEFAULT_ICON
         return icon
 
     @property
@@ -145,9 +147,10 @@ class CNNFuturesData(object):
     def update(self):
         """Get the latest data from Currencylayer."""
         from raschietto import Raschietto, Matcher
-        page = Raschietto.from_url(self._resource)
-        _LOGGER.debug("CNN page loaded")
-        futures_matcher = Matcher(".wsod_bold.wsod_aRight")
-        futures = futures_matcher(page, multiple=True)
-        sp = futures[0].split("\n")
-        self.data = futures
+        if self.data is None or datetime.today().isoweekday() < 6:
+            page = Raschietto.from_url(self._resource)
+            _LOGGER.debug("CNN page loaded")
+            futures_matcher = Matcher(".wsod_bold.wsod_aRight")
+            futures = futures_matcher(page, multiple=True)
+            sp = futures[0].split("\n")
+            self.data = futures

@@ -109,3 +109,12 @@
       - sensor.glances_cpu_load
       - sensor.glances_disk_used
       - sensor.glances_ram_used
+      - sensor.dow_futures
+      - sensor.dow_futures_change
+      - sensor.dow_futures_change_pct
+      - sensor.nasdaq_futures
+      - sensor.nasdaq_futures_change
+      - sensor.nasdaq_futures_change_pct
+      - sensor.sp_futures
+      - sensor.sp_futures_change
+      - sensor.sp_futures_change_pct
