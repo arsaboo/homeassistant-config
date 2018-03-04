@@ -6,6 +6,9 @@
                 "Home Assistant Config folder\custom_components\sensor\" folder
                 You may have to install two additional packages
                 sudo apt-get install libxslt1.1 libxml2-dev
+                The following resources are supported: sp, sp_change_pct, sp_change
+                dow, dow_change_pct, dow_change, nasdaq, nasdaq_change_pct, nasdaq_change
+                Check the configuration in sensor.yaml (search for futures_cnn).
 """
 
 from datetime import datetime, timedelta
