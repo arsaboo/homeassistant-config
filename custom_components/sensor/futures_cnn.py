@@ -77,14 +77,12 @@ class CNNFuturesSensor(Entity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        if self.type in ['sp', 'dow', 'nasdaq']:
+        if self.type in ['sp', 'dow', 'nasdaq'] or self._state == 0:
             icon = DEFAULT_ICON
         elif self._state > 0:
             icon = 'mdi:arrow-up-bold-circle'
         elif self._state < 0:
             icon = 'mdi:arrow-down-bold-circle'
-        else:
-            icon = DEFAULT_ICON
         return icon
 
     @property
