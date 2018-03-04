@@ -308,17 +308,7 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if states.sensor.allergy_index_forecasted_average.attributes.rating == 'High' -%}
-            {{ '/local/icons/high.png'}}
-          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium/High'  -%}
-            {{ '/local/icons/medium-high.png'}}
-          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Medium'  -%}
-            {{ '/local/icons/medium.png'}}
-          {%- elif states.sensor.allergy_index_forecasted_average.attributes.rating == 'Low/Medium' -%}
-            {{ '/local/icons/low-medium.png'}}
-          {%- else -%}
-            {{ '/local/icons/low.png'}}
-          {%- endif -%}
+          {{ '/local/icons/' ~ states.sensor.allergy_index_forecasted_average.attributes.rating.lower().replace('/', '-') ~ '.png'}}
       cold_flu_risk:
         friendly_name: 'Cold & Flu Risk'
         value_template: >-
@@ -328,17 +318,7 @@
             NA
           {%- endif -%}
         entity_picture_template: >-
-          {%- if states.sensor.cold__flu_forecasted_average.attributes.rating == 'High' -%}
-            {{ '/local/icons/high.png'}}
-          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium/High'  -%}
-            {{ '/local/icons/medium-high.png'}}
-          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Medium'  -%}
-            {{ '/local/icons/medium.png'}}
-          {%- elif states.sensor.cold__flu_forecasted_average.attributes.rating == 'Low/Medium' -%}
-            {{ '/local/icons/low-medium.png'}}
-          {%- else -%}
-            {{ '/local/icons/low.png'}}
-          {%- endif -%}
+          {{ '/local/icons/' ~ states.sensor.cold__flu_forecasted_average.attributes.rating.lower().replace('/', '-') ~ '.png'}}
       emulated_hue_names:
         friendly_name: "Emulated Hue Names"
         value_template: >-
