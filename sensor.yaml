@@ -191,6 +191,13 @@
            {%- else -%}
              0
            {%- endif -%}
+        entity_picture_template: >-
+          {%- if states.binary_sensor.portfolio_trend.attributes.gradient < 0 -%}
+            {{ '/local/icons/down.png'}}
+          {%- else -%}
+            {{ '/local/icons/up.png'}}
+          {%- endif -%}
+
       hvacmode:
         friendly_name: "HVAC Mode"
         value_template: >-

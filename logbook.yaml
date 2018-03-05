@@ -28,6 +28,7 @@
       - binary_sensor.downstairs_occupancy
       - binary_sensor.porch_field_detection
       - binary_sensor.patio_field_detection
+      - binary_sensor.portfolio_trend
       - binary_sensor.driveway_field_detection
       - binary_sensor.backyard_field_detection
       - binary_sensor.backyard_line_crossing
