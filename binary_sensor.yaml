@@ -57,12 +57,6 @@
         prob_given_false: 0.1
         platform: 'state'
         to_state: 'home'
-  - platform: trend
-    sensors:
-      portfolio_trend:
-        entity_id: sensor.portfolioval
-        sample_duration: 600
-        max_samples: 20
   - platform: ping
     host: 192.168.2.3
     name: PiHole
