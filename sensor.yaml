@@ -17,8 +17,8 @@
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
-  - platform: cert_expiry
-    host: !secret ha_url
+  # - platform: cert_expiry
+  #   host: !secret ha_url
   - platform: glances
     host: 192.168.2.212
     resources:
@@ -140,6 +140,11 @@
   #   name: "Download Grafana"
   #   command: !secret grafana_temperature
   #   scan_interval: 120
+  - platform: command_line
+    name: SSL certificate expiry
+    unit_of_measurement: days
+    scan_interval: 86400
+    command: "ssl-cert-check -b -c /etc/letsencrypt/live/hassnuc.duckdns.org/cert.pem | awk '{ print $NF }'"
   - platform: scrape
     resource: http://money.cnn.com/data/premarket/
     name: Curr Future
