@@ -848,7 +848,7 @@
 
 - id: lifx_party_mode
   alias: "Turn Lifx Party Mode On"
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     - platform: time
       seconds: '/3'

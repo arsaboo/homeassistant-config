@@ -146,9 +146,10 @@ class CNNFuturesData(object):
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
-        """Get the latest data from Currencylayer."""
+        """Get the latest data from CNN."""
         from raschietto import Raschietto, Matcher
-        if self.data is None or datetime.today().isoweekday() < 6:
+        if (self.data is None or datetime.today().isoweekday() != 6 or
+            (datetime.today().isoweekday() == 7 and datetime.today().hour > 17)):
             page = Raschietto.from_url(self._resource)
             _LOGGER.debug("CNN page loaded")
             futures_matcher = Matcher(".wsod_bold.wsod_aRight")
