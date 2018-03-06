@@ -227,8 +227,7 @@ camera:
     verify_ssl: False
     # obtain your URL from yr.no. Search for your location and view hour-by-hour results
   - platform: generic
-    still_image_url: !secret meteogram_url
-    content_type: 'image/svg+xml'
+    still_image_url: !secret meteogram_png_url
     name: Meteogram
   - platform: generic
     name: worldtime
