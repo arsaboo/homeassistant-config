@@ -184,6 +184,7 @@
 
   Investments:
     - sensor.portfolioval
+    - sensor.portfoliochange
     - sensor.dow_futures
     - sensor.dow_futures_change
     - sensor.dow_futures_change_pct

@@ -9,3 +9,4 @@
       - media_player.panasonic_viera_tv
       - sensor.plexspy
       - sensor.portfolioval
+      - sensor.portfoliochange

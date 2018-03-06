@@ -196,6 +196,15 @@
            {%- else -%}
              0
            {%- endif -%}
+      portfoliochange:
+        friendly_name: "Portfolio Change"
+        unit_of_measurement: "$"
+        value_template: >-
+           {%- if states.input_number.portfoliochange.state != None -%}
+             {{states.input_number.portfoliochange.state|default(0)|round(2)}}
+           {%- else -%}
+             0
+           {%- endif -%}
       hvacmode:
         friendly_name: "HVAC Mode"
         value_template: >-
