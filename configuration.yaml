@@ -160,20 +160,36 @@ google_assistant:
   exposed_domains:
     - cover
   entity_config:
-    light.gateway_light_34ce00813670:
-      expose: true
     group.living_room_lights:
       expose: true
+      room: living room
     switch.driveway:
       expose: true
       type: 'light'
+      room: driveway
     switch.wemoporch:
       expose: true
       type: 'light'
+      name: Porch Lights
+      room: porch
     light.kitchen_lights:
       expose: true
+      room: kitchen
     light.lifx5:
       expose: true
+      room: garage
+    switch.wemoinsight:
+      expose: true
+      name: Wemo Insight
+      room: office
+    climate.downstairs:
+      expose: true
+      name: Living Room Ecobee
+      room: living room
+    light.hue_color_lamp_3:
+      expose: True
+      name: Philips Hue
+      room: kids room
 
 map:
 downloader:
