@@ -6,13 +6,13 @@
     view: yes
     icon: mdi:home-assistant
     entities:
+      - group.investments
       - group.information
       - group.all_lights
       - group.home_security
       - group.switches
       - group.ring_doorbell
       - group.financial
-      - group.investments
 
   temperature:
     name: Temperature Sensors
@@ -122,7 +122,6 @@
     - input_select.hvacmode
 
   Information:
-    - sensor.portfolioval
     - sensor.morning_commute
     - sensor.alok_to_home
     - sensor.plexspy

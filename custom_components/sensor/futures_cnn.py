@@ -31,7 +31,7 @@ CONF_ATTRIBUTION = "Data provided by CNN.com"
 DEFAULT_ICON = 'mdi:currency-usd'
 
 SCAN_INTERVAL = timedelta(seconds=30)
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=1)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
 
 SENSOR_TYPES = {
     'sp': ['S&P Futures', ' '],

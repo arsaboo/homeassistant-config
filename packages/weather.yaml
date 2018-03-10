@@ -36,7 +36,7 @@ sensor:
       forecast_1:
         friendly_name_template: >
           {%- set date = as_timestamp(now()) + (1 * 86400 ) -%}
-          {{ date | timestamp_custom("%A (%-m/%-d)") }}
+          {{ date | timestamp_custom("Tomorrow (%-m/%-d)") }}
         value_template: >
           {{states.sensor.dark_sky_daily_high_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_daily_low_temperature_1.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_1.state|round(0)}}%
         entity_picture_template: >-
