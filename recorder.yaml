@@ -21,6 +21,7 @@
       - automation.update_friendly_names_at_night
       - group.ring_doorbell
       - sensor.pollen
+      - sensor.cold_flu_risk
       - sensor.curr_future
       - sensor.pollen_level
       - sensor.hassuptime
