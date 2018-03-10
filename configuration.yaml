@@ -165,11 +165,9 @@ google_assistant:
       room: living room
     switch.driveway:
       expose: true
-      type: 'light'
       room: driveway
     switch.wemoporch:
       expose: true
-      type: 'light'
       name: Porch Lights
       room: porch
     light.kitchen_lights:
