@@ -100,8 +100,9 @@ arlo:
   username: !secret arlo_user
   password: !secret arlo_password
 alarm_control_panel:
-  - platform: arlo
-
+  - platform: ifttt
+    name: "Abode IFTTT"
+  - platform: arlo    
 
 xiaomi_aqara:
   gateways:
