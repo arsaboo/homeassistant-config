@@ -39,7 +39,7 @@ weather:
   - platform: yweather
     name: Weather
     woeid: !secret woeid
-
+# enable_debug:
 customizer:
   custom_ui: hosted
   hide_attributes:
@@ -102,7 +102,7 @@ arlo:
 alarm_control_panel:
   - platform: ifttt
     name: "Abode IFTTT"
-  - platform: arlo    
+  - platform: arlo
 
 xiaomi_aqara:
   gateways:
@@ -406,6 +406,7 @@ logger:
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
     custom_components.sensor.life360: critical
+    custom_components.alarm_control_panel: debug
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
 # Text to speech
