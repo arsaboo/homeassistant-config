@@ -47,7 +47,7 @@ def setup(hass, config):
         arlo = PyArlo(username, password, preload=False)
         if not arlo.is_connected:
             return False
-        arlo.update = Throttle(timedelta(seconds=5))(arlo.update)
+        arlo.update = Throttle(timedelta(seconds=10))(arlo.update)
         hass.data[DATA_ARLO] = arlo
     except (ConnectTimeout, HTTPError) as ex:
         _LOGGER.error("Unable to connect to Netgear Arlo: %s", str(ex))
