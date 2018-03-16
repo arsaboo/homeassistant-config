@@ -71,3 +71,7 @@
       - sensor.dark_sky_icon_5
       - sensor.dark_sky_icon_6
       - sensor.dark_sky_icon_7
+      - input_text.patio
+      - input_text.porch
+      - input_text.driveway
+      - input_text.backyard

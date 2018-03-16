@@ -126,6 +126,8 @@ lyric:
   client_id: !secret lyric_client_id
   client_secret: !secret lyric_client_secret
 
+shell_command:
+  image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
 
 media_extractor:
 
@@ -452,6 +454,7 @@ binary_sensor: !include binary_sensor.yaml
 input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 input_number: !include input_number.yaml
+input_text: !include input_text.yaml
 frontend: !include frontend.yaml
 recorder: !include recorder.yaml
 logbook: !include logbook.yaml

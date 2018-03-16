@@ -169,6 +169,7 @@
   Camera Sensors:
     control: hidden
     entities:
+      - script.classify_images
       - binary_sensor.backyard_motion
       - binary_sensor.backyard_field_detection
       - binary_sensor.backyard_line_crossing
@@ -181,6 +182,10 @@
       - binary_sensor.porch_field_detection
       - binary_sensor.porch_line_crossing
       - binary_sensor.porch_motion
+      - sensor.backyardtags
+      - sensor.drivewaytags
+      - sensor.patiotags
+      - sensor.porchtags
 
   Investments:
     - sensor.portfolioval

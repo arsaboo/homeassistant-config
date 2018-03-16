@@ -329,3 +329,19 @@
             {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
             {{item.attributes.emulated_hue_name|title}}
           {%- endfor -%}.
+      porchtags:
+        friendly_name: "Porch Tags"
+        value_template: >-
+          {{ states('input_text.porch') }}
+      drivewaytags:
+        friendly_name: "Driveway Tags"
+        value_template: >-
+          {{ states('input_text.driveway') }}
+      backyardtags:
+        friendly_name: "Backyard Tags"
+        value_template: >-
+          {{ states('input_text.backyard') }}
+      patiotags:
+        friendly_name: "Patio Tags"
+        value_template: >-
+          {{ states('input_text.patio') }}

@@ -1,0 +1,16 @@
+#################################################################
+## Input_text
+#################################################################
+
+  porch:
+    name: Porch Camera Tags
+    initial: Tags
+  patio:
+    name: Patio Camera Tags
+    initial: Tags
+  driveway:
+    name: Driveway Camera Tags
+    initial: Tags
+  backyard:
+    name: Backyard Camera Tags
+    initial: Tags
