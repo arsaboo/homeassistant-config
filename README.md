@@ -71,3 +71,7 @@ docker create \
 
 ## My Home Assistant dashboard
 <img src="https://github.com/arsaboo/homeassistant-config/blob/master/HA_screenshot_1.png" alt="Home Assistant dashboard" />
+
+# Useful links
+
+* [HA cheat sheet](/HASS%20Cheatsheet.md) for miscellaneous tips and tricks.
