@@ -23,6 +23,11 @@ docker create \
 -v /mnt/hollywood:/data/movies:shared \
  plexinc/pms-docker:plexpass
  ```
+* [Machinebox](https://machinebox.io/) image tagging service in a Docker container using the following command. First obtain your [API key](https://machinebox.io/login) and assign it to `MB_KEY`. Next
+ ```
+ sudo docker run --name=machinebox -p 8081:8080 -e "MB_KEY=$MB_KEY" -d machinebox/tagbox
+ ```
+
 ## Some of the devices and services that I use with HA
   * [Aeotec Z-Stick Gen5](https://www.amazon.com/dp/B00X0AWA6E/) for Z-Wave control
     * I use a [z-wave dry contact relay](https://www.amazon.com/gp/product/B00ER6MH22/) along with a tilt sensor for automating my garage door
@@ -57,7 +62,7 @@ docker create \
     * [Google Cast](https://home-assistant.io/components/media_player.cast/) on my Nvidia Shield TV
   * Notifications:
     * [iOS ](https://home-assistant.io/docs/ecosystem/ios/notifications/basic/) and [Pushbullet](https://home-assistant.io/components/notify.pushbullet/) for basic notifications
-    * [Telegram](https://home-assistant.io/components/notify.telegram/) and iOS for [actionable notifications](   https://home-assistant.io/docs/ecosystem/ios/notifications/actions/)
+    * [Telegram](https://home-assistant.io/components/notify.telegram/) and iOS for [actionable notifications](https://home-assistant.io/docs/ecosystem/ios/notifications/actions/)
     * [TTS](https://home-assistant.io/components/tts/) with the Sonos
     * [Notification for Android TV](https://home-assistant.io/components/notify.nfandroidtv/) to send visual notifications to Shield
   * Weather and Climate related
