@@ -65,7 +65,7 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-  - platform: arlo
+  # - platform: arlo
 #Time and Date Sensor
   - platform: time_date
     display_options:

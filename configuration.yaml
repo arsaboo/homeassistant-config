@@ -18,6 +18,7 @@ homeassistant:
   whitelist_external_dirs:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
+    - '/home/homeassistant/.homeassistant/downloads/camera/'
 updater:
   include_used_components: true
 influxdb:
@@ -96,13 +97,13 @@ wemo:
     - 192.168.2.130
     - 192.168.2.206
     - 192.168.2.237
-arlo:
-  username: !secret arlo_user
-  password: !secret arlo_password
+# arlo:
+#   username: !secret arlo_user
+#   password: !secret arlo_password
 alarm_control_panel:
   - platform: ifttt
     name: "Abode IFTTT"
-  - platform: arlo
+  # - platform: arlo
 
 xiaomi_aqara:
   gateways:
@@ -234,8 +235,8 @@ camera:
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
-  - platform: arlo
-    ffmpeg_arguments: '-pred 1 -q:v 2'
+  # - platform: arlo
+  #   ffmpeg_arguments: '-pred 1 -q:v 2'
   - platform: generic
     name: LivingRoom_temperature
     still_image_url: 'http://192.168.2.113:3000/render/dashboard-solo/db/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
