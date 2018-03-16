@@ -281,6 +281,10 @@
         data_template:
           entity_id: input_select.abodestatus
           option: "{{states.alarm_control_panel.abode_alarm.state}}"
+      - service: alarm_control_panel.ifttt_push_alarm_state
+        data_template:
+          entity_id: alarm_control_panel.abode_ifttt
+          state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: input_select.select_option
         data_template:
           entity_id: input_select.livingroomharmony
