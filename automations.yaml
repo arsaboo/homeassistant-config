@@ -414,7 +414,7 @@
             content-type: jpg
     - service: shell_command.image_classify
       data_template:
-        camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"            
+        camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     - service: camera.snapshot
       data_template:
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
@@ -657,6 +657,10 @@
                  {%- set state  = 0 -%}
               {%- endif %}
               {{ state }}
+    - service: logbook.log
+      data_template:
+        name: "Volume changed: "
+        message: "{{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
     - service: notify.shield
       data_template:
         title: "Home Assistant"
@@ -666,10 +670,6 @@
           {%- else -%}
             Volume lowered to {{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
           {%- endif -%}
-    - service: logbook.log
-      data_template:
-        name: "Volume changed: "
-        message: "{{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
   initial_state: 'on'
