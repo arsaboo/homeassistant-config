@@ -23,9 +23,9 @@ docker create \
 -v /mnt/hollywood:/data/movies:shared \
  plexinc/pms-docker:plexpass
  ```
-* [Machinebox](https://machinebox.io/) image tagging service in a Docker container using the following command. First obtain your [API key](https://machinebox.io/login) and assign it to `MB_KEY`. Next
+* [Machinebox](https://machinebox.io/) image tagging service in a Docker container using the following command. First obtain your [API key](https://machinebox.io/login) and assign it to `MB_KEY` and then run the container using (you can access the Tagbox interface at http://ip.ad.dr.es:8081):
  ```
- sudo docker run --name=machinebox -p 8081:8080 -e "MB_KEY=$MB_KEY" -d machinebox/tagbox
+ $ sudo docker run --name=machinebox -p 8081:8080 -e "MB_KEY=$MB_KEY" -d machinebox/tagbox
  ```
 
 ## Some of the devices and services that I use with HA
