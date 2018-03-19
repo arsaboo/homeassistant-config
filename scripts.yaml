@@ -63,7 +63,7 @@
       - service: input_select.select_option
         data_template:
           entity_id: input_select.lyricmode
-          option: '{{ states.input_select.hvacmode.state |default("cool") }}'
+          option: '{{ states.input_select.lyricmode_hist.state |default("cool") }}'
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: ifttt.trigger

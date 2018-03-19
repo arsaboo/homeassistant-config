@@ -322,6 +322,12 @@
       entity_id: input_select.lyricmode
   action:
     - service_template: "rest_command.lyric_mode_{{ trigger.to_state.state }}"
+    - condition: template
+      value_template: "{{ trigger.from_state.state in ['heat', 'cool'] }}"
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.lyricmode_hist
+        option: '{{ trigger.from_state.state }}'
 
 - id: enable_thermostat_away_mode
   alias: 'Enable thermostat away'
