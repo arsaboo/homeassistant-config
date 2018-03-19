@@ -3,6 +3,12 @@
     options:
       - heat
       - cool
+  lyricmode:
+    name: Lyric Mode
+    options:
+      - heat
+      - cool
+      - 'off'
   abodestatus:
     name: Abode status
     options:

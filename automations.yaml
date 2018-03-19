@@ -313,6 +313,16 @@
           switch.lyric_hold
         {%- endif -%}
 
+
+- id: thermostat_lyric_mode
+  alias: 'Thermostat - Lyric mode change'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_select.lyricmode
+  action:
+    - service_template: "rest_command.lyric_mode_{{ trigger.to_state.state }}"
+
 - id: enable_thermostat_away_mode
   alias: 'Enable thermostat away'
   initial_state: 'on'

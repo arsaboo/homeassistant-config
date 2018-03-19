@@ -120,6 +120,7 @@
     - climate.lyric_t5_thermostat
     - switch.lyric_hold
     - input_select.hvacmode
+    - input_select.lyricmode
 
   Information:
     - sensor.morning_commute

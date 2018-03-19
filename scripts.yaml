@@ -17,7 +17,11 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
-          - switch.lyric_hold
+          # - switch.lyric_hold
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.lyricmode
+          option: 'off'
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
       # - service: ifttt.trigger
@@ -55,7 +59,11 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
-          - switch.lyric_hold
+          # - switch.lyric_hold
+      - service: input_select.select_option
+        data_template:
+          entity_id: input_select.lyricmode
+          option: '{{ states.input_select.hvacmode.state |default("cool") }}'
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: ifttt.trigger
