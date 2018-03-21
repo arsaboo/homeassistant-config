@@ -155,7 +155,7 @@
     entities:
       - alarm_control_panel.abode_alarm
       - alarm_control_panel.arlohome
-      - alarm_control_panel.abode_ifttt
+      - alarm_control_panel.abode
       - input_select.abodestatus
       - cover.garagedoor
       - input_boolean.abodeupdate

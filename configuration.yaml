@@ -102,7 +102,7 @@ wemo:
 #   password: !secret arlo_password
 alarm_control_panel:
   - platform: ifttt
-    name: "Abode IFTTT"
+    name: "Abode"
   # - platform: arlo
 
 xiaomi_aqara:
