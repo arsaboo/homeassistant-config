@@ -154,7 +154,7 @@
     control: hidden
     entities:
       - alarm_control_panel.abode_alarm
-      - alarm_control_panel.arlohome
+      - alarm_control_panel.arlo
       - alarm_control_panel.abode
       - input_select.abodestatus
       - cover.garagedoor

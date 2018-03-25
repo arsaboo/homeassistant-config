@@ -103,8 +103,12 @@ wemo:
 alarm_control_panel:
   - platform: ifttt
     name: "Abode"
+  - platform: ifttt
+    name: Arlo
+    event_arm_away: arlo_alarm_arm_away
+    event_disarm: arlo_alarm_disarm
+    optimistic: true
   # - platform: arlo
-
 xiaomi_aqara:
   gateways:
     - key: !secret xiaomikey
