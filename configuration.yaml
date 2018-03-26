@@ -90,7 +90,12 @@ light:
     retain: true
     optimistic: false
     qos: 0
-
+  - platform: group
+    name: Living Room Lights
+    entities:
+      - light.lifx3
+      - light.lifxnrguest
+      - light.lifxnrkitchen
 wemo:
   static:
     - 192.168.2.104

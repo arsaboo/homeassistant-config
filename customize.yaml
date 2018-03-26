@@ -180,11 +180,6 @@
        emulated_hue_hidden: false
        emulated_hue_name: "Garage Door"
        friendly_name: Garage Door Switch
-     group.living_room_lights:
-       emulated_hue_hidden: false
-       emulated_hue_name: "Living room lights"
-       homebridge_hidden: false
-       friendly_name: Living room lights
      input_boolean.tv:
        homebridge_hidden: false
      cover.garagedoor:
@@ -235,6 +230,16 @@
          pin: true
          off_when_min: true
      light.lifxnrguest:
+       custom_ui_state_card: state-card-custom-ui
+       state_card_mode: single-line
+       stretch_slider: true
+       slider_theme:
+         min: 0
+         max: 255
+         pin: true
+         off_when_min: true
+     light.living_room_lights:
+       homebridge_hidden: false
        custom_ui_state_card: state-card-custom-ui
        state_card_mode: single-line
        stretch_slider: true

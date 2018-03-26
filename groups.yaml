@@ -207,10 +207,10 @@
     - switch.patiomotion
     - switch.porchmotion
 
-  living_room_lights:
-    - light.lifx3
-    - light.lifxnrguest
-    - light.lifxnrkitchen
+  # living_room_lights:
+  #   - light.lifx3
+  #   - light.lifxnrguest
+  #   - light.lifxnrkitchen
 
   Entertainment:
     control: hidden
