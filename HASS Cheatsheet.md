@@ -65,9 +65,10 @@ devices, you may have to sign out, restart, and sign back in to your Apple TV.
 I am using the default AIO username/password, replace them with yours
 
 1. You can remove a topic from Mosquitto using `mosquitto_pub -r -n -u 'pi' -P 'raspberry' -t 'owntracks/arsaboo/mqttrpi'`
-2. To subscribe to all the topics use `mosquitto_sub -h 192.168.2.212 -u 'pi' -P 'raspberry' -v -t '#'` (replace the IP address)
-3. To publish use `mosquitto_pub -u 'pi' -P 'raspberry' -t 'smartthings/Driveway/switch'  -m 'on'` (use the relevant topic).
-4. You can find the path to mosquitto_pub using `which mosquitto_pub`; restart Mosquitto using `sudo systemctl restart mosquitto`.
+2. To delete all topics, use `mosquitto_sub -t '#' -v -u USERNAME -P PASSWORD| while read line _; do mosquitto_pub -t $line -r -n -u USERNAME -P PASSWORD; done`
+3. To subscribe to all the topics use `mosquitto_sub -h 192.168.2.212 -u 'pi' -P 'raspberry' -v -t '#'` (replace the IP address)
+4. To publish use `mosquitto_pub -u 'pi' -P 'raspberry' -t 'smartthings/Driveway/switch'  -m 'on'` (use the relevant topic).
+5. You can find the path to mosquitto_pub using `which mosquitto_pub`; restart Mosquitto using `sudo systemctl restart mosquitto`.
 
 # HASS operations
 1. To check realtime logs `sudo journalctl -f -u home-assistant@homeassistant`
@@ -222,6 +223,6 @@ Some useful commands:
   sudo dd if=/dev/mmcblk0 of=/dev/null bs=8M count=100
   sudo hdparm -t /dev/mmcblk0
   ```
-* Many of the problems with Pi are related to faulty power supply. You can use `vcgencmd get_throttled` to check if your Pi is getting adequate power supply. You want that to return `throttled=0x0`. If not it means that the Raspberry is throttling itself due to low voltage, or other factors. 
+* Many of the problems with Pi are related to faulty power supply. You can use `vcgencmd get_throttled` to check if your Pi is getting adequate power supply. You want that to return `throttled=0x0`. If not it means that the Raspberry is throttling itself due to low voltage, or other factors.
 * Test Write speed (will create 200MB file in /home/pi/testfile) using `dd if=/dev/zero of=/home/pi/testfile bs=8M count=25`
 * To check which files are using up all the space on your SD card, run `sudo du | sort -n`. You can delete the culprits using something like `sudo rm -rf ./.pm2/logs/` (will recursively delete folder /logs/).
