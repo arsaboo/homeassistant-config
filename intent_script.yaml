@@ -86,18 +86,14 @@
           {%- endif -%}
         data_template:
           entity_id: >
-            {%- if Room.lower() in ['kitchen'] -%}
+            {%- if Room.lower() in ['kitchen', 'living room'] -%}
               light.
-            {%- elif Room.lower() in ['living room'] -%}
-              group.
             {%- elif Room.lower() in ['driveway', 'porch'] -%}
               switch.
             {%- endif -%}
 
-            {%- if Room.lower() in ['kitchen'] -%}
+            {%- if Room.lower() in ['kitchen', 'living room'] -%}
               kitchen_lights
-            {%- elif Room.lower() in ['living room'] -%}
-              living_room_lights
             {%- elif Room.lower() in ['driveway'] -%}
               driveway
             {%- elif Room.lower() in ['porch'] -%}
