@@ -220,7 +220,7 @@ http:
   ssl_key: !secret ssl_key
   base_url: !secret base_url
   ip_ban_enabled: True
-  login_attempts_threshold: 3
+  login_attempts_threshold: 1
   trusted_networks:
     - 192.168.2.0/24
 
