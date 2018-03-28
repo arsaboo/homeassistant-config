@@ -316,7 +316,7 @@
         entity_id: script.classify_images
 
   classify_images:
-    alias: 'Classify all images'
+    alias: 'Process all images'
     sequence:
       - service: shell_command.image_classify
         data_template:
@@ -330,5 +330,16 @@
       - service: shell_command.image_classify
         data_template:
           camera: "backyard"
-
+      - service: shell_command.facebox
+        data_template:
+          camera: "porch"
+      - service: shell_command.facebox
+        data_template:
+          camera: "patio"
+      - service: shell_command.facebox
+        data_template:
+          camera: "driveway"
+      - service: shell_command.facebox
+        data_template:
+          camera: "backyard"
       # - service: python_script.dark_sky_friendly_names

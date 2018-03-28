@@ -14,3 +14,15 @@
   backyard:
     name: Backyard Camera Tags
     initial: Tags
+  porchfaces:
+    name: Porch Camera Faces
+    initial: 0
+  patiofaces:
+    name: Patio Camera Faces
+    initial: 0
+  drivewayfaces:
+    name: Driveway Camera Faces
+    initial: 0
+  backyardfaces:
+    name: Backyard Camera Faces
+    initial: 0

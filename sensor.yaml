@@ -345,3 +345,19 @@
         friendly_name: "Patio Tags"
         value_template: >-
           {{ states('input_text.patio') }}
+      porchfaces:
+        friendly_name: "Porch Faces"
+        value_template: >-
+          {{ states('input_text.porchfaces') }}
+      drivewayfaces:
+        friendly_name: "Driveway Faces"
+        value_template: >-
+          {{ states('input_text.drivewayfaces') }}
+      backyardfaces:
+        friendly_name: "Backyard Faces"
+        value_template: >-
+          {{ states('input_text.backyardfaces') }}
+      patiofaces:
+        friendly_name: "Patio Faces"
+        value_template: >-
+          {{ states('input_text.patiofaces') }}

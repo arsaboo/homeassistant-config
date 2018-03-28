@@ -69,6 +69,7 @@
       - group.devices
       - group.hass_details
       - group.camera_sensors
+      - group.camera_processing
       - group.camera_switches
       - group.network_details
       - group.arlo
@@ -170,7 +171,6 @@
   Camera Sensors:
     control: hidden
     entities:
-      - script.classify_images
       - binary_sensor.backyard_motion
       - binary_sensor.backyard_field_detection
       - binary_sensor.backyard_line_crossing
@@ -183,10 +183,18 @@
       - binary_sensor.porch_field_detection
       - binary_sensor.porch_line_crossing
       - binary_sensor.porch_motion
+
+
+  Camera Processing:
+      - script.classify_images
       - sensor.backyardtags
       - sensor.drivewaytags
       - sensor.patiotags
       - sensor.porchtags
+      - sensor.backyardfaces
+      - sensor.drivewayfaces
+      - sensor.patiofaces
+      - sensor.porchfaces
 
   Investments:
     - sensor.portfolioval

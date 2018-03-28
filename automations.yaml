@@ -415,6 +415,9 @@
     - service: shell_command.image_classify
       data_template:
         camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    - service: shell_command.facebox
+      data_template:
+        camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     - service: camera.snapshot
       data_template:
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
