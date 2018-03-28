@@ -4,10 +4,10 @@ automation.*:
     if (attributes.last_triggered) return window.hassUtil.relativeTime(new Date(attributes.last_triggered)); else return null;
 sensor.dow_futures_change*:
  templates:
-   rgb_color: "if (state > 0) return [50,205,50]; else return [178,34,34];"
+   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
 sensor.nasdaq_futures_change*:
  templates:
-   rgb_color: "if (state > 0) return [50,205,50]; else return [178,34,34];"
+   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
 sensor.sp_futures_change*:
  templates:
-   rgb_color: "if (state > 0) return [50,205,50]; else return [178,34,34];"
+   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
