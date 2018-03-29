@@ -2,12 +2,10 @@ automation.*:
   custom_ui_state_card: state-card-custom-ui
   extra_data_template: >-
     if (attributes.last_triggered) return window.hassUtil.relativeTime(new Date(attributes.last_triggered)); else return null;
-sensor.dow_futures_change*:
+sensor.*_futures_change:
  templates:
-   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
-sensor.nasdaq_futures_change*:
+   hs_color: "if (state > 0) return [100,100]; else return [0,55];"
+sensor.*_futures_change_pct:
  templates:
-   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
-sensor.sp_futures_change*:
- templates:
-   hs_color: "if (state > 0) return [110,100]; else return [0,70];"
+   hs_color: "if (state > 0) return [100,100]; else return [0,55];"
+   brightness: "if (state > 0) return (51 * state) > 255 ? 255 : 51 * state; else return (-51 * state) > 255 ? 255 : -51 * state;"
