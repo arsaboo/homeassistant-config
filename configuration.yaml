@@ -300,6 +300,15 @@ camera:
 ifttt:
   key: !secret ifttt_key
 
+image_processing:
+  - platform: facebox
+    scan_interval: 10000
+    endpoint: 192.168.2.212:8082
+    source:
+      - entity_id: camera.patio
+      - entity_id: camera.porch
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
 # image_processing:
 #   - platform: clarifai
 #     name: general_classifier

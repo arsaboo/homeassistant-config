@@ -191,6 +191,10 @@
       - sensor.drivewaytags
       - sensor.patiotags
       - sensor.porchtags
+      - image_processing.facebox_backyard
+      - image_processing.facebox_patio
+      - image_processing.facebox_driveway
+      - image_processing.facebox_porch      
       - sensor.backyardfaces
       - sensor.drivewayfaces
       - sensor.patiofaces
