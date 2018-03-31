@@ -182,7 +182,7 @@ google_assistant:
   exposed_domains:
     - cover
   entity_config:
-    group.living_room_lights:
+    light.living_room_lights:
       expose: true
       room: living room
     switch.driveway:
