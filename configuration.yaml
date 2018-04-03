@@ -309,6 +309,14 @@ image_processing:
       - entity_id: camera.porch
       - entity_id: camera.backyard
       - entity_id: camera.driveway
+  - platform: tagbox
+    scan_interval: 10000 # Default 10
+    endpoint: 192.168.2.212:8081
+    source:
+      - entity_id: camera.patio
+      - entity_id: camera.porch
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
 # image_processing:
 #   - platform: clarifai
 #     name: general_classifier

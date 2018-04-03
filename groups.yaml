@@ -187,18 +187,22 @@
 
   Camera Processing:
       - script.classify_images
-      - sensor.backyardtags
-      - sensor.drivewaytags
-      - sensor.patiotags
-      - sensor.porchtags
       - image_processing.facebox_backyard
       - image_processing.facebox_patio
       - image_processing.facebox_driveway
       - image_processing.facebox_porch
+      - image_processing.tagbox_backyard
+      - image_processing.tagbox_patio
+      - image_processing.tagbox_driveway
+      - image_processing.tagbox_porch
       # - sensor.backyardfaces
       # - sensor.drivewayfaces
       # - sensor.patiofaces
       # - sensor.porchfaces
+      # - sensor.backyardtags
+      # - sensor.drivewaytags
+      # - sensor.patiotags
+      # - sensor.porchtags
 
   Investments:
     - sensor.portfolioval

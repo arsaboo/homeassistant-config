@@ -412,12 +412,18 @@
           attachment:
             url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[0]].attributes.entity_picture }}"
             content-type: jpg
-    - service: shell_command.image_classify
+    - service: image_processing.scan
       data_template:
-        camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-    - service: shell_command.facebox
+        entity_id: "image_processing.facebox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    - service: image_processing.scan
       data_template:
-        camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+        entity_id: "image_processing.tagbox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    # - service: shell_command.image_classify
+    #   data_template:
+    #     camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    # - service: shell_command.facebox
+    #   data_template:
+    #     camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     - service: camera.snapshot
       data_template:
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
