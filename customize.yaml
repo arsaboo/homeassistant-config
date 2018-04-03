@@ -313,7 +313,7 @@
      sensor.temperature_158d0001ab3b2b:
        friendly_name:  Study Temperature
      binary_sensor.door_window_sensor_158d0001bf26df:
-       friendly_name:  Master Door
+       friendly_name:  Garage Entry Door
      sensor.illumination_158d0001a1f2ab:
        friendly_name: Guest Room Brightness
        icon: mdi:brightness-7

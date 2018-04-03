@@ -162,7 +162,7 @@
       - input_boolean.abodeupdate
       - binary_sensor.back_door
       - binary_sensor.front_door
-      - binary_sensor.garage_entry_door
+      - binary_sensor.door_window_sensor_158d0001bf26df
       - input_boolean.startrecording
       - binary_sensor.motion_sensor_158d00016daecc
       - binary_sensor.motion_sensor_158d00016612af
