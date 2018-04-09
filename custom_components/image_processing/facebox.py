@@ -109,5 +109,6 @@ class Facebox(ImageProcessingEntity):
     def device_state_attributes(self):
         """Return other details about the sensor state."""
         attr = self._faces
+        attr.update({'total_faces': self._total_faces})
         attr.update({'response_time': self._response_time})
         return attr
