@@ -74,6 +74,7 @@
       - group.network_details
       - group.arlo
       - group.all_automations
+      - group.uscis
 
   HASS Details:
     - sensor.time__date
@@ -294,6 +295,14 @@
     - sensor.xiaomi_aqara_temperature_humidity_sensor
     - sensor.xiaomi_yeelight_white
     - sensor.xiaomi_door_window_sensor
+
+  USCIS:
+    - sensor.alok_485
+    - sensor.alok_765
+    - sensor.rashmi_485
+    - sensor.rashmi_765
+    - sensor.arnav_485
+    - sensor.arnav_765
 
   camera_arlolivingroom:
     entities:
