@@ -8,30 +8,16 @@ sensor.*_futures_change:
 sensor.*_futures_change_pct:
   templates:
     hs_color: >
-      if (state < -4) {
-        return [358, 83];
-      } else if (state < -2 && state >= -4 ) {
-        return [23, 90];
-      } else if (state < 0 && state >= -2 ) {
-        return [51,100];
-      } else if (state < 2 && state >= 0 ) {
-        return [63,74];
-      } else if (state < 4 && state >= 2 ) {
-        return [101,48];
-      } else {
-        return [146, 86];
-      }
+      if (state < -4) return [358, 83];
+      if (state < -2) return [23, 90];
+      if (state < 0) return [51,100];
+      if (state < 2) return [63,74];
+      if (state < 4 ) return [101,48];
+      return [146, 86];
     brightness: >
-      if (state < -4) {
-        return 37;
-      } else if (state < -2 && state >= -4 ) {
-        return 55;
-      } else if (state < 0 && state >= -2 ) {
-        return 50;
-      } else if (state < 2 && state >= 0 ) {
-        return 51;
-      } else if (state < 4 && state >= 2 ) {
-        return 51;
-      } else {
-        return 31;
-      }
+      if (state < -4) return 37;
+      if (state < -2) return 55;
+      if (state < 0) return 50;
+      if (state < 2) return 51;
+      if (state < 4) return 51;
+      return 31;
