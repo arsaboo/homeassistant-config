@@ -2,22 +2,28 @@ automation.*:
   custom_ui_state_card: state-card-custom-ui
   extra_data_template: >-
     if (attributes.last_triggered) return window.hassUtil.relativeTime(new Date(attributes.last_triggered)); else return null;
+# Use scaled value for brightness in HSB. (B-50)*5.10
 sensor.*_futures_change:
  templates:
-   hs_color: "if (state > 0) return [120,61]; else return [0,70];"
+    hs_color: >
+      if (state > 0) return [120, 75];
+      return [0,80];
+    brightness: >
+      if (state > 0) return 150;
+      return 100;
 sensor.*_futures_change_pct:
   templates:
     hs_color: >
-      if (state < -4) return [358, 83];
+      if (state < -4) return [360, 85];
       if (state < -2) return [23, 90];
-      if (state < 0) return [51,100];
-      if (state < 2) return [63,74];
-      if (state < 4 ) return [101,48];
-      return [146, 86];
+      if (state < 0) return [50,100];
+      if (state < 2) return [65,85];
+      if (state < 4) return [100,65];
+      return [150,95];
     brightness: >
-      if (state < -4) return 37;
-      if (state < -2) return 55;
-      if (state < 0) return 50;
-      if (state < 2) return 51;
-      if (state < 4) return 51;
-      return 31;
+      if (state < -4) return 180;
+      if (state < -2) return 255;
+      if (state < 0) return 255;
+      if (state < 2) return 204;
+      if (state < 4) return 125;
+      return 50;
