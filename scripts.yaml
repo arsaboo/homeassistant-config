@@ -17,11 +17,7 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
-          # - switch.lyric_hold
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.lyricmode
-          option: 'off'
+          - switch.lyric_mode_off
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
       # - service: ifttt.trigger
@@ -59,11 +55,7 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
-          # - switch.lyric_hold
-      - service: input_select.select_option
-        data_template:
-          entity_id: input_select.lyricmode
-          option: '{{ states.input_select.lyricmode_hist.state |default("cool") }}'
+          - switch.lyric_mode_off
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: ifttt.trigger
@@ -71,29 +63,29 @@
       # - service: homeassistant.turn_off
       #   entity_id: input_boolean.startrecording
 
-  lyric_hold_on:
-    alias: 'Lyric hold on'
+  lyric_mode_off:
+    alias: 'Lyric mode off'
     sequence:
-      - service: climate.set_temperature
-        data_template:
-          entity_id: climate.lyric_t5_thermostat
-          temperature: >-
-            {%- if states.input_select.hvacmode.state == 'heat' -%}
-              66
-            {%- else -%}
-              83
-            {%- endif -%}
-      - service: climate.set_hold_mode
+      - service: climate.set_operation_mode
         data:
           entity_id: climate.lyric_t5_thermostat
-          hold_mode: 'PermanentHold'
+          operation_mode: 'off'
 
-  lyric_hold_off:
-    alias: 'Lyric hold off'
+  lyric_mode_cool:
+    alias: 'Lyric mode cool'
     sequence:
-      - service: climate.lyric_resume_program
+      - service: climate.set_operation_mode
         data:
           entity_id: climate.lyric_t5_thermostat
+          operation_mode: 'cool'
+
+  lyric_mode_heat:
+    alias: 'Lyric mode heat'
+    sequence:
+      - service: climate.set_operation_mode
+        data:
+          entity_id: climate.lyric_t5_thermostat
+          operation_mode: 'heat'
 
   tv_off:
     alias: 'Turn Television off'

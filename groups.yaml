@@ -120,9 +120,10 @@
     - sensor.upstairs_temperature
     - switch.upstairs_away
     - climate.lyric_t5_thermostat
-    - switch.lyric_hold
     - input_select.hvacmode
     - input_select.lyricmode
+    - input_select.lyricmode_hist
+    - switch.lyric_mode_off
 
   Information:
     - sensor.morning_commute
