@@ -2,11 +2,10 @@
   include:
     entities:
       - sensor.downstairsthermoper
+      - sensor.upstairsthermoper
       - binary_sensor.garagedoor
       - device_tracker.meta_rashmi
       - device_tracker.meta_alok
       - alarm_control_panel.abode_alarm
       - media_player.panasonic_viera_tv
-      - sensor.plexspy
       - sensor.portfolioval
-      - sensor.portfoliochange

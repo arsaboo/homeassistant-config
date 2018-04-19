@@ -22,7 +22,7 @@ from homeassistant.const import (CONF_NAME, CONF_RESOURCES, ATTR_ATTRIBUTION)
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 
-REQUIREMENTS = ['raschietto==0.1.1']
+REQUIREMENTS = ['raschietto']
 
 _LOGGER = logging.getLogger(__name__)
 _RESOURCE = 'http://money.cnn.com/data/premarket/'

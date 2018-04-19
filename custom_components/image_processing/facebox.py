@@ -52,7 +52,6 @@ class Facebox(ImageProcessingEntity):
         self._camera = camera_entity
         self._url = "http://{}/facebox/check".format(endpoint)
         self._state = "No_processing_performed"
-        self._total_faces = None
         self._faces = {}
         self._response_time = None
 
@@ -66,17 +65,12 @@ class Facebox(ImageProcessingEntity):
 
         if response['success']:
             elapsed_time = time.perf_counter() - timer_start
-            self._response_time = round(elapsed_time, ROUNDING_DECIMALS)
-            self._total_faces = response['facesCount']  # An int.
+            self._response_time = "{} seconds".format(
+                    str(round(elapsed_time, 1)))
+            self._state = int(response['facesCount'])
             self._faces = self.process_faces(response)
-            try:
-                self._state = max(
-                    self._faces.keys(), key=(lambda k: self._faces[k]))
-            except:
-                self._state = "No_taught_faces"
         else:
-            self._state = "Request_failed"
-            self._total_faces = None
+            self._state = "Processing_not_successful"
             self._faces = {}
 
     def encode_image(self, image):
@@ -109,6 +103,17 @@ class Facebox(ImageProcessingEntity):
     def device_state_attributes(self):
         """Return other details about the sensor state."""
         attr = self._faces
-        attr.update({'total_faces': self._total_faces})
         attr.update({'response_time': self._response_time})
         return attr
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        if isinstance(self._state, int):
+            if self._state == 1:
+                unit_of_measurement = "face"
+            else:
+                unit_of_measurement = "faces"
+        else:
+            unit_of_measurement = None
+        return unit_of_measurement

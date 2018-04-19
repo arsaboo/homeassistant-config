@@ -140,13 +140,13 @@ shell_command:
   image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
   facebox: bash /home/homeassistant/.homeassistant/shell_scripts/facebox.sh "{{camera}}"
 #   Using Stringify Maker requests
-rest_command:
-  lyric_mode_off:
-    url: !secret lyric_mode_off
-  lyric_mode_heat:
-    url: !secret lyric_mode_heat
-  lyric_mode_cool:
-    url: !secret lyric_mode_cool
+# rest_command:
+#   lyric_mode_off:
+#     url: !secret lyric_mode_off
+#   lyric_mode_heat:
+#     url: !secret lyric_mode_heat
+#   lyric_mode_cool:
+#     url: !secret lyric_mode_cool
 
 media_extractor:
 
