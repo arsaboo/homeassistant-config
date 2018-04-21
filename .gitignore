@@ -69,7 +69,7 @@ google_calendars.yaml
 components
 deps
 tts
-www
+www/icons
 downloads
 icloud
 dlib_faces
