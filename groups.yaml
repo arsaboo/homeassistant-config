@@ -19,6 +19,7 @@
     view: yes
     icon: mdi:weather-cloudy
     entities:
+      - group.yahooweathercard
       - group.weather
       - group.weather_card_forecast
       - group.room_sensors
@@ -94,7 +95,11 @@
     - sensor.cold_flu_risk
     - sensor.dark_sky_hourly_summary
     - sensor.dark_sky_daily_summary
-
+  yahooweathercard:
+    name: Weather Forecast
+    view: no
+    entities:
+        - input_boolean.weather
   Room Sensors:
     - sensor.illumination_158d00016612af
     - sensor.humidity_158d0001ab7d20

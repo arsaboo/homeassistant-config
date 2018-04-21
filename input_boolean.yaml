@@ -30,3 +30,4 @@
     name: Party Mode
     initial: off
     icon: mdi:theme-light-dark
+  weather:

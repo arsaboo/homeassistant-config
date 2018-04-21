@@ -95,6 +95,11 @@
        friendly_name: 'Daily Summary'
      sensor.dark_sky_hourly_summary:
        friendly_name: 'Hourly Summary'
+     input_boolean.weather:
+       custom_ui_state_card: custom-weather-card
+       config:
+         weather: weather.weather
+         sun: sun.sun
      sensor.portfolioval:
        icon: mdi:currency-usd
      sensor.portfoliochange:
