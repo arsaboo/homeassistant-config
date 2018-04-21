@@ -1,0 +1,236 @@
+<!--
+https://github.com/c727/home-assistant-tiles
+version: 20180308
+-->
+<dom-module id='state-card-tiles'>
+  <template>
+    <style>
+      :host {
+        --tiles-columns: 3;
+        --tiles-column-width: 1fr;
+        --tiles-row-height: 100px;
+        --tiles-gap: 4px;
+        --tiles-color: var(--primary-color);
+        --tiles-color-on: var(--google-green-500);
+        --tiles-color-off: var(--google-red-500);
+        --tiles-text-color: #FFF;
+        --tiles-text-color-on: var(--tiles-text-color);
+        --tiles-text-color-off: var(--tiles-text-color);
+        --tiles-text-size: 1em;
+        --tiles-text-sec-color: var(--tiles-text-color);
+        --tiles-text-sec-size: 1em;
+        --tiles-text-align: center;
+        --tiles-icon-size: 24px;
+      }
+      paper-button-group {
+        display: grid;
+        grid-template-columns: repeat(var(--tiles-columns), var(--tiles-column-width));
+        grid-auto-rows: var(--tiles-row-height);
+        grid-gap: var(--tiles-gap);
+        width: 100%;
+      }
+      paper-button {          
+        box-shadow: none !important;
+        margin: 0 !important;
+        min-width: 50px;
+        min-height: 50px;
+        background-color: var(--tiles-color);
+        color: var(--tiles-text-color);
+        font-size: var(--tiles-text-size);
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        flex-direction: column;
+      }
+      paper-button.on {
+        background-color: var(--tiles-color-on);
+        color: var(--tiles-text-color-on);
+      }
+      paper-button.off {
+        background-color: var(--tiles-color-off);
+        color: var(--tiles-text-color-off);
+      }
+      div {
+        text-align: var(--tiles-text-align);
+        width: 100%;
+      }
+      .secondary {
+        color: var(--tiles-text-sec-color);
+        font-size: var(--tiles-text-sec-size);
+      }
+      iron-icon {
+        --iron-icon-height: var(--tiles-icon-size);
+        --iron-icon-width: var(--tiles-icon-size);
+      }
+    </style>
+    <paper-button-group on-click='stopPropagation' on-tap='stopPropagation'>
+      <template is='dom-repeat' items='[[stateObj.attributes.config.entities]]' as='entity'>
+        <paper-button raised class$='[[computeClass(hass, entity)]]' style$='[[computeStyle(entity)]][[computeStyleTemplate(hass, entity)]]' on-click='buttonClicked'>
+          <div>
+            <template is='dom-if' if='[[entity.icon]]'>
+              <iron-icon icon='[[entity.icon]]'></iron-icon>
+            </template>
+            <template is='dom-if' if='[[entity.icon_template]]'>
+              <iron-icon icon='[[computeFromTemplate(hass, entity, "icon_template")]]'></iron-icon>
+            </template>
+            [[computeLabel(hass, entity)]]
+          </div>
+          <template is='dom-if' if='[[hasLabelSec(entity)]]'>
+            <div class='secondary'>[[computeLabelSec(hass, entity)]]</div>
+          </template>
+        </paper-button>
+      </template>
+    </paper-button-group>
+  </template>
+</dom-module>
+
+<script>
+const DOMAIN_SCRIPT = ['script', 'python_script'];
+const DOMAIN_SENSOR = ['sensor', 'binary_sensor'];
+const DOMAIN_NO_TOGGLE = DOMAIN_SCRIPT.concat(DOMAIN_SENSOR, 'scene');
+
+class StateCardTiles extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'state-card-tiles'; }
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+    };
+  }
+
+  ready() {
+    super.ready();
+    const config = this.stateObj.attributes.config;
+    let style = {};
+    if (config.columns) style['--tiles-columns'] = config.columns;
+    if (config.column_width) style['--tiles-column-width'] = config.column_width;
+    if (config.row_height) style['--tiles-row-height'] = config.row_height;
+    if (config.gap) style['--tiles-gap'] = config.gap;
+    if (config.color) style['--tiles-color'] = config.color;
+    if (config.color_on) style['--tiles-color-on'] = config.color_on;
+    if (config.color_off) style['--tiles-color-off'] = config.color_off;
+    if (config.text_color) style['--tiles-text-color'] = config.text_color;
+    if (config.text_color_on) style['--tiles-text-color-on'] = config.text_color_on;
+    if (config.text_color_off) style['--tiles-text-color-off'] = config.text_color_off;
+    if (config.text_size) style['--tiles-text-size'] = config.text_size;
+    if (config.text_sec_color) style['--tiles-text-sec-color'] = config.text_sec_color;
+    if (config.text_sec_size) style['--tiles-text-sec-size'] = config.text_sec_size;
+    if (config.text_align) style['--tiles-text-align'] = config.text_align;
+    if (config.icon_size) style['--tiles-icon-size'] = config.icon_size;
+    this.updateStyles(style);
+  }
+
+  computeFromTemplate(hass, entity, template) {
+    const state = hass.states[entity.entity].state;
+    const attributes = hass.states[entity.entity].attributes;
+    const entities = hass.states;
+    return Function('state', 'attributes', 'entities', entity[template])(state, attributes, entities);
+  }
+
+  computeLabel(hass, entity) {
+    if (entity.label_template) {
+      return this.computeFromTemplate(hass, entity, 'label_template');
+    } else if (entity.label_state) {
+      const stateObj = hass.states[entity.label_state];
+      return stateObj.attributes && stateObj.attributes.unit_of_measurement ? `${stateObj.state} ${stateObj.attributes.unit_of_measurement}` : stateObj.state;
+    } else if (entity.label) {
+      return entity.label;
+    } else if (DOMAIN_SENSOR.includes(entity.entity.split('.')[0])) {
+      const stateObj = hass.states[entity.entity];
+      return stateObj.attributes && stateObj.attributes.unit_of_measurement ? `${stateObj.state} ${stateObj.attributes.unit_of_measurement}` : stateObj.state;
+    } else {
+      return '';
+    }
+  }
+
+  hasLabelSec(entity) {
+    return entity.label_sec || entity.label_sec_state || entity.label_sec_template;
+  }
+
+  computeLabelSec(hass, entity) {
+    return this.computeLabel(hass, {
+      label_template: entity.label_sec_template,
+      label_state: entity.label_sec_state,
+      label: entity.label_sec,
+      entity: entity.entity });
+  }
+
+  computeClass(hass, entity) {
+    const domain = entity.entity.split('.')[0];
+    if (DOMAIN_NO_TOGGLE.includes(domain)) {
+      return '';
+    } else {
+      return window.hassUtil.OFF_STATES.includes(hass.states[entity.entity].state) ? 'off' : 'on';
+    }
+  }
+
+  computeStyle (entity) {
+    const c = entity.column ? entity.column : 'auto';
+    const cs = entity.column_span ? entity.column_span : 1;
+    const r = entity.row ? entity.row : 'auto';
+    const rs = entity.row_span ? entity.row_span : 1;
+    let style = '';
+    if (entity.color) style += ` --tiles-color: ${entity.color};`;
+    if (entity.color_on) style += ` --tiles-color-on: ${entity.color_on};`;
+    if (entity.color_off) style += ` --tiles-color-off: ${entity.color_off};`;
+    if (entity.text_color) style += ` --tiles-text-color: ${entity.text_color};`;
+    if (entity.text_color_on) style += ` --tiles-text-color-on: ${entity.text_color_on};`;
+    if (entity.text_color_off) style += ` --tiles-text-color-off: ${entity.text_color_off};`;
+    if (entity.text_size) style += ` --tiles-text-size: ${entity.text_size};`;
+    if (entity.text_sec_color) style += ` --tiles-text-sec-color: ${entity.text_sec_color};`;
+    if (entity.text_sec_size) style += ` --tiles-text-sec-size: ${entity.text_sec_size};`;
+    if (entity.text_align) style += ` --tiles-text-align: ${entity.text_align};`;
+    if (entity.icon_size) style += ` --tiles-icon-size: ${entity.icon_size};`;
+    if (entity.image) style += ` background-image: url("${entity.image}");`;
+    return `grid-column: ${c} / span ${cs}; grid-row: ${r} / span ${rs}; ${style}`;
+  }
+
+  computeStyleTemplate(hass, entity) {
+    return entity.style_template ? this.computeFromTemplate(hass, entity, 'style_template') : '';
+  }
+
+  buttonClicked(ev) {
+    const entity = ev.model.entity.entity;
+    const more_info = ev.model.entity.more_info;
+    const stateDomain = entity.split('.')[0];
+
+    if (DOMAIN_SENSOR.includes(stateDomain) || more_info) {
+      this.fire('hass-more-info', { entityId: more_info || entity });
+    } else {
+      let serviceDomain;
+      let service;
+      let data;
+      if (DOMAIN_SCRIPT.includes(stateDomain)) {
+        serviceDomain = stateDomain;
+        service = entity.split('.')[1];
+        data = ev.model.entity.data || {};
+      } else {
+        const isOff = window.hassUtil.OFF_STATES.includes(this.hass.states[entity].state);
+        switch (stateDomain) {
+          case 'lock':
+            serviceDomain = 'lock';
+            service = isOff ? 'lock' : 'unlock';
+            break;
+          case 'cover':
+            serviceDomain = 'cover';
+            service = isOff ? 'open' : 'close';
+            break;
+          case 'scene':
+            serviceDomain = 'scene';
+            service = 'turn_on';
+            break;        
+          default:
+            serviceDomain = 'homeassistant';
+            service = isOff ? 'turn_on' : 'turn_off';
+        }
+        data = { entity_id: entity };
+      }
+      this.hass.callService(serviceDomain, service, data);
+    }
+  }
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
+  }
+}
+customElements.define(StateCardTiles.is, StateCardTiles);
+</script>
