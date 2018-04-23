@@ -41,7 +41,6 @@
       - group.camera_ring_doorbell
       - group.camera_arsbloom
       - group.camera_usps
-      - group.camera_abode_living_room
       - group.camera_foscam1
       - group.camera_foscam2
       - group.camera_foscam3
@@ -118,16 +117,17 @@
     - sensor.downstairsthermoper
     - sensor.downstairs_humidity
     - sensor.living_room_temperature
+    - sensor.downstairs_hvac_runtime
     - switch.downstairs_away
     - climate.upstairs
     - sensor.upstairsthermoper
     - sensor.upstairs_humidity
     - sensor.upstairs_temperature
     - switch.upstairs_away
+    - sensor.upstairs_hvac_runtime
     - climate.lyric_t5_thermostat
     - input_select.hvacmode
     - input_select.lyricmode
-    - input_select.lyricmode_hist
     - switch.lyric_mode_off
 
   Information:

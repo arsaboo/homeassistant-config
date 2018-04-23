@@ -26,7 +26,7 @@
     friendly_name: Arnav 765
   - platform: uscis
     case_id: !secret arnav_485
-    friendly_name: Arnav 485          
+    friendly_name: Arnav 485
   - platform: pollen
     zip_code: !secret home_zip
     monitored_conditions:
@@ -196,6 +196,24 @@
             {{ ', ' }}
           {%- endif -%}
           {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
+      downstairs_hvac_runtime:
+        friendly_name: "Downstairs HVAC Runtime"
+        unit_of_measurement: "h"
+        value_template: >-
+           {%- if [states.sensor.downstairs_cool.state|float, states.sensor.downstairs_heat.state|float, 0]|max != None -%}
+             {{ [states.sensor.downstairs_cool.state|float, states.sensor.downstairs_heat.state|float, 0]|max }}
+           {%- else -%}
+             0
+           {%- endif -%}
+      upstairs_hvac_runtime:
+        friendly_name: "Upstairs HVAC Runtime"
+        unit_of_measurement: "h"
+        value_template: >-
+           {%- if [states.sensor.upstairs_cool.state|float, states.sensor.upstairs_heat.state|float, 0]|max != None -%}
+             {{ [states.sensor.upstairs_cool.state|float, states.sensor.upstairs_heat.state|float, 0]|max }}
+           {%- else -%}
+             0
+           {%- endif -%}
       wemopowerused:
         friendly_name: "Wemo Current Power"
         unit_of_measurement: "w"
