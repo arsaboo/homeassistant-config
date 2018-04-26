@@ -350,12 +350,12 @@ sun:
 media_player:
   - platform: sonos
     hosts: 192.168.2.150
-  - platform: kodi
-    host: http://192.168.2.28
-    port: 8080
-    name: Kodi NSTV
-    username: !secret kodi_username
-    password: !secret kodi_password
+  # - platform: kodi
+  #   host: http://192.168.2.28
+  #   port: 8080
+  #   name: Kodi NSTV
+  #   username: !secret kodi_username
+  #   password: !secret kodi_password
   - platform: panasonic_viera
     host: 192.168.2.128
     port: 55000
