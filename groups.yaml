@@ -77,7 +77,6 @@
       - group.uscis
 
   HASS Details:
-    - sensor.time__date
     - sensor.hassuptime
     - sensor.ssl_certificate_expiry
     - input_select.current_theme
@@ -86,8 +85,6 @@
     - sensor.pws_weather
     - sensor.pws_temp_f
     - sensor.pws_relative_humidity
-    - binary_sensor.ars_bloom_rain
-    - sensor.pws_wind_dir
     - sensor.pws_wind_string
     - sensor.dark_sky_cloud_coverage
     - sensor.pollen_level
@@ -304,9 +301,7 @@
 
   USCIS:
     - sensor.alok_485
-    - sensor.alok_765
     - sensor.rashmi_485
-    - sensor.rashmi_765
     - sensor.arnav_485
     - sensor.arnav_765
 

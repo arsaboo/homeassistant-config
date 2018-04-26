@@ -10,14 +10,8 @@
       - nasdaq_change_pct
       - nasdaq_change
   - platform: uscis
-    case_id: !secret alok_765
-    friendly_name: Alok 765
-  - platform: uscis
     case_id: !secret alok_485
     friendly_name: Alok 485
-  - platform: uscis
-    case_id: !secret rashmi_765
-    friendly_name: Rashmi 765
   - platform: uscis
     case_id: !secret rashmi_485
     friendly_name: Rashmi 485
@@ -83,11 +77,6 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-  # - platform: arlo
-#Time and Date Sensor
-  - platform: time_date
-    display_options:
-      - 'time_date'
   - platform: plex
     name: PlexSpy
     host: 192.168.2.212
