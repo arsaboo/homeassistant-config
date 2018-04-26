@@ -38,7 +38,7 @@ influxdb:
 python_script:
 weather:
   - platform: yweather
-    name: Weather
+    name: yweather
     woeid: !secret woeid
 # enable_debug:
 customizer:

@@ -26,7 +26,7 @@
       - group.thermostats
       - group.camera_meteogram
       - group.camera_wundergroundradar
-      - weather.weather
+      - weather.yweather
       - camera.livingroom_temperature
 
   cameras:
