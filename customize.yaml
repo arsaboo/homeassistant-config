@@ -105,12 +105,8 @@
      sensor.portfoliochange:
        icon: mdi:currency-usd
        templates:
-         hs_color: >
-           if (state > 0) return [120, 75];
-           return [0,80];
-         brightness: >
-            if (state > 0) return 80;
-            return 100;
+         icon_color: >
+           if (state > 0) return 'rgb(50,205,50)'; else return 'rgb(178,34,34)';
      group.all_automations:
        hidden: false
        friendly_name: 'Automations'

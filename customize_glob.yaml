@@ -9,35 +9,19 @@ device_tracker.*:
 # Use scaled value for brightness in HSB. (B-50)*5.10
 sensor.*_futures_change:
  templates:
-    hs_color: >
-      if (state > 0) return [120, 75];
-      return [0,80];
-    brightness: >
-      if (state > 0) return 150;
-      return 100;
+   icon_color: >
+     if (state > 0) return 'rgb(50,205,50)'; else return 'rgb(178,34,34)';
 sensor.*_futures_change_pct:
   templates:
-    hs_color: >
-      if (state < -5) return [358, 82];
-      if (state < -4) return [357, 79];
-      if (state < -3) return [358, 88];
-      if (state < -2) return [20, 85];
-      if (state < -1) return [32, 90];
-      if (state < 0) return [45, 95];
-      if (state < 1) return [65,80];
-      if (state < 2) return [85,67];
-      if (state < 3) return [88,70];
-      if (state < 4) return [130,72];
-      return [151,100];
-    brightness: >
-      if (state < -5) return 50;
-      if (state < -4) return 135;
-      if (state < -3) return 200;
-      if (state < -2) return 230;
-      if (state < -1) return 245;
-      if (state < 0) return 255;
-      if (state < 1) return 185;
-      if (state < 2) return 140;
-      if (state < 3) return 60;
-      if (state < 4) return 31;
-      return 0;
+    icon_color: >
+      if (state < -5) return 'rgb(151, 26, 30)';
+      if (state < -4) return 'rgb(194, 39, 45)';
+      if (state < -3) return 'rgb(236, 27, 33)';
+      if (state < -2) return 'rgb(244, 101, 35)';
+      if (state < -1) return 'rgb(248, 147, 29)';
+      if (state < 0) return 'rgb(255, 194, 15)';
+      if (state < 1) return 'rgb(202, 219, 43)';
+      if (state < 2) return 'rgb(142, 198, 65)';
+      if (state < 3) return 'rgb(106, 158, 47)';
+      if (state < 4) return 'rgb(37, 145, 60)';
+      return 'rgb(0, 111, 58)';
