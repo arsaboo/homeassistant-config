@@ -22,7 +22,7 @@
         prob_given_true: 1
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.b4445761f6c04b7f835fcfdc03b47111'
+      - entity_id: 'device_tracker.e1594e5321df414c82daf655d5282fca'
         prob_given_true: 0.99
         prob_given_false: 0.1
         platform: 'state'
