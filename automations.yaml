@@ -24,10 +24,10 @@
       entity_id:
         - device_tracker.alokiosiphone
         - device_tracker.alok_alok
-        - device_tracker.6b00226793104872afb9248f8a45f957
+        - device_tracker.b4445761f6c04b7f835fcfdc03b47111
         - device_tracker.rashmiappiphone
         - device_tracker.sonu_sonu
-        - device_tracker.3a196aa7e85e4ab5bee4e3d3af667a09
+        - device_tracker.b4445761f6c04b7f835fcfdc03b47111
     - platform: state
       entity_id:
         - device_tracker.myiphone
