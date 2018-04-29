@@ -22,6 +22,6 @@
           - identifier: 'ENABLE_ABODE_UPDATES'
             title: 'Enable Abode Updates'
             activationMode: 'background'
-            authenticationRequired: yes
+            authenticationRequired: no
             destructive: yes
             behavior: 'default'
