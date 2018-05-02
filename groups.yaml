@@ -303,7 +303,6 @@
     - sensor.alok_485
     - sensor.rashmi_485
     - sensor.arnav_485
-    - sensor.arnav_765
 
   camera_arlolivingroom:
     entities:
