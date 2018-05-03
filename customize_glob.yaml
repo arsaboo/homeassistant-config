@@ -5,8 +5,6 @@ automation.*:
 device_tracker.*:
   custom_ui_state_card: state-card-custom-ui
   extra_data_template: "${window.hassUtil.relativeTime(new Date(entity.last_changed))}"
-
-# Use scaled value for brightness in HSB. (B-50)*5.10
 sensor.*_futures_change:
  templates:
    icon_color: >

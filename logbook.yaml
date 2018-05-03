@@ -34,10 +34,10 @@
       - device_tracker.b4445761f6c04b7f835fcfdc03b47111
       - sensor.alok_485
       - sensor.arnav_485
+      - sensor.rashmi_485      
       - sensor.hvacmode
       - sensor.living_room
       - sensor.plexspy
-      - sensor.rashmi_485
       - sensor.season
       - sensor.speedtest_download
       - sensor.ssl_certificate_expiry
