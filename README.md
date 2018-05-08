@@ -1,4 +1,4 @@
-# Home Assistant Configuration 
+# Home Assistant Configuration
 
 Here's my [Home Assistant](https://home-assistant.io/) configuration. I have installed HA on an [Intel NUC SkullCanyon](https://www.amazon.com/dp/B01DJ9XS52/) with [32GB RAM](https://www.amazon.com/gp/product/B015YPB8ME/) and [500GB NVMe SSD](https://www.amazon.com/gp/product/B01LYFKJR7/). I am currently running Ubuntu 16.04 LTS on the NUC and used the [virtual environment](https://home-assistant.io/docs/installation/virtualenv/) approach to install HA.
 
