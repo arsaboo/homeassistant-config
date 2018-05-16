@@ -114,8 +114,8 @@
         name: Xiaomi Aqara Human Body Sensor
       - url: https://www.gearbest.com/access-control/pp_626702.html
         name: Xiaomi Aqara Temperature Humidity Sensor
-      - url: https://www.gearbest.com/smart-light-bulb/pp_278478.html
-        name: Xiaomi Yeelight White
+      - url: https://www.gearbest.com/ip-cameras/pp_693217.html
+        name: Xiaomi Dafang Camera
       - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
         name: Xiaomi Door Window Sensor
   - platform: alpha_vantage
