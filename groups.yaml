@@ -274,7 +274,9 @@
     - device_tracker.alok_alok
     - device_tracker.b4445761f6c04b7f835fcfdc03b47111
     - binary_sensor.rashmi_home
+    - proximity.rashmi
     - binary_sensor.alok_home
+    - proximity.alok
 
   Ring Doorbell:
     - binary_sensor.ring_front_door_ding

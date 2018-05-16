@@ -230,6 +230,18 @@ discovery:
     - apple_tv
     - panasonic_viera
 
+proximity:
+  Alok:
+    devices:
+      - device_tracker.meta_alok
+    tolerance: 50
+    unit_of_measurement: mi
+  Rashmi:
+    devices:
+      - device_tracker.meta_rashmi
+    tolerance: 50
+    unit_of_measurement: mi
+
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
 ffmpeg:
