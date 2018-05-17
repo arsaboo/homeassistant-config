@@ -231,12 +231,12 @@ discovery:
     - panasonic_viera
 
 proximity:
-  Alok:
+  alok:
     devices:
       - device_tracker.meta_alok
     tolerance: 50
     unit_of_measurement: mi
-  Rashmi:
+  rashmi:
     devices:
       - device_tracker.meta_rashmi
     tolerance: 50
