@@ -19,6 +19,10 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
     - '/home/homeassistant/.homeassistant/downloads/camera/'
+    - '/home/homeassistant/.homeassistant/downloads/camera/porch'
+    - '/home/homeassistant/.homeassistant/downloads/camera/patio'
+    - '/home/homeassistant/.homeassistant/downloads/camera/backyard'
+    - '/home/homeassistant/.homeassistant/downloads/camera/driveway'
 updater:
   include_used_components: true
 influxdb:
