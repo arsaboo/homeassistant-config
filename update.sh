@@ -74,12 +74,12 @@ get_file $0 https://github.com/andrey-git/home-assistant-custom-ui/blob/master/u
 check_dir "www/custom_ui"
 
 
-get_file_and_gz state-card-custom-ui-es5.html https://github.com/andrey-git/home-assistant-custom-ui/blob/master/state-card-custom-ui-es5.html www/custom_ui/
-get_file_and_gz state-card-custom-ui.html https://github.com/andrey-git/home-assistant-custom-ui/blob/master/state-card-custom-ui.html www/custom_ui/
 get_file scripts.js.map https://github.com/andrey-git/home-assistant-custom-ui/blob/master/scripts.js.map www/custom_ui/
 get_file scripts.js.LICENSE https://github.com/andrey-git/home-assistant-custom-ui/blob/master/scripts.js.LICENSE www/custom_ui/
 get_file scripts-es5.js.map https://github.com/andrey-git/home-assistant-custom-ui/blob/master/scripts-es5.js.map www/custom_ui/
 get_file scripts-es5.js.LICENSE https://github.com/andrey-git/home-assistant-custom-ui/blob/master/scripts-es5.js.LICENSE www/custom_ui/
+get_file_and_gz state-card-custom-ui-es5.html https://github.com/andrey-git/home-assistant-custom-ui/blob/master/state-card-custom-ui-es5.html www/custom_ui/
+get_file_and_gz state-card-custom-ui.html https://github.com/andrey-git/home-assistant-custom-ui/blob/master/state-card-custom-ui.html www/custom_ui/
 
 
 if [ $? != 0 ]; then
