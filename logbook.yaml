@@ -31,10 +31,7 @@
       - device_tracker.alokiosiphone
       - device_tracker.myiphone
       - device_tracker.alok_alok
-      - device_tracker.b4445761f6c04b7f835fcfdc03b47111
-      - sensor.alok_485
-      - sensor.arnav_485
-      - sensor.rashmi_485      
+      - device_tracker.b4445761f6c04b7f835fcfdc03b47111    
       - sensor.hvacmode
       - sensor.living_room
       - sensor.plexspy

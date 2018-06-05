@@ -106,7 +106,7 @@
        icon: mdi:currency-usd
        templates:
          icon_color: >
-           if (state > 0) return 'rgb(50,205,50)'; else return 'rgb(178,34,34)';
+           if (state < 0) return 'rgb(178,34,34)'; else return 'rgb(50,205,50)';
      group.all_automations:
        hidden: false
        friendly_name: 'Automations'
