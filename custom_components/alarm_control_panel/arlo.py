@@ -4,12 +4,12 @@ Support for Arlo Alarm Control Panels.
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/alarm_control_panel.arlo/
 """
-import asyncio
 import logging
 
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanel, PLATFORM_SCHEMA)
@@ -40,7 +40,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Arlo Alarm Control Panels."""
-    arlo = hass.data[DATA_ARLO].hub
+    arlo = hass.data[DATA_ARLO]
 
     if not arlo.base_stations:
         return
@@ -69,15 +69,15 @@ class ArloBaseStation(AlarmControlPanel):
         """Return icon."""
         return ICON
 
-    @asyncio.coroutine
-    def async_added_to_hass(self):
+    async def async_added_to_hass(self):
         """Register callbacks."""
         async_dispatcher_connect(
             self.hass, SIGNAL_UPDATE_ARLO, self._update_callback)
 
+    @callback
     def _update_callback(self):
         """Call update method."""
-        self.schedule_update_ha_state(True)
+        self.async_schedule_update_ha_state(True)
 
     @property
     def state(self):
@@ -86,25 +86,22 @@ class ArloBaseStation(AlarmControlPanel):
 
     def update(self):
         """Update the state of the device."""
-        _LOGGER.info("Updating Arlo Alarm Control Panel %s", self.name)
+        _LOGGER.debug("Updating Arlo Alarm Control Panel %s", self.name)
         mode = self._base_station.mode
         if mode:
             self._state = self._get_state_from_mode(mode)
         else:
             self._state = None
 
-    @asyncio.coroutine
-    def async_alarm_disarm(self, code=None):
+    async def async_alarm_disarm(self, code=None):
         """Send disarm command."""
         self._base_station.mode = DISARMED
 
-    @asyncio.coroutine
-    def async_alarm_arm_away(self, code=None):
+    async def async_alarm_arm_away(self, code=None):
         """Send arm away command. Uses custom mode."""
         self._base_station.mode = self._away_mode_name
 
-    @asyncio.coroutine
-    def async_alarm_arm_home(self, code=None):
+    async def async_alarm_arm_home(self, code=None):
         """Send arm home command. Uses custom mode."""
         self._base_station.mode = self._home_mode_name
 
