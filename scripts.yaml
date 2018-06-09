@@ -11,7 +11,7 @@
       - service: alarm_control_panel.alarm_arm_away
         entity_id:
           - alarm_control_panel.abode_alarm
-          - alarm_control_panel.arlo
+          - alarm_control_panel.arlohome
           - alarm_control_panel.abode
       - service: switch.turn_on
         entity_id:
@@ -35,7 +35,7 @@
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.abode
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.arlo
+        entity_id: alarm_control_panel.arlohome
       # - service: ifttt.trigger
       #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
@@ -49,7 +49,7 @@
       - service: alarm_control_panel.alarm_disarm
         entity_id:
           - alarm_control_panel.abode_alarm
-          - alarm_control_panel.arlo
+          - alarm_control_panel.arlohome
           - alarm_control_panel.abode
       - service: switch.turn_off
         entity_id:
@@ -281,13 +281,13 @@
         data_template:
           entity_id: input_select.abodestatus
           option: "{{states.alarm_control_panel.abode_alarm.state}}"
+      # - service: alarm_control_panel.ifttt_push_alarm_state
+      #   data_template:
+      #     entity_id: alarm_control_panel.abode
+      #     state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: alarm_control_panel.ifttt_push_alarm_state
         data_template:
-          entity_id: alarm_control_panel.abode
-          state: "{{states.alarm_control_panel.abode_alarm.state}}"
-      - service: alarm_control_panel.ifttt_push_alarm_state
-        data_template:
-          entity_id: alarm_control_panel.arlo
+          entity_id: alarm_control_panel.arlohome
           state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: input_select.select_option
         data_template:

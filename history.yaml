@@ -6,3 +6,5 @@
       - device_tracker.meta_alok
       - alarm_control_panel.abode_alarm
       - media_player.panasonic_viera_tv
+      - alarm_control_panel.arlohome_2
+      - alarm_control_panel.arlohome

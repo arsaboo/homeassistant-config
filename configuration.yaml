@@ -106,18 +106,19 @@ wemo:
     - 192.168.2.130
     - 192.168.2.206
     - 192.168.2.237
-# arlo:
-#   username: !secret arlo_user
-#   password: !secret arlo_password
+arlo:
+  username: !secret arlo_user
+  password: !secret arlo_password
+  scan_interval: 120
 alarm_control_panel:
+  # - platform: ifttt
+  #   name: "Abode"
   - platform: ifttt
-    name: "Abode"
-  - platform: ifttt
-    name: Arlo
+    name: ArloHome
     event_arm_away: arlo_alarm_arm_away
     event_disarm: arlo_alarm_disarm
     optimistic: true
-  # - platform: arlo
+  - platform: arlo
 xiaomi_aqara:
   gateways:
     - key: !secret xiaomikey
@@ -267,13 +268,13 @@ camera:
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
-  # - platform: arlo
-  #   ffmpeg_arguments: '-pred 1 -q:v 2'
+  - platform: arlo
   - platform: generic
     name: LivingRoom_temperature
     still_image_url: 'http://192.168.2.113:3000/render/dashboard-solo/db/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
     username: !secret grafana_user
     password: !secret grafana_pass
+  - platform: ring
   # - platform: local_file
   #   name: Grafana_temperature
   #   file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
@@ -459,7 +460,7 @@ logger:
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
     custom_components.sensor.life360: critical
-    custom_components.alarm_control_panel: debug
+    custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
 # Text to speech
