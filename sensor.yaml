@@ -18,6 +18,9 @@
   - platform: uscis
     case_id: !secret arnav_485
     friendly_name: Arnav 485
+  - platform: uscis
+    case_id: !secret arnav_765
+    friendly_name: Arnav 765    
   - platform: pollen
     zip_code: !secret home_zip
     monitored_conditions:
