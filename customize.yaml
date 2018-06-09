@@ -304,6 +304,16 @@
      binary_sensor.water_leak_sensor_158d0001d77800:
        friendly_name: Laundry Water Leak
        homebridge_hidden: false
+     #2016DP6443      
+     sensor.humidity_158d0001ab3c88:
+       friendly_name:  Living Room Humidity
+       icon: mdi:water-percent
+     sensor.pressure_158d0001ab3c88:
+       friendly_name:  Living Room Pressure
+     sensor.temperature_158d0001ab3c88:
+       friendly_name:  Living Room Temperature
+
+
      sensor.humidity_158d0001ab7d20:
        friendly_name:  Attic Humidity
        icon: mdi:water-percent

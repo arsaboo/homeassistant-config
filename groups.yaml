@@ -101,6 +101,9 @@
     - sensor.humidity_158d0001ab7d20
     - sensor.pressure_158d0001ab7d20
     - sensor.temperature_158d0001ab7d20
+    - sensor.humidity_158d0001ab3c88
+    - sensor.pressure_158d0001ab3c88
+    - sensor.temperature_158d0001ab3c88
     - sensor.humidity_158d0001ab3b2b
     - sensor.pressure_158d0001ab3b2b
     - sensor.temperature_158d0001ab3b2b
