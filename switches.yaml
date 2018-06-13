@@ -57,6 +57,24 @@
             data:
               entity_id: climate.upstairs
               away_mode: 'False'
+      developer_mode:
+        # icon: mdi:auto-fix
+        friendly_name: Developer Mode
+        value_template: "{{(states.group.developer.attributes|default({})).view|default('False') == True}}"
+        turn_on:
+          - service: python_script.populate_catchall_group
+          - service: group.set
+            data:
+              object_id: developer
+              view: true
+              visible: true
+        turn_off:
+          - service: group.set
+            data:
+              object_id: developer
+              view: false
+              visible: false
+
 #  platform: command_line
 #  switches:
 #    #Switch for Foscam Motion Detection
