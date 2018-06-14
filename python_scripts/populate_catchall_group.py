@@ -1,3 +1,5 @@
+# Script to combine all ungrouped entities in one groups
+
 def scan_for_new_entities(hass, logger, data):
     ignore = data.get("domains_to_ignore", "zone,automation,script,zwave")
     domains_to_ignore = ignore.replace(" ", "").split(",")
