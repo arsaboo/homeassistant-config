@@ -53,7 +53,10 @@
      device_tracker.sonu_sonu:
        entity_picture: /local/icons/life360.png
        friendly_name: Rashmi Life360
-
+     proximity.rashmi:
+       friendly_name: Rashmi Proximity
+     proximity.alok:
+       friendly_name: Alok Proximity
  #weather
      sensor.ars_bloom_voltage:
        friendly_name: 'BloomSky Voltage'
@@ -304,7 +307,7 @@
      binary_sensor.water_leak_sensor_158d0001d77800:
        friendly_name: Laundry Water Leak
        homebridge_hidden: false
-     #2016DP6443      
+     #2016DP6443
      sensor.humidity_158d0001ab3c88:
        friendly_name:  Living Room Humidity
        icon: mdi:water-percent
@@ -330,6 +333,7 @@
        friendly_name:  Study Temperature
      binary_sensor.door_window_sensor_158d0001bf26df:
        friendly_name:  Garage Entry Door
+       device_class: door
      sensor.illumination_158d0001a1f2ab:
        friendly_name: Guest Room Brightness
        icon: mdi:brightness-7
