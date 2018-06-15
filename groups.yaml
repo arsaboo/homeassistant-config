@@ -231,6 +231,7 @@
     - sensor.sp_futures
     - sensor.sp_futures_change
     - sensor.sp_futures_change_pct
+    - sensor.10_year_treasury
 
   Camera Switches:
     - switch.backyardmotion
