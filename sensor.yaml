@@ -159,7 +159,7 @@
     name: 10 Year Treasury
     unit_of_measurement: '%'
     scan_interval: 18000
-    command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"    
+    command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"
   - platform: scrape
     resource: http://money.cnn.com/data/premarket/
     name: Curr Future
