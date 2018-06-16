@@ -46,8 +46,6 @@ def scan_for_new_entities(hass, logger, data):
     else:
         visible = False
 
-    entity_ids.insert(0, "python_script.scan_for_new_entities")
-
     service_data = {'object_id': 'catchall', 'name': 'Ungrouped Items',
                     'view': show_as_view, 'icon': 'mdi:magnify',
                     'control': 'hidden', 'entities': entity_ids,
