@@ -83,6 +83,7 @@
     icon: mdi:developer-board
     entities:
       - group.catchall
+      - group.deaditems
 
   HASS Details:
     - switch.developer_mode

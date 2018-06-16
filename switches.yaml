@@ -62,6 +62,7 @@
         value_template: "{{states.group.developer.attributes.view == True}}"
         turn_on:
           - service: python_script.populate_catchall_group
+          - service: python_script.find_unused_entities
           - service: group.set
             data:
               object_id: developer
@@ -76,6 +77,9 @@
           - service: group.remove
             data:
               object_id: catchall
+          - service: group.remove
+            data:
+              object_id: deaditems
 #  platform: command_line
 #  switches:
 #    #Switch for Foscam Motion Detection
