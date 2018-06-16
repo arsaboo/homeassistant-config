@@ -1,0 +1,98 @@
+<!--
+https://github.com/covrig/homeassistant-iframe-card
+version: 20180206
+-->
+<dom-module id="state-card-iframe">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        border-radius: 2px;
+        cursor: pointer;
+        min-height: 50px;
+        line-height: 0;
+        margin-left: -16px;
+        margin-top: -20px;
+        margin-bottom: -20px;
+      }
+       .overlayiframe {
+        background:transparent; 
+        position:absolute; 
+        width: var(--width); 
+        height:var(--height);
+        top:var(--height);
+        margin-top:var(--negheight);
+        z-index: 5
+      }
+      .iframewrap {
+        width: var(--widthwrap); 
+        height:var(--heightwrap);
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        margin: auto;
+        background:transparent; 
+        position:relative;
+      }
+      .iframefeed {
+        width: var(--width); 
+        height:var(--height);
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        margin: auto;
+        display:block;
+        -ms-transform: scale(var(--scale));
+        -moz-transform: scale(var(--scale));
+        -o-transform: scale(var(--scale));
+        -webkit-transform: scale(var(--scale));
+        transform: scale(var(--scale));
+        -ms-transform-origin: 0 0;
+        -moz-transform-origin: 0 0;
+        -o-transform-origin: 0 0;
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+      }
+    </style>
+    
+    <div class="iframewrap" on-tap='cardTapped'>
+    <div class="overlayiframe" onClick="style.pointerEvents='none'" on-tap='cardTapped'></div>
+    <iframe src='[[stateObj.attributes.config.url]]' class="iframefeed" frameborder="0" align="middle" scrolling="no"></iframe></div>
+  </template>
+</dom-module>
+
+<script>
+class Iframehass extends Polymer.Element {
+  static get is() { return 'state-card-iframe'; }
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      config: {
+        type: Object,
+        computed: 'computeConfig(stateObj)',
+      },
+    };
+  }
+
+  computeConfig(stateObj) {     
+    return stateObj.attributes.config;
+  }
+
+  ready() {
+    super.ready();
+    var config = this.config || {};
+    this.updateStyles({
+      '--width': (config.width / config.scale)+'%' ? (config.width / config.scale)+'%' : '100%',
+      '--height': config.height+'px' ? config.height+'px' : '200px',
+      '--scale': config.scale ? config.scale: '1',
+      '--heightwrap': (config.height * config.scale)+'px' ? (config.height * config.scale)+'px' : '200px',
+      '--widthtwrap': config.width+'%' ? config.width+'%' : '100%',
+      '--negheight': '-'+(config.height)+'px' ? '-'+(config.height)+'px' : '-200px',
+    });
+  }
+  cardTapped(ev) {
+      ev.stopPropagation();
+  }
+}
+customElements.define(Iframehass.is, Iframehass);
+</script>

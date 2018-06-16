@@ -103,6 +103,13 @@
        config:
          weather: weather.yweather
          sun: sun.sun
+     sensor.iframe_windy:
+       custom_ui_state_card: state-card-iframe
+       config:
+         height: 350
+         width: 108
+         scale: 1
+         url: https://embed.windy.com/embed2.html?gust,32.487,-84.023,6
      sensor.portfolioval:
        icon: mdi:currency-usd
      sensor.portfoliochange:

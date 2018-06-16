@@ -28,6 +28,7 @@
       - group.camera_wundergroundradar
       - weather.yweather
       - camera.livingroom_temperature
+      - group.group_iframe
 
   cameras:
     name: Cameras
@@ -99,11 +100,18 @@
     - sensor.cold_flu_risk
     - sensor.dark_sky_hourly_summary
     - sensor.dark_sky_daily_summary
+
   yahooweathercard:
     name: Weather Forecast
     view: no
     entities:
         - input_boolean.weather
+
+  group_iframe:
+    name: ' '
+    entities:
+      - sensor.iframe_windy
+
   Room Sensors:
     - sensor.illumination_158d00016612af
     - sensor.humidity_158d0001ab7d20

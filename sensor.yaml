@@ -168,6 +168,8 @@
     select: ".wsod_bold.wsod_aRight"
   - platform: template
     sensors:
+      iframe_windy:
+        value_template: iframe
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
