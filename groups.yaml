@@ -219,6 +219,7 @@
       - image_processing.tagbox_patio
       - image_processing.tagbox_driveway
       - image_processing.tagbox_porch
+      - image_processing.sighthound_porch
       # - sensor.backyardfaces
       # - sensor.drivewayfaces
       # - sensor.patiofaces

@@ -332,4 +332,5 @@
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
+          - image_processing.sighthound_porch
       # - service: python_script.dark_sky_friendly_names
