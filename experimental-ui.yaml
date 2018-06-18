@@ -1,0 +1,44 @@
+title: My Awesome Home
+views:
+    # The name of a view will be used as tab title.
+    # Might be used for other things in the future.
+  - name: Example
+    # Each view can have a different theme applied.
+    theme: teal
+    # The cards to show on this view.
+    cards:
+        # The entities card will take a list of entities and show their state.
+      - type: entities
+        # Title of the entities card
+        title: Example
+        # The entities here will be shown in the same order as specified.
+        entities:
+          - input_boolean.abodeupdate
+          - input_boolean.partymode
+          - input_boolean.tvtime
+          - camera.porch
+          - media_player.livingroomsonos
+
+        # The filter card will filter available entities for certain criteria
+        # and render it as type 'entities'.
+      - type: entity-filter
+        # Filter criteria. They are all optional.
+        filter:
+          domain: input_boolean
+          state: 'on'
+        # This config will be passed to the card rendering the filter results
+        card_config:
+          title: Input booleans that are on
+
+    # Specify a tab_icon if you want the view tab to be an icon.
+  - tab_icon: mdi:home-assistant
+    # Name of the view. Will be used as the tooltip for tab icon
+    name: Second view
+    theme: darkorange
+    cards:
+      - type: entities
+        title: Lots of Kitchen AC
+        entities:
+          - input_boolean.abodeupdate
+          - input_boolean.partymode
+          - input_boolean.tvtime
