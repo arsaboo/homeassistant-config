@@ -95,9 +95,8 @@ views:
           - sensor.forecast_5
           - sensor.forecast_6
           - sensor.forecast_7
-      - type: 'custom:custom-weather'
+      - type: 'custom:custom-weather-animated'
         entity: input_boolean.weather
-
       - type: entities
         title: Room Sensors
         entities:
