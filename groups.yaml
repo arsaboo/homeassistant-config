@@ -166,6 +166,7 @@
 
   Media Player:
     - media_player.livingroomsonos
+    - media_player.office
     - media_player.kodi_nstv
     - media_player.living_room_home
     - media_player.panasonic_viera_tv

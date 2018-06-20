@@ -477,13 +477,13 @@ tts:
     cache: true
     cache_dir: /home/homeassistant/.homeassistant/tts
     time_memory: 300
-  - platform: voicerss
-    api_key: !secret voicerss_key
-  - platform: amazon_polly
-    aws_access_key_id: !secret aws_access_key_id
-    aws_secret_access_key: !secret aws_secret_access_key
-    text_type: ssml
-    cache: True
+  # - platform: voicerss
+  #   api_key: !secret voicerss_key
+  # - platform: amazon_polly
+  #   aws_access_key_id: !secret aws_access_key_id
+  #   aws_secret_access_key: !secret aws_secret_access_key
+  #   text_type: ssml
+  #   cache: True
 remote:
   - platform: harmony
     name: livingroom
