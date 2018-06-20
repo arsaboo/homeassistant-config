@@ -77,10 +77,10 @@ class Iframehass extends Polymer.Element {
     };
   }
 
-  _computeStateObj: function(config, hass) {
+  _computeStateObj(config, hass) {
     return hass.states[config.entity];
   },
-  computeConfig: function (hass, stateObj) {
+  computeConfig(hass, stateObj) {
     return stateObj.attributes.config;
   },
 
