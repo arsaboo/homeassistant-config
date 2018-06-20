@@ -369,10 +369,13 @@ image_processing:
   #     - entity_id: camera.patio
   #       name: "Face Detected patio"
 
+sonos:
+  media_player:
+    hosts:
+      - 192.168.2.150
+      - 192.168.2.69
 sun:
 media_player:
-  - platform: sonos
-    hosts: 192.168.2.150
   # - platform: kodi
   #   host: http://192.168.2.28
   #   port: 8080
