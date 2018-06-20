@@ -66,21 +66,15 @@ class IframehassExp extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      stateObj: {
-        type: Object,
-        computed: '_computeStateObj(config, hass)',
-      },
+      stateObj: Object,
       config: {
         type: Object,
-        computed: 'computeConfig(hass, stateObj)',
+        computed: 'computeConfig(stateObj)',
       },
     };
   }
 
-  _computeStateObj(config, hass) {
-    return hass.states[config.entity];
-  }
-  computeConfig(hass, stateObj) {
+  computeConfig(stateObj) {
     return stateObj.attributes.config;
   }
 
