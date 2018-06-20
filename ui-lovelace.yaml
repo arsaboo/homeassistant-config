@@ -1,0 +1,307 @@
+title: ARS Home
+views:
+  - tab_icon: mdi:home-assistant
+    # Name of the view. Will be used as the tooltip for tab icon
+    name: Second view
+    # theme: darkorange
+    cards:
+      - type: entities
+        title: Investments
+        entities:
+          - sensor.portfolioval
+          - sensor.portfoliochange
+          - sensor.dow_futures
+          - sensor.dow_futures_change
+          - sensor.dow_futures_change_pct
+          - sensor.nasdaq_futures
+          - sensor.nasdaq_futures_change
+          - sensor.nasdaq_futures_change_pct
+          - sensor.sp_futures
+          - sensor.sp_futures_change
+          - sensor.sp_futures_change_pct
+          - sensor.10_year_treasury
+      - type: entities
+        title: Ring Doorbell
+        entities:
+          - binary_sensor.ring_front_door_ding
+          - binary_sensor.ring_front_door_motion
+          - sensor.ring_front_door_last_activity
+          - sensor.ring_front_door_last_ding
+          - sensor.ring_front_door_last_motion
+      - type: entities
+        title: Home Security
+        entities:
+          - alarm_control_panel.abode_alarm
+          - alarm_control_panel.arlohome
+          - alarm_control_panel.abode
+          - input_select.abodestatus
+          - cover.garagedoor
+          - input_boolean.abodeupdate
+          - binary_sensor.back_door
+          - binary_sensor.front_door
+          - binary_sensor.door_window_sensor_158d0001bf26df
+          - input_boolean.startrecording
+          - binary_sensor.motion_sensor_158d00016daecc
+          - binary_sensor.motion_sensor_158d00016612af
+          - binary_sensor.motion_sensor_158d0001a1f2ab
+      - type: entities
+        title: Information
+        entities:
+          - sensor.morning_commute
+          - sensor.alok_to_home
+          - sensor.plexspy
+          - sensor.usdinr
+      - type: entity-filter
+        filter:
+          domain: light
+        card_config:
+          title: All lights
+      - type: entities
+        title: Switches
+        entities:
+          - switch.wemoswitch
+          - switch.garage_relay_switch
+          - switch.driveway
+          - switch.wemoporch
+          - switch.wemoinsight
+      - type: 'custom:state-card-iframe-exp'
+        entity: sensor.iframe_windy_exp
+  - tab_icon: mdi:weather-cloudy
+    name: Weather
+    cards:
+      - type: entities
+        title: Weather
+        entities:
+          - sensor.pws_weather
+          - sensor.pws_temp_f
+          - sensor.pws_relative_humidity
+          - sensor.pws_wind_string
+          - sensor.dark_sky_cloud_coverage
+          - sensor.pollen_level
+          - sensor.cold_flu_risk
+          - sensor.dark_sky_hourly_summary
+          - sensor.dark_sky_daily_summary
+      - type: weather-forecast
+        entity: weather.yweather
+      - type: entities
+        title: Forecast
+        entities:
+          - sensor.forecast_0
+          - sensor.forecast_1
+          - sensor.forecast_2
+          - sensor.forecast_3
+          - sensor.forecast_4
+          - sensor.forecast_5
+          - sensor.forecast_6
+          - sensor.forecast_7
+      - type: 'custom:custom-weather-animated'
+        entity: input_boolean.weather
+      - type: entities
+        title: Room Sensors
+        entities:
+          - sensor.illumination_158d00016612af
+          - sensor.humidity_158d0001ab7d20
+          - sensor.pressure_158d0001ab7d20
+          - sensor.temperature_158d0001ab7d20
+          - sensor.humidity_158d0001ab3c88
+          - sensor.pressure_158d0001ab3c88
+          - sensor.temperature_158d0001ab3c88
+          - sensor.humidity_158d0001ab3b2b
+          - sensor.pressure_158d0001ab3b2b
+          - sensor.temperature_158d0001ab3b2b
+          - sensor.illumination_34ce00813670
+          - sensor.illumination_158d0001a1f2ab
+          - binary_sensor.water_leak_sensor_158d0001d77800
+          - sensor.leeoalarmstatus
+      - type: camera-preview
+        entity: camera.meteogram
+      - type: camera-preview
+        entity: camera.wundergroundradar
+      - type: entities
+        title: Thermostats
+        entities:
+          - climate.downstairs
+          - sensor.downstairsthermoper
+          - sensor.downstairs_humidity
+          - sensor.living_room_temperature
+          - sensor.downstairs_hvac_runtime
+          - switch.downstairs_away
+          - climate.upstairs
+          - sensor.upstairsthermoper
+          - sensor.upstairs_humidity
+          - sensor.upstairs_temperature
+          - switch.upstairs_away
+          - sensor.upstairs_hvac_runtime
+          - climate.lyric_t5_thermostat
+          - input_select.hvacmode
+          - input_select.lyricmode
+          - switch.lyric_mode_off
+
+  - tab_icon: mdi:cctv
+    name: Cameras
+    cards:
+      - type: camera-preview
+        entity: camera.driveway
+      - type: camera-preview
+        entity: camera.patio
+      - type: camera-preview
+        entity: camera.porch
+      - type: camera-preview
+        entity: camera.backyard
+      - type: camera-preview
+        entity: camera.arlo3
+      - type: camera-preview
+        entity: camera.arlolivingroom
+      - type: camera-preview
+        entity: camera.livingroom2
+      - type: camera-preview
+        entity: camera.front_door
+      - type: camera-preview
+        entity: camera.worldtime
+      - type: camera-preview
+        entity: camera.ars_bloom
+
+  - tab_icon: mdi:play-circle-outline
+    name: Media
+    cards:
+      - type: entities
+        title: Thermostats
+        entities:
+          - sensor.living_room
+          - input_select.livingroomharmony
+          - input_select.hdmiswitcher
+          - input_select.hdmiinput
+          - input_number.harmonyvolume
+          - input_boolean.tv
+          - input_boolean.tvtime
+          - sensor.total_tv_time
+          - script.tv_off
+      - type: entities
+        title: Light Operations
+        entities:
+          - input_boolean.partymode
+          - script.colorloop_start
+          - script.disco_party
+          - script.lifx_stop_effects
+      - type: media-control
+        entity: media_player.livingroomsonos
+      - type: media-control
+        entity: media_player.office
+      - type: media-control
+        entity: media_player.kodi_nstv
+      - type: media-control
+        entity: media_player.living_room_home
+      - type: media-control
+        entity: media_player.panasonic_viera_tv
+      - type: media-control
+        entity: media_player.shield
+      - type: media-control
+        entity: media_player.shield_android_tv
+      - type: media-control
+        entity: media_player.plex_shield_android_tv
+
+  - tab_icon: mdi:settings
+    name: Settings
+    cards:
+      - type: entities
+        title: Household
+        entities:
+          - device_tracker.meta_rashmi
+          - device_tracker.meta_alok
+      - type: entities
+        title: Devices
+        entities:
+          - device_tracker.pi_rashmiphone
+          - device_tracker.rashmiappiphone
+          - device_tracker.rashmisiphone
+          - device_tracker.sonu_sonu
+          - device_tracker.e1594e5321df414c82daf655d5282fca
+          - device_tracker.pi_alokphone
+          - device_tracker.alokiosiphone
+          - device_tracker.myiphone
+          - device_tracker.alok_alok
+          - device_tracker.b4445761f6c04b7f835fcfdc03b47111
+          - binary_sensor.rashmi_home
+          - proximity.rashmi
+          - binary_sensor.alok_home
+          - proximity.alok
+      - type: entities
+        title: HASS Details
+        entities:
+          - switch.developer_mode
+          - sensor.hassuptime
+          - sensor.ssl_certificate_expiry
+          - input_select.current_theme
+      - type: entities
+        title: Camera Sensors
+        entities:
+          - binary_sensor.backyard_motion
+          - binary_sensor.backyard_field_detection
+          - binary_sensor.backyard_line_crossing
+          - binary_sensor.driveway_motion
+          - binary_sensor.driveway_field_detection
+          - binary_sensor.driveway_line_crossing
+          - binary_sensor.patio_motion
+          - binary_sensor.patio_field_detection
+          - binary_sensor.patio_line_crossing
+          - binary_sensor.porch_field_detection
+          - binary_sensor.porch_line_crossing
+          - binary_sensor.porch_motion
+      - type: entities
+        title: Camera Processing
+        entities:
+          - script.classify_images
+          - image_processing.facebox_backyard
+          - image_processing.facebox_patio
+          - image_processing.facebox_driveway
+          - image_processing.facebox_porch
+          - image_processing.tagbox_backyard
+          - image_processing.tagbox_patio
+          - image_processing.tagbox_driveway
+          - image_processing.tagbox_porch
+          - image_processing.sighthound_porch
+      - type: entities
+        title: Camera Switches
+        entities:
+          - switch.backyardmotion
+          - switch.drivewaymotion
+          - switch.patiomotion
+          - switch.porchmotion
+      - type: entities
+        title: Network Details
+        entities:
+          - binary_sensor.pihole
+          - sensor.speedtest_download
+          - sensor.pihole_dns_queries_today
+          - sensor.pihole_domains_blocked
+          - sensor.pihole_ads_percentage_blocked_today
+          - sensor.pihole_dns_unique_domains
+          - sensor.glances_cpu_load
+          - sensor.glances_disk_used
+          - sensor.glances_ram_used
+      - type: entities
+        title: Arlo
+        entities:
+          - sensor.battery_level_arlolivingroom
+          - sensor.captured_today_arlolivingroom
+          - sensor.signal_strength_arlolivingroom
+          - sensor.battery_level_livingroom2
+          - sensor.captured_today_livingroom2
+          - sensor.signal_strength_livingroom2
+          - sensor.battery_level_arlo3
+          - sensor.captured_today_arlo3
+          - sensor.signal_strength_arlo3
+      - type: entities
+        title: USCIS
+        entities:
+          - sensor.alok_485
+          - sensor.alok_131
+          - sensor.rashmi_485
+          - sensor.rashmi_131
+          - sensor.arnav_485
+          - sensor.arnav_131
+      - type: entity-filter
+        filter:
+          domain: automation
+        card_config:
+          title: All Automations
