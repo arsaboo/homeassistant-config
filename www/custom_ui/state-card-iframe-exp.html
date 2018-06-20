@@ -61,7 +61,7 @@ version: 20180206
 </dom-module>
 
 <script>
-class Iframehass extends Polymer.Element {
+class IframehassExp extends Polymer.Element {
   static get is() { return 'state-card-iframe-exp'; }
   static get properties() {
     return {
@@ -79,10 +79,10 @@ class Iframehass extends Polymer.Element {
 
   _computeStateObj(config, hass) {
     return hass.states[config.entity];
-  },
+  }
   computeConfig(hass, stateObj) {
     return stateObj.attributes.config;
-  },
+  }
 
   ready() {
     super.ready();
@@ -100,5 +100,5 @@ class Iframehass extends Polymer.Element {
       ev.stopPropagation();
   }
 }
-customElements.define(Iframehass.is, Iframehass);
+customElements.define(IframehassExp.is, IframehassExp);
 </script>
