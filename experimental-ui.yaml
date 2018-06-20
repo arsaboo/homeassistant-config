@@ -64,7 +64,9 @@ views:
           - switch.driveway
           - switch.wemoporch
           - switch.wemoinsight
-          - switch.aeon_switch
+      #     - switch.aeon_switch
+      # - type: 'custom:example-card'
+      #   entity_id: input_boolean.tv_time
   - tab_icon: mdi:weather-cloudy
     name: Weather
     cards:
@@ -80,10 +82,6 @@ views:
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
           - sensor.dark_sky_daily_summary
-      - type: camera-preview
-        entity: camera.meteogram
-      - type: camera-preview
-        entity: camera.wundergroundradar
       - type: weather-forecast
         entity: weather.yweather
       - type: entities
@@ -97,6 +95,9 @@ views:
           - sensor.forecast_5
           - sensor.forecast_6
           - sensor.forecast_7
+      - type: 'custom-weather'
+        entity: input_boolean.switch_ac_kitchen
+
       - type: entities
         title: Room Sensors
         entities:
@@ -114,6 +115,10 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
+      - type: camera-preview
+        entity: camera.meteogram
+      - type: camera-preview
+        entity: camera.wundergroundradar
       - type: entities
         title: Thermostats
         entities:
