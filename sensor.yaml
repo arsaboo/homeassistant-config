@@ -179,6 +179,8 @@
     sensors:
       iframe_windy:
         value_template: iframe
+      iframe_windy_exp:
+        value_template: iframe
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-

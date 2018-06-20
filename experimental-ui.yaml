@@ -64,9 +64,8 @@ views:
           - switch.driveway
           - switch.wemoporch
           - switch.wemoinsight
-      #     - switch.aeon_switch
-      # - type: 'custom:example-card'
-      #   entity_id: input_boolean.tv_time
+      - type: 'custom:state-card-iframe-exp'
+        entity: sensor.iframe_windy_exp
   - tab_icon: mdi:weather-cloudy
     name: Weather
     cards:
