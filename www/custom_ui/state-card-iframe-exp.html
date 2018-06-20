@@ -50,9 +50,11 @@
       }
     </style>
 
-    <div class="iframewrap" on-tap='cardTapped'>
-    <div class="overlayiframe" onClick="style.pointerEvents='none'" on-tap='cardTapped'></div>
-    <iframe src='[[stateObj.attributes.config.url]]' class="iframefeed" frameborder="0" align="middle" scrolling="no"></iframe></div>
+    <ha-card>
+      <div class="iframewrap" on-tap='cardTapped'>
+      <div class="overlayiframe" onClick="style.pointerEvents='none'" on-tap='cardTapped'></div>
+      <iframe src='[[stateObj.attributes.config.url]]' class="iframefeed" frameborder="0" align="middle" scrolling="no"></iframe></div>
+    </ha-card>
   </template>
 </dom-module>
 
