@@ -1,6 +1,26 @@
 <dom-module id='custom-weather'>
   <template>
     <style>
+      ha-card {
+        padding: 16px;
+      }
+      .state {
+        padding: 4px 0;
+      }
+      .header {
+        @apply --paper-font-headline;
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 4px 0 12px;
+      }
+      .header .name {
+        @apply --paper-font-common-nowrap;
+      }
+      .state-card-dialog {
+        cursor: pointer;
+      }
       .clear {
         clear:both;
       }
@@ -108,59 +128,63 @@
       }
 
     </style>
-    <div class="card">
-      <span class="icon bigger" style="background: none, url(/local/icons/weather_icons/animated/[[nowCond]].svg) no-repeat; background-size: contain;"></span>
-      <span class="temp">[[roundedTemp]]</span><span class="tempc">&#176;F</span>
-      <span class="weather">[[nowCondIT]]</span>
-      <br>
-      <span>
-        <ul class="variations right">
-          <template is="dom-if" if="[[weatherObj.attributes.humidity]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:water-percent"></iron-icon></span> [[weatherObj.attributes.humidity]]<span class="unit"> %</span></li>
-          </template>
-          <template is="dom-if" if="[[weatherObj.attributes.pressure]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[weatherObj.attributes.pressure]]<span class="unit"> hPa</span></li>
-          </template>
-          <template is="dom-if" if="[[pressureObj.state]]"> <!-- if weather station doesn't have pressure info, get it from a separate sensor -->
-            <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[nowPressure]]<span class="unit"> hPa</span></li>
-          </template>
-          <template is="dom-if" if="[[precipationfcObj.state]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:weather-rainy"></iron-icon></span> [[nowPrecipationfc]]<span class="unit" > mm/u (> uur)</span></li>
-          </template>
 
-        </ul>
-        <ul class="variations">
-          <template is="dom-if" if="[[weatherObj.attributes.wind_speed]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:weather-windy"></iron-icon></span> [[windBearing]] [[weatherObj.attributes.wind_speed]]<span class="unit"> m/s</span></li>
-          </template>
-          <template is="dom-if" if="[[weatherObj.attributes.visibility]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[weatherObj.attributes.visibility]]<span class="unit"> m</span></li>
-          </template>
-          <template is="dom-if" if="[[visibilityObj.state]]"> <!-- if weather station doesn't have visibility info, get it from a separate sensor -->
-            <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[nowVisibility]]<span class="unit" > m</span></li>
-          </template>
-          <template is="dom-if" if="[[precipationObj.state]]">
-            <li><span class="iron-icon"><iron-icon icon="mdi:weather-pouring"></iron-icon></span> [[nowPrecipation]]<span class="unit" > mm/u</span></li>
-          </template>
-        </ul>
-      </span>
+    <ha-card>
+      <div class="card">
+        <span class="icon bigger" style="background: none, url(/local/icons/weather_icons/animated/[[nowCond]].svg) no-repeat; background-size: contain;"></span>
+        <span class="temp">[[roundedTemp]]</span><span class="tempc">&#176;F</span>
+        <span class="weather">[[nowCondIT]]</span>
+        <br>
+        <span>
+          <ul class="variations right">
+            <template is="dom-if" if="[[weatherObj.attributes.humidity]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:water-percent"></iron-icon></span> [[weatherObj.attributes.humidity]]<span class="unit"> %</span></li>
+            </template>
+            <template is="dom-if" if="[[weatherObj.attributes.pressure]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[weatherObj.attributes.pressure]]<span class="unit"> hPa</span></li>
+            </template>
+            <template is="dom-if" if="[[pressureObj.state]]"> <!-- if weather station doesn't have pressure info, get it from a separate sensor -->
+              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[nowPressure]]<span class="unit"> hPa</span></li>
+            </template>
+            <template is="dom-if" if="[[precipationfcObj.state]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-rainy"></iron-icon></span> [[nowPrecipationfc]]<span class="unit" > mm/u (> uur)</span></li>
+            </template>
 
-      <div class="forecast clear">
-        <template is="dom-repeat" items="[[forecast]]">
-        <div class="day"><span class="dayname">[[item.dayIT]]</span>
-          <template is="dom-if" if="[[item.condIcon]]">
-          <br> <i class="icon" style="background: none, url(/local/icons/weather_icons/animated/[[item.condIcon]].svg) no-repeat; background-size: contain;"></i>
-          </template>
-          <template is="dom-if" if="[[item.tempHigh]]">
-          <br> <span class="highTemp">[[item.tempHigh]]&#176;F</span>
-          </template>
-          <template is="dom-if" if="[[item.tempLow]]">
-          <br> <span class="lowTemp">[[item.tempLow]]&#176;F</span>
-          </template>
+          </ul>
+          <ul class="variations">
+            <template is="dom-if" if="[[weatherObj.attributes.wind_speed]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-windy"></iron-icon></span> [[windBearing]] [[weatherObj.attributes.wind_speed]]<span class="unit"> m/s</span></li>
+            </template>
+            <template is="dom-if" if="[[weatherObj.attributes.visibility]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[weatherObj.attributes.visibility]]<span class="unit"> m</span></li>
+            </template>
+            <template is="dom-if" if="[[visibilityObj.state]]"> <!-- if weather station doesn't have visibility info, get it from a separate sensor -->
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[nowVisibility]]<span class="unit" > m</span></li>
+            </template>
+            <template is="dom-if" if="[[precipationObj.state]]">
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-pouring"></iron-icon></span> [[nowPrecipation]]<span class="unit" > mm/u</span></li>
+            </template>
+          </ul>
+        </span>
+
+        <div class="forecast clear">
+          <template is="dom-repeat" items="[[forecast]]">
+          <div class="day"><span class="dayname">[[item.dayIT]]</span>
+            <template is="dom-if" if="[[item.condIcon]]">
+            <br> <i class="icon" style="background: none, url(/local/icons/weather_icons/animated/[[item.condIcon]].svg) no-repeat; background-size: contain;"></i>
+            </template>
+            <template is="dom-if" if="[[item.tempHigh]]">
+            <br> <span class="highTemp">[[item.tempHigh]]&#176;F</span>
+            </template>
+            <template is="dom-if" if="[[item.tempLow]]">
+            <br> <span class="lowTemp">[[item.tempLow]]&#176;F</span>
+            </template>
+          </div>
+        </template>
         </div>
-      </template>
       </div>
-    </div>
+    </ha-card>
+
   </template>
 </dom-module>
 
