@@ -95,7 +95,7 @@ views:
           - sensor.forecast_5
           - sensor.forecast_6
           - sensor.forecast_7
-      - type: 'custom-weather'
+      - custom: 'custom-weather'
         entity: weather.yweather
 
       - type: entities
