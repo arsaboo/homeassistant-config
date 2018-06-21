@@ -1,0 +1,71 @@
+<!--
+panel_custom:
+  - name: no-love
+    sidebar_title: No love
+    sidebar_icon: mdi:heart-off
+    webcomponent_path: /home/bs/.homeassistant/panels/no-love.html
+-->
+
+<dom-module id="ha-panel-no-love">
+  <style>
+    .error {
+      color: red;
+    }
+  </style>
+  <template>
+    <paper-button raised on-click="_hereWeGo">Refresh</paper-button>
+    <template is="dom-repeat" items="[[_entities]]">
+      <div>[[item]]</div>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class NoLove extends Polymer.Element {
+  static get is() { return 'ha-panel-no-love'; }
+  static get properties() {
+    return {
+      hass: Object,
+      _entities: Array,
+      _error: String,
+    };
+  }
+
+  _toSt(obj) {
+    return JSON.stringify(obj, null, 2);
+  }
+
+  _hereWeGo() {
+    this.hass.connection.sendMessagePromise({ type: 'frontend/lovelace_config' })
+      .then((conf) => {
+        const inLove = new Set();
+
+        conf.result.views.forEach((view) => {
+          view.cards.forEach((card) => {
+            if (card.entity) {
+              inLove.add(card.entity);
+            } else if (card.entities) {
+              card.entities.forEach((entity) => {
+                inLove.add(entity);
+              });
+            }
+          });
+        });
+
+        const _entities = Object.keys(this.hass.states).filter(entity => !inLove.has(entity));
+
+        this.setProperties({
+          _entities,
+          _errorMsg: null,
+        })
+      },
+        err => this.setProperties({
+          _entities: [],
+          _errorMsg: err.message,
+        })
+      );
+  }
+}
+
+customElements.define(NoLove.is, NoLove);
+</script>

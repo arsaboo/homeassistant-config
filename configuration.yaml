@@ -50,6 +50,11 @@ customizer:
   hide_attributes:
     - node_id
     - value_index
+panel_custom:
+  - name: no-love
+    sidebar_title: No love
+    sidebar_icon: mdi:heart-off
+    webcomponent_path: /home/homeassistant/.homeassistant/panels/no-love.html
 
 zone:
   name: Home
