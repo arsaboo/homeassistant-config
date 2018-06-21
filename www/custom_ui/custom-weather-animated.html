@@ -141,10 +141,10 @@
               <li><span class="iron-icon"><iron-icon icon="mdi:water-percent"></iron-icon></span> [[weatherObj.attributes.humidity]]<span class="unit"> %</span></li>
             </template>
             <template is="dom-if" if="[[weatherObj.attributes.pressure]]">
-              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[weatherObj.attributes.pressure]]<span class="unit"> hPa</span></li>
+              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[weatherObj.attributes.pressure]]<span class="unit"> inHg</span></li>
             </template>
             <template is="dom-if" if="[[pressureObj.state]]"> <!-- if weather station doesn't have pressure info, get it from a separate sensor -->
-              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[nowPressure]]<span class="unit"> hPa</span></li>
+              <li><span class="iron-icon"><iron-icon icon="mdi:gauge"></iron-icon></span> [[nowPressure]]<span class="unit"> inHg</span></li>
             </template>
             <template is="dom-if" if="[[precipationfcObj.state]]">
               <li><span class="iron-icon"><iron-icon icon="mdi:weather-rainy"></iron-icon></span> [[nowPrecipationfc]]<span class="unit" > mm/u (> uur)</span></li>
@@ -156,10 +156,10 @@
               <li><span class="iron-icon"><iron-icon icon="mdi:weather-windy"></iron-icon></span> [[windBearing]] [[weatherObj.attributes.wind_speed]]<span class="unit"> m/s</span></li>
             </template>
             <template is="dom-if" if="[[weatherObj.attributes.visibility]]">
-              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[weatherObj.attributes.visibility]]<span class="unit"> m</span></li>
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[weatherObj.attributes.visibility]]<span class="unit"> mi</span></li>
             </template>
             <template is="dom-if" if="[[visibilityObj.state]]"> <!-- if weather station doesn't have visibility info, get it from a separate sensor -->
-              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[nowVisibility]]<span class="unit" > m</span></li>
+              <li><span class="iron-icon"><iron-icon icon="mdi:weather-fog"></iron-icon></span> [[nowVisibility]]<span class="unit" > mi</span></li>
             </template>
             <template is="dom-if" if="[[precipationObj.state]]">
               <li><span class="iron-icon"><iron-icon icon="mdi:weather-pouring"></iron-icon></span> [[nowPrecipation]]<span class="unit" > mm/u</span></li>
