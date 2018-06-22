@@ -1,4 +1,4 @@
-title: ARS Home
+name: ARS Home
 views:
   - tab_icon: mdi:home-assistant
     # Name of the view. Will be used as the tooltip for tab icon
@@ -21,13 +21,12 @@ views:
           - sensor.sp_futures_change_pct
           - sensor.10_year_treasury
       - type: entities
-        title: Ring Doorbell
+        title: Information
         entities:
-          - binary_sensor.ring_front_door_ding
-          - binary_sensor.ring_front_door_motion
-          - sensor.ring_front_door_last_activity
-          - sensor.ring_front_door_last_ding
-          - sensor.ring_front_door_last_motion
+          - sensor.morning_commute
+          - sensor.alok_to_home
+          - sensor.plexspy
+          - sensor.usdinr
       - type: entities
         title: Home Security
         entities:
@@ -44,18 +43,18 @@ views:
           - binary_sensor.motion_sensor_158d00016daecc
           - binary_sensor.motion_sensor_158d00016612af
           - binary_sensor.motion_sensor_158d0001a1f2ab
-      - type: entities
-        title: Information
+      - type: glance
+        title: Doors
         entities:
-          - sensor.morning_commute
-          - sensor.alok_to_home
-          - sensor.plexspy
-          - sensor.usdinr
+          - binary_sensor.back_door
+          - binary_sensor.front_door
+          - binary_sensor.door_window_sensor_158d0001bf26df
+          - binary_sensor.ring_front_door_motion
       - type: entity-filter
         filter:
-          domain: light
+          - domain: light
         card_config:
-          title: All lights
+          title: Lights
       - type: entities
         title: Switches
         entities:
@@ -64,11 +63,30 @@ views:
           - switch.driveway
           - switch.wemoporch
           - switch.wemoinsight
-      - type: 'custom:state-card-iframe-exp'
-        entity: sensor.iframe_windy_exp
+      # - type: 'custom:state-card-iframe'
+      #   entity: sensor.iframe_windy_exp
+      - type: entities
+        title: Ring Doorbell
+        entities:
+          - binary_sensor.ring_front_door_ding
+          - binary_sensor.ring_front_door_motion
+          - sensor.ring_front_door_last_activity
+          - sensor.ring_front_door_last_ding
+          - sensor.ring_front_door_last_motion
+      - type: picture-glance
+        image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=240&w=495
+        title: Living
+        entities:
+          - light.living_room_lights
+          - binary_sensor.motion_sensor_158d00016daecc
+          - sensor.humidity_158d0001ab3c88
+          - sensor.temperature_158d0001ab3c88
+
   - tab_icon: mdi:weather-cloudy
     name: Weather
     cards:
+      - type: 'custom:custom-weather-animated'
+        entity: input_boolean.weather
       - type: entities
         title: Weather
         entities:
@@ -81,8 +99,6 @@ views:
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
           - sensor.dark_sky_daily_summary
-      - type: weather-forecast
-        entity: weather.yweather
       - type: entities
         title: Forecast
         entities:
@@ -94,8 +110,6 @@ views:
           - sensor.forecast_5
           - sensor.forecast_6
           - sensor.forecast_7
-      - type: 'custom:custom-weather-animated'
-        entity: input_boolean.weather
       - type: entities
         title: Room Sensors
         entities:
@@ -113,10 +127,8 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
-      - type: camera-preview
-        entity: camera.meteogram
-      - type: camera-preview
-        entity: camera.wundergroundradar
+      - type: weather-forecast
+        entity: weather.yweather
       - type: entities
         title: Thermostats
         entities:
@@ -136,6 +148,10 @@ views:
           - input_select.hvacmode
           - input_select.lyricmode
           - switch.lyric_mode_off
+      - type: camera-preview
+        entity: camera.meteogram
+      - type: camera-preview
+        entity: camera.wundergroundradar
 
   - tab_icon: mdi:cctv
     name: Cameras
@@ -225,6 +241,25 @@ views:
           - proximity.rashmi
           - binary_sensor.alok_home
           - proximity.alok
+      - type: entity-filter
+        card: glance
+        filter:
+          - entity_id: 'device_tracker.*rashmi*'
+            state: 'home'
+          - entity_id: 'device_tracker.*sonu*'
+            state: 'home'
+          - entity_id: 'device_tracker.e1594e5321df414c82daf655d5282fca'
+            state: 'home'
+          - entity_id: 'device_tracker.*alok*'
+            state: 'home'
+          - entity_id: 'device_tracker.b4445761f6c04b7f835fcfdc03b47111'
+            state: 'home'
+          - entity_id: 'device_tracker.myiphone'
+            state: 'home'
+          - entity_id: 'binary_sensor.*home*'
+          - entity_id: '*proximity*'
+        card_config:
+          title: Devices
       - type: entities
         title: HASS Details
         entities:
@@ -302,6 +337,6 @@ views:
           - sensor.arnav_131
       - type: entity-filter
         filter:
-          domain: automation
+          - domain: automation
         card_config:
           title: All Automations
