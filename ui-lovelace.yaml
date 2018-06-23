@@ -63,8 +63,6 @@ views:
           - switch.driveway
           - switch.wemoporch
           - switch.wemoinsight
-      # - type: 'custom:state-card-iframe'
-      #   entity: sensor.iframe_windy_exp
       - type: entities
         title: Ring Doorbell
         entities:
@@ -152,6 +150,9 @@ views:
         entity: camera.meteogram
       - type: camera-preview
         entity: camera.wundergroundradar
+      - type: "custom:lovelace-iframe"
+        height: 350
+        url: https://embed.windy.com/embed2.html?gust,32.487,-84.023,5
 
   - tab_icon: mdi:cctv
     name: Cameras
@@ -244,22 +245,13 @@ views:
       - type: entity-filter
         card: glance
         filter:
-          - entity_id: 'device_tracker.*rashmi*'
-            state: 'home'
-          - entity_id: 'device_tracker.*sonu*'
-            state: 'home'
-          - entity_id: 'device_tracker.e1594e5321df414c82daf655d5282fca'
-            state: 'home'
-          - entity_id: 'device_tracker.*alok*'
-            state: 'home'
-          - entity_id: 'device_tracker.b4445761f6c04b7f835fcfdc03b47111'
-            state: 'home'
-          - entity_id: 'device_tracker.myiphone'
+          - domain: device_tracker
             state: 'home'
           - entity_id: 'binary_sensor.*home*'
           - entity_id: '*proximity*'
         card_config:
           title: Devices
+
       - type: entities
         title: HASS Details
         entities:
