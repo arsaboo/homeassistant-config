@@ -247,8 +247,12 @@
       hass: {
         type: Object,
       },
+      config: {
+	type: Object,      
+      },
       stateObj: {
         type: Object,
+	computed: '_computeStateObj(config, hass)',
       },
       weatherObj: {
         type: Object,
@@ -282,6 +286,10 @@
       },
     },
 
+    _computeStateObj: function(config, hass) {
+      return hass.states[config.entity];
+    },
+	  
     computeWeatherObj: function (hass, stateObj) {
       return stateObj && stateObj.attributes && stateObj.attributes.config && stateObj.attributes.config.weather ? hass.states[stateObj.attributes.config.weather] : null;
     },
