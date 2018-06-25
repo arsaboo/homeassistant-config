@@ -452,6 +452,9 @@ notify:
   - platform: nfandroidtv
     name: Shield
     host: 192.168.2.28
+  - platform: command_line
+    name: 'Echo Dot'
+    command: "/home/homeassistant/.homeassistant/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error

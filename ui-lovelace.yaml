@@ -79,7 +79,6 @@ views:
           - binary_sensor.motion_sensor_158d00016daecc
           - sensor.humidity_158d0001ab3c88
           - sensor.temperature_158d0001ab3c88
-
   - tab_icon: mdi:weather-cloudy
     name: Weather
     cards:
