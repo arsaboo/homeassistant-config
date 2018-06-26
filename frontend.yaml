@@ -2,9 +2,8 @@
     - /local/custom_ui/custom-weather-card.html
     - /local/custom_ui/custom-weather-animated.html
     - /local/custom_ui/state-card-iframe.html
-    - /local/custom_ui/lovelace-iframe.html
-  extra_html_url_es5:
-    - /local/custom_ui/lovelace-iframe.html
+  # extra_html_url_es5:
+  #   - /local/custom_ui/lovelace-iframe.html
   themes:
     teal:
       # Main Stuff #

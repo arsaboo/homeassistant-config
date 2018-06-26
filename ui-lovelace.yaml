@@ -149,8 +149,8 @@ views:
         entity: camera.meteogram
       - type: camera-preview
         entity: camera.wundergroundradar
-      - type: "custom:lovelace-iframe"
-        height: 350
+      - type: iframe
+        aspect_ratio: 70%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
   - tab_icon: mdi:cctv
     name: Cameras
@@ -245,8 +245,6 @@ views:
         filter:
           - domain: device_tracker
             state: 'home'
-          - entity_id: 'binary_sensor.*home*'
-          - entity_id: '*proximity*'
         card_config:
           title: Devices
 
