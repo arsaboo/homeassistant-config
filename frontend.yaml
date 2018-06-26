@@ -1,9 +1,11 @@
   extra_html_url:
     - /local/custom_ui/custom-weather-card.html
     - /local/custom_ui/custom-weather-animated.html
+    - /local/lovelace.html
   extra_html_url_es5:
     - /local/custom_ui/custom-weather-card.html
     - /local/custom_ui/custom-weather-animated.html
+    - /local/lovelace.html    
   themes:
     teal:
       # Main Stuff #
