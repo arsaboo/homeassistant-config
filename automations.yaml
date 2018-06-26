@@ -467,7 +467,7 @@
 
 - id: save_camera_images
   alias: 'Camera - Save images on motion'
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
    - platform: state
      entity_id:
