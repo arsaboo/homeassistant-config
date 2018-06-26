@@ -1,25 +1,9 @@
 automation.*:
   custom_ui_state_card: state-card-custom-ui
-  extra_data_template: >-
-    if(!attributes.last_triggered)return null;
-    var t,s=(new Date()-new Date(attributes.last_triggered))/1e3;
-    return(
-    (t=Math.floor(s/86400))?t+(t>1?" days":" day"):
-    (t=Math.floor(s/3600))?t+(t>1?" hours":" hour"):
-    (t=Math.floor(s/60))?t+(t>1?" minutes":" minute"):
-    (t=Math.floor(s))!==1?t+" seconds":" second"
-    )+" ago";
+  show_last_changed: true
 device_tracker.*:
   custom_ui_state_card: state-card-custom-ui
-  extra_data_template: >-
-    if(!attributes.last_changed)return null;
-    var t,s=(new Date()-new Date(attributes.last_changed))/1e3;
-    return(
-    (t=Math.floor(s/86400))?t+(t>1?" days":" day"):
-    (t=Math.floor(s/3600))?t+(t>1?" hours":" hour"):
-    (t=Math.floor(s/60))?t+(t>1?" minutes":" minute"):
-    (t=Math.floor(s))!==1?t+" seconds":" second"
-    )+" ago";
+  show_last_changed: true
 sensor.*_futures_change:
  templates:
    icon_color: >
