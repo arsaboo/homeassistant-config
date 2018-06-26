@@ -1,3 +1,6 @@
+# resources:
+#   - url: /local/custom_ui/wired-card.js
+#     type: module
 name: ARS Home
 views:
   - tab_icon: mdi:home-assistant
@@ -84,6 +87,10 @@ views:
     cards:
       - type: 'custom:custom-weather-animated'
         entity: input_boolean.weather
+      # - type: "custom:wired-toggle-card"
+      #   entities:
+      #     - input_boolean.abodeupdate
+      #     - input_boolean.tvtime
       - type: entities
         title: Weather
         entities:

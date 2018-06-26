@@ -338,11 +338,11 @@ image_processing:
       - entity_id: camera.porch
       - entity_id: camera.backyard
       - entity_id: camera.driveway
-  - platform: sighthound
-    api_key: sighthound_api
-    scan_interval: 10000
-    source:
-      - entity_id: camera.porch
+  # - platform: sighthound
+  #   api_key: sighthound_api
+  #   scan_interval: 10000
+  #   source:
+  #     - entity_id: camera.porch
 # image_processing:
 #   - platform: clarifai
 #     name: general_classifier
