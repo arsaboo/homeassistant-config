@@ -276,7 +276,7 @@ camera:
   - platform: arlo
   - platform: generic
     name: LivingRoom_temperature
-    still_image_url: 'http://192.168.2.113:3000/render/dashboard-solo/db/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
+    still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
     username: !secret grafana_user
     password: !secret grafana_pass
   - platform: ring
@@ -479,6 +479,7 @@ logger:
     custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
+    homeassistant.components.http.view: info
 # Text to speech
 tts:
   - platform: google
