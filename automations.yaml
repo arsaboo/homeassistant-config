@@ -215,7 +215,7 @@
           true
         {%- endif -%}
     - condition: template
-      value_template: "{{ states.input_select.abodestatus.state != 'armed_away' }}"
+      value_template: "{{ states('input_select.abodestatus') != 'armed_away' }}"
   trigger:
     - platform: state
       entity_id: group.household
@@ -296,7 +296,7 @@
   condition:
     - condition: template
       value_template: >
-        {{states.input_select.abodestatus.state == 'disarmed' and states.group.thermostats.state == 'on'}}
+        {{states('input_select.abodestatus') == 'disarmed' and states('group.thermostats') == 'on'}}
   trigger:
    - platform: time
      minutes: '/5'
@@ -305,11 +305,11 @@
     - service: homeassistant.turn_off
       data_template:
         entity_id: >
-          {%- if states.switch.downstairs_away.state == 'on' -%}
+          {%- if states('switch.downstairs_away') == 'on' -%}
             switch.downstairs_away
-          {%- elif states.switch.upstairs_away.state == 'on' -%}
+          {%- elif states('switch.upstairs_away') == 'on' -%}
             switch.upstairs_away
-          {%- elif states.switch.lyric_mode_off.state == 'on' -%}
+          {%- elif states('switch.lyric_mode_off') == 'on' -%}
             switch.lyric_mode_off
           {%- endif -%}
 
@@ -354,13 +354,13 @@
       conditions:
         - condition: template
           value_template: >
-            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.downstairs_away.state == 'off'}}
+            {{states('input_select.abodestatus') == 'armed_away' and states('switch.downstairs_away') == 'off'}}
         - condition: template
           value_template: >
-            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.upstairs_away.state == 'off'}}
+            {{states('input_select.abodestatus') == 'armed_away' and states('switch.upstairs_away') == 'off'}}
         - condition: template
           value_template: >
-            {{states.input_select.abodestatus.state == 'armed_away' and states.switch.lyric_mode_off.state == 'off'}}
+            {{states('input_select.abodestatus') == 'armed_away' and states('switch.lyric_mode_off') == 'off'}}
   trigger:
    - platform: time
      minutes: '/5'
@@ -369,11 +369,11 @@
     - service: homeassistant.turn_on
       data_template:
         entity_id: >
-          {%- if states.switch.downstairs_away.state == 'off' -%}
+          {%- if states('switch.downstairs_away') == 'off' -%}
             switch.downstairs_away
-          {%- elif states.switch.upstairs_away.state == 'off' -%}
+          {%- elif states('switch.upstairs_away') == 'off' -%}
             switch.upstairs_away
-          {%- elif states.switch.lyric_mode_off.state == 'off' -%}
+          {%- elif states('switch.lyric_mode_off') == 'off' -%}
             switch.lyric_mode_off
           {%- endif -%}
 
@@ -507,12 +507,12 @@
         title: Low Battery levels
         notification_id: low-battery-alert
         message: >
-          Check battery: {{ states.sensor.battery_status.state }}
+          Check battery: {{ states('sensor.battery_status') }}
     - service: notify.pushbullet
       data_template:
         title: "Battery status"
         message: >
-          Check battery: {{ states.sensor.battery_status.state }}
+          Check battery: {{ states('sensor.battery_status') }}
 
 - id: heal_zwave_network
   alias: Heal Z-Wave Network
@@ -528,17 +528,17 @@
   initial_state: 'on'
   trigger:
     platform: template
-    value_template: "{{states.sensor.pypi_hass_version.state == states.sensor.current_version.state}}"
+    value_template: "{{states('sensor.pypi_hass_version') == states('sensor.current_version') }}"
   action:
     - service: notify.pushbullet
       data:
-        message: "HomeAssistant {{ states('states.sensor.pypi_hass_version.state') }} is now available"
+        message: "HomeAssistant {{ states('sensor.pypi_hass_version') }} is now available"
         title: "Update HASS"
     - service: persistent_notification.create
       data:
         title: "Update Available"
         message: >
-          Home Assistant {{ states('states.sensor.pypi_hass_version.state') }} is available, please update.
+          Home Assistant {{ states('sensor.pypi_hass_version') }} is available, please update.
         notification_id: "update_available"
 
 - id: change_current_theme
@@ -550,7 +550,7 @@
   action:
     - service: frontend.set_theme
       data_template:
-        name: '{{states.input_select.current_theme.state}}'
+        name: "{{states('input_select.current_theme')}}"
 
 #################################################################
 ## Commute Times
@@ -606,8 +606,8 @@
          - fri
      - condition: template
        value_template: >
-         {%- if states.device_tracker.meta_alok -%}
-           {{ states.device_tracker.meta_alok.state != 'home' }}
+         {%- if states('device_tracker.meta_alok') -%}
+           {{ states('device_tracker.meta_alok') != 'home' }}
          {%- else -%}
            false
          {%- endif -%}
@@ -1206,7 +1206,7 @@
        after: '08:15:00'
        before: '21:45:00'
      - condition: template
-       value_template: '{{ states.sensor.humidity_158d0001ab3b2b.state | int < 30 }}'
+       value_template: '{{ states("sensor.humidity_158d0001ab3b2b") | int < 30 }}'
      - condition: state
        entity_id: switch.wemoswitch
        state: 'off'
@@ -1227,7 +1227,7 @@
       state: 'on'
   trigger:
     platform: template
-    value_template: '{{ states.sensor.humidity_158d0001ab3b2b.state | int >= 30 }}'
+    value_template: '{{ states("sensor.humidity_158d0001ab3b2b") | int >= 30 }}'
   action:
     service: homeassistant.turn_off
     entity_id: switch.wemoswitch
@@ -1286,21 +1286,21 @@
       data_template:
         entity_id: input_select.livingroomharmony
         option: >
-          {{ states.remote.livingroom.attributes.current_activity }}
+          {{ state_attr('remote.livingroom','current_activity') }}
     - service: input_number.set_value
       data_template:
         entity_id: input_number.harmonyvolume
         value: >
-            {{ (states.media_player.livingroomsonos.attributes.volume_level * 100) | int }}
+            {{ (state_attr('media_player.livingroomsonos', 'volume_level') * 100) | int }}
     - service: input_select.select_option
       data_template:
         entity_id: input_select.hdmiswitcher
         option: >
-          {%- if states.remote.livingroom.attributes.current_activity == "Watch Apple TV" -%}
+          {%- if state_attr('remote.livingroom','current_activity') == "Watch Apple TV" -%}
             AppleTV
-          {%- elif states.remote.livingroom.attributes.current_activity == "Watch Fire TV" -%}
+          {%- elif state_attr('remote.livingroom','current_activity') == "Watch Fire TV" -%}
             FireTV
-          {%- elif states.remote.livingroom.attributes.current_activity == "SATV" -%}
+          {%- elif state_attr('remote.livingroom','current_activity') == "SATV" -%}
             Shield
           {%- endif -%}
 
@@ -1359,7 +1359,7 @@
       data_template:
         entity_id: media_player.livingroomsonos
         volume_level: >
-          {{states.input_number.harmonyvolume.state | int / 100}}
+          {{states('input_number.harmonyvolume') | int / 100}}
 
 - id: start_harmony_activity_from_input_select
   alias: "Start Harmony activity from input_select"

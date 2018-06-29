@@ -56,6 +56,11 @@ views:
       - type: entity-filter
         filter:
           - domain: light
+            state: 'on'
+          - domain: light
+            state: 'off'
+          - entity_id: switch.driveway
+          - entity_id: switch.wemoporch
         card_config:
           title: Lights
       - type: entities
@@ -63,8 +68,6 @@ views:
         entities:
           - switch.wemoswitch
           - switch.garage_relay_switch
-          - switch.driveway
-          - switch.wemoporch
           - switch.wemoinsight
       - type: entities
         title: Ring Doorbell

@@ -163,7 +163,7 @@
     name: SSL certificate expiry
     unit_of_measurement: days
     scan_interval: 86400
-    command: "ssl-cert-check -b -c /home/homeassistant/dehydrated/certs/cert.pem | awk '{ print $NF }'"
+    command: !secret cert_expiry
   - platform: command_line
     name: 10 Year Treasury
     unit_of_measurement: '%'
@@ -214,6 +214,12 @@
            {%- else -%}
              0
            {%- endif -%}
+        icon_template: >-
+          {%- if states('sensor.downstairs_cool')|default(0) < states('sensor.downstairs_heat')|default(0) -%}
+            mdi:fire
+          {%- elif states('sensor.downstairs_cool')|default(0) > states('sensor.downstairs_heat')|default(0) -%}
+            mdi:snowflake
+          {%- endif -%}
       upstairs_hvac_runtime:
         friendly_name: "Upstairs HVAC Runtime"
         unit_of_measurement: "h"
@@ -223,6 +229,12 @@
            {%- else -%}
              0
            {%- endif -%}
+        icon_template: >-
+          {%- if states('sensor.upstairs_cool')|default(0) < states('sensor.upstairs_heat')|default(0) -%}
+            mdi:fire
+          {%- elif states('sensor.upstairs_cool')|default(0) > states('sensor.upstairs_heat')|default(0) -%}
+            mdi:snowflake
+          {%- endif -%}
       wemopowerused:
         friendly_name: "Wemo Current Power"
         unit_of_measurement: "w"
