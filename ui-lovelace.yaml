@@ -3,7 +3,8 @@
 #     type: module
 title: ARS Home
 views:
-  - tab_icon: mdi:home-assistant
+  - icon: mdi:home-assistant
+    id: home
     # Name of the view. Will be used as the tooltip for tab icon
     title: Home
     # theme: darkorange
@@ -85,7 +86,8 @@ views:
           - binary_sensor.motion_sensor_158d00016daecc
           - sensor.humidity_158d0001ab3c88
           - sensor.temperature_158d0001ab3c88
-  - tab_icon: mdi:weather-cloudy
+  - icon: mdi:weather-cloudy
+    id: weather
     title: Weather
     garage_door_tilt_sensor_alarm_level: Weather
     cards:
@@ -163,7 +165,8 @@ views:
       - type: iframe
         aspect_ratio: 70%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
-  - tab_icon: mdi:cctv
+  - icon: mdi:cctv
+    id: cameras
     title: Cameras
     cards:
       - type: camera-preview
@@ -187,7 +190,8 @@ views:
       - type: camera-preview
         entity: camera.ars_bloom
 
-  - tab_icon: mdi:play-circle-outline
+  - icon: mdi:play-circle-outline
+    id: media  
     title: Media
     cards:
       - type: entities
@@ -226,7 +230,8 @@ views:
       - type: media-control
         entity: media_player.plex_shield_android_tv
 
-  - tab_icon: mdi:settings
+  - icon: mdi:settings
+    id: settings
     title: Settings
     cards:
       - type: entities
