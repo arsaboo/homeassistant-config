@@ -57,6 +57,7 @@ life360.sh
 .google.token
 .ring_cache.pickle
 .spotify-token-cache
+.storage
 usps_cookies.pickle
 abodepy_cache.pickle
 camera_recording.py
