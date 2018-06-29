@@ -271,9 +271,9 @@
       hass: {
         type: Object,
       },
-      config: {
-        type: Object,
-      },
+      // config: {
+      //   type: Object,
+      // },
       stateObj: {
         type: Object,
         computed: '_computeStateObj(config, hass)',
@@ -309,7 +309,9 @@
         computed: 'computePrecipationfcObj(hass, stateObj)',
       },
     },
-
+    setConfig(config) {
+      this.config = config;
+    },
     _computeStateObj: function(config, hass) {
       return hass.states[config.entity];
     },
