@@ -128,6 +128,11 @@ views:
             style:
               top: 25%
               left: 50%
+          - type: state-badge
+            entity: binary_sensor.back_door
+            style:
+              top: 16%
+              left: 14%
             # Guest Room
           - type: state-badge
             entity: binary_sensor.motion_sensor_158d0001a1f2ab
@@ -147,6 +152,11 @@ views:
               top: 95%
               left: 32%
             # Garage
+          - type: state-badge
+            entity:  binary_sensor.door_window_sensor_158d0001bf26df
+            style:
+              top: 64%
+              left: 55%
           - type: state-badge
             tap_action: toggle
             entity: light.lifx5
@@ -180,8 +190,13 @@ views:
           - type: state-badge
             entity: climate.downstairs
             style:
-              top: 70%
-              left: 22%
+              top: 78%
+              left: 15%
+          - type: state-badge
+            entity: binary_sensor.front_door
+            style:
+              top: 89%
+              left: 32%
       - type: picture-elements
         title: Second Level
         image: /local/floorplans/second.jpg
@@ -193,10 +208,16 @@ views:
               left: 35%
             # Master
           - type: state-badge
-            entity:  climate.lyric_t5_thermostat
+            entity: climate.lyric_t5_thermostat
             style:
               top: 65%
               left: 80%
+            # Laundry
+          - type: state-badge
+            entity: binary_sensor.water_leak_sensor_158d0001d77800
+            style:
+              top: 25%
+              left: 66%
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
