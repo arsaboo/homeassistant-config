@@ -126,13 +126,13 @@ views:
           - type: state-badge
             entity: binary_sensor.motion_sensor_158d00016daecc
             style:
-              top: 25%
+              top: 27%
               left: 50%
           - type: state-badge
             entity: binary_sensor.back_door
             style:
-              top: 16%
-              left: 14%
+              top: 17%
+              left: 15%
             # Guest Room
           - type: state-badge
             entity: binary_sensor.motion_sensor_158d0001a1f2ab
@@ -156,7 +156,7 @@ views:
             entity:  binary_sensor.door_window_sensor_158d0001bf26df
             style:
               top: 64%
-              left: 55%
+              left: 56%
           - type: state-badge
             tap_action: toggle
             entity: light.lifx5
@@ -192,6 +192,11 @@ views:
             style:
               top: 78%
               left: 15%
+          - type: state-text
+            entity: sensor.downstairs_temperature
+            style:
+              top: 85%
+              left: 15%
           - type: state-badge
             entity: binary_sensor.front_door
             style:
@@ -218,6 +223,17 @@ views:
             style:
               top: 25%
               left: 66%
+            # Kids room
+          - type: state-text
+            entity: sensor.upstairs_temperature
+            style:
+              top: 23%
+              left: 15%
+          - type: state-badge
+            entity: climate.upstairs
+            style:
+              top: 15%
+              left: 15%
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
