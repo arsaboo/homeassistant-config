@@ -103,11 +103,6 @@
        config:
          weather: weather.yweather
          sun: sun.sun
-     input_boolean.weather2:
-       custom_ui_state_card: custom-weather-animated
-       config:
-         weather: weather.yweather
-         sun: sun.sun
      sensor.iframe_windy:
        custom_ui_state_card: state-card-iframe
        config:
