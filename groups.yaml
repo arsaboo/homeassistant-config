@@ -41,7 +41,6 @@
       - group.camera_patio
       - group.camera_ring_doorbell
       - group.camera_arsbloom
-      - group.camera_usps
       - group.camera_foscam1
       - group.camera_foscam2
       - group.camera_foscam3
@@ -350,9 +349,6 @@
   camera_abode_living_room:
     entities:
       - camera.living_room
-  camera_usps:
-    entities:
-      - camera.usps_mail
   camera_meteogram:
     entities:
       - camera.meteogram
