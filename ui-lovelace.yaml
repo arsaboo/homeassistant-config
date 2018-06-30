@@ -33,6 +33,7 @@ views:
           - sensor.usdinr
       - type: entities
         title: Home Security
+        show_header_toggle: false
         entities:
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.arlohome
@@ -52,8 +53,10 @@ views:
         entities:
           - binary_sensor.back_door
           - binary_sensor.front_door
-          - binary_sensor.door_window_sensor_158d0001bf26df
-          - binary_sensor.ring_front_door_motion
+          - entity: binary_sensor.door_window_sensor_158d0001bf26df
+            title: Garage
+          - entity: binary_sensor.ring_front_door_motion
+            title: Front Motion
       - type: entity-filter
         filter:
           - domain: light
@@ -86,6 +89,114 @@ views:
           - binary_sensor.motion_sensor_158d00016daecc
           - sensor.humidity_158d0001ab3c88
           - sensor.temperature_158d0001ab3c88
+      - type: picture-elements
+        title: Main Level
+        image: /local/floorplans/main.jpg
+        elements:
+          - type: service-button
+            title: All lights Off
+            style:
+              top: 97%
+              left: 82%
+            service:
+              domain: light
+              service: turn_off
+              data:
+                entity_id: group.all_lights
+            # Kitchen
+          - type: state-badge
+            entity: light.kitchen_lights
+            tap_action: toggle
+            style:
+              top: 45%
+              left: 11%
+              # '--paper-item-icon-color': yellow
+            # Living Room
+          - type: state-badge
+            tap_action: toggle
+            entity: light.living_room_lights
+            style:
+              top: 35%
+              left: 50%
+          - type: state-text
+            entity: sensor.temperature_158d0001ab3c88
+            style:
+              top: 40%
+              left: 50%
+          - type: state-badge
+            entity: binary_sensor.motion_sensor_158d00016daecc
+            style:
+              top: 25%
+              left: 50%
+            # Guest Room
+          - type: state-badge
+            entity: binary_sensor.motion_sensor_158d0001a1f2ab
+            style:
+              top: 27%
+              left: 85%
+            # Porch
+          - type: state-badge
+            tap_action: toggle
+            entity: switch.wemoporch
+            style:
+              top: 95%
+              left: 22%
+          - type: state-badge
+            entity: binary_sensor.ring_front_door_motion
+            style:
+              top: 95%
+              left: 32%
+            # Garage
+          - type: state-badge
+            tap_action: toggle
+            entity: light.lifx5
+            style:
+              top: 65%
+              left: 78%
+          - type: state-badge
+            tap_action: toggle
+            entity: switch.driveway
+            style:
+              top: 87%
+              left: 78%
+          - type: state-badge
+            tap_action: toggle
+            entity: cover.garagedoor
+            style:
+              top: 80%
+              left: 78%
+            # Study
+          - type: state-text
+            entity: sensor.temperature_158d0001ab3b2b
+            style:
+              top: 78%
+              left: 50%
+          - type: state-text
+            entity: sensor.humidity_158d0001ab3b2b
+            style:
+              top: 83%
+              left: 50%
+            # Dining
+          - type: state-badge
+            entity: climate.downstairs
+            style:
+              top: 70%
+              left: 22%
+      - type: picture-elements
+        title: Second Level
+        image: /local/floorplans/second.jpg
+        elements:
+          - type: state-badge
+            entity: binary_sensor.motion_sensor_158d00016612af
+            style:
+              top: 40%
+              left: 35%
+            # Master
+          - type: state-badge
+            entity:  climate.lyric_t5_thermostat
+            style:
+              top: 65%
+              left: 80%
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
@@ -191,11 +302,12 @@ views:
         entity: camera.ars_bloom
 
   - icon: mdi:play-circle-outline
-    id: media  
+    id: media
     title: Media
     cards:
       - type: entities
-        title: Thermostats
+        title: Entertainment
+        show_header_toggle: false
         entities:
           - sensor.living_room
           - input_select.livingroomharmony
@@ -208,6 +320,7 @@ views:
           - script.tv_off
       - type: entities
         title: Light Operations
+        show_header_toggle: false
         entities:
           - input_boolean.partymode
           - script.colorloop_start
@@ -266,6 +379,7 @@ views:
 
       - type: entities
         title: HASS Details
+        show_header_toggle: false
         entities:
           - switch.developer_mode
           - sensor.hassuptime
@@ -288,6 +402,7 @@ views:
           - binary_sensor.porch_motion
       - type: entities
         title: Camera Processing
+        show_header_toggle: false
         entities:
           - script.classify_images
           - image_processing.facebox_backyard
