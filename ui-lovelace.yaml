@@ -17,110 +17,140 @@ views:
         image: /local/floorplans/main.jpg
         elements:
           - type: service-button
-            title: All lights Off
+            title: Lights Off
             style:
               top: 97%
-              left: 82%
-            service:
-              domain: light
-              service: turn_off
-              data:
-                entity_id: group.all_lights
+              left: 70%
+            service: light.turn_off
+            service_data:
+              entity_id: group.all_lights
+          - type: state-icon
+            entity: input_boolean.abodeupdate
+            tap_action: toggle
+            style:
+              top: 3%
+              left: 30%
             # Kitchen
-          - type: state-badge
+          - type: state-icon
             entity: light.kitchen_lights
             tap_action: toggle
             style:
               top: 45%
               left: 11%
               # '--paper-item-icon-color': yellow
+          - type: state-icon
+            entity: camera.porch
+            style:
+              top: 90%
+              left: 4%
+          - type: state-icon
+            entity: camera.patio
+            style:
+              top: 18%
+              left: 4%
+          - type: state-icon
+            entity: camera.backyard
+            style:
+              top: 18%
+              left: 96%
+          - type: state-icon
+            entity: camera.driveway
+            style:
+              top: 81%
+              left: 96%
             # Living Room
-          - type: state-badge
+          - type: state-icon
             tap_action: toggle
             entity: light.living_room_lights
             style:
               top: 35%
               left: 50%
-          - type: state-text
+          - type: state-label
             entity: sensor.temperature_158d0001ab3c88
             style:
               top: 40%
               left: 50%
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.motion_sensor_158d00016daecc
             style:
               top: 27%
               left: 50%
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.back_door
             style:
               top: 17%
               left: 15%
+          - type: state-icon
+            tap_action: toggle
+            entity: input_boolean.tv
+            style:
+              top: 30%
+              left: 70%
             # Guest Room
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.motion_sensor_158d0001a1f2ab
             style:
               top: 27%
               left: 85%
             # Porch
-          - type: state-badge
+          - type: state-icon
             tap_action: toggle
             entity: switch.wemoporch
             style:
               top: 95%
               left: 22%
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.ring_front_door_motion
             style:
               top: 95%
               left: 32%
             # Garage
-          - type: state-badge
+          - type: state-icon
             entity:  binary_sensor.door_window_sensor_158d0001bf26df
             style:
               top: 64%
               left: 56%
-          - type: state-badge
+          - type: state-icon
             tap_action: toggle
             entity: light.lifx5
             style:
               top: 65%
               left: 78%
-          - type: state-badge
+          - type: state-icon
             tap_action: toggle
             entity: switch.driveway
             style:
               top: 87%
               left: 78%
-          - type: state-badge
+          - type: state-icon
             tap_action: toggle
             entity: cover.garagedoor
             style:
               top: 80%
               left: 78%
             # Study
-          - type: state-text
+          - type: state-label
             entity: sensor.temperature_158d0001ab3b2b
             style:
               top: 78%
               left: 50%
-          - type: state-text
+          - type: state-label
             entity: sensor.humidity_158d0001ab3b2b
             style:
               top: 83%
               left: 50%
             # Dining
-          - type: state-badge
+          - type: state-icon
             entity: climate.downstairs
             style:
               top: 78%
               left: 15%
-          - type: state-text
+          - type: state-label
             entity: sensor.downstairs_temperature
             style:
               top: 85%
               left: 15%
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.front_door
             style:
               top: 89%
@@ -129,38 +159,38 @@ views:
         title: Second Level
         image: /local/floorplans/second.jpg
         elements:
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.motion_sensor_158d00016612af
             style:
               top: 40%
               left: 35%
             # Master
-          - type: state-badge
+          - type: state-icon
             entity: climate.lyric_t5_thermostat
             style:
               top: 65%
               left: 80%
             # Laundry
-          - type: state-badge
+          - type: state-icon
             entity: binary_sensor.water_leak_sensor_158d0001d77800
             style:
               top: 25%
               left: 66%
             # Kids room
-          - type: state-text
+          - type: state-label
             entity: sensor.upstairs_temperature
             style:
               top: 23%
               left: 15%
-          - type: state-badge
+          - type: state-icon
             entity: climate.upstairs
             style:
               top: 15%
               left: 15%
-      - type: "custom:weather-card"
-        entities:
-          - weather.yweather
-          - sun.sun
+      # - type: "custom:weather-card"
+      #   entities:
+      #     - weather.yweather
+      #     - sun.sun
       - type: entities
         title: Investments
         entities:
@@ -388,6 +418,19 @@ views:
         entities:
           - device_tracker.meta_rashmi
           - device_tracker.meta_alok
+      - type: glance
+        title: Rashmi
+        entities:
+          - entity: device_tracker.pi_rashmiphone
+            title: Owntracks
+          - entity: device_tracker.rashmiappiphone
+            title: HA App
+          - entity: device_tracker.rashmisiphone
+            title: WiFi
+          - entity: device_tracker.sonu_sonu
+            title: Life360
+          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
+            title: Geofency
       - type: entities
         title: Devices
         entities:
