@@ -1,4 +1,7 @@
-# resources:
+resources:
+  - url: /local/custom_ui/weather-card.js
+    type: js
+
 #   - url: /local/custom_ui/wired-card.js
 #     type: module
 title: ARS Home
@@ -9,86 +12,6 @@ views:
     title: Home
     # theme: darkorange
     cards:
-      - type: entities
-        title: Investments
-        entities:
-          - sensor.portfolioval
-          - sensor.portfoliochange
-          - sensor.dow_futures
-          - sensor.dow_futures_change
-          - sensor.dow_futures_change_pct
-          - sensor.nasdaq_futures
-          - sensor.nasdaq_futures_change
-          - sensor.nasdaq_futures_change_pct
-          - sensor.sp_futures
-          - sensor.sp_futures_change
-          - sensor.sp_futures_change_pct
-          - sensor.10_year_treasury
-      - type: entities
-        title: Information
-        entities:
-          - sensor.morning_commute
-          - sensor.alok_to_home
-          - sensor.plexspy
-          - sensor.usdinr
-      - type: entities
-        title: Home Security
-        show_header_toggle: false
-        entities:
-          - alarm_control_panel.abode_alarm
-          - alarm_control_panel.arlohome
-          - alarm_control_panel.abode
-          - input_select.abodestatus
-          - cover.garagedoor
-          - input_boolean.abodeupdate
-          - binary_sensor.back_door
-          - binary_sensor.front_door
-          - binary_sensor.door_window_sensor_158d0001bf26df
-          - input_boolean.startrecording
-          - binary_sensor.motion_sensor_158d00016daecc
-          - binary_sensor.motion_sensor_158d00016612af
-          - binary_sensor.motion_sensor_158d0001a1f2ab
-      - type: glance
-        title: Doors
-        entities:
-          - binary_sensor.back_door
-          - binary_sensor.front_door
-          - entity: binary_sensor.door_window_sensor_158d0001bf26df
-            title: Garage
-          - entity: binary_sensor.ring_front_door_motion
-            title: Front Motion
-      - type: entity-filter
-        filter:
-          - domain: light
-            state: 'on'
-          - domain: light
-            state: 'off'
-          - entity_id: switch.driveway
-          - entity_id: switch.wemoporch
-        card_config:
-          title: Lights
-      - type: entities
-        title: Switches
-        entities:
-          - switch.wemoswitch
-          - switch.garage_relay_switch
-          - switch.wemoinsight
-      - type: entities
-        title: Ring Doorbell
-        entities:
-          - binary_sensor.ring_front_door_ding
-          - binary_sensor.ring_front_door_motion
-          - sensor.ring_front_door_last_activity
-          - sensor.ring_front_door_last_ding
-          - sensor.ring_front_door_last_motion
-      - type: picture-glance
-        image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=240&w=495
-        title: Living
-        entities:
-          - light.living_room_lights
-          - binary_sensor.motion_sensor_158d00016daecc
-          - sensor.humidity_158d0001ab3c88
-          - sensor.temperature_158d0001ab3c88
       - type: picture-elements
         title: Main Level
         image: /local/floorplans/main.jpg
@@ -234,6 +157,82 @@ views:
             style:
               top: 15%
               left: 15%
+      - type: "custom:weather-card"
+        entities:
+          - weather.yweather
+          - sun.sun
+      - type: entities
+        title: Investments
+        entities:
+          - sensor.portfolioval
+          - sensor.portfoliochange
+          - sensor.dow_futures
+          - sensor.dow_futures_change
+          - sensor.dow_futures_change_pct
+          - sensor.nasdaq_futures
+          - sensor.nasdaq_futures_change
+          - sensor.nasdaq_futures_change_pct
+          - sensor.sp_futures
+          - sensor.sp_futures_change
+          - sensor.sp_futures_change_pct
+          - sensor.10_year_treasury
+      - type: entities
+        title: Information
+        entities:
+          - sensor.morning_commute
+          - sensor.alok_to_home
+          - sensor.plexspy
+          - sensor.usdinr
+      - type: entities
+        title: Home Security
+        show_header_toggle: false
+        entities:
+          - alarm_control_panel.abode_alarm
+          - alarm_control_panel.arlohome
+          - alarm_control_panel.abode
+          - input_select.abodestatus
+          - cover.garagedoor
+          - input_boolean.abodeupdate
+          - binary_sensor.back_door
+          - binary_sensor.front_door
+          - binary_sensor.door_window_sensor_158d0001bf26df
+          - input_boolean.startrecording
+          - binary_sensor.motion_sensor_158d00016daecc
+          - binary_sensor.motion_sensor_158d00016612af
+          - binary_sensor.motion_sensor_158d0001a1f2ab
+      - type: glance
+        title: Doors
+        entities:
+          - binary_sensor.back_door
+          - binary_sensor.front_door
+          - entity: binary_sensor.door_window_sensor_158d0001bf26df
+            title: Garage
+          - entity: binary_sensor.ring_front_door_motion
+            title: Front Motion
+      - type: entity-filter
+        filter:
+          - domain: light
+            state: 'on'
+          - domain: light
+            state: 'off'
+          - entity_id: switch.driveway
+          - entity_id: switch.wemoporch
+        card_config:
+          title: Lights
+      - type: entities
+        title: Switches
+        entities:
+          - switch.wemoswitch
+          - switch.garage_relay_switch
+          - switch.wemoinsight
+      - type: entities
+        title: Ring Doorbell
+        entities:
+          - binary_sensor.ring_front_door_ding
+          - binary_sensor.ring_front_door_motion
+          - sensor.ring_front_door_last_activity
+          - sensor.ring_front_door_last_ding
+          - sensor.ring_front_door_last_motion
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
@@ -451,13 +450,20 @@ views:
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
           - image_processing.sighthound_porch
-      - type: entities
-        title: Camera Switches
-        entities:
-          - switch.backyardmotion
-          - switch.drivewaymotion
-          - switch.patiomotion
-          - switch.porchmotion
+      # - type: entities
+      #   title: Camera Switches
+      #   entities:
+      #     - switch.backyardmotion
+      #     - switch.drivewaymotion
+      #     - switch.patiomotion
+      #     - switch.porchmotion
+      - type: row
+        cards:
+          - type: entity-filter
+            filter:
+              - entity_id: switch.*motion
+            card:
+              type: glance
       - type: entities
         title: Network Details
         entities:
