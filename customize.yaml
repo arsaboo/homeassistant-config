@@ -183,11 +183,25 @@
      input_boolean.startrecording:
        emulated_hue_hidden: false
      switch.driveway:
+       templates:
+         icon_color: >
+            if (state === 'on') return 'rgb(251, 210, 41)';
+            return 'rgb(54, 95, 140)';
+         icon: >
+            if (state === 'on') return 'mdi:lightbulb-on';
+            return 'mdi:lightbulb';
        emulated_hue_hidden: false
        emulated_hue_name: "Driveway Light"
        friendly_name: "Driveway Light"
        homebridge_hidden: false
      switch.wemoporch:
+       templates:
+         icon_color: >
+            if (state === 'on') return 'rgb(251, 210, 41)';
+            return 'rgb(54, 95, 140)';
+         icon: >
+            if (state === 'on') return 'mdi:lightbulb-on';
+            return 'mdi:lightbulb';
        emulated_hue_hidden: false
        emulated_hue_name: "Porch Lights"
        friendly_name: "Porch Lights"
@@ -198,6 +212,11 @@
        friendly_name: Garage Door Switch
      input_boolean.tv:
        homebridge_hidden: false
+     input_boolean.tvtime:
+       templates:
+         icon: >
+            if (state === 'on') return 'mdi:television-classic';
+            return 'mdi:television-classic-off';
      cover.garagedoor:
        homebridge_cover_type: garage_door
 

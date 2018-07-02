@@ -4,6 +4,10 @@ automation.*:
 device_tracker.*:
   custom_ui_state_card: state-card-custom-ui
   show_last_changed: true
+input_boolean.*:
+ templates:
+   icon_color: >
+     if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';
 sensor.*_futures_change:
  templates:
    icon_color: >
