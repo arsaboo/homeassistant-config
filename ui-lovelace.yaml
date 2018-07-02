@@ -518,7 +518,7 @@ views:
     title: Testing
     cards:
       - type: glance
-        title: Rashmi
+        title: Devices
         entities:
           - entity: device_tracker.pi_rashmiphone
             title: Owntracks
@@ -530,23 +530,100 @@ views:
             title: Life360
           - entity: device_tracker.e1594e5321df414c82daf655d5282fca
             title: Geofency
+          - entity: device_tracker.pi_alokphone
+            title: Owntracks
+          - entity: device_tracker.alokiosiphone
+            title: HA App
+          - entity: device_tracker.myiphone
+            title: WiFi
+          - entity: device_tracker.alok_alok
+            title: Life360
+          - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
+            title: Geofency
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            entity: device_tracker.meta_alok
+            state_image:
+              "home": /local/icons/alok_home.png
+              "not_home": /local/icons/alok_not_home.png
+              "buckhead": /local/icons/alok_not_home.png
+              "Buckhead": /local/icons/alok_not_home.png
+            title: " "
+          - type: picture-entity
+            entity: device_tracker.meta_rashmi
+            state_image:
+              "home": /local/icons/rashmi_home.png
+              "not_home": /local/icons/rashmi_not_home.png
+            title: " "
       - type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.pi_rashmiphone
-            image: /local/icons/life360.png
+            title: " "
+            state_image:
+              "home": /local/icons/rashmi_owntracks_home.png
+              "not_home": /local/icons/rashmi_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmiappiphone
-            image: /local/icons/life360.png
+            title: " "
+            state_image:
+              "home": /local/icons/rashmi_ios_home.png
+              "not_home": /local/icons/rashmi_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmisiphone
-            image: /local/icons/life360.png
+            title: " "
+            state_image:
+              "home": /local/icons/rashmi_wifi_home.png
+              "not_home": /local/icons/rashmi_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.sonu_sonu
-            image: /local/icons/life360.png
+            title: " "
+            state_image:
+              "home": /local/icons/rashmi_life360_home.png
+              "not_home": /local/icons/rashmi_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            image: /local/icons/life360.png
+            title: " "
+            state_image:
+              "home": /local/icons/rashmi_geofency_home.png
+              "not_home": /local/icons/rashmi_geofency_not_home.png
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            entity: device_tracker.pi_alokphone
+            title: " "
+            state_image:
+              "home": /local/icons/alok_owntracks_home.png
+              "not_home": /local/icons/alok_owntracks_not_home.png
+              "Buckhead": /local/icons/alok_owntracks_not_home.png
+          - type: picture-entity
+            entity: device_tracker.alokiosiphone
+            title: " "
+            state_image:
+              "home": /local/icons/alok_ios_home.png
+              "not_home": /local/icons/alok_ios_not_home.png
+              "Buckhead": /local/icons/alok_ios_not_home.png
+          - type: picture-entity
+            entity: device_tracker.myiphone
+            title: " "
+            state_image:
+              "home": /local/icons/alok_wifi_home.png
+              "not_home": /local/icons/alok_wifi_not_home.png
+          - type: picture-entity
+            entity: device_tracker.alok_alok
+            title: " "
+            state_image:
+              "home": /local/icons/alok_life360_home.png
+              "not_home": /local/icons/alok_life360_not_home.png
+              "Buckhead": /local/icons/alok_life360_not_home.png
+          - type: picture-entity
+            entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
+            title: " "
+            state_image:
+              "home": /local/icons/alok_geofency_home.png
+              "not_home": /local/icons/alok_geofency_not_home.png
+              "buckhead": /local/icons/alok_geofency_not_home.png
       - type: horizontal-stack
         cards:
           - type: entity-filter
