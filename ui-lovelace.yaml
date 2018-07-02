@@ -20,7 +20,8 @@ views:
             title: Lights Off
             style:
               top: 97%
-              left: 70%
+              right: 00%
+              padding: 0px
             service: light.turn_off
             service_data:
               entity_id: group.all_lights
@@ -191,6 +192,7 @@ views:
       #   entities:
       #     - weather.yweather
       #     - sun.sun
+
       - type: entities
         title: Investments
         entities:
@@ -247,7 +249,7 @@ views:
             state: 'off'
           - entity_id: switch.driveway
           - entity_id: switch.wemoporch
-        card_config:
+        card:
           title: Lights
       - type: entities
         title: Switches
@@ -418,43 +420,15 @@ views:
         entities:
           - device_tracker.meta_rashmi
           - device_tracker.meta_alok
-      - type: glance
-        title: Rashmi
-        entities:
-          - entity: device_tracker.pi_rashmiphone
-            title: Owntracks
-          - entity: device_tracker.rashmiappiphone
-            title: HA App
-          - entity: device_tracker.rashmisiphone
-            title: WiFi
-          - entity: device_tracker.sonu_sonu
-            title: Life360
-          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            title: Geofency
-      - type: entities
-        title: Devices
-        entities:
-          - device_tracker.pi_rashmiphone
-          - device_tracker.rashmiappiphone
-          - device_tracker.rashmisiphone
-          - device_tracker.sonu_sonu
-          - device_tracker.e1594e5321df414c82daf655d5282fca
-          - device_tracker.pi_alokphone
-          - device_tracker.alokiosiphone
-          - device_tracker.myiphone
-          - device_tracker.alok_alok
-          - device_tracker.b4445761f6c04b7f835fcfdc03b47111
-          - binary_sensor.rashmi_home
-          - proximity.rashmi
-          - binary_sensor.alok_home
-          - proximity.alok
       - type: entity-filter
-        card: glance
+        title: Devices
+        show_empty: false
         filter:
           - domain: device_tracker
             state: 'home'
-        card_config:
+        card:
           title: Devices
+          card: glance
 
       - type: entities
         title: HASS Details
@@ -500,13 +474,6 @@ views:
       #     - switch.drivewaymotion
       #     - switch.patiomotion
       #     - switch.porchmotion
-      - type: row
-        cards:
-          - type: entity-filter
-            filter:
-              - entity_id: switch.*motion
-            card:
-              type: glance
       - type: entities
         title: Network Details
         entities:
@@ -543,5 +510,47 @@ views:
       - type: entity-filter
         filter:
           - domain: automation
-        card_config:
+        card:
           title: All Automations
+
+  - icon: mdi:test-tube
+    id: test
+    title: Testing
+    cards:
+      - type: glance
+        title: Rashmi
+        entities:
+          - entity: device_tracker.pi_rashmiphone
+            title: Owntracks
+          - entity: device_tracker.rashmiappiphone
+            title: HA App
+          - entity: device_tracker.rashmisiphone
+            title: WiFi
+          - entity: device_tracker.sonu_sonu
+            title: Life360
+          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
+            title: Geofency
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            entity: device_tracker.pi_rashmiphone
+            image: /local/icons/life360.png
+          - type: picture-entity
+            entity: device_tracker.rashmiappiphone
+            image: /local/icons/life360.png
+          - type: picture-entity
+            entity: device_tracker.rashmisiphone
+            image: /local/icons/life360.png
+          - type: picture-entity
+            entity: device_tracker.sonu_sonu
+            image: /local/icons/life360.png
+          - type: picture-entity
+            entity: device_tracker.e1594e5321df414c82daf655d5282fca
+            image: /local/icons/life360.png
+      - type: horizontal-stack
+        cards:
+          - type: entity-filter
+            filter:
+              - entity_id: switch.*motion
+            card:
+              type: glance
