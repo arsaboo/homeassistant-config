@@ -1343,11 +1343,16 @@
     platform: state
     entity_id: input_boolean.tv
   action:
-    service: remote.send_command
-    data_template:
-      command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
-      device: 31747892
-      entity_id: remote.livingroom
+    - service: remote.send_command
+      data_template:
+        command: Home
+        device: 31747959
+        entity_id: remote.livingroom
+    - service: remote.send_command
+      data_template:
+        command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
+        device: 31747892
+        entity_id: remote.livingroom
 - id: set_volume
   alias: "Set Volume"
   initial_state: 'on'
