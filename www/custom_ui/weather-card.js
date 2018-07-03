@@ -2,7 +2,6 @@ class WeatherCard extends HTMLElement {
   set hass(hass) {
     if (!this.content) {
       const card = document.createElement('ha-card');
-      // card.header = 'Weather Forecast';
       const link = document.createElement('link');
       link.type = 'text/css';
       link.rel = 'stylesheet';
@@ -111,8 +110,7 @@ class WeatherCard extends HTMLElement {
     this.config = config;
   }
 
-  // The height of your card. Home Assistant uses this to automatically
-  // distribute all cards over the available columns.
+  // @TODO: This requires more intelligent logic
   getCardSize() {
     return 3;
   }
