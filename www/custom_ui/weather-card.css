@@ -13,6 +13,7 @@
 
   .ha-icon {
     height: 18px;
+    margin-right: 5px;
     color: var(--paper-item-icon-color);
   }
 
@@ -41,7 +42,7 @@
     color: var(--primary-text-color);
     list-style: none;
     margin-left: -2em;
-    margin-top: 3.5em;
+    margin-top: 4.5em;
   }
 
   .variations.right {
@@ -104,6 +105,7 @@
   .icon {
     width: 50px;
     height: 50px;
+    margin-right: 5px;
     display: inline-block;
     vertical-align: middle;
     background-size: contain;
