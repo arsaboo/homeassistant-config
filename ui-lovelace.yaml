@@ -31,6 +31,12 @@ views:
             style:
               top: 3%
               left: 30%
+          - type: state-icon
+            entity: input_boolean.tvtime
+            tap_action: toggle
+            style:
+              top: 3%
+              left: 40%
             # Kitchen
           - type: state-icon
             entity: light.kitchen_lights
@@ -188,11 +194,6 @@ views:
             style:
               top: 15%
               left: 15%
-      # - type: "custom:weather-card"
-      #   entities:
-      #     - weather.yweather
-      #     - sun.sun
-
       - type: entities
         title: Investments
         entities:
@@ -272,6 +273,9 @@ views:
     cards:
       - type: 'custom:custom-weather-animated'
         entity: input_boolean.weather
+      - type: "custom:weather-card"
+        entity_weather: weather.yweather
+        entity_sun: sun.sun
       # - type: "custom:wired-toggle-card"
       #   entities:
       #     - input_boolean.abodeupdate
@@ -337,9 +341,9 @@ views:
           - input_select.hvacmode
           - input_select.lyricmode
           - switch.lyric_mode_off
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.meteogram
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.wundergroundradar
       - type: iframe
         aspect_ratio: 70%
@@ -348,25 +352,25 @@ views:
     id: cameras
     title: Cameras
     cards:
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.driveway
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.patio
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.porch
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.backyard
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.arlo3
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.arlolivingroom
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.livingroom2
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.front_door
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.worldtime
-      - type: camera-preview
+      - type: picture-entity
         entity: camera.ars_bloom
 
   - icon: mdi:play-circle-outline
@@ -549,42 +553,42 @@ views:
               "not_home": /local/icons/alok_not_home.png
               "buckhead": /local/icons/alok_not_home.png
               "Buckhead": /local/icons/alok_not_home.png
-            title: " "
+            show_info: false
           - type: picture-entity
             entity: device_tracker.meta_rashmi
             state_image:
               "home": /local/icons/rashmi_home.png
               "not_home": /local/icons/rashmi_not_home.png
-            title: " "
+            show_info: false
       - type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.pi_rashmiphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/rashmi_owntracks_home.png
               "not_home": /local/icons/rashmi_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmiappiphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/rashmi_ios_home.png
               "not_home": /local/icons/rashmi_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmisiphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/rashmi_wifi_home.png
               "not_home": /local/icons/rashmi_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.sonu_sonu
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/rashmi_life360_home.png
               "not_home": /local/icons/rashmi_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/rashmi_geofency_home.png
               "not_home": /local/icons/rashmi_geofency_not_home.png
@@ -592,42 +596,35 @@ views:
         cards:
           - type: picture-entity
             entity: device_tracker.pi_alokphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/alok_owntracks_home.png
               "not_home": /local/icons/alok_owntracks_not_home.png
               "Buckhead": /local/icons/alok_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.alokiosiphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/alok_ios_home.png
               "not_home": /local/icons/alok_ios_not_home.png
               "Buckhead": /local/icons/alok_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.myiphone
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/alok_wifi_home.png
               "not_home": /local/icons/alok_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.alok_alok
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/alok_life360_home.png
               "not_home": /local/icons/alok_life360_not_home.png
               "Buckhead": /local/icons/alok_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
-            title: " "
+            show_info: false
             state_image:
               "home": /local/icons/alok_geofency_home.png
               "not_home": /local/icons/alok_geofency_not_home.png
               "buckhead": /local/icons/alok_geofency_not_home.png
-      - type: horizontal-stack
-        cards:
-          - type: entity-filter
-            filter:
-              - entity_id: switch.*motion
-            card:
-              type: glance
