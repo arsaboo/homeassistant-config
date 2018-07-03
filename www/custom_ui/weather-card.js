@@ -83,16 +83,16 @@ class WeatherCard extends HTMLElement {
     this.content.innerHTML = `
       <span class="icon bigger" style="background: none, url(/local/icons/weather_icons/animated/${weatherIcons[currentCondition]}.svg) no-repeat; background-size: contain;">${currentCondition}</span>
       <span class="temp">${temperature}</span><span class="tempc"> ${getUnit('temperature')}</span>
-      <div>
+      <span>
         <ul class="variations right">
             <li><span class="ha-icon"><ha-icon icon="mdi:water-percent"></ha-icon></span>${humidity}<span class="unit"> %</span></li>
-            <li><span class="ha-icon"><ha-icon icon="mdi:gauge"></ha-icon></span>${pressure}<span class="unit"> ${getUnit('temperature')}</span></li>
+            <li><span class="ha-icon"><ha-icon icon="mdi:gauge"></ha-icon></span>${pressure}<span class="unit"> ${getUnit('air_pressure')}</span></li>
         </ul>
         <ul class="variations">
             <li><span class="ha-icon"><ha-icon icon="mdi:weather-windy"></ha-icon></span>${windBearing} ${windSpeed}<span class="unit"> ${getUnit('length')}/h</span></li>
             <li><span class="ha-icon"><ha-icon icon="mdi:weather-fog"></ha-icon></span>${visibility}<span class="unit"> ${getUnit('length')}</span></li>
         </ul>
-      </div>
+      </span>
       <div class="forecast clear">
           ${forecast.map(daily => `
               <div class="day">
