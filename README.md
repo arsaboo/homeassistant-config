@@ -76,7 +76,17 @@ docker create \
     * [Pollen](https://home-assistant.io/components/sensor.pollen/) sensor for allergy related information
 
 ## My Home Assistant dashboard
-<img src="https://github.com/arsaboo/homeassistant-config/blob/master/HA_screenshot_1.png" alt="Home Assistant dashboard" />
+
+I moved my entire configuration to Lovelace. Here are some screenshots (please note that these may not be the most updated images, but you should get an idea).
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/ha_ss_1.png" alt="Home Assistant dashboard" />
+
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/ha_ss_2.png" alt="Home Assistant dashboard" />
+
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/ha_ss_3.png" alt="Home Assistant dashboard" />
+
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/ha_ss_4.png" alt="Home Assistant dashboard" />
+
+<img src="https://github.com/arsaboo/homeassistant-config/blob/master/ha_ss_5.png" alt="Home Assistant dashboard" />
 
 # Useful links
 
