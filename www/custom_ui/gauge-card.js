@@ -38,7 +38,7 @@ function _updateStyle(element, scale) {
     .gauge-c{
       z-index: 2;
       position: absolute;
-      background-color: #5664F9;
+      background-color: var(--label-badge-yellow);
       width: calc(var(--base-unit) * 4);
       height: calc(var(--base-unit) * 2);
       top: calc(var(--base-unit) * 2);
@@ -52,21 +52,21 @@ function _updateStyle(element, scale) {
     .gauge-data{
       z-index: 4;
       color: var(--primary-text-color);
-      line-height: calc(var(--base-unit) * 0.25);
+      line-height: calc(var(--base-unit) * 0.3);
       position: absolute;
       width: calc(var(--base-unit) * 4);
-      height: calc(var(--base-unit) * 2);
-      top: calc(var(--base-unit) * 1.3);
+      height: calc(var(--base-unit) * 2.1);
+      top: calc(var(--base-unit) * 1.2);
       margin-left: auto;
       margin-right: auto;
       transition: all 1s ease-out;
     }
     .gauge-data #percent{
-      font-size: 1.5em;
+      font-size: calc(var(--base-unit) * 0.55);
     }
     .gauge-data #title{
-      padding-top: 10px;
-      font-size: 0.9em;
+      padding-top: calc(var(--base-unit) * 0.15);
+      font-size: calc(var(--base-unit) * 0.30);
     }
   `;
 }
@@ -82,8 +82,35 @@ function _updateContent(element) {
   `;
 }
 
-function translateTurn(value, config) {
-  return 5*(value - config.min)/(config.max - config.min)
+function _translateTurn(value, config) {
+  return 5 * (value - config.min) / (config.max - config.min)
+}
+
+function _computeSeverity(stateValue, sections) {
+  let numberValue = Number(stateValue);
+  const severityMap = {
+    red: "var(--label-badge-red)",
+    green: "var(--label-badge-green)",
+    amber: "var(--label-badge-yellow)",
+    normal: "var(--label-badge-blue)",
+  }
+  if (!sections) return severityMap["normal"];
+  let sortable = [];
+  for (let severity in sections) {
+    sortable.push([severity, sections[severity]]);
+  }
+  sortable.sort((a, b) => { return a[1] - b[1] });
+
+  if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
+    return severityMap[sortable[0][0]]
+  }
+  if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
+    return severityMap[sortable[1][0]]
+  }
+  if (numberValue >= sortable[2][1]) {
+    return severityMap[sortable[2][0]]
+  }
+  return severityMap["normal"];
 }
 
 class GaugeCard extends HTMLElement {
@@ -116,11 +143,12 @@ class GaugeCard extends HTMLElement {
     const entityState = hass.states[config.entity].state;
     const measurement = hass.states[config.entity].attributes.unit_of_measurement;
 
-    if (!config.entity || entityState !== this._entityState) {
+    if (entityState !== this._entityState) {
       this.lastChild.shadowRoot.getElementById("percent").textContent = `${entityState} ${measurement}`;
       this.lastChild.shadowRoot.getElementById("title").textContent = config.title;
-      const turn = translateTurn(entityState, config)/10;
+      const turn = _translateTurn(entityState, config) / 10;
       this.lastChild.shadowRoot.getElementById("gauge").style.transform = `rotate(${turn}turn)`;
+      this.lastChild.shadowRoot.getElementById("gauge").style.backgroundColor = _computeSeverity(entityState, config.severity);
       this._entityState = entityState
     }
 
