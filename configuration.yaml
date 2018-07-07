@@ -139,9 +139,9 @@ bloomsky:
 ecobee:
   api_key: !secret ecobee_key
   hold_temp: True
-lyric:
-  client_id: !secret lyric_client_id
-  client_secret: !secret lyric_client_secret
+# lyric:
+#   client_id: !secret lyric_client_id
+#   client_secret: !secret lyric_client_secret
 
 shell_command:
   image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
