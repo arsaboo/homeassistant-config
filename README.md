@@ -31,7 +31,8 @@ docker create \
 
 ## Some of the devices and services that I use with HA
   * [Aeotec Z-Stick Gen5](https://www.amazon.com/dp/B00X0AWA6E/) for Z-Wave control
-    * I use a [z-wave dry contact relay](https://www.amazon.com/gp/product/B00ER6MH22/) along with a tilt sensor for automating my garage door
+    * I use a [z-wave dry contact relay](https://www.amazon.com/gp/product/B00ER6MH22/) along with a tilt sensor for automating my garage door. 
+    <img src="https://github.com/arsaboo/homeassistant-config/blob/master/z-wave_relay.png" alt="Z-wave Relay wiring" />
   * [Xiaomi Aqara](https://www.aliexpress.com/item/Original-Xiaomi-Smart-Gateway-2-Intelligent-Web-Wifi-Radio-and-Ringbell-Smart-Window-and-Door-Sensor/32816289388.html) for Zigbee sensors
     * Currently using [water](https://www.gearbest.com/home-smart-improvements/pp_668897.html), [temperature/humidity](https://www.gearbest.com/access-control/pp_626702.html), [door/window](https://www.gearbest.com/smart-light-bulb/pp_257677.html), and [human body](https://www.gearbest.com/alarm-systems/pp_659226.html) sensors
     * Also, using [Mi Magic Cube](https://www.aliexpress.com/item/Xiaomi-Mi-Magic-Cube-Controller-Zigbee-Version-Controlled-by-Six-Actions-For-Smart-Home-Device-work/32826737195.html) for volume and brightness automation.
