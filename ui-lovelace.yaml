@@ -1,9 +1,17 @@
 resources:
   - url: /local/custom_ui/weather-card.js
     type: js
+  - url: /local/custom_ui/dark-sky-weather-card.js
+    type: js
+  - url: /local/custom_ui/monster-card.js
+    type: js
+  - url: /local/custom_ui/gauge-card.js
+    type: js
+  - url: /local/custom_ui/bignumber-card.js
+    type: js
+  - url: /local/custom_ui/alarm_control_panel-card.js
+    type: js
 
-#   - url: /local/custom_ui/wired-card.js
-#     type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -13,14 +21,14 @@ views:
     # theme: darkorange
     cards:
       - type: picture-elements
-        title: Main Level
+        # title: Main Level
         image: /local/floorplans/main.jpg
         elements:
           - type: service-button
             title: Lights Off
             style:
               top: 97%
-              right: 00%
+              left: 90%
               padding: 0px
             service: light.turn_off
             service_data:
@@ -73,10 +81,26 @@ views:
               top: 35%
               left: 50%
           - type: state-label
-            entity: sensor.temperature_158d0001ab3c88
+            entity: sensor.livingroom_temp_rounded
             style:
-              top: 40%
+              top: 43%
               left: 50%
+              'background-color': gray
+              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              # 'background-color': red
+              # 'border-radius': 100%
+              'text-align': center
+              'font-size': 12px
+              'color': white
+              'font-family': Helvetica
+              'display': block
+              'overflow': hidden
+              # 'width': 27px
+              # 'height': 27px
+              # 'border-radius': 50%
+              # 'width': 20px
+              # 'height': 20px
+              # 'opacity': 0.8
           - type: state-icon
             entity: binary_sensor.motion_sensor_158d00016daecc
             style:
@@ -137,33 +161,48 @@ views:
               left: 78%
             # Study
           - type: state-label
-            entity: sensor.temperature_158d0001ab3b2b
+            entity: sensor.study_temp_rounded
             style:
               top: 78%
               left: 50%
+              'background-color': gray
+              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              # 'background-color': red
+              # 'border-radius': 100%
+              'text-align': center
+              'font-size': 12px
+              'color': white
+              'font-family': Helvetica
+              'display': block
+              'overflow': hidden
           - type: state-label
             entity: sensor.humidity_158d0001ab3b2b
             style:
               top: 83%
               left: 50%
             # Dining
-          - type: state-icon
-            entity: climate.downstairs
+          - type: state-label
+            entity: sensor.dining_temp_rounded
             style:
               top: 78%
               left: 15%
-          - type: state-label
-            entity: sensor.downstairs_temperature
-            style:
-              top: 85%
-              left: 15%
+              'background-color': gray
+              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              # 'background-color': red
+              # 'border-radius': 100%
+              'text-align': center
+              'font-size': 12px
+              'color': white
+              'font-family': Helvetica
+              'display': block
+              'overflow': hidden
           - type: state-icon
             entity: binary_sensor.front_door
             style:
               top: 89%
               left: 32%
       - type: picture-elements
-        title: Second Level
+        # title: Second Level
         image: /local/floorplans/second.jpg
         elements:
           - type: state-icon
@@ -185,15 +224,33 @@ views:
               left: 66%
             # Kids room
           - type: state-label
-            entity: sensor.upstairs_temperature
+            entity: sensor.kids_temp_rounded
             style:
-              top: 23%
+              top: 18%
               left: 15%
-          - type: state-icon
-            entity: climate.upstairs
-            style:
-              top: 15%
-              left: 15%
+              'background-color': gray
+              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              # 'background-color': red
+              # 'border-radius': 100%
+              'text-align': center
+              'font-size': 12px
+              'color': white
+              'font-family': Helvetica
+              'display': block
+              'overflow': hidden
+      - type: vertical-stack
+        cards:
+          - type: custom:alarm_control_panel-card
+            entity: alarm_control_panel.abode_alarm
+            title: Abode
+            states:
+              - arm_home
+              - arm_away
+          - type: custom:alarm_control_panel-card
+            entity: alarm_control_panel.arlohome
+            title: Arlo
+            states:
+              - arm_away
       - type: entities
         title: Investments
         entities:
@@ -222,7 +279,7 @@ views:
         entities:
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.arlohome
-          - alarm_control_panel.abode
+          # - alarm_control_panel.abode
           - input_select.abodestatus
           - cover.garagedoor
           - input_boolean.abodeupdate
@@ -233,25 +290,17 @@ views:
           - binary_sensor.motion_sensor_158d00016daecc
           - binary_sensor.motion_sensor_158d00016612af
           - binary_sensor.motion_sensor_158d0001a1f2ab
-      - type: glance
-        title: Doors
+      - type: entities
+        title: Lights
         entities:
-          - binary_sensor.back_door
-          - binary_sensor.front_door
-          - entity: binary_sensor.door_window_sensor_158d0001bf26df
-            title: Garage
-          - entity: binary_sensor.ring_front_door_motion
-            title: Front Motion
-      - type: entity-filter
-        filter:
-          - domain: light
-            state: 'on'
-          - domain: light
-            state: 'off'
-          - entity_id: switch.driveway
-          - entity_id: switch.wemoporch
-        card:
-          title: Lights
+          - light.gateway_light_34ce00813670
+          - light.hue_color_lamp_3
+          - light.kitchen_lights
+          - light.lifx5
+          - light.lifx3
+          - light.lifxnrguest
+          - light.lifxnrkitchen
+          - light.living_room_lights
       - type: entities
         title: Switches
         entities:
@@ -269,10 +318,9 @@ views:
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
-    garage_door_tilt_sensor_alarm_level: Weather
     cards:
-      - type: 'custom:custom-weather-animated'
-        entity: input_boolean.weather
+      # - type: 'custom:custom-weather-animated'
+      #   entity: input_boolean.weather
       - type: "custom:weather-card"
         entity_weather: weather.yweather
         entity_sun: sun.sun
@@ -320,8 +368,6 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
-      - type: weather-forecast
-        entity: weather.yweather
       - type: entities
         title: Thermostats
         entities:
@@ -337,7 +383,7 @@ views:
           - sensor.upstairs_temperature
           - switch.upstairs_away
           - sensor.upstairs_hvac_runtime
-          - climate.lyric_t5_thermostat
+          # - climate.lyric_t5_thermostat
           - input_select.hvacmode
           - input_select.lyricmode
           - switch.lyric_mode_off
@@ -354,6 +400,7 @@ views:
     cards:
       - type: picture-entity
         entity: camera.driveway
+        show_info: false
       - type: picture-entity
         entity: camera.patio
       - type: picture-entity
@@ -370,8 +417,10 @@ views:
         entity: camera.front_door
       - type: picture-entity
         entity: camera.worldtime
+        show_info: false
       - type: picture-entity
         entity: camera.ars_bloom
+
 
   - icon: mdi:play-circle-outline
     id: media
@@ -395,6 +444,7 @@ views:
         show_header_toggle: false
         entities:
           - input_boolean.partymode
+          - script.sonoslinein
           - script.colorloop_start
           - script.disco_party
           - script.lifx_stop_effects
@@ -419,147 +469,6 @@ views:
     id: settings
     title: Settings
     cards:
-      - type: entities
-        title: Household
-        entities:
-          - device_tracker.meta_rashmi
-          - device_tracker.meta_alok
-      - type: entity-filter
-        title: Devices
-        show_empty: false
-        filter:
-          - domain: device_tracker
-            state: 'home'
-        card:
-          title: Devices
-          card: glance
-
-      - type: entities
-        title: HASS Details
-        show_header_toggle: false
-        entities:
-          - switch.developer_mode
-          - sensor.hassuptime
-          - sensor.ssl_certificate_expiry
-          - input_select.current_theme
-      - type: entities
-        title: Camera Sensors
-        entities:
-          - binary_sensor.backyard_motion
-          - binary_sensor.backyard_field_detection
-          - binary_sensor.backyard_line_crossing
-          - binary_sensor.driveway_motion
-          - binary_sensor.driveway_field_detection
-          - binary_sensor.driveway_line_crossing
-          - binary_sensor.patio_motion
-          - binary_sensor.patio_field_detection
-          - binary_sensor.patio_line_crossing
-          - binary_sensor.porch_field_detection
-          - binary_sensor.porch_line_crossing
-          - binary_sensor.porch_motion
-      - type: entities
-        title: Camera Processing
-        show_header_toggle: false
-        entities:
-          - script.classify_images
-          - image_processing.facebox_backyard
-          - image_processing.facebox_patio
-          - image_processing.facebox_driveway
-          - image_processing.facebox_porch
-          - image_processing.tagbox_backyard
-          - image_processing.tagbox_patio
-          - image_processing.tagbox_driveway
-          - image_processing.tagbox_porch
-          - image_processing.sighthound_porch
-      # - type: entities
-      #   title: Camera Switches
-      #   entities:
-      #     - switch.backyardmotion
-      #     - switch.drivewaymotion
-      #     - switch.patiomotion
-      #     - switch.porchmotion
-      - type: entities
-        title: Network Details
-        entities:
-          - binary_sensor.pihole
-          - sensor.speedtest_download
-          - sensor.pihole_dns_queries_today
-          - sensor.pihole_domains_blocked
-          - sensor.pihole_ads_percentage_blocked_today
-          - sensor.pihole_dns_unique_domains
-          - sensor.glances_cpu_load
-          - sensor.glances_disk_used
-          - sensor.glances_ram_used
-      - type: entities
-        title: Arlo
-        entities:
-          - sensor.battery_level_arlolivingroom
-          - sensor.captured_today_arlolivingroom
-          - sensor.signal_strength_arlolivingroom
-          - sensor.battery_level_livingroom2
-          - sensor.captured_today_livingroom2
-          - sensor.signal_strength_livingroom2
-          - sensor.battery_level_arlo3
-          - sensor.captured_today_arlo3
-          - sensor.signal_strength_arlo3
-      - type: entities
-        title: USCIS
-        entities:
-          - sensor.alok_485
-          - sensor.alok_131
-          - sensor.rashmi_485
-          - sensor.rashmi_131
-          - sensor.arnav_485
-          - sensor.arnav_131
-      - type: entity-filter
-        filter:
-          - domain: automation
-        card:
-          title: All Automations
-
-  - icon: mdi:test-tube
-    id: test
-    title: Testing
-    cards:
-      - type: glance
-        title: Devices
-        entities:
-          - entity: device_tracker.pi_rashmiphone
-            title: Owntracks
-          - entity: device_tracker.rashmiappiphone
-            title: HA App
-          - entity: device_tracker.rashmisiphone
-            title: WiFi
-          - entity: device_tracker.sonu_sonu
-            title: Life360
-          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            title: Geofency
-          - entity: device_tracker.pi_alokphone
-            title: Owntracks
-          - entity: device_tracker.alokiosiphone
-            title: HA App
-          - entity: device_tracker.myiphone
-            title: WiFi
-          - entity: device_tracker.alok_alok
-            title: Life360
-          - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
-            title: Geofency
-      - type: horizontal-stack
-        cards:
-          - type: picture-entity
-            entity: device_tracker.meta_alok
-            state_image:
-              "home": /local/icons/alok_home.png
-              "not_home": /local/icons/alok_not_home.png
-              "buckhead": /local/icons/alok_not_home.png
-              "Buckhead": /local/icons/alok_not_home.png
-            show_info: false
-          - type: picture-entity
-            entity: device_tracker.meta_rashmi
-            state_image:
-              "home": /local/icons/rashmi_home.png
-              "not_home": /local/icons/rashmi_not_home.png
-            show_info: false
       - type: horizontal-stack
         cards:
           - type: picture-entity
@@ -601,6 +510,7 @@ views:
               "home": /local/icons/alok_owntracks_home.png
               "not_home": /local/icons/alok_owntracks_not_home.png
               "Buckhead": /local/icons/alok_owntracks_not_home.png
+              "Downtown": /local/icons/alok_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.alokiosiphone
             show_info: false
@@ -608,6 +518,7 @@ views:
               "home": /local/icons/alok_ios_home.png
               "not_home": /local/icons/alok_ios_not_home.png
               "Buckhead": /local/icons/alok_ios_not_home.png
+              "Downtown": /local/icons/alok_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.myiphone
             show_info: false
@@ -621,6 +532,7 @@ views:
               "home": /local/icons/alok_life360_home.png
               "not_home": /local/icons/alok_life360_not_home.png
               "Buckhead": /local/icons/alok_life360_not_home.png
+              "Downtown": /local/icons/alok_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
             show_info: false
@@ -628,3 +540,201 @@ views:
               "home": /local/icons/alok_geofency_home.png
               "not_home": /local/icons/alok_geofency_not_home.png
               "buckhead": /local/icons/alok_geofency_not_home.png
+              "downtown": /local/icons/alok_geofency_not_home.png
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            entity: device_tracker.meta_alok
+            state_image:
+              home: /local/icons/alok_home.png
+              not_home: /local/icons/alok_not_home.png
+              buckhead: /local/icons/alok_not_home.png
+              Buckhead: /local/icons/alok_not_home.png
+              downtown: /local/icons/alok_not_home.png
+              Downtown: /local/icons/alok_not_home.png
+            show_info: false
+          - type: picture-entity
+            entity: device_tracker.meta_rashmi
+            state_image:
+              "home": /local/icons/rashmi_home.png
+              "not_home": /local/icons/rashmi_not_home.png
+            show_info: false
+
+      - type: entities
+        title: HASS Details
+        show_header_toggle: false
+        entities:
+          - switch.developer_mode
+          - sensor.hassuptime
+          - sensor.ssl_certificate_expiry
+          - input_select.current_theme
+      - type: entities
+        title: Camera Sensors
+        entities:
+          - binary_sensor.backyard_motion
+          - binary_sensor.backyard_field_detection
+          - binary_sensor.backyard_line_crossing
+          - binary_sensor.driveway_motion
+          - binary_sensor.driveway_field_detection
+          - binary_sensor.driveway_line_crossing
+          - binary_sensor.patio_motion
+          - binary_sensor.patio_field_detection
+          - binary_sensor.patio_line_crossing
+          - binary_sensor.porch_field_detection
+          - binary_sensor.porch_line_crossing
+          - binary_sensor.porch_motion
+      - type: entities
+        title: Camera Processing
+        show_header_toggle: false
+        entities:
+          - script.classify_images
+          - image_processing.facebox_backyard
+          - image_processing.facebox_patio
+          - image_processing.facebox_driveway
+          - image_processing.facebox_porch
+          - image_processing.tagbox_backyard
+          - image_processing.tagbox_patio
+          - image_processing.tagbox_driveway
+          - image_processing.tagbox_porch
+
+
+      - type: entities
+        title: Network Details
+        entities:
+          - binary_sensor.pihole
+          - sensor.speedtest_download
+          - sensor.pihole_dns_queries_today
+          - sensor.pihole_domains_blocked
+          - sensor.pihole_ads_percentage_blocked_today
+          - sensor.pihole_dns_unique_domains
+          - sensor.glances_cpu_load
+          - sensor.glances_disk_used
+          - sensor.glances_ram_used
+      - type: entities
+        title: Arlo
+        entities:
+          - sensor.battery_level_arlolivingroom
+          - sensor.captured_today_arlolivingroom
+          - sensor.signal_strength_arlolivingroom
+          - sensor.battery_level_livingroom2
+          - sensor.captured_today_livingroom2
+          - sensor.signal_strength_livingroom2
+          - sensor.battery_level_arlo3
+          - sensor.captured_today_arlo3
+          - sensor.signal_strength_arlo3
+      - type: entities
+        title: USCIS
+        entities:
+          - sensor.alok_485
+          - sensor.alok_131
+          - sensor.rashmi_485
+          - sensor.rashmi_131
+          - sensor.arnav_485
+          - sensor.arnav_131
+
+  - icon: mdi:test-tube
+    id: test
+    title: Testing
+    cards:
+      - type: glance
+        title: Devices
+        entities:
+          - entity: device_tracker.pi_rashmiphone
+            title: Owntracks
+          - entity: device_tracker.rashmiappiphone
+            title: HA App
+          - entity: device_tracker.rashmisiphone
+            title: WiFi
+          - entity: device_tracker.sonu_sonu
+            title: Life360
+          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
+            title: Geofency
+          - entity: device_tracker.pi_alokphone
+            title: Owntracks
+          - entity: device_tracker.alokiosiphone
+            title: HA App
+          - entity: device_tracker.myiphone
+            title: WiFi
+          - entity: device_tracker.alok_alok
+            title: Life360
+          - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
+            title: Geofency
+      - type: entity-filter
+        entities:
+          - light.lifx3
+        state_filter:
+          - 'off'
+        show_empty: false
+        card:
+          type: picture
+          image: https://images.pexels.com/photos/220147/pexels-photo-220147.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500
+          navigation_path: /lovelace/weather
+      - type: map
+        entities:
+          - entity: device_tracker.meta_alok
+          - entity: device_tracker.meta_rashmi
+          - zone.home
+      - type: custom:monster-card
+        card:
+          type: entities
+          title: Things that are probably broken
+        filter:
+          include:
+            - state: "unknown"
+      - type: horizontal-stack
+        cards:
+          - type: custom:gauge-card
+            title: Attic
+            entity: sensor.temperature_158d0001ab7d20
+            min: 40
+            max: 140
+            scale: '35px'
+            severity:
+              red: 90
+              green: 0
+              amber: 80
+          - type: custom:gauge-card
+            title: Living
+            entity: sensor.temperature_158d0001ab3c88
+            min: 40
+            max: 100
+            scale: '35px'
+            severity:
+              red: 80
+              green: 0
+              amber: 70
+          - type: custom:gauge-card
+            title: Living
+            entity: sensor.temperature_158d0001ab3b2b
+            min: 40
+            max: 100
+            scale: '35px'
+            severity:
+              red: 80
+              green: 0
+              amber: 70
+      - type: custom:dark-sky-weather-card
+        entity_sun: sun.sun
+        entity_daily_summary: sensor.dark_sky_daily_summary
+        entity_current_conditions: sensor.dark_sky_icon
+        entity_humidity: sensor.dark_sky_humidity
+        entity_pressure: sensor.dark_sky_pressure
+        entity_temperature: sensor.dark_sky_temperature
+        entity_visibility: sensor.dark_sky_visibility
+        entity_wind_bearing: sensor.dark_sky_wind_bearing
+        entity_wind_speed: sensor.dark_sky_wind_speed
+        entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1
+        entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2
+        entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
+        entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
+        entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
+        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature
+        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_1
+        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_2
+        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_3
+        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_4
+        entity_forecast_icon_1: sensor.dark_sky_icon_1
+        entity_forecast_icon_2: sensor.dark_sky_icon_2
+        entity_forecast_icon_3: sensor.dark_sky_icon_3
+        entity_forecast_icon_4: sensor.dark_sky_icon_4
+        entity_forecast_icon_5: sensor.dark_sky_icon_5
