@@ -102,6 +102,9 @@
         data_template:
           entity_id: remote.livingroom
           activity: PowerOff
+      - service: homeassistant.turn_off
+        data:
+          entity_id: input_boolean.tv
   sonos_say:
     alias: "Sonos TTS script"
     sequence:
@@ -200,6 +203,15 @@
             {% elif station == 'wabe' %}
               x-rincon-mp3radio://pba-ice.streamguys.org:80/wabe
             {% endif %}
+          media_content_type: "MUSIC"
+
+  sonoslinein:
+    alias: 'Sonos set Line-in'
+    sequence:
+      - service: media_player.play_media
+        data:
+          entity_id: media_player.livingroomsonos
+          media_content_id: 'x-rincon-stream:RINCON_5CAAFD01D8BC01400'
           media_content_type: "MUSIC"
 
   colorloop_start:

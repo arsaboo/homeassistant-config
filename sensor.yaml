@@ -180,6 +180,18 @@
     sensors:
       iframe_windy:
         value_template: iframe
+      livingroom_temp_rounded:
+        friendly_name: "Living room temperature"
+        value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"
+      study_temp_rounded:
+        friendly_name: "Study temperature"
+        value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
+      dining_temp_rounded:
+        friendly_name: "Dining temperature"
+        value_template: "{{states('sensor.downstairs_temperature')|round}}"
+      kids_temp_rounded:
+        friendly_name: "Dining temperature"
+        value_template: "{{states('sensor.upstairs_temperature')|round}}"
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-

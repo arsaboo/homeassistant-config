@@ -1,7 +1,7 @@
 resources:
   - url: /local/custom_ui/weather-card.js
     type: js
-  - url: /local/custom_ui/dark-sky-weather-card.js
+  - url: /local/custom_ui/dark-sky-weather-card.js?v=1
     type: js
   - url: /local/custom_ui/monster-card.js
     type: js
@@ -9,7 +9,7 @@ resources:
     type: js
   - url: /local/custom_ui/bignumber-card.js
     type: js
-  - url: /local/custom_ui/alarm_control_panel-card.js
+  - url: /local/custom_ui/alarm_control_panel-card.js?v=1
     type: js
 
 title: ARS Home
@@ -238,7 +238,7 @@ views:
               'font-family': Helvetica
               'display': block
               'overflow': hidden
-      - type: vertical-stack
+      - type: horizontal-stack
         cards:
           - type: custom:alarm_control_panel-card
             entity: alarm_control_panel.abode_alarm

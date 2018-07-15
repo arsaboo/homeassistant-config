@@ -391,7 +391,7 @@ media_player:
     username: !secret kodi_username
     password: !secret kodi_password
   - platform: panasonic_viera
-    host: 192.168.2.128
+    host: 192.168.2.242
     port: 55000
     name: Panasonic Viera TV
   - platform: plex
