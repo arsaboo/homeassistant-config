@@ -111,12 +111,20 @@ views:
             style:
               top: 17%
               left: 15%
-          - type: state-icon
-            tap_action: toggle
+          - type: image
             entity: input_boolean.tv
+            tap_action: toggle
+            image: /local/icons/tv_off2.png
+            state_image:
+              'on': /local/icons/tv_on2.png
+            state_filter:
+              'on': drop-shadow(-5px 0 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
-              top: 30%
-              left: 70%
+              top: 29%
+              left: 68.5%
+              width: 2.5%
+              padding: 10px 0 10px 30px
             # Guest Room
           - type: state-icon
             entity: binary_sensor.motion_sensor_158d0001a1f2ab
@@ -719,7 +727,8 @@ views:
         entity_current_conditions: sensor.dark_sky_icon
         entity_humidity: sensor.dark_sky_humidity
         entity_pressure: sensor.dark_sky_pressure
-        entity_temperature: sensor.dark_sky_temperature
+        entity_temperature: sensor.pws_temp_f
+        # entity_temperature: sensor.dark_sky_temperature
         entity_visibility: sensor.dark_sky_visibility
         entity_wind_bearing: sensor.dark_sky_wind_bearing
         entity_wind_speed: sensor.dark_sky_wind_speed
