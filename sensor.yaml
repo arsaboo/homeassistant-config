@@ -192,6 +192,9 @@
       kids_temp_rounded:
         friendly_name: "Dining temperature"
         value_template: "{{states('sensor.upstairs_temperature')|round}}"
+      bedroom_temp_rounded:
+        friendly_name: "Dining temperature"
+        value_template: "{{states('sensor.bedroom_temperature')|round}}"        
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-

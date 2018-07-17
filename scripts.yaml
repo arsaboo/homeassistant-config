@@ -17,6 +17,7 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
+          - switch.bedroom_away
           - switch.lyric_mode_off
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
@@ -55,6 +56,7 @@
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
+          - switch.bedroom_away
           - switch.lyric_mode_off
       - service: light.turn_off
         entity_id: group.living_room_lights

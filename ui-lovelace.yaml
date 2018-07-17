@@ -33,18 +33,36 @@ views:
             service: light.turn_off
             service_data:
               entity_id: group.all_lights
-          - type: state-icon
+          - type: image
             entity: input_boolean.abodeupdate
             tap_action: toggle
+            state_image:
+              'on': /local/icons/abode_enabled.png
+              'off': /local/icons/abode_disabled.png
             style:
-              top: 3%
+              top: 4%
               left: 30%
-          - type: state-icon
+              width: 6%
+          - type: image
             entity: input_boolean.tvtime
             tap_action: toggle
+            state_image:
+              'on': /local/icons/tv_enabled.png
+              'off': /local/icons/tv_disabled.png
             style:
-              top: 3%
+              top: 4%
               left: 40%
+              width: 6%
+          - type: image
+            entity: switch.security_armed
+            tap_action: toggle
+            state_image:
+              'on': /local/icons/security_armed_red.png
+              'off': /local/icons/security_disarmed.png
+            style:
+              top: 4%
+              left: 50%
+              width: 6%
             # Kitchen
           - type: state-icon
             entity: light.kitchen_lights
@@ -219,11 +237,27 @@ views:
               top: 40%
               left: 35%
             # Master
-          - type: state-icon
-            entity: climate.lyric_t5_thermostat
+          - type: state-label
+            entity: sensor.bedroom_temp_rounded
             style:
               top: 65%
               left: 80%
+              'background-color': gray
+              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              # 'background-color': red
+              # 'border-radius': 100%
+              'text-align': center
+              'font-size': 12px
+              'color': white
+              'font-family': Helvetica
+              'display': block
+              'overflow': hidden
+          #
+          # - type: state-icon
+          #   entity: climate.lyric_t5_thermostat
+          #   style:
+          #     top: 65%
+          #     left: 80%
             # Laundry
           - type: state-icon
             entity: binary_sensor.water_leak_sensor_158d0001d77800

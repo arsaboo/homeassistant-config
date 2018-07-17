@@ -57,6 +57,33 @@
             data:
               entity_id: climate.upstairs
               away_mode: 'False'
+      bedroom_away:
+        friendly_name: Bedroom Away
+        value_template: "{{(states.climate.bedroom.attributes|default({})).away_mode|default('off') == 'on'}}"
+        turn_on:
+          - service: climate.set_away_mode
+            data:
+              entity_id: climate.bedroom
+              away_mode: 'True'
+        turn_off:
+          - service: climate.set_away_mode
+            data:
+              entity_id: climate.bedroom
+              away_mode: 'False'
+      security_armed:
+        friendly_name: Home Security Arm
+        value_template: "{{states('alarm_control_panel.abode_alarm') != 'disarmed'}}"
+        turn_on:
+          - service: alarm_control_panel.alarm_arm_away
+            entity_id:
+              - alarm_control_panel.abode_alarm
+              - alarm_control_panel.arlohome
+        turn_off:
+          - service: alarm_control_panel.alarm_disarm
+            entity_id:
+              - alarm_control_panel.abode_alarm
+              - alarm_control_panel.arlohome
+
       developer_mode:
         friendly_name: Developer Mode
         value_template: "{{states.group.developer.attributes.view == True}}"
