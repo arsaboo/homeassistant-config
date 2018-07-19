@@ -497,6 +497,8 @@ views:
       - type: media-control
         entity: media_player.kodi_nstv
       - type: media-control
+        entity: media_player.echo_dot_gen2
+      - type: media-control
         entity: media_player.living_room_home
       - type: media-control
         entity: media_player.panasonic_viera_tv

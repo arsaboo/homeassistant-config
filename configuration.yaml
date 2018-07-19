@@ -396,6 +396,10 @@ media_player:
     name: Panasonic Viera TV
   - platform: plex
     entity_namespace: 'plex'
+  - platform: alexa
+    email: !secret amazon_user
+    password: !secret amazon_pass
+    url: "amazon.com"
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
