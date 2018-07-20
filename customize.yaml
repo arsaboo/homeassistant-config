@@ -7,6 +7,9 @@
      climate.upstairs:
        friendly_name: EcobeeUp
        entity_picture: /local/icons/Ecobee.png
+     climate.bedroom:
+       friendly_name: EcobeeMaster
+       entity_picture: /local/icons/Ecobee.png
      climate.lyric_t5_thermostat:
        friendly_name: LyricMaster
        entity_picture: /local/icons/lyric.png

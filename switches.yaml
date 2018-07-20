@@ -58,7 +58,7 @@
               entity_id: climate.upstairs
               away_mode: 'False'
       bedroom_away:
-        friendly_name: Bedroom Away
+        friendly_name: Master Away
         value_template: "{{(states.climate.bedroom.attributes|default({})).away_mode|default('off') == 'on'}}"
         turn_on:
           - service: climate.set_away_mode

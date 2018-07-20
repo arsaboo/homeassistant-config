@@ -90,6 +90,20 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
+  - platform: history_stats
+    name: Master heat
+    entity_id: sensor.masterthermoper
+    state: 'heat'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Master cool
+    entity_id: sensor.masterthermoper
+    state: 'cool'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
   - platform: plex
     name: PlexSpy
     host: 192.168.2.212
@@ -193,8 +207,8 @@
         friendly_name: "Dining temperature"
         value_template: "{{states('sensor.upstairs_temperature')|round}}"
       bedroom_temp_rounded:
-        friendly_name: "Dining temperature"
-        value_template: "{{states('sensor.bedroom_temperature')|round}}"        
+        friendly_name: "Bedroom temperature"
+        value_template: "{{states('sensor.master_temperature')|round}}"
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -249,6 +263,21 @@
           {%- if states('sensor.upstairs_cool')|default(0) < states('sensor.upstairs_heat')|default(0) -%}
             mdi:fire
           {%- elif states('sensor.upstairs_cool')|default(0) > states('sensor.upstairs_heat')|default(0) -%}
+            mdi:snowflake
+          {%- endif -%}
+      master_hvac_runtime:
+        friendly_name: "Master HVAC Runtime"
+        unit_of_measurement: "h"
+        value_template: >-
+           {%- if [states.sensor.master_cool.state|float, states.sensor.master_heat.state|float, 0]|max != None -%}
+             {{ [states.sensor.master_cool.state|float, states.sensor.master_heat.state|float, 0]|max }}
+           {%- else -%}
+             0
+           {%- endif -%}
+        icon_template: >-
+          {%- if states('sensor.master_cool')|default(0) < states('sensor.master_heat')|default(0) -%}
+            mdi:fire
+          {%- elif states('sensor.master_cool')|default(0) > states('sensor.master_heat')|default(0) -%}
             mdi:snowflake
           {%- endif -%}
       wemopowerused:
@@ -346,6 +375,22 @@
           {%- if states.climate.upstairs.attributes.operation == "heat" -%}
             mdi:fire
           {%- elif states.climate.upstairs.attributes.operation ==  "cool" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
+      masterthermoper:
+        friendly_name: "Master Thermostat"
+        value_template: >-
+           {%- if states.climate.bedroom != None -%}
+             {{ states.climate.bedroom.attributes.operation }}
+           {%- else -%}
+             unknown
+           {%- endif -%}
+        icon_template: >-
+          {%- if states.climate.bedroom.attributes.operation == "heat" -%}
+            mdi:fire
+          {%- elif states.climate.bedroom.attributes.operation ==  "cool" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
