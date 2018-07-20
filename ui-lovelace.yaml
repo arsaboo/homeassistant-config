@@ -20,6 +20,13 @@ views:
     title: Home
     # theme: darkorange
     cards:
+      - type: custom:monster-card
+        show_empty: false
+        card:
+          type: entities
+        filter:
+          include:
+            - domain: configurator
       - type: picture-elements
         # title: Main Level
         image: /local/floorplans/main.jpg
@@ -42,7 +49,7 @@ views:
             style:
               top: 4%
               left: 30%
-              width: 6%
+              width: 7%
           - type: image
             entity: input_boolean.tvtime
             tap_action: toggle
@@ -52,7 +59,7 @@ views:
             style:
               top: 4%
               left: 40%
-              width: 6%
+              width: 7%
           - type: image
             entity: switch.security_armed
             tap_action: toggle
@@ -62,42 +69,81 @@ views:
             style:
               top: 4%
               left: 50%
-              width: 6%
+              width: 7%
             # Kitchen
-          - type: state-icon
+          - type: image
             entity: light.kitchen_lights
             tap_action: toggle
+            image: /local/icons/light_bulb_off.png
+            state_image:
+              'on': /local/icons/light_bulb_on.png
+            state_filter:
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
-              top: 45%
+              top: 48%
               left: 11%
-              # '--paper-item-icon-color': yellow
-          - type: state-icon
+              width: 7%
+              padding: 50px 50px 100px 50px
+          - type: icon
+            icon: mdi:cctv
             entity: camera.porch
             style:
               top: 90%
-              left: 4%
-          - type: state-icon
+              left: 3%
+              transform: rotate(235deg)
+              --iron-icon-height: 40px
+              --iron-icon-width: 40px
+              --iron-icon-stroke-color: black
+              --iron-icon-fill-color: rgba(50, 50, 50, .75)
+          - type: icon
+            icon: mdi:cctv
             entity: camera.patio
             style:
-              top: 18%
-              left: 4%
-          - type: state-icon
+              top: 11%
+              left: 2%
+              transform: rotate(-60deg) scaleX(-1)
+              --iron-icon-height: 40px
+              --iron-icon-width: 40px
+              --iron-icon-stroke-color: black
+              --iron-icon-fill-color: rgba(50, 50, 50, .75)
+          - type: icon
+            icon: mdi:cctv
             entity: camera.backyard
             style:
-              top: 18%
-              left: 96%
-          - type: state-icon
+              top: 11%
+              left: 90%
+              transform: rotate(60deg)
+              --iron-icon-height: 40px
+              --iron-icon-width: 40px
+              --iron-icon-stroke-color: black
+              --iron-icon-fill-color: rgba(50, 50, 50, .75)
+          - type: icon
+            icon: mdi:cctv
             entity: camera.driveway
             style:
-              top: 81%
-              left: 96%
+              top: 82%
+              left: 91%
+              transform: rotate(120deg) scaleX(-1)
+              --iron-icon-height: 40px
+              --iron-icon-width: 40px
+              --iron-icon-stroke-color: black
+              --iron-icon-fill-color: rgba(50, 50, 50, .75)
             # Living Room
-          - type: state-icon
-            tap_action: toggle
+          - type: image
             entity: light.living_room_lights
+            tap_action: toggle
+            image: /local/icons/light_bulb_off.png
+            state_image:
+              'on': /local/icons/light_bulb_on.png
+            state_filter:
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
-              top: 35%
+              top: 38%
               left: 50%
+              width: 7%
+              padding: 50px 50px 100px 50px
           - type: state-label
             entity: sensor.livingroom_temp_rounded
             style:
@@ -140,7 +186,7 @@ views:
               'off': brightness(80%) saturate(0.8)
             style:
               top: 29%
-              left: 68.5%
+              left: 68.3%
               width: 2.5%
               padding: 10px 0 10px 30px
             # Guest Room
@@ -167,24 +213,51 @@ views:
             style:
               top: 64%
               left: 56%
-          - type: state-icon
-            tap_action: toggle
+          - type: image
             entity: light.lifx5
-            style:
-              top: 65%
-              left: 78%
-          - type: state-icon
             tap_action: toggle
+            image: /local/icons/light_bulb_off.png
+            state_image:
+              'on': /local/icons/light_bulb_on.png
+            state_filter:
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
+            style:
+              top: 68%
+              left: 78%
+              width: 7%
+              padding: 50px 50px 100px 50px
+          # - type: state-icon
+          #   tap_action: toggle
+          #   entity: light.lifx5
+          #   style:
+          #     top: 65%
+          #     left: 78%
+          - type: image
             entity: switch.driveway
-            style:
-              top: 87%
-              left: 78%
-          - type: state-icon
             tap_action: toggle
-            entity: cover.garagedoor
+            image: /local/icons/light_off.png
+            state_image:
+              'on': /local/icons/light_on.png
+            state_filter:
+              'on': drop-shadow(-5px -5px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
-              top: 80%
+              top: 92.7%
               left: 78%
+              width: 7%
+              padding: 0 50px 100px 50px
+          - type: image
+            entity: cover.garagedoor
+            tap_action: toggle
+            image: /local/icons/garage_door_closed1.png
+            state_image:
+              'open': /local/icons/garage_door_open1.png
+              'closed': /local/icons/garage_door_closed1.png
+            style:
+              top: 75%
+              left: 78%
+              width: 7%
             # Study
           - type: state-label
             entity: sensor.study_temp_rounded
@@ -363,9 +436,35 @@ views:
     cards:
       # - type: 'custom:custom-weather-animated'
       #   entity: input_boolean.weather
-      - type: "custom:weather-card"
-        entity_weather: weather.yweather
+      - type: custom:dark-sky-weather-card
         entity_sun: sun.sun
+        entity_daily_summary: sensor.dark_sky_daily_summary
+        entity_current_conditions: sensor.dark_sky_icon
+        entity_humidity: sensor.pws_relative_humidity #sensor.dark_sky_humidity
+        entity_pressure: sensor.dark_sky_pressure
+        entity_temperature: sensor.pws_temp_f #sensor.dark_sky_temperature
+        entity_visibility: sensor.dark_sky_visibility
+        entity_wind_bearing: sensor.dark_sky_wind_bearing
+        entity_wind_speed: sensor.dark_sky_wind_speed
+        entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1
+        entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2
+        entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
+        entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
+        entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
+        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature
+        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_1
+        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_2
+        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_3
+        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_4
+        entity_forecast_icon_1: sensor.dark_sky_icon_1
+        entity_forecast_icon_2: sensor.dark_sky_icon_2
+        entity_forecast_icon_3: sensor.dark_sky_icon_3
+        entity_forecast_icon_4: sensor.dark_sky_icon_4
+        entity_forecast_icon_5: sensor.dark_sky_icon_5
+
+      # - type: "custom:weather-card"
+      #   entity_weather: weather.yweather
+      #   entity_sun: sun.sun
       # - type: "custom:wired-toggle-card"
       #   entities:
       #     - input_boolean.abodeupdate
@@ -396,6 +495,7 @@ views:
       - type: entities
         title: Room Sensors
         entities:
+          - climate.bedroom
           - sensor.illumination_158d00016612af
           - sensor.humidity_158d0001ab7d20
           - sensor.pressure_158d0001ab7d20
@@ -410,31 +510,56 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
-      - type: entities
-        title: Thermostats
-        entities:
-          - climate.downstairs
-          - sensor.downstairsthermoper
-          - sensor.downstairs_humidity
-          - sensor.living_room_temperature
-          - sensor.downstairs_hvac_runtime
-          - switch.downstairs_away
-          - climate.upstairs
-          - sensor.upstairsthermoper
-          - sensor.upstairs_humidity
-          - sensor.upstairs_temperature
-          - switch.upstairs_away
-          - sensor.upstairs_hvac_runtime
-          # - climate.lyric_t5_thermostat
-          - input_select.hvacmode
-          - input_select.lyricmode
-          - switch.lyric_mode_off
+      - type: vertical-stack
+        cards:
+          - type: glance
+            title: Downstairs Thermostat
+            entities:
+              - entity: sensor.downstairsthermoper
+                name: Operation
+              - entity: sensor.downstairs_humidity
+                name: Humidity
+              - entity: sensor.living_room_temperature
+                name: Temperature
+              - entity: sensor.downstairs_hvac_runtime
+                name: Runtime
+              - entity: switch.downstairs_away
+                tap_action: toggle
+                name: Away
+          - type: glance
+            title: Kids Room Thermostat
+            entities:
+              - entity: sensor.upstairsthermoper
+                name: Operation
+              - entity: sensor.upstairs_humidity
+                name: Humidity
+              - entity: sensor.upstairs_temperature
+                name: Temperature
+              - entity: sensor.upstairs_hvac_runtime
+                name: Runtime
+              - entity: switch.upstairs_away
+                tap_action: toggle
+                name: Away
+          - type: glance
+            title: Master Thermostat
+            entities:
+              - entity: sensor.masterthermoper
+                name: Operation
+              - entity: sensor.bedroom_humidity
+                name: Humidity
+              - entity: sensor.master_temperature
+                name: Temperature
+              - entity: sensor.master_hvac_runtime
+                name: Runtime
+              - entity: switch.bedroom_away
+                tap_action: toggle
+                name: Away
       - type: picture-entity
         entity: camera.meteogram
       - type: picture-entity
         entity: camera.wundergroundradar
       - type: iframe
-        aspect_ratio: 70%
+        aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
   - icon: mdi:cctv
     id: cameras
@@ -718,13 +843,6 @@ views:
           - entity: device_tracker.meta_alok
           - entity: device_tracker.meta_rashmi
           - zone.home
-      - type: custom:monster-card
-        card:
-          type: entities
-          title: Things that are probably broken
-        filter:
-          include:
-            - state: "unknown"
       - type: horizontal-stack
         cards:
           - type: custom:gauge-card
@@ -757,29 +875,25 @@ views:
               red: 80
               green: 0
               amber: 70
-      - type: custom:dark-sky-weather-card
-        entity_sun: sun.sun
-        entity_daily_summary: sensor.dark_sky_daily_summary
-        entity_current_conditions: sensor.dark_sky_icon
-        entity_humidity: sensor.dark_sky_humidity
-        entity_pressure: sensor.dark_sky_pressure
-        entity_temperature: sensor.pws_temp_f
-        # entity_temperature: sensor.dark_sky_temperature
-        entity_visibility: sensor.dark_sky_visibility
-        entity_wind_bearing: sensor.dark_sky_wind_bearing
-        entity_wind_speed: sensor.dark_sky_wind_speed
-        entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1
-        entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2
-        entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
-        entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
-        entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
-        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature
-        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_1
-        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_2
-        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_3
-        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_4
-        entity_forecast_icon_1: sensor.dark_sky_icon_1
-        entity_forecast_icon_2: sensor.dark_sky_icon_2
-        entity_forecast_icon_3: sensor.dark_sky_icon_3
-        entity_forecast_icon_4: sensor.dark_sky_icon_4
-        entity_forecast_icon_5: sensor.dark_sky_icon_5
+
+      - type: history-graph
+        title: 'Ecobee Master Temp'
+        entities:
+          - sensor.bedroom_temperature
+          - sensor.temperature_158d0001ab3b2b
+          - sensor.master_temperature
+      - type: custom:monster-card
+        card:
+          type: entities
+          title: All Automations
+        filter:
+          include:
+            - domain: automation
+
+      # - type: custom:monster-card
+      #   card:
+      #     type: entities
+      #     title: Things that are probably broken
+      #   filter:
+      #     include:
+      #       - state: "unknown"

@@ -44,6 +44,8 @@ weather:
   - platform: yweather
     name: yweather
     woeid: !secret woeid
+  # - platform: darksky
+  #   api_key: !secret darksky_key
 # enable_debug:
 customizer:
   custom_ui: hosted

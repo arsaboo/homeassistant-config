@@ -222,7 +222,7 @@
             return 'mdi:television-classic-off';
          icon_color: >
             if (state === 'on') return 'rgb(251, 210, 41)';
-            return 'rgb(54, 95, 140)';            
+            return 'rgb(54, 95, 140)';
      cover.garagedoor:
        homebridge_cover_type: garage_door
 
