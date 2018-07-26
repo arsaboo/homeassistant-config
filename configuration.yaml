@@ -336,13 +336,13 @@ image_processing:
       - entity_id: camera.porch
       - entity_id: camera.backyard
       - entity_id: camera.driveway
-  - platform: classificationbox
-    scan_interval: 10000
-    ip_address: 192.168.2.212
-    port: 8083
-    confidence: 50
-    source:
-      - entity_id: camera.porch
+  # - platform: classificationbox
+  #   scan_interval: 10000
+  #   ip_address: 192.168.2.212
+  #   port: 8083
+  #   confidence: 50
+  #   source:
+  #     - entity_id: camera.porch
   # - platform: sighthound
   #   api_key: sighthound_api
   #   scan_interval: 10000

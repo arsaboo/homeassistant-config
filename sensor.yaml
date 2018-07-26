@@ -324,20 +324,7 @@
       ringvideourl:
         friendly_name: "Ring Video URL"
         value_template: >-
-           {%- if states.camera.front_door.attributes.video_url != None -%}
-             {{states.camera.front_door.attributes.video_url.split('?')[0]}}
-           {%- else -%}
-             unknown
-           {%- endif -%}
-      hoursslept:
-        friendly_name: "Hours Slept"
-        unit_of_measurement: "hrs"
-        value_template: >-
-           {%- if states.sensor.sleep_minutesasleep != None -%}
-             {{(states.sensor.sleep_minutesasleep.state|int/60)|round(2)}}
-           {%- else -%}
-             unknown
-           {%- endif -%}
+          {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
