@@ -1,18 +1,22 @@
 resources:
   - url: /local/custom_ui/weather-card.js
     type: js
-  - url: /local/custom_ui/circle-sensor-element.js
+  - url: /local/custom_ui/circle-sensor-card.js
     type: module
   - url: /local/custom_ui/dark-sky-weather-card.js?v=1
     type: js
-  - url: /local/custom_ui/monster-card.js
+  - url: /local/custom_ui/monster-card.js?v=1
     type: js
   - url: /local/custom_ui/gauge-card.js
     type: js
   - url: /local/custom_ui/bignumber-card.js
     type: js
-  - url: /local/custom_ui/alarm_control_panel-card.js?v=1
+  - url: /local/custom_ui/alarm_control_panel-card.js?v=1.1
     type: js
+  - url: /local/custom_ui/thermostat-card.js?v=1.1
+    type: module
+  - url: /local/custom_ui/canvas-gauge-card.js
+    type: module
 
 title: ARS Home
 views:
