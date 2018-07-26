@@ -36,7 +36,7 @@ class MonsterCard extends HTMLElement {
       }
       return _compare[operator](x, y);
     }
-    const entities = new Set();
+    const entities = new Map();
     filters.forEach((filter) => {
       const filters = [];
       if (filter.domain) {
@@ -57,17 +57,15 @@ class MonsterCard extends HTMLElement {
         filters.push(stateObj => _complexCompare(stateObj.state, filter.state));
       }
 
+      const options = filter.options ? filter.options : {}
+
       Object.keys(hass.states).sort().forEach(key => {
         if (filters.every(filterFunc => filterFunc(hass.states[key]))) {
-          if (filter.options) {
-            entities.add(Object.assign({ "entity": hass.states[key].entity_id }, filter.options));
-          } else {
-            entities.add(hass.states[key].entity_id)
-          }
+          entities.set(hass.states[key].entity_id, Object.assign({ "entity": hass.states[key].entity_id }, options));
         }
       });
     });
-    return Array.from(entities);
+    return Array.from(entities.values());
   }
 
   setConfig(config) {
@@ -92,8 +90,8 @@ class MonsterCard extends HTMLElement {
     const config = this._config;
     let entities = this._getEntities(hass, config.filter.include);
     if (config.filter.exclude) {
-      const excludeEntities = this._getEntities(hass, config.filter.exclude);
-      entities = entities.filter(entity => !excludeEntities.includes(entity));
+      const excludeEntities = this._getEntities(hass, config.filter.exclude).map(entity => entity.entity);
+      entities = entities.filter(entity => !excludeEntities.includes(entity.entity));
     }
 
 
@@ -109,7 +107,7 @@ class MonsterCard extends HTMLElement {
     }
 
     if (!config.card.entities || config.card.entities.length !== entities.length ||
-      !config.card.entities.every((value, index) => value === entities[index])) {
+      !config.card.entities.every((value, index) => value.entity === entities[index].entity)) {
       config.card.entities = entities;
       this.lastChild.setConfig(config.card);
     }
