@@ -320,10 +320,10 @@
           {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
             mdi:snowflake
           {%- endif -%}
-      ringvideourl:
-        friendly_name: "Ring Video URL"
-        value_template: >-
-          {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
+      # ringvideourl:
+      #   friendly_name: "Ring Video URL"
+      #   value_template: >-
+      #     {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
