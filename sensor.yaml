@@ -1,4 +1,3 @@
-  - platform: authenticated
   - platform: arlo
     monitored_conditions:
       - captured_today
