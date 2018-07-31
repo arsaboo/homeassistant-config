@@ -1,4 +1,4 @@
-import ThermostatUI from './thermostat-card.lib.js'
+import ThermostatUI from './thermostat-card.lib.js?v=0.2'
 class ThermostatCard extends HTMLElement {
   constructor() {
     super();
@@ -12,7 +12,7 @@ class ThermostatCard extends HTMLElement {
       hvac_state = entity.attributes[config.hvac.attribute];
     else
       hvac_state = entity.state;
-    this.thermostat.updateState({
+    const new_state = {
       min_value: entity.attributes.min_temp,
       max_value: entity.attributes.max_temp,
       ambient_temperature: entity.attributes.current_temperature,
@@ -21,8 +21,38 @@ class ThermostatCard extends HTMLElement {
       target_temperature_high: entity.attributes.target_temp_high,
       hvac_state: config.hvac.states[hvac_state] || 'off',
       away: (entity.attributes.away_mode == 'on' ? true : false),
-    });
-    this._hass = hass
+    }
+    if (!this._saved_state ||
+      (this._saved_state.min_value != new_state.min_value ||
+        this._saved_state.max_value != new_state.max_value ||
+        this._saved_state.ambient_temperature != new_state.ambient_temperature ||
+        this._saved_state.target_temperature != new_state.target_temperature ||
+        this._saved_state.target_temperature_low != new_state.target_temperature_low ||
+        this._saved_state.target_temperature_high != new_state.target_temperature_high ||
+        this._saved_state.hvac_state != new_state.hvac_state ||
+        this._saved_state.away != new_state.away)) {
+      this._saved_state = new_state;
+      this.thermostat.updateState(new_state);
+    }
+    this._hass = hass;
+  }
+
+  _controlSetPoints() {
+    if (this.thermostat.dual) {
+      if (this.thermostat.temperature.high != this._saved_state.target_temperature_high ||
+        this.thermostat.temperature.low != this._saved_state.target_temperature_low)
+        this._hass.callService('climate', 'set_temperature', {
+          entity_id: this._config.entity,
+          target_temp_high: this.thermostat.temperature.high,
+          target_temp_low: this.thermostat.temperature.low,
+        });
+    } else {
+      if (this.thermostat.temperature.target != this._saved_state.target_temperature)
+        this._hass.callService('climate', 'set_temperature', {
+          entity_id: this._config.entity,
+          temperature: this.thermostat.temperature.target,
+        });
+    }
   }
 
   setConfig(config) {
@@ -39,6 +69,11 @@ class ThermostatCard extends HTMLElement {
     const cardConfig = Object.assign({}, config);
     cardConfig.hvac = Object.assign({}, config.hvac);
     if (!cardConfig.diameter) cardConfig.diameter = 400;
+    if (!cardConfig.pending) cardConfig.pending = 3;
+    if (!cardConfig.idle_zone) cardConfig.idle_zone = 2;
+    if (!cardConfig.step) cardConfig.step = 0.5;
+    if (!cardConfig.highlight_tap) cardConfig.highlight_tap = false;
+    if (!cardConfig.no_card) cardConfig.no_card = false;
     if (!cardConfig.num_ticks) cardConfig.num_ticks = 150;
     if (!cardConfig.tick_degrees) cardConfig.tick_degrees = 300;
     if (!cardConfig.hvac.states) cardConfig.hvac.states = { 'off': 'off', 'heat': 'heat', 'cool': 'cool', };
@@ -48,11 +83,17 @@ class ThermostatCard extends HTMLElement {
     cardConfig.ticks_outer_radius = cardConfig.diameter / 30;
     cardConfig.ticks_inner_radius = cardConfig.diameter / 8;
     cardConfig.offset_degrees = 180 - (360 - cardConfig.tick_degrees) / 2;
-
-    const card = document.createElement('ha-card');
+    cardConfig.control = this._controlSetPoints.bind(this);
     this.thermostat = new ThermostatUI(cardConfig);
-    card.appendChild(this.thermostat.container);
-    root.appendChild(card);
+
+    if (cardConfig.no_card === true) {
+      root.appendChild(this.thermostat.container);
+    }
+    else {
+      const card = document.createElement('ha-card');
+      card.appendChild(this.thermostat.container);
+      root.appendChild(card);
+    }
     this._config = cardConfig;
   }
 }
