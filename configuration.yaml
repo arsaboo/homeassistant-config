@@ -279,6 +279,9 @@ camera:
     username: !secret grafana_user
     password: !secret grafana_pass
   - platform: ring
+  # - platform: unsplash
+  #   api_key: !secret unsplash_key
+  #   output_dir: /www/
   # - platform: local_file
   #   name: Grafana_temperature
   #   file_path: /home/homeassistant/.homeassistant/downloads/temperature.png

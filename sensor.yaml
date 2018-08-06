@@ -199,15 +199,6 @@
       study_temp_rounded:
         friendly_name: "Study temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
-      dining_temp_rounded:
-        friendly_name: "Dining temperature"
-        value_template: "{{states('sensor.downstairs_temperature')|round}}"
-      kids_temp_rounded:
-        friendly_name: "Kids Room temperature"
-        value_template: "{{states('sensor.upstairs_temperature')|round}}"
-      bedroom_temp_rounded:
-        friendly_name: "Bedroom temperature"
-        value_template: "{{states('sensor.master_temperature')|round}}"
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
