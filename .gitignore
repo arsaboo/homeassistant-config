@@ -78,3 +78,4 @@ dlib_nofaces
 dlib_known_faces
 dlib_unknown_faces
 .cloud
+*.pickle
