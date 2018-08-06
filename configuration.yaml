@@ -281,7 +281,7 @@ camera:
   - platform: ring
   # - platform: unsplash
   #   api_key: !secret unsplash_key
-  #   output_dir: /www/
+  #   output_dir: /www/icons/
   # - platform: local_file
   #   name: Grafana_temperature
   #   file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
