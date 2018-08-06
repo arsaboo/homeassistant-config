@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-import "./gauge.min.js"
+  /**
+  * DO NOT USE THIS FILE IF USING SINGLE CARDS, USE THE VERSION UNDER 'dist' CATALOG!!!!
+  */
 
-// Use this when building to prod package
-//import "canvas-gauges";
+import "./gauge.min.js";
 
 /**
  * `canvas-gauge-card`
@@ -49,15 +50,12 @@ import "./gauge.min.js"
     - See http://sss for docs
  */
 class CanvasGaugeCard extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        this.__initTests();
-    }
     /**
      * Renders the card 
      */
     _render() {
+        const elemCardRoot = document.createElement('div');
+        elemCardRoot.id = 'cardroot';
         // Create the container element 
         const elemContainer = document.createElement('div');
         elemContainer.id = 'container';
@@ -68,6 +66,11 @@ class CanvasGaugeCard extends HTMLElement {
         // The styles
         const style = `
             <style>
+                #cardroot {
+                    width: ${elemContainer.width}px;
+                    height: calc(${elemContainer.height}px + ${this.config.shadow_bottom ? this.config.shadow_bottom : 0}px);
+                    position: relative;
+                }
                 #container {
                     width: ${elemContainer.width}px;
                     height: ${elemContainer.height}px;        
@@ -85,7 +88,7 @@ class CanvasGaugeCard extends HTMLElement {
                     width: 100%;
                     height: ${shadowHeight};
                     left: 0px;
-                    bottom: 0;
+                    bottom: 0px;
                     background: rgba(0, 0, 0, 0.5);;
                     position: absolute;
                     }
@@ -146,6 +149,8 @@ class CanvasGaugeCard extends HTMLElement {
         elemInnerContainer.appendChild(elemCanvas);
 
         elemContainer.appendChild(elemInnerContainer);
+        elemCardRoot.appendChild(elemContainer);
+        elemContainer.onclick = this._click.bind(this);
         if (this.config.name) {
             var elemShadow = document.createElement('div');
             elemShadow.className = 'shadow';
@@ -158,12 +163,10 @@ class CanvasGaugeCard extends HTMLElement {
             elemState.innerText = this.config.name;
 
             elemShadow.appendChild(elemState);
-            elemContainer.appendChild(elemShadow);
+            elemCardRoot.appendChild(elemShadow);
         }
 
-        elemContainer.onclick = this._click.bind(this);
-        this.shadowRoot.appendChild(elemContainer);
-
+        this.shadowRoot.appendChild(elemCardRoot);
         this._gauge = gauge;
     }
 
@@ -231,63 +234,11 @@ class CanvasGaugeCard extends HTMLElement {
         return 2;
     }
 
-    /** 
-     * Init testdata
-     * I use this in my development environment to make a very simple mock of config/hass objects 
-    */
-    __initTests() {
-        var test_config =
-        {
-            entity: 'sensor.temp',
-            name: 'Test',
-            card_height: 190,
-            card_width: undefined,
-            card_top: undefined,
-            card_left: undefined,
-            gauge: {}
-        };
-
-        test_config.gauge['type'] = 'radial-gauge';
-        test_config.gauge['title'] = 'Speed';
-        test_config.gauge['width'] = 300;
-        test_config.gauge['height'] = 300;
-        test_config.gauge['units'] = 'Km/h';
-        test_config.gauge['minValue'] = 0;
-        test_config.gauge['maxValue'] = 220;
-        test_config.gauge['startAngle'] = 90;
-        test_config.gauge['ticksAngle'] = 180;
-        test_config.gauge['valueBox'] = false;
-        test_config.gauge['majorTicks'] = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220];
-        test_config.gauge['minorTicks'] = 2;
-        test_config.gauge['strokeTicks'] = true;
-        test_config.gauge['highlights'] = [
-            {
-                "from": 160,
-                "to": 220,
-                "color": "rgba(200, 50, 50, .75)"
-            }
-        ];
-        test_config.gauge['colorPlate'] = '#fff';
-        //       test_config.gauge['borderShadowWidth'] = 0;
-        //       test_config.gauge['borderOuterWidth'] = 0;
-        //       test_config.gauge['borderMiddleWidth'] = 0;
-        //       test_config.gauge['borderInnerWidth'] = 0;
-        test_config.gauge['borders'] = false;
-        test_config.gauge['needleType'] = 'arrow';
-        test_config.gauge['needleWidth'] = 2;
-        test_config.gauge['needleCircleSize'] = 7;
-        test_config.gauge['needleCircleOuter'] = true;
-        test_config.gauge['needleCircleInner'] = false;
-        test_config.gauge['animationDuration'] = 1500;
-        test_config.gauge['animationRule'] = 'linear';
-        test_config.gauge['value'] = '50';
-
-        var test_hass = { states: [] };
-        test_hass.states[test_config.entity] = { state: "15" };
-        this.setConfig(test_config);
-
-        this.hass = test_hass;
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
     }
+
 }
 
 window.customElements.define('canvas-gauge-card', CanvasGaugeCard);

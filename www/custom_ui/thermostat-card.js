@@ -1,4 +1,4 @@
-import ThermostatUI from './thermostat-card.lib.js?v=0.2'
+import ThermostatUI from './thermostat-card.lib.js?v=0.0.1'
 class ThermostatCard extends HTMLElement {
   constructor() {
     super();
@@ -74,6 +74,7 @@ class ThermostatCard extends HTMLElement {
     if (!cardConfig.step) cardConfig.step = 0.5;
     if (!cardConfig.highlight_tap) cardConfig.highlight_tap = false;
     if (!cardConfig.no_card) cardConfig.no_card = false;
+    if (!cardConfig.chevron_size) cardConfig.chevron_size = 50;
     if (!cardConfig.num_ticks) cardConfig.num_ticks = 150;
     if (!cardConfig.tick_degrees) cardConfig.tick_degrees = 300;
     if (!cardConfig.hvac.states) cardConfig.hvac.states = { 'off': 'off', 'heat': 'heat', 'cool': 'cool', };
@@ -91,6 +92,7 @@ class ThermostatCard extends HTMLElement {
     }
     else {
       const card = document.createElement('ha-card');
+      card.style.padding = '5%';
       card.appendChild(this.thermostat.container);
       root.appendChild(card);
     }
