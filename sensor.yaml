@@ -419,7 +419,7 @@
       backyard_camera_tags:
         friendly_name: 'Backyard Tags'
         value_template: >-
-          {% set common_tags = ['Lawn', 'Road surface', 'Asphalt', 'Yard', 'Garden', 'Tree', 'Park', 'Walkway', 'Grass', 'Backyard'] %}
+          {% set common_tags = ['Lawn', 'Road surface', 'Asphalt', 'Woodland', 'Meadow', 'Plant', 'Yard', 'Garden', 'Tree', 'Park', 'Walkway', 'Grass', 'Backyard'] %}
           {% set new_tags = states.image_processing.tagbox_backyard.attributes['tags']|map(attribute='name')|list %}
           {% macro tags_added(before_list, after_list) %}
             {%- for tag in after_list if tag != 'None' and tag not in before_list %}
