@@ -583,13 +583,20 @@ views:
     cards:
       - type: picture-entity
         entity: camera.driveway
-        show_info: false
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.patio
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.porch
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.backyard
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.arlo3
       - type: picture-entity
@@ -600,12 +607,16 @@ views:
         entity: camera.front_door
       - type: picture-entity
         entity: camera.worldtime
-        show_info: false
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.ars_bloom
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.unsplash
-        show_info: false
+        show_name: false
+        show_state: false
 
   - icon: mdi:play-circle-outline
     id: media
@@ -660,31 +671,36 @@ views:
         cards:
           - type: picture-entity
             entity: device_tracker.pi_rashmiphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/rashmi_owntracks_home.png
               "not_home": /local/icons/rashmi_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmiappiphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/rashmi_ios_home.png
               "not_home": /local/icons/rashmi_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmisiphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/rashmi_wifi_home.png
               "not_home": /local/icons/rashmi_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.sonu_sonu
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/rashmi_life360_home.png
               "not_home": /local/icons/rashmi_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/rashmi_geofency_home.png
               "not_home": /local/icons/rashmi_geofency_not_home.png
@@ -692,7 +708,8 @@ views:
         cards:
           - type: picture-entity
             entity: device_tracker.pi_alokphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/alok_owntracks_home.png
               "not_home": /local/icons/alok_owntracks_not_home.png
@@ -700,7 +717,8 @@ views:
               "Downtown": /local/icons/alok_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.alokiosiphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/alok_ios_home.png
               "not_home": /local/icons/alok_ios_not_home.png
@@ -708,13 +726,15 @@ views:
               "Downtown": /local/icons/alok_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.myiphone
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/alok_wifi_home.png
               "not_home": /local/icons/alok_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.alok_alok
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/alok_life360_home.png
               "not_home": /local/icons/alok_life360_not_home.png
@@ -722,7 +742,8 @@ views:
               "Downtown": /local/icons/alok_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
-            show_info: false
+            show_name: false
+            show_state: false
             state_image:
               "home": /local/icons/alok_geofency_home.png
               "not_home": /local/icons/alok_geofency_not_home.png
@@ -739,13 +760,15 @@ views:
               Buckhead: /local/icons/alok_not_home.png
               downtown: /local/icons/alok_not_home.png
               Downtown: /local/icons/alok_not_home.png
-            show_info: false
+            show_name: false
+            show_state: false
           - type: picture-entity
             entity: device_tracker.meta_rashmi
             state_image:
               "home": /local/icons/rashmi_home.png
               "not_home": /local/icons/rashmi_not_home.png
-            show_info: false
+            show_name: false
+            show_state: false
 
       - type: entities
         title: HASS Details
@@ -783,7 +806,10 @@ views:
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
-
+          - sensor.backyard_camera_tags
+          - sensor.driveway_camera_tags
+          - sensor.patio_camera_tags
+          - sensor.porch_camera_tags                    
 
       - type: entities
         title: Network Details
