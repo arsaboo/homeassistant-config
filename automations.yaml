@@ -523,6 +523,20 @@
   action:
     service: zwave.heal_network
 
+# {{state_attr('zwave.garage_door_tilt_sensor','query_stage')=='CacheLoad'}}
+# - id: z-wave_cacheload
+#   alias: Repair Z-Wave Network
+#   initial_state: 'on'
+#   trigger:
+#     - platform: state
+#       entity_id: zwave.garage_door_tilt_sensor
+#       to: 'initializing'
+#     - platform: state
+#       entity_id: zwave.garage_relay
+#       to: 'initializing'
+#   action:
+#     service: zwave.test_network
+
 - id: update_available_notification
   alias: "Update Available Notification"
   initial_state: 'on'
