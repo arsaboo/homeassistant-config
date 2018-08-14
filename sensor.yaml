@@ -416,35 +416,105 @@
             {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
             {{item.attributes.emulated_hue_name|title}}
           {%- endfor -%}.
-      porchtags:
-        friendly_name: "Porch Tags"
+      backyard_camera_tags:
+        friendly_name: 'Backyard Tags'
         value_template: >-
-          {{ states('input_text.porch') }}
-      drivewaytags:
-        friendly_name: "Driveway Tags"
+          {% set common_tags = ['Lawn', 'Road surface', 'Asphalt', 'Yard', 'Garden', 'Tree', 'Park', 'Walkway', 'Grass', 'Backyard'] %}
+          {% set new_tags = states.image_processing.tagbox_backyard.attributes['tags']|map(attribute='name')|list %}
+          {% macro tags_added(before_list, after_list) %}
+            {%- for tag in after_list if tag != 'None' and tag not in before_list %}
+              {%- if loop.first %}{% elif loop.last %}, and {% else %},{% endif -%}
+              {{ tag }}
+            {%- endfor -%}
+          {%- endmacro -%}
+          {%- macro list_diff(before_list, after_list) -%}
+           {%- set added = tags_added(before_list, after_list) -%}
+           {% if added | trim != "" %}{{ added }}{%- endif -%}
+          {%- endmacro -%}
+          {{ list_diff(common_tags, new_tags) }}
+        icon_template: mdi:cctv
+      driveway_camera_tags:
+        friendly_name: 'Driveway Tags'
         value_template: >-
-          {{ states('input_text.driveway') }}
-      backyardtags:
-        friendly_name: "Backyard Tags"
+          {% set common_tags = ['Lane', 'Road', 'Tarmac', 'City', 'Asphalt', 'Sidewalk', 'Road surface', 'Residential area', 'Suburb', 'City', 'Walkway', 'Flooring', 'Roof'] %}
+          {% set new_tags = states.image_processing.tagbox_driveway.attributes['tags']|map(attribute='name')|list %}
+          {% macro tags_added(before_list, after_list) %}
+            {%- for tag in after_list if tag != 'None' and tag not in before_list %}
+              {%- if loop.first %}{% elif loop.last %}, and {% else %},{% endif -%}
+              {{ tag }}
+            {%- endfor -%}
+          {%- endmacro -%}
+          {%- macro list_diff(before_list, after_list) -%}
+           {%- set added = tags_added(before_list, after_list) -%}
+           {% if added | trim != "" %}{{ added }}{%- endif -%}
+          {%- endmacro -%}
+          {{ list_diff(common_tags, new_tags) }}
+        icon_template: mdi:cctv
+
+      patio_camera_tags:
+        friendly_name: 'Patio Tags'
         value_template: >-
-          {{ states('input_text.backyard') }}
-      patiotags:
-        friendly_name: "Patio Tags"
+          {% set common_tags = ['Road surface', 'Flooring', 'Walkway','Floor', 'Asphalt','Outdoor structure', 'Wall', 'Garden', 'Lawn', 'Yard', 'Grass', 'Backyard', 'Flower'] %}
+          {% set new_tags = states.image_processing.tagbox_patio.attributes['tags']|map(attribute='name')|list %}
+          {% macro tags_added(before_list, after_list) %}
+            {%- for tag in after_list if tag != 'None' and tag not in before_list %}
+              {%- if loop.first %}{% elif loop.last %}, and {% else %},{% endif -%}
+              {{ tag }}
+            {%- endfor -%}
+          {%- endmacro -%}
+          {%- macro list_diff(before_list, after_list) -%}
+           {%- set added = tags_added(before_list, after_list) -%}
+           {% if added | trim != "" %}{{ added }}{%- endif -%}
+          {%- endmacro -%}
+          {{ list_diff(common_tags, new_tags) }}
+        icon_template: mdi:cctv
+
+      porch_camera_tags:
+        friendly_name: 'Porch Tags'
         value_template: >-
-          {{ states('input_text.patio') }}
-      porchfaces:
-        friendly_name: "Porch Faces"
-        value_template: >-
-          {{ states('input_text.porchfaces') }}
-      drivewayfaces:
-        friendly_name: "Driveway Faces"
-        value_template: >-
-          {{ states('input_text.drivewayfaces') }}
-      backyardfaces:
-        friendly_name: "Backyard Faces"
-        value_template: >-
-          {{ states('input_text.backyardfaces') }}
-      patiofaces:
-        friendly_name: "Patio Faces"
-        value_template: >-
-          {{ states('input_text.patiofaces') }}
+          {% set common_tags = ['Walkway', 'Estate', 'Outdoor structure', 'Garden', 'Lawn', 'Yard', 'Flower', 'Backyard', 'Grass'] %}
+          {% set new_tags = states.image_processing.tagbox_porch.attributes['tags']|map(attribute='name')|list %}
+          {% macro tags_added(before_list, after_list) %}
+            {%- for tag in after_list if tag != 'None' and tag not in before_list %}
+              {%- if loop.first %}{% elif loop.last %}, and {% else %},{% endif -%}
+              {{ tag }}
+            {%- endfor -%}
+          {%- endmacro -%}
+          {%- macro list_diff(before_list, after_list) -%}
+           {%- set added = tags_added(before_list, after_list) -%}
+           {% if added | trim != "" %}{{ added }}{%- endif -%}
+          {%- endmacro -%}
+          {{ list_diff(common_tags, new_tags) }}
+        icon_template: mdi:cctv
+      # porchtags:
+      #   friendly_name: "Porch Tags"
+      #   value_template: >-
+      #     {{ states('input_text.porch') }}
+      # drivewaytags:
+      #   friendly_name: "Driveway Tags"
+      #   value_template: >-
+      #     {{ states('input_text.driveway') }}
+      # backyardtags:
+      #   friendly_name: "Backyard Tags"
+      #   value_template: >-
+      #     {{ states('input_text.backyard') }}
+      # patiotags:
+      #   friendly_name: "Patio Tags"
+      #   value_template: >-
+      #     {{ states('input_text.patio') }}
+      # porchfaces:
+      #   friendly_name: "Porch Faces"
+      #   value_template: >-
+      #     {{ states('input_text.porchfaces') }}
+      # drivewayfaces:
+      #   friendly_name: "Driveway Faces"
+      #   value_template: >-
+      #     {{ states('input_text.drivewayfaces') }}
+      # backyardfaces:
+      #   friendly_name: "Backyard Faces"
+      #   value_template: >-
+      #     {{ states('input_text.backyardfaces') }}
+      # patiofaces:
+      #   friendly_name: "Patio Faces"
+      #   value_template: >-
+      #     {{ states('input_text.patiofaces') }}
