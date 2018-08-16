@@ -1,14 +1,28 @@
 class ExtWebLink extends HTMLElement {
   set hass(hass) {
+    if (!this.config.icon) {
+      this.config.icon = "mdi:home-assistant";
+    }
     if (!this.config.entity) {
       var state = "";
     } else {
-      var state = hass.states[this.config.entity].state;
+      if (hass.states[this.config.entity].attributes.unit_of_meassurement) {
+        var state = hass.states[this.config.entity].state+' '+hass.states[this.config.entity].attributes.unit_of_meassurement;
+      } else {
+        var state = hass.states[this.config.entity].state
+      }
     }
+    if (this.config.name) {
+      var name = this.config.name;
+    } else {
+      var name = hass.states[this.config.entity].attributes.friendly_name;
+    }
+    if (!this.config.url) {
+      this.config.url = "#";
+    } 
     this.innerHTML =`
       <style>
         a {
-          display: flex;
           align-items: center;
           color: var(--primary-color);
           text-decoration-line: none;
@@ -26,21 +40,29 @@ class ExtWebLink extends HTMLElement {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          margin-left: 16px;
         }
         div .state {
           text-align: right;
+          padding: 10px 0px 10px 0px;
+        }
+        div .name {
+          text-align: left;
+          overflow: visible;
+          padding: 10px 12px 10px 16px;
+          
+        }
+        div .main {
+          display: flex;
         }
       </style>
-      <a href="${this.config.url}" target="_blank">
-      <ha-icon icon="${this.config.icon}"></ha-icon>
-        <div class="name">
-          ${this.config.name} <ha-icon icon="mdi:open-in-new" class="innline"></ha-icon>
-        </div>
-        <div class="state">
-          ${state}
-        </div>
-      </a>
+      <div class="main">
+        
+          <ha-icon icon="${this.config.icon}"></ha-icon>
+          <div class="name">${name}</div>
+          <a href="${this.config.url}" target="_blank"><ha-icon icon="mdi:open-in-new" class="innline"></ha-icon></a>
+          <div class="state">${state}</div>
+        
+      </div>
     `;
   }
   setConfig(config) {
