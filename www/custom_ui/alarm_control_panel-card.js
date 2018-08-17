@@ -141,11 +141,12 @@ class AlarmControlPanelCard extends HTMLElement {
   }
 
   _callService(service, code) {
+    const input = this.shadowRoot.lastChild.querySelector("paper-input");
     this.myhass.callService('alarm_control_panel', `alarm_${service}`, {
       entity_id: this._config.entity,
       code: code,
     });
-    this.shadowRoot.lastChild.querySelector("paper-input").value = '';
+    if (input) input.value = '';
   }
 
   _setupInput() {
