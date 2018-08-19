@@ -416,7 +416,7 @@
       backyard_camera_tags:
         friendly_name: 'Backyard Tags'
         value_template: >-
-          {% set common_tags = ['Lawn', 'Road surface', 'Asphalt', 'Woodland', 'Meadow', 'Plant', 'Yard', 'Garden', 'Tree', 'Park', 'Walkway', 'Grass', 'Backyard'] %}
+          {% set common_tags = ['Drawing','Black-and-white','Monochrome','White','Snow','Monochrome photography','Black','Darkness','Light', 'Winter', 'Recreation', 'Sport venue', 'Outdoor recreation', 'Flower', 'Plant', 'Lawn', 'Road surface', 'Asphalt', 'Woodland', 'Meadow', 'Plant', 'Yard', 'Garden', 'Tree', 'Park', 'Walkway', 'Grass', 'Backyard'] %}
           {% set new_tags = states.image_processing.tagbox_backyard.attributes['tags']|map(attribute='name')|list %}
           {% macro tags_added(before_list, after_list) %}
             {%- for tag in after_list if tag != 'None' and tag not in before_list %}
@@ -433,7 +433,7 @@
       driveway_camera_tags:
         friendly_name: 'Driveway Tags'
         value_template: >-
-          {% set common_tags = ['Lane', 'Road', 'Tarmac', 'City', 'Asphalt', 'Sidewalk', 'Road surface', 'Residential area', 'Suburb', 'City', 'Walkway', 'Flooring', 'Roof'] %}
+          {% set common_tags = ['Drawing','Black-and-white','Monochrome','White','Snow','Monochrome photography','Black','Darkness','Light', 'Winter', 'Neighbourhood', 'Lawn', 'Public space', 'Lane', 'Road', 'Tarmac', 'City', 'Asphalt', 'Sidewalk', 'Road surface', 'Residential area', 'Suburb', 'City', 'Walkway', 'Flooring', 'Roof'] %}
           {% set new_tags = states.image_processing.tagbox_driveway.attributes['tags']|map(attribute='name')|list %}
           {% macro tags_added(before_list, after_list) %}
             {%- for tag in after_list if tag != 'None' and tag not in before_list %}
@@ -451,7 +451,7 @@
       patio_camera_tags:
         friendly_name: 'Patio Tags'
         value_template: >-
-          {% set common_tags = ['Road surface', 'Flooring', 'Walkway','Floor', 'Asphalt','Outdoor structure', 'Wall', 'Garden', 'Lawn', 'Yard', 'Grass', 'Backyard', 'Flower'] %}
+          {% set common_tags = ['Drawing','Black-and-white','Monochrome','White','Snow','Monochrome photography','Black','Darkness','Light', 'Winter', 'Soil', 'Roof', 'Road surface', 'Flooring', 'Walkway','Floor', 'Asphalt','Outdoor structure', 'Wall', 'Garden', 'Lawn', 'Yard', 'Grass', 'Backyard', 'Flower'] %}
           {% set new_tags = states.image_processing.tagbox_patio.attributes['tags']|map(attribute='name')|list %}
           {% macro tags_added(before_list, after_list) %}
             {%- for tag in after_list if tag != 'None' and tag not in before_list %}
@@ -469,7 +469,7 @@
       porch_camera_tags:
         friendly_name: 'Porch Tags'
         value_template: >-
-          {% set common_tags = ['Walkway', 'Estate', 'Outdoor structure', 'Garden', 'Lawn', 'Yard', 'Flower', 'Backyard', 'Grass'] %}
+          {% set common_tags = ['Drawing','Black-and-white','Monochrome','White','Snow','Monochrome photography','Black','Darkness','Light', 'Winter', 'Walkway', 'Estate', 'Outdoor structure', 'Garden', 'Lawn', 'Yard', 'Flower', 'Backyard', 'Grass'] %}
           {% set new_tags = states.image_processing.tagbox_porch.attributes['tags']|map(attribute='name')|list %}
           {% macro tags_added(before_list, after_list) %}
             {%- for tag in after_list if tag != 'None' and tag not in before_list %}

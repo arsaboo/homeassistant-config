@@ -62,6 +62,12 @@ class SliderEntityRow extends Polymer.Element {
   {
     this.showTop = false;
     this.showBottom = false;
+    if(!(this.attribute in this.stateObj.attributes)) {
+      if(!('supported_features' in this.stateObj.attributes) ||
+        !(this.stateObj.attributes['supported_features'] & 1)) {
+          return;
+      }
+    }
     if(!(this.hideWhenOff && !this.isOn)) {
       if(this.breakSlider)
         this.showBottom = true;

@@ -491,6 +491,35 @@
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
         filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
 
+- id: alert_abnormal_activity
+  alias: Alert Abnormal Activity
+  initial_state: true
+  hide_entity: true
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.backyard_camera_tags
+        - sensor.driveway_camera_tags
+        - sensor.patio_camera_tags
+        - sensor.porch_camera_tags
+  condition:
+    - condition: template
+      value_template: '{{ trigger.to_state.state |trim != "" }}'
+  action:
+    - service: logbook.log
+      data_template:
+        name: "Activity detected: "
+        message: "{{ trigger.to_state.state }} detected on {{ states['camera'][trigger.entity_id.split('.')[1].split('_')[0]].attributes.friendly_name }} camera!"
+    # - service: script.notify_me
+    #   data_template:
+    #     message: "{{ trigger.to_state.state }} detected on {{ states['camera'][trigger.entity_id.split('.')[1].split('_')[0] ~ '_camera'].attributes.friendly_name }}!"
+    # - service: script.voice_notify
+    #   data_template:
+    #     message: "{{ trigger.to_state.state }} detected on {{ states['camera'][trigger.entity_id.split('.')[1].split('_')[0] ~ '_camera'].attributes.friendly_name }}!"
+
+
+
+
 #################################################################
 ## HASS Related
 #################################################################
@@ -1214,7 +1243,7 @@
 ## Humidifier
 - id: turn_on_humidifier
   alias: Turn on humidifier
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
      - condition: time
        after: '08:15:00'
@@ -1234,7 +1263,7 @@
 
 - id: turn_off_humidifier
   alias: Turn off humidifier
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
     - condition: state
       entity_id: switch.wemoswitch

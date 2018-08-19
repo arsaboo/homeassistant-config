@@ -19,10 +19,13 @@ resources:
     type: module
   - url: /local/custom_ui/canvas-gauge-card.js?v=0.1
     type: module
-
   - url: /local/custom_ui/calendar-card.js
     type: module
   - url: https://unpkg.com/moment@2.22.2/moment.js
+    type: js
+  - url: /local/custom_ui/ext-weblink.js?v=0.6
+    type: js
+  - url: /local/custom_ui/slider-entity-row.js?v=0.2
     type: js
 title: ARS Home
 views:
@@ -412,18 +415,30 @@ views:
       - type: entities
         title: Information
         entities:
-          - sensor.morning_commute
-          - sensor.alok_to_home
+          - type: "custom:ext-weblink"
+            url: !secret commute_office_url
+            icon: mdi:car
+            entity: sensor.morning_commute
+          - entity: sensor.alok_to_home
+            url: !secret commute_home_url
+            type: "custom:ext-weblink"
+            icon: mdi:car
           - sensor.plexspy
           - sensor.usdinr
+
       - type: entities
         title: Lights
         entities:
-          - light.gateway_light_34ce00813670
-          - light.hue_color_lamp_3
-          - light.lifx3
-          - light.lifxnrguest
-          - light.lifxnrkitchen
+          - entity: light.gateway_light_34ce00813670
+            type: custom:slider-entity-row
+          - entity: light.hue_color_lamp_3
+            type: custom:slider-entity-row
+          - entity: light.lifx3
+            type: custom:slider-entity-row
+          - entity: light.lifxnrguest
+            type: custom:slider-entity-row
+          - entity: light.lifxnrkitchen
+            type: custom:slider-entity-row
       - type: entities
         title: Switches
         entities:
@@ -783,21 +798,6 @@ views:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
       - type: entities
-        title: Camera Sensors
-        entities:
-          - binary_sensor.backyard_motion
-          - binary_sensor.backyard_field_detection
-          - binary_sensor.backyard_line_crossing
-          - binary_sensor.driveway_motion
-          - binary_sensor.driveway_field_detection
-          - binary_sensor.driveway_line_crossing
-          - binary_sensor.patio_motion
-          - binary_sensor.patio_field_detection
-          - binary_sensor.patio_line_crossing
-          - binary_sensor.porch_field_detection
-          - binary_sensor.porch_line_crossing
-          - binary_sensor.porch_motion
-      - type: entities
         title: Camera Processing
         show_header_toggle: false
         entities:
@@ -813,7 +813,7 @@ views:
           - sensor.backyard_camera_tags
           - sensor.driveway_camera_tags
           - sensor.patio_camera_tags
-          - sensor.porch_camera_tags                    
+          - sensor.porch_camera_tags
 
       - type: entities
         title: Network Details
@@ -845,7 +845,6 @@ views:
           - sensor.alok_485
           - sensor.alok_131
           - sensor.rashmi_485
-          - sensor.rashmi_131
           - sensor.arnav_485
           - sensor.arnav_131
 
@@ -1338,7 +1337,24 @@ views:
               strokeTicks: true
               highlights: [{"from": 80, "to": 100,"color": "rgba(200, 50, 50, .75)"}]
               borders: false
-
+      - type: entities
+        title: Camera Sensors
+        entities:
+          - binary_sensor.backyard_motion
+          - binary_sensor.backyard_field_detection
+          - binary_sensor.backyard_line_crossing
+          - type: divider
+          - binary_sensor.driveway_motion
+          - binary_sensor.driveway_field_detection
+          - binary_sensor.driveway_line_crossing
+          - type: divider
+          - binary_sensor.patio_motion
+          - binary_sensor.patio_field_detection
+          - binary_sensor.patio_line_crossing
+          - type: divider
+          - binary_sensor.porch_field_detection
+          - binary_sensor.porch_line_crossing
+          - binary_sensor.porch_motion
       # - type: custom:monster-card
       #   card:
       #     type: entities
