@@ -511,6 +511,10 @@ remote:
     name: livingroom
     host: 192.168.2.152
 
+google:
+  client_id: !secret gcal_client_id
+  client_secret: !secret gcal_client_secret
+
 scene:
   platform: lifx_cloud
   token: !secret lifx_key

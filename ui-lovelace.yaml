@@ -20,6 +20,10 @@ resources:
   - url: /local/custom_ui/canvas-gauge-card.js?v=0.1
     type: module
 
+  - url: /local/custom_ui/calendar-card.js
+    type: module
+  - url: https://unpkg.com/moment@2.22.2/moment.js
+    type: js
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -849,6 +853,11 @@ views:
     id: test
     title: Testing
     cards:
+      - type: "custom:calendar-card"
+        entities:
+          - calendar.personal
+          - calendar.work
+          - calendar.us_holidays
       - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png
