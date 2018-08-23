@@ -265,7 +265,7 @@ export default class ThermostatUI {
     if (value) {
       lblTarget[0].textContent = text;
       if (value % 1 != 0) {
-        lblTarget[1].textContent = '5';
+        lblTarget[1].textContent = Math.round(value % 1 * 10);
       } else {
         lblTarget[1].textContent = '';
       }
@@ -548,6 +548,7 @@ export default class ThermostatUI {
         text-anchor: middle;
         font-family: Helvetica, sans-serif;
         alignment-baseline: central;
+        dominant-baseline: central;
       }
       .dial__lbl--target {
         font-size: 120px;

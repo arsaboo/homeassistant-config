@@ -1,4 +1,4 @@
-import ThermostatUI from './thermostat-card.lib.js?v=0.0.1'
+import ThermostatUI from './thermostat-card.lib.js?v=0.1.1'
 class ThermostatCard extends HTMLElement {
   constructor() {
     super();
@@ -7,6 +7,9 @@ class ThermostatCard extends HTMLElement {
   set hass(hass) {
     const config = this._config;
     const entity = hass.states[config.entity];
+    let ambient_temperature = entity.attributes.current_temperature;
+    if (config.ambient_temperature && hass.states[config.ambient_temperature])
+      ambient_temperature = hass.states[config.ambient_temperature].state;
     let hvac_state;
     if (config.hvac.attribute)
       hvac_state = entity.attributes[config.hvac.attribute];
@@ -15,7 +18,7 @@ class ThermostatCard extends HTMLElement {
     const new_state = {
       min_value: entity.attributes.min_temp,
       max_value: entity.attributes.max_temp,
-      ambient_temperature: entity.attributes.current_temperature,
+      ambient_temperature: ambient_temperature,
       target_temperature: entity.attributes.temperature,
       target_temperature_low: entity.attributes.target_temp_low,
       target_temperature_high: entity.attributes.target_temp_high,
