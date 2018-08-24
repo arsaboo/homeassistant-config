@@ -1,3 +1,13 @@
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: Portfolio morning
+        query: "SELECT state FROM states WHERE entity_id='sensor.personal_capital_investments' and HOUR(last_changed) >= 13 and DATEDIFF(NOW(), last_changed) < 1 ORDER BY last_changed ASC LIMIT 1;"
+        column: 'state'
+        unit_of_measurement: $
+  - platform: personalcapital
+    email: !secret pc_username
+    password: !secret pc_password
   - platform: arlo
     monitored_conditions:
       - captured_today
