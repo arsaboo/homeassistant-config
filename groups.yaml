@@ -325,10 +325,8 @@
 
   USCIS:
     - sensor.alok_485
-    - sensor.alok_131
     - sensor.rashmi_485
     - sensor.arnav_485
-    - sensor.arnav_131
 
   camera_arlolivingroom:
     entities:

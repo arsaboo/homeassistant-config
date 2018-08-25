@@ -1301,10 +1301,8 @@
     - platform: state
       entity_id:
         - sensor.alok_485
-        - sensor.alok_131
         - sensor.rashmi_485
         - sensor.arnav_485
-        - sensor.arnav_131
   action:
     - service: notify.pushbullet
       data_template:
