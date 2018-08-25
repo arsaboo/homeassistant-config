@@ -435,9 +435,22 @@ telegram_bot:
   api_key: !secret telegram_key
   allowed_chat_ids:
     - !secret telegram_chatID_Alok
-
+hangouts:
 notify:
   - platform: ios
+  - platform: hangouts
+    name: alok_hangouts
+    default_conversations:
+      - id: !secret hangouts_alok
+  - platform: hangouts
+    name: rashmi_hangouts
+    default_conversations:
+      - id: !secret hangouts_rashmi
+  - platform: hangouts
+    name: parents_hangouts
+    default_conversations:
+      - id: !secret hangouts_rashmi
+      - id: !secret hangouts_alok
   - platform: pushbullet
     api_key: !secret pushbullet_key
     name: pushbullet
