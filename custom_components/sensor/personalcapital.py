@@ -128,6 +128,7 @@ class PersonalCapitalNetWorthSensor(Entity):
             return False
 
         spData = result.json()['spData']
+        # TODO If no spData, need to reauthenticate
         # _LOGGER.warn(spData)
         self._state = spData.get('networth', 0.0)
         self._networth = spData.get('networth', 0.0)
@@ -184,7 +185,7 @@ class PersonalCapitalCategorySensor(Entity):
         """Initialize the sensor."""
         self.hass = hass
         self._pc = pc
-        self._name = friendlyName
+        self._name = f'Personal Capital {friendlyName}'
         self._productType = productType
         self._accountType = accountType
         self._balanceName = balanceName
@@ -200,9 +201,10 @@ class PersonalCapitalCategorySensor(Entity):
             return False
 
         spData = result.json()['spData']
+        # TODO If no spData, need to reauthenticate
         self._state = spData.get(self._balanceName, 0.0)
         accounts = spData.get('accounts')
-        _LOGGER.warn(spData)
+        # _LOGGER.warn(spData)
 
         for account in accounts:
             if self._productType == account.get('productType') and \
