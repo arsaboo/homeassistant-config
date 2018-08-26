@@ -348,3 +348,43 @@
           - image_processing.tagbox_porch
           - image_processing.sighthound_porch
       # - service: python_script.dark_sky_friendly_names
+  discovery:
+    alias: 'Play Discovery'
+    sequence:
+      service: media_player.play_media
+      data:
+        entity_id: media_player.shield
+        media_content_id: !secret discovery_url
+        media_content_type: tvshow
+  cnn:
+    alias: 'Play CNN'
+    sequence:
+      service: media_player.play_media
+      data:
+        entity_id: media_player.shield
+        media_content_id: !secret cnn_url
+        media_content_type: tvshow
+  disney:
+    alias: 'Play Disney'
+    sequence:
+      service: media_player.play_media
+      data:
+        entity_id: media_player.shield
+        media_content_id: !secret disney_url
+        media_content_type: tvshow
+  cnbc:
+    alias: 'Play CNBC'
+    sequence:
+      service: media_player.play_media
+      data:
+        entity_id: media_player.shield
+        media_content_id: !secret cnbc_url
+        media_content_type: tvshow
+  animalplanet:
+    alias: 'Play Animal Planet'
+    sequence:
+      service: media_player.play_media
+      data:
+        entity_id: media_player.shield
+        media_content_id: !secret animal_planet_url
+        media_content_type: tvshow
