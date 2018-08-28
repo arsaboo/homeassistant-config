@@ -53,6 +53,7 @@
       - sensor.pihole_domains_blocked
       - sensor.pihole_ads_percentage_blocked_today
       - sensor.pihole_dns_unique_domains
+      - sensor.10_year_treasury
       - input_boolean.frontdoor
       - input_boolean.backdoor
       - binary_sensor.garageentrydoor
