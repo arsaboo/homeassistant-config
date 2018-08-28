@@ -15,7 +15,7 @@ resources:
     type: js
   - url: /local/custom_ui/alarm_control_panel-card.js?v=1.1
     type: js
-  - url: /local/custom_ui/thermostat-card.js?v=1.2
+  - url: /local/custom_ui/thermostat-card.js?v=1.3
     type: module
   - url: /local/custom_ui/canvas-gauge-card.js?v=0.1
     type: module
@@ -27,6 +27,8 @@ resources:
     type: js
   - url: /local/custom_ui/slider-entity-row.js?v=0.2
     type: js
+  - url: /local/custom_ui/button-card.js
+    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -396,8 +398,11 @@ views:
       - type: entities
         title: Investments
         entities:
+          - sensor.personal_capital_networth
+          - sensor.personal_capital_investments
           - sensor.portfolioval
           - sensor.portfoliochange
+          - sensor.portfoliochange2
           - type: divider
           - sensor.dow_futures
           - sensor.dow_futures_change
@@ -423,6 +428,8 @@ views:
             url: !secret commute_home_url
             type: "custom:ext-weblink"
             icon: mdi:car
+          # - sensor.morning_commute
+          # - sensor.alok_to_home
           - sensor.plexspy
           - sensor.usdinr
 
@@ -843,10 +850,8 @@ views:
         title: USCIS
         entities:
           - sensor.alok_485
-          - sensor.alok_131
           - sensor.rashmi_485
           - sensor.arnav_485
-          - sensor.arnav_131
 
   - icon: mdi:test-tube
     id: test
@@ -857,6 +862,9 @@ views:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
+      - type: history-graph
+        entities:
+          - sensor.personal_capital_investments
       - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png
@@ -1200,16 +1208,6 @@ views:
             title: Life360
           - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
             title: Geofency
-      - type: entity-filter
-        entities:
-          - light.lifx3
-        state_filter:
-          - 'off'
-        show_empty: false
-        card:
-          type: picture
-          image: https://images.pexels.com/photos/220147/pexels-photo-220147.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500
-          navigation_path: /lovelace/weather
       - type: map
         entities:
           - entity: device_tracker.meta_alok
@@ -1222,35 +1220,6 @@ views:
         filter:
           include:
             - domain: automation
-      - type: horizontal-stack
-        cards:
-          - type: picture-entity
-            image: /local/icons/music_left.png
-            entity: light.lifx5
-            show_info: false
-          - type: picture-entity
-            image: /local/icons/music_play_pause.png
-            entity: light.lifx5
-            show_info: false
-          - type: picture-entity
-            image: /local/icons/music_right.png
-            entity: light.lifx5
-            show_info: false
-      - type: glance
-        title: Devices
-        entities:
-          - type: picture-entity
-            image: /local/icons/music_left.png
-            entity: light.kitchen_lights
-            show_info: false
-          - type: picture-entity
-            image: /local/icons/music_play_pause.png
-            entity: light.kitchen_lights
-            show_info: false
-          - type: picture-entity
-            image: /local/icons/music_right.png
-            entity: light.kitchen_lights
-            show_info: false
       - type: horizontal-stack
         cards:
           - type: custom:canvas-gauge-card
