@@ -37,7 +37,7 @@ class CalendarCard extends HTMLElement {
       }
 
       events.sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
-      
+
       let isSomethingChanged = this.isSomethingChanged(events);
       this.events = events;
       this.lastUpdate = moment();
@@ -63,7 +63,7 @@ class CalendarCard extends HTMLElement {
       this.content.innerHTML = `
         <style>
           .day-wrapper {
-            border-bottom: 1px solid rgba(0,0,0,.12);
+            border-bottom: 1px solid;
             margin-bottom: 10px;
           }
 
@@ -113,11 +113,11 @@ class CalendarCard extends HTMLElement {
 
           .time {
             font-size: smaller;
-            color: rgba(var(--primary-color),.62);
+            color: var(--primary-color);
           }
 
           .now {
-            color: #03a9f4;
+            color: var(--paper-item-icon-color, #44739e);
           }
 
           hr.now {
@@ -129,7 +129,7 @@ class CalendarCard extends HTMLElement {
           }
 
           ha-icon {
-            color: var(--state-icon-color);
+            color: var(--paper-item-icon-color, #44739e);
           }
 
           ha-icon.now {
@@ -175,7 +175,7 @@ class CalendarCard extends HTMLElement {
           <div class="info">
             <div class="summary">${event.title}</div>
             ${event.location ? `<div class="location"><ha-icon icon="mdi:map-marker"></ha-icon>&nbsp;${event.location}</div>` : ''}
-            
+
           </div>
           <div class="time">${event.isFullDayEvent ? 'All day' : (moment(event.startDateTime).format('HH:mm') + `-` + moment(event.endDateTime).format('HH:mm'))}</div>
         </div>
