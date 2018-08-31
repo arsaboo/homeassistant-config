@@ -388,3 +388,18 @@
         entity_id: media_player.shield
         media_content_id: !secret animal_planet_url
         media_content_type: tvshow
+
+  kodi_update_library:
+    alias: Kodi Update Library
+    sequence:
+        service: media_player.kodi_call_method
+        data:
+          entity_id: media_player.kodi_nstv
+          method: VideoLibrary.Scan
+  kodi_clean_library:
+    alias: Kodi Clean Library
+    sequence:
+        service: media_player.kodi_call_method
+        data:
+          entity_id: media_player.kodi_nstv
+          method: VideoLibrary.Clean
