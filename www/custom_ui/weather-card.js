@@ -14,7 +14,7 @@ class WeatherCard extends HTMLElement {
     }
 
     const getUnit = function (measure) {
-      const lengthUnit = hass.config.core.unit_system.length;
+      const lengthUnit = hass.config.unit_system.length;
       switch (measure) {
         case 'air_pressure':
           return lengthUnit === 'km' ? 'hPa' : 'inHg';
@@ -23,7 +23,7 @@ class WeatherCard extends HTMLElement {
         case 'precipitation':
           return lengthUnit === 'km' ? 'mm' : 'in';
         default:
-          return hass.config.core.unit_system[measure] || '';
+          return hass.config.unit_system[measure] || '';
       }
     };
 
