@@ -161,6 +161,16 @@ shell_command:
 #     url: !secret lyric_mode_heat
 #   lyric_mode_cool:
 #     url: !secret lyric_mode_cool
+rest_command:
+  youtube:
+    url: 'http://192.168.2.252:8001/api/v2/applications/111299001912'
+    method: post
+  netflix:
+    url: 'http://192.168.2.252:8001/ws/apps/Netflix'
+    method: post
+  plex:
+    url: 'http://192.168.2.252:8001/api/v2/applications/kIciSQlYEM.plex'
+    method: post
 
 media_extractor:
 
@@ -393,6 +403,7 @@ sonos:
     hosts:
       - 192.168.2.150
       - 192.168.2.69
+      - 192.168.2.253
 sun:
 media_player:
   - platform: kodi
@@ -401,10 +412,14 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  - platform: panasonic_viera
-    host: 192.168.2.242
-    port: 55000
-    name: Panasonic Viera TV
+  # - platform: panasonic_viera
+  #   host: 192.168.2.242
+  #   port: 55000
+  #   name: Panasonic Viera TV
+  - platform: samsungtv
+    host: 192.168.2.252
+    name: Living Room TV
+    mac: !secret samsungtvmac
   - platform: plex
     entity_namespace: 'plex'
   - platform: alexa

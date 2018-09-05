@@ -311,8 +311,8 @@ views:
           - type: state-label
             entity: sensor.study_temp_rounded
             style:
-              top: 78%
-              left: 50%
+              top: 80%
+              left: 49%
               'background-color': gray
               'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
               # 'background-color': red
@@ -323,11 +323,6 @@ views:
               'font-family': Helvetica
               'display': block
               'overflow': hidden
-          - type: state-label
-            entity: sensor.humidity_158d0001ab3b2b
-            style:
-              top: 83%
-              left: 50%
 
             # Dining
           - type: custom:thermostat-card
@@ -657,10 +652,102 @@ views:
           - input_select.hdmiswitcher
           - input_select.hdmiinput
           - input_number.harmonyvolume
-          - input_boolean.tv
-          - input_boolean.tvtime
           - sensor.total_tv_time
+          - sensor.sonos_audio_in
           - script.tv_off
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: "custom:button-card"
+                color_type: blank-card
+              - type: "custom:button-card"
+                entity: switch.sonos_speech_enhance
+                name: Speech Enhance
+                icon: mdi:comment-check-outline
+                default_color: rgb(255, 255, 255)
+                color: rgb(28, 128, 199)
+                action: toggle
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - font-weight: bold
+              - type: "custom:button-card"
+                entity: switch.sonos_night_sound
+                name: Night Sound
+                icon: mdi:weather-night
+                color: rgb(28, 128, 199)
+                action: toggle
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - font-weight: bold
+              - type: "custom:button-card"
+                color_type: blank-card
+          - type: horizontal-stack
+            cards:
+              - type: "custom:button-card"
+                color_type: blank-card
+              - type: "custom:button-card"
+                color_type: card
+                color: rgb(223, 255, 97)
+                icon: mdi:volume-plus
+                action: service
+                service:
+                  domain: media_player
+                  action: volume_up
+                  data:
+                    entity_id: media_player.family_room_2
+              - type: "custom:button-card"
+                entity: sensor.sonos_volume
+                color_type: card
+                show_state: true
+                color: rgb(223, 255, 97)
+                action: more_info
+              - type: "custom:button-card"
+                color_type: card
+                color: rgb(223, 255, 97)
+                icon: mdi:volume-minus
+                action: service
+                service:
+                  domain: media_player
+                  action: volume_down
+                  data:
+                    entity_id: media_player.family_room_2
+              - type: "custom:button-card"
+                color_type: blank-card
+          - type: horizontal-stack
+            cards:
+              - type: "custom:button-card"
+                color_type: blank-card
+              - type: "custom:button-card"
+                color_type: card
+                color: rgb(223, 255, 97)
+                icon: mdi:plex
+                action: service
+                service:
+                  domain: rest_command
+                  action: plex
+              - type: "custom:button-card"
+                color_type: card
+                color: rgb(223, 255, 97)
+                icon: mdi:youtube
+                action: service
+                service:
+                  domain: rest_command
+                  action: youtube
+              - type: "custom:button-card"
+                color_type: card
+                color: rgb(223, 255, 97)
+                icon: mdi:netflix
+                action: service
+                service:
+                  domain: rest_command
+                  action: netflix
+              - type: "custom:button-card"
+                color_type: blank-card
+
       - type: entities
         title: Light Operations
         show_header_toggle: false
@@ -675,19 +762,23 @@ views:
       - type: media-control
         entity: media_player.office
       - type: media-control
+        entity: media_player.family_room_2
+      - type: media-control
         entity: media_player.kodi_nstv
       - type: media-control
         entity: media_player.echo_dot_gen2
       - type: media-control
         entity: media_player.living_room_home
+      # - type: media-control
+      #   entity: media_player.panasonic_viera_tv
       - type: media-control
-        entity: media_player.panasonic_viera_tv
+        entity: media_player.living_room_tv
       - type: media-control
         entity: media_player.shield
       - type: media-control
         entity: media_player.shield_android_tv
-      - type: media-control
-        entity: media_player.plex_shield_android_tv
+      # - type: media-control
+      #   entity: media_player.plex_shield_android_tv
 
   - icon: mdi:settings
     id: settings
@@ -943,7 +1034,7 @@ views:
             service_data:
               entity_id: remote.livingroom
               command: ChannelDown
-              device: 31747892
+              device: 56988979
           - type: icon
             icon: mdi:plus
             title: Channel Up
@@ -958,7 +1049,7 @@ views:
             service_data:
               entity_id: remote.livingroom
               command: ChannelUp
-              device: 31747892
+              device: 56988979
           - type: icon
             icon: mdi:volume-plus
             title: Volume Up

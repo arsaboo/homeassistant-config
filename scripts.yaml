@@ -288,7 +288,7 @@
           entityid: 'device_tracker.alok_alok'
           fromstate: '{{states.device_tracker.alok_alok.state}}'
           tostate: '{{states.device_tracker.alok_alok.state}}'
-      - service_template: "homeassistant.turn_{{ 'on' if states.media_player.panasonic_viera_tv.state == 'on' else 'off' }}"
+      - service_template: "homeassistant.turn_{{ 'on' if states.media_player.living_room_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv
       - service: input_select.select_option

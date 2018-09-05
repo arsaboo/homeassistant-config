@@ -13,7 +13,7 @@
     db_url: !secret recorder_db_url
     queries:
       - name: Portfolio morning
-        query: "SELECT state FROM states WHERE entity_id='sensor.personal_capital_investments' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) = 1 or DATEDIFF(NOW(), last_changed) = 2 or DATEDIFF(NOW(), last_changed) = 3)) ORDER BY last_changed desc LIMIT 1;"
+        query: "SELECT state FROM states WHERE entity_id='sensor.personal_capital_investments' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) = 1 or DATEDIFF(NOW(), last_changed) = 2 or DATEDIFF(NOW(), last_changed) = 3 or DATEDIFF(NOW(), last_changed) = 4)) ORDER BY last_changed desc LIMIT 1;"
         column: 'state'
         unit_of_measurement: $
   - platform: personalcapital
@@ -68,7 +68,7 @@
       - download
   - platform: history_stats
     name: Total TV Time
-    entity_id: media_player.panasonic_viera_tv
+    entity_id: media_player.living_room_tv
     state: 'on'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
@@ -201,6 +201,16 @@
     scan_interval: 86400
     # select: ".wsod_bold.wsod_aRight span"
     select: ".wsod_bold.wsod_aRight"
+  - platform: rest
+    method: POST
+    resource: http://192.168.2.253:1400/DeviceProperties/Control
+    name: Sonos Stereo
+    headers:
+      SOAPACTION: "urn:schemas-upnp-org:service:DeviceProperties:1#GetZoneInfo"
+      Content-Type: text/xml; charset="utf-8"
+    payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
+    value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
+    # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
   - platform: template
     sensors:
       iframe_windy:
@@ -211,6 +221,15 @@
       study_temp_rounded:
         friendly_name: "Study temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
+      sonos_audio_in:
+        friendly_name: "Sonos Audio-in"
+        value_template: >-
+          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': '(not listening) playing another stream?', '22': 'Silence'} -%}
+          {{ audio_in[states.sensor.sonos_stereo.state] | default('NA', true)}}
+        icon_template: >-
+          {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
+          {{ audio_in[states.sensor.sonos_stereo.state] | default('mdi:volume-high', true) }}
+
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -398,8 +417,8 @@
           {%- endif -%}
       sonos_volume:
         value_template: >-
-          {%- if states.media_player.livingroomsonos.attributes.volume_level != None -%}
-            {{ (states.media_player.livingroomsonos.attributes.volume_level|default(0) * 100) |int }}
+          {%- if states.media_player.family_room_2.attributes.volume_level != None -%}
+            {{ (states.media_player.family_room_2.attributes.volume_level|default(0) * 100) |int }}
           {%- else -%}
             NA
           {%- endif -%}

@@ -730,7 +730,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: media_player.livingroomsonos
+      entity_id: media_player.family_room_2
       state: 'playing'
   trigger:
     platform: event
@@ -741,9 +741,9 @@
   action:
     - service: media_player.volume_set
       data_template:
-        entity_id: media_player.livingroomsonos
+        entity_id: media_player.family_room_2
         volume_level: >
-              {% set state = (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) -%}
+              {% set state = (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) -%}
               {%-  if state > 1 -%}
                  {%- set state  = 1 -%}
               {%-  elif state < 0 -%}
@@ -753,16 +753,17 @@
     - service: logbook.log
       data_template:
         name: "Volume changed: "
-        message: "{{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
+        message: "{{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
     - service: notify.shield
       data_template:
         title: "Home Assistant"
         message: >
           {%- if trigger.event.data.action_value > 0 -%}
-            Volume increased to {{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
+            Volume increased to {{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
           {%- else -%}
-            Volume lowered to {{ (states.media_player.livingroomsonos.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
+            Volume lowered to {{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
           {%- endif -%}
+
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
   initial_state: 'on'
@@ -1331,7 +1332,7 @@
       data_template:
         entity_id: input_number.harmonyvolume
         value: >
-            {{ (state_attr('media_player.livingroomsonos', 'volume_level') * 100) | int }}
+            {{ (state_attr('media_player.family_room_2', 'volume_level') * 100) | int }}
     - service: input_select.select_option
       data_template:
         entity_id: input_select.hdmiswitcher
@@ -1349,7 +1350,7 @@
   initial_state: 'on'
   trigger:
     platform: state
-    entity_id: media_player.panasonic_viera_tv
+    entity_id: media_player.living_room_tv
   action:
     - service_template: "homeassistant.turn_{{ 'on' if trigger.to_state.state == 'on' else 'off' }}"
       data:
@@ -1359,7 +1360,7 @@
   initial_state: 'on'
   trigger:
     platform: state
-    entity_id: media_player.panasonic_viera_tv
+    entity_id: media_player.living_room_tv
     from: 'off'
     to: 'on'
   condition:
@@ -1370,11 +1371,11 @@
     - service: remote.send_command
       data_template:
         command: PowerOff
-        device: 31747892
+        device: 56988979
         entity_id: remote.livingroom
     - service: media_player.turn_off
       entity_id:
-        - media_player.panasonic_viera_tv
+        - media_player.living_room_tv
 
 - id: turn_tv_on_off
   alias: Turn TV on/off
@@ -1391,7 +1392,7 @@
     - service: remote.send_command
       data_template:
         command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
-        device: 31747892
+        device: 56988979
         entity_id: remote.livingroom
 - id: set_volume
   alias: "Set Volume"
@@ -1402,7 +1403,7 @@
   action:
     - service: media_player.volume_set
       data_template:
-        entity_id: media_player.livingroomsonos
+        entity_id: media_player.family_room_2
         volume_level: >
           {{states('input_number.harmonyvolume') | int / 100}}
 
@@ -1490,7 +1491,7 @@
         {%- elif trigger.to_state.state == "InputHdmi4" -%}
           InputHdmi4
         {%- endif -%}
-      device: 31747892
+      device: 56988979
       entity_id: remote.livingroom
 - id: update_volume_slider
   alias: "Update Volume Slider"
@@ -1508,3 +1509,62 @@
         title: "Home Assistant"
         message: >
             Volume changed to {{ trigger.to_state.state }}
+- id: notify_sonos_audio_in
+  alias: "Notify Sonos audio-in state"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: sensor.sonos_stereo
+      to: '2'
+  condition:
+    - condition: template
+      value_template: "{{state_attr('media_player.family_room_2','source')=='TV'}}"
+    - condition: state
+      entity_id: media_player.family_room_2
+      state: 'playing'
+  action:
+    service: notify.telegram
+    data_template:
+      message: Sonos audio-in is {{states('sensor.sonos_audio_in')}}
+      title: Sonos in Stereo
+- id: sonos_enable_speech_enhance_and_night_sound
+  alias: "Sonos Enable speech enhance and night sound"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: media_player.living_room_tv
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: time
+      after: '20:30:00'
+      before: '23:00:00'
+  action:
+    - service: media_player.sonos_set_option
+      data:
+        entity_id: media_player.family_room_2
+        night_sound: true
+    - service: media_player.sonos_set_option
+      data:
+        entity_id: media_player.family_room_2
+        speech_enhance: true
+- id: sonos_disable_speech_enhance_and_night_sound
+  alias: "Sonos Disable speech enhance and night sound"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: media_player.living_room_tv
+      to: 'off'
+  condition:
+    - condition: time
+      after: '20:30:00'
+      before: '23:00:00'
+  action:
+    - service: media_player.sonos_set_option
+      data:
+        entity_id: media_player.family_room_2
+        night_sound: false
+    - service: media_player.sonos_set_option
+      data:
+        entity_id: media_player.family_room_2
+        speech_enhance: false

@@ -83,7 +83,32 @@
             entity_id:
               - alarm_control_panel.abode_alarm
               - alarm_control_panel.arlohome
-
+      sonos_night_sound:
+        friendly_name: Sonos Night Sound
+        value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
+        turn_on:
+          - service: media_player.sonos_set_option
+            data:
+              entity_id: media_player.family_room_2
+              night_sound: True
+        turn_off:
+          - service: media_player.sonos_set_option
+            data:
+              entity_id: media_player.family_room_2
+              night_sound: False
+      sonos_speech_enhance:
+        friendly_name: Sonos Speech Enhance
+        value_template: "{{state_attr('media_player.family_room_2','speech_enhance')}}"
+        turn_on:
+          - service: media_player.sonos_set_option
+            data:
+              entity_id: media_player.family_room_2
+              speech_enhance: True
+        turn_off:
+          - service: media_player.sonos_set_option
+            data:
+              entity_id: media_player.family_room_2
+              speech_enhance: False
       developer_mode:
         friendly_name: Developer Mode
         value_template: "{{states.group.developer.attributes.view == True}}"
@@ -107,6 +132,23 @@
           - service: group.remove
             data:
               object_id: deaditems
+  # - platform: command_line
+  #   switches:
+  #     utubeon:
+  #       command_on: curl -X POST http://192.168.2.252:8001/api/v2/applications/111299001912
+  #       command_off: curl -X DELETE http://192.168.2.252:8001/api/v2/applications/111299001912
+  #       friendly_name: "Turn on Youtube"
+  #       command_state: off
+  #     netflixon:
+  #       command_on: curl -X POST http://192.168.2.252:8001/ws/apps/Netflix
+  #       command_off: curl -X POST http://192.168.2.252:8001/api/v2/applications/RN1MCdNq8t
+  #       command_state: curl -X GET http://192.168.2.252:8001/ws/apps/Netflix
+  #       friendly_name: "Turn on Netflix"
+  #     plexon:
+  #       command_on: curl -X POST http://192.168.2.252:8001/api/v2/applications/kIciSQlYEM.plex
+  #       command_off: curl -X POST http://192.168.2.252:8001
+  #       command_state: off
+  #       friendly_name: "Turn on Plex"
 #  platform: command_line
 #  switches:
 #    #Switch for Foscam Motion Detection

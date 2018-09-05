@@ -13,6 +13,7 @@
       - input_select.livingroomharmony
       - sensor.living_room
       - sensor.dark_sky_summary
+      - sensor.total_tv_time
       - zwave.garage_door_tilt_sensor
       - automation.change_leeo_color
       - automation.change_leeo_upstairs_color
@@ -26,6 +27,8 @@
       - sensor.pollen_level
       - sensor.hassuptime
       - sensor.uptime
+      - sensor.sonos_stereo
+      - sensor.sonos_audio_in
       - sensor.time__date
       - sensor.ssl_certificate_expiry
       - switch.pihole
