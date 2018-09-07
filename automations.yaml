@@ -1355,6 +1355,18 @@
     - service_template: "homeassistant.turn_{{ 'on' if trigger.to_state.state == 'on' else 'off' }}"
       data:
         entity_id: input_boolean.tv
+- id: turn_on_off_shield_with_tv
+  alias: Turn Shield on/off with TV
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: media_player.living_room_tv
+  action:
+    - service: remote.send_command
+      data_template:
+        command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
+        device: 31747959
+        entity_id: remote.livingroom    
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -1558,7 +1570,7 @@
   condition:
     - condition: time
       after: '20:30:00'
-      before: '23:00:00'
+      before: '07:00:00'
   action:
     - service: media_player.sonos_set_option
       data:

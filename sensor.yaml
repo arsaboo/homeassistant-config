@@ -224,7 +224,7 @@
       sonos_audio_in:
         friendly_name: "Sonos Audio-in"
         value_template: >-
-          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': '(not listening) playing another stream?', '22': 'Silence'} -%}
+          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence'} -%}
           {{ audio_in[states.sensor.sonos_stereo.state] | default('NA', true)}}
         icon_template: >-
           {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}

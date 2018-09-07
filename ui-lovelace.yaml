@@ -25,7 +25,7 @@ resources:
     type: js
   - url: /local/custom_ui/ext-weblink.js?v=0.6
     type: js
-  - url: /local/custom_ui/slider-entity-row.js?v=0.2
+  - url: /local/custom_ui/slider-entity-row.js?v=0.3
     type: js
   - url: /local/custom_ui/button-card.js
     type: module
@@ -663,7 +663,7 @@ views:
                 color_type: blank-card
               - type: "custom:button-card"
                 entity: switch.sonos_speech_enhance
-                name: Speech Enhance
+                name: Speech
                 icon: mdi:comment-check-outline
                 default_color: rgb(255, 255, 255)
                 color: rgb(28, 128, 199)
@@ -674,7 +674,7 @@ views:
                   - font-weight: bold
               - type: "custom:button-card"
                 entity: switch.sonos_night_sound
-                name: Night Sound
+                name: Night
                 icon: mdi:weather-night
                 color: rgb(28, 128, 199)
                 action: toggle
@@ -693,6 +693,8 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
+                style:
+                  - height: 50px
                 action: service
                 service:
                   domain: media_player
@@ -701,14 +703,18 @@ views:
                     entity_id: media_player.family_room_2
               - type: "custom:button-card"
                 entity: sensor.sonos_volume
-                color_type: card
+                color_type: icon
                 show_state: true
                 color: rgb(223, 255, 97)
+                style:
+                  - height: 50px
                 action: more_info
               - type: "custom:button-card"
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
+                style:
+                  - height: 50px
                 action: service
                 service:
                   domain: media_player
