@@ -107,6 +107,22 @@
       - service: homeassistant.turn_off
         data:
           entity_id: input_boolean.tv
+  tv_youtube_on:
+    alias: 'Television - turn Youtube on'
+    sequence:
+      - condition: state
+        entity_id: input_boolean.tv
+        state: 'on'
+      - service: remote.send_command
+        data_template:
+          command: PowerOn
+          device: 56988979
+          entity_id: remote.livingroom
+      - delay: 00:00:02
+      - service: rest_command.youtube
+      - service: homeassistant.turn_on
+        data:
+          entity_id: input_boolean.tv
   sonos_say:
     alias: "Sonos TTS script"
     sequence:
@@ -318,6 +334,11 @@
             {%- else -%}
               Shield
             {%- endif -%}
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.harmonyvolume
+          value: >
+              {{ (state_attr('media_player.family_room_2', 'volume_level') * 100) | int }}
       - service: homeassistant.turn_on
         entity_id: script.classify_images
 

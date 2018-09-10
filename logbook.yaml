@@ -31,7 +31,7 @@
       - device_tracker.alokiosiphone
       - device_tracker.myiphone
       - device_tracker.alok_alok
-      - device_tracker.b4445761f6c04b7f835fcfdc03b47111    
+      - device_tracker.b4445761f6c04b7f835fcfdc03b47111
       - sensor.hvacmode
       - sensor.living_room
       - sensor.plexspy
@@ -40,6 +40,8 @@
       - sensor.ssl_certificate_expiry
       - sensor.steps_alok
       - sensor.steps_rashmi
+      - automation.set_volume
+      - automation.update_volume_slider
   exclude:
     domains:
       - sun

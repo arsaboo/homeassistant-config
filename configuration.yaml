@@ -30,20 +30,20 @@ homeassistant:
 updater:
   include_used_components: true
 
-influxdb:
-  host: 192.168.2.113
-  include:
-    entities:
-       - sensor.temperature_158d0001ab3b2b
-       - sensor.humidity_158d0001ab3b2b
-       - sensor.temperature_158d0001ab7d20
-       - sensor.humidity_158d0001ab7d20
-       - sensor.portfolioval
-       - sensor.pws_temp_f
-       - sensor.downstairsthermoper
-       - sensor.upstairsthermoper
-       - climate.downstairs
-       - climate.upstairs
+# influxdb:
+#   host: 192.168.2.113
+#   include:
+#     entities:
+#        - sensor.temperature_158d0001ab3b2b
+#        - sensor.humidity_158d0001ab3b2b
+#        - sensor.temperature_158d0001ab7d20
+#        - sensor.humidity_158d0001ab7d20
+#        - sensor.portfolioval
+#        - sensor.pws_temp_f
+#        - sensor.downstairsthermoper
+#        - sensor.upstairsthermoper
+#        - climate.downstairs
+#        - climate.upstairs
 python_script:
 weather:
   - platform: yweather
@@ -189,12 +189,16 @@ cloud:
         - switch.driveway
         - switch.garage_relay_switch
         - switch.wemoporch
+        - script.tv_youtube_on
       include_domains:
         - cover
     entity_config:
       light.gateway_light_34ce00813670:
         name: Gateway Light
         description: Xiaomi Gateway Light
+      script.tv_youtube_on:
+        name: Youtube
+        description: Youtube on
 
 google_assistant:
   project_id: !secret google_project_id
@@ -234,7 +238,10 @@ google_assistant:
       expose: True
       name: Philips Hue
       room: kids room
-
+    script.tv_youtube_on:
+      expose: True
+      name: Youtube
+      room: living room
 map:
 downloader:
   download_dir: downloads
@@ -288,11 +295,11 @@ camera:
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
   - platform: arlo
-  - platform: generic
-    name: LivingRoom_temperature
-    still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
-    username: !secret grafana_user
-    password: !secret grafana_pass
+  # - platform: generic
+  #   name: LivingRoom_temperature
+  #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
+  #   username: !secret grafana_user
+  #   password: !secret grafana_pass
   - platform: ring
   - platform: unsplash
     api_key: !secret unsplash_key
