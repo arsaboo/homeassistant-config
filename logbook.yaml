@@ -42,6 +42,7 @@
       - sensor.steps_rashmi
       - automation.set_volume
       - automation.update_volume_slider
+      - sensor.sonos_stereo
   exclude:
     domains:
       - sun

@@ -13,7 +13,7 @@ resources:
     type: js
   - url: /local/custom_ui/bignumber-card.js
     type: js
-  - url: /local/custom_ui/alarm_control_panel-card.js?v=1.1
+  - url: /local/custom_ui/alarm_control_panel-card.js?v=1.2
     type: js
   - url: /local/custom_ui/thermostat-card.js?v=1.3
     type: module
@@ -692,13 +692,13 @@ views:
               - type: "custom:button-card"
                 color_type: card
                 color: rgb(223, 255, 97)
-                icon: mdi:volume-plus
+                icon: mdi:volume-minus
                 style:
                   - height: 50px
                 action: service
                 service:
                   domain: media_player
-                  action: volume_up
+                  action: volume_down
                   data:
                     entity_id: media_player.family_room_2
               - type: "custom:button-card"
@@ -712,13 +712,13 @@ views:
               - type: "custom:button-card"
                 color_type: card
                 color: rgb(223, 255, 97)
-                icon: mdi:volume-minus
+                icon: mdi:volume-plus
                 style:
                   - height: 50px
                 action: service
                 service:
                   domain: media_player
-                  action: volume_down
+                  action: volume_up
                   data:
                     entity_id: media_player.family_room_2
               - type: "custom:button-card"

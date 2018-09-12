@@ -200,6 +200,43 @@ cloud:
         name: Youtube
         description: Youtube on
 
+  google_actions:
+    filter:
+      include_entities:
+        - script.tv_youtube_on
+        - switch.wemoporch
+        - switch.driveway
+        - switch.wemoinsight
+      include_domains:
+        - cover
+        - light
+      exclude_entities:
+        - light.gateway_light_34ce00813670
+        - light.hue_color_lamp_1
+        - light.hue_color_lamp_2
+        - light.hue_color_lamp_3
+        - light.lifx3
+        - light.lifxnrguest
+        - light.lifxnrkitchen
+    entity_config:
+      light.living_room_lights:
+        room: living room
+      switch.driveway:
+        room: driveway
+      switch.wemoporch:
+        name: Porch Lights
+        room: porch
+      light.kitchen_lights:
+        room: kitchen
+      light.lifx5:
+        room: garage
+      switch.wemoinsight:
+        name: Wemo Insight
+        room: office
+      script.tv_youtube_on:
+        name: Youtube
+        room: living room
+
 google_assistant:
   project_id: !secret google_project_id
   client_id: !secret google_client_id
