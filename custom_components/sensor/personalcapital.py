@@ -82,7 +82,7 @@ def request_app_setup(hass, config, pc, add_devices, discovery_info=None):
 
 def load_session(hass):
     try:
-        with open(hass.config.path(SESSION_FILE)) as data_file:    
+        with open(hass.config.path(SESSION_FILE)) as data_file:
             cookies = {}
             try:
                 cookies = json.load(data_file)
@@ -224,6 +224,7 @@ class PersonalCapitalCategorySensor(Entity):
     def update(self):
         """Get the latest state of the sensor."""
         result = self._pc.fetch('/newaccount/getAccounts')
+        _LOGGER.debug("PC: %s", result)
 
         if not result:
             return False
