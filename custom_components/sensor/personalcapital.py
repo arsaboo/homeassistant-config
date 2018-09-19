@@ -160,6 +160,7 @@ class PersonalCapitalNetWorthSensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
+            _Logger.debug("PC: %s", result.json()['spHeader']['success'])
             pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
 
@@ -235,6 +236,7 @@ class PersonalCapitalCategorySensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
+            _Logger.debug("PC: %s", result.json()['spHeader']['success'])
             pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
 
