@@ -46,6 +46,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 _CONFIGURING = {}
 _LOGGER = logging.getLogger(__name__)
 
+_CACHE = {}
+
 def request_app_setup(hass, config, pc, add_devices, discovery_info=None):
     """Request configuration steps from the user."""
     from personalcapital import PersonalCapital, RequireTwoFactorException, TwoFactorVerificationModeEnum
@@ -105,8 +107,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if len(session) > 0:
         pc.set_session(session)
 
+        _CACHE[CONF_EMAIL] = config.get(CONF_EMAIL)
+        _CACHE[CONF_PASSWORD] = config.get(CONF_PASSWORD)
+
         try:
-            pc.login(config.get(CONF_EMAIL), config.get(CONF_PASSWORD))
+            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             continue_setup_platform(hass, config, pc, add_devices, discovery_info)
         except RequireTwoFactorException:
             request_app_setup(hass, config, pc, add_devices, discovery_info)
@@ -154,8 +159,12 @@ class PersonalCapitalNetWorthSensor(Entity):
         """Get the latest state of the sensor."""
         result = self._pc.fetch('/newaccount/getAccounts')
 
-        if not result:
-            return False
+        if not result or not result.json()['spHeader']['success']:
+            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            result = self._pc.fetch('/newaccount/getAccounts')
+
+            if not result or 'spData' not in result.json():
+                return False
 
         spData = result.json()['spData']
         self._state = spData.get('networth', 0.0)
@@ -224,10 +233,13 @@ class PersonalCapitalCategorySensor(Entity):
     def update(self):
         """Get the latest state of the sensor."""
         result = self._pc.fetch('/newaccount/getAccounts')
-        _LOGGER.debug("PC: %s", result)
 
-        if not result:
-            return False
+        if not result or not result.json()['spHeader']['success']:
+            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            result = self._pc.fetch('/newaccount/getAccounts')
+
+            if not result or 'spData' not in result.json():
+                return False
 
         spData = result.json()['spData']
         self._state = spData.get(self._balanceName, 0.0)
