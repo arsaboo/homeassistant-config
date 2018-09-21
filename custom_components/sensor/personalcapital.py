@@ -160,13 +160,13 @@ class PersonalCapitalNetWorthSensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
-            _LOGGER.debug("PC_pre: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
-            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
-            _LOGGER.debug("PC_post: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+          try:
+            self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
-
-            if not result or 'spData' not in result.json():
-                return False
+            _LOGGER.debug("PC_pre: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])            
+          except RequireTwoFactorException:
+            _LOGGER.debug("PC_post: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+            return False
 
         spData = result.json()['spData']
         self._state = spData.get('networth', 0.0)
@@ -237,13 +237,13 @@ class PersonalCapitalCategorySensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
-            _LOGGER.debug("PC_pre2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
-            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
-            _LOGGER.debug("PC_post2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+          try:
+            self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
-
-            if not result or 'spData' not in result.json():
-                return False
+            _LOGGER.debug("PC_pre2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+          except RequireTwoFactorException:
+            _LOGGER.debug("PC_post2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+            return False
 
         spData = result.json()['spData']
         self._state = spData.get(self._balanceName, 0.0)
