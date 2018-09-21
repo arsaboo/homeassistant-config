@@ -160,8 +160,9 @@ class PersonalCapitalNetWorthSensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
-            _LOGGER.debug("PC: %s", result.json()['spHeader'])
+            _LOGGER.debug("PC_pre: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            _LOGGER.debug("PC_post: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             result = self._pc.fetch('/newaccount/getAccounts')
 
             if not result or 'spData' not in result.json():
@@ -236,8 +237,9 @@ class PersonalCapitalCategorySensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
-            _LOGGER.debug("PC: %s", result.json()['spHeader'])
+            _LOGGER.debug("PC_pre2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            _LOGGER.debug("PC_post2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             result = self._pc.fetch('/newaccount/getAccounts')
 
             if not result or 'spData' not in result.json():
