@@ -161,11 +161,12 @@ class PersonalCapitalNetWorthSensor(Entity):
 
         if not result or not result.json()['spHeader']['success']:
           try:
+            _LOGGER.debug("PC_pre: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
-            _LOGGER.debug("PC_pre: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])            
-          except RequireTwoFactorException:
             _LOGGER.debug("PC_post: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+          except RequireTwoFactorException:
+            _LOGGER.debug("PC_except: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             return False
 
         spData = result.json()['spData']
@@ -238,11 +239,12 @@ class PersonalCapitalCategorySensor(Entity):
 
         if not result or not result.json()['spHeader']['success']:
           try:
+            _LOGGER.debug("PC_pre2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
-            _LOGGER.debug("PC_pre2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
-          except RequireTwoFactorException:
             _LOGGER.debug("PC_post2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
+          except RequireTwoFactorException:
+            _LOGGER.debug("PC_except2: %s and success: %s", result.json()['spHeader'], result.json()['spHeader']['success'])
             return False
 
         spData = result.json()['spData']
