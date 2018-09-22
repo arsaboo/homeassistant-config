@@ -328,19 +328,19 @@ camera:
   - platform: generic
     still_image_url: !secret meteogram_png_url
     name: Meteogram
-  - platform: generic
-    name: worldtime
-    still_image_url: https://imgs.xkcd.com/comics/now.png
   - platform: arlo
+  - platform: ring
+  # - platform: unsplash
+  #   api_key: !secret unsplash_key
+  #   output_dir: /www/icons/
+  # - platform: generic
+  #   name: worldtime
+  #   still_image_url: https://imgs.xkcd.com/comics/now.png
   # - platform: generic
   #   name: LivingRoom_temperature
   #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
   #   username: !secret grafana_user
   #   password: !secret grafana_pass
-  - platform: ring
-  - platform: unsplash
-    api_key: !secret unsplash_key
-    output_dir: /www/icons/
   # - platform: local_file
   #   name: Grafana_temperature
   #   file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
@@ -446,7 +446,6 @@ sonos:
   media_player:
     hosts:
       - 192.168.2.150
-      - 192.168.2.69
       - 192.168.2.253
 sun:
 media_player:
@@ -464,8 +463,6 @@ media_player:
     host: 192.168.2.252
     name: Living Room TV
     mac: !secret samsungtvmac
-  - platform: plex
-    entity_namespace: 'plex'
   - platform: alexa
     email: !secret amazon_user
     password: !secret amazon_pass
@@ -554,7 +551,7 @@ logger:
     homeassistant.components.camera.generic: critical
     homeassistant.components.sensor.wunderground: critical
     homeassistant.components.sensor.pi_hole: critical
-    homeassistant.components.media_player.plex: critical
+    homeassistant.components.media_player: critical
     homeassistant.components.telegram_bot: critical
     homeassistant.components.scene.lifx_cloud: critical
     homeassistant.components.sensor.darksky: critical
@@ -562,6 +559,7 @@ logger:
     aiohttp.access: critical
     aiohttp.server: critical
     haffmpeg.core: critical
+    homeassistant.core: critical
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
@@ -569,7 +567,8 @@ logger:
     custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
-    homeassistant.components.http.view: info
+    # homeassistant.components.http.view: info
+    custom_components.sensor.personalcapital: debug
 # Text to speech
 tts:
   - platform: google

@@ -626,18 +626,18 @@ views:
         entity: camera.livingroom2
       - type: picture-entity
         entity: camera.front_door
-      - type: picture-entity
-        entity: camera.worldtime
-        show_name: false
-        show_state: false
+      # - type: picture-entity
+      #   entity: camera.worldtime
+      #   show_name: false
+      #   show_state: false
       - type: picture-entity
         entity: camera.ars_bloom
         show_name: false
         show_state: false
-      - type: picture-entity
-        entity: camera.unsplash
-        show_name: false
-        show_state: false
+      # - type: picture-entity
+      #   entity: camera.unsplash
+      #   show_name: false
+      #   show_state: false
 
   - icon: mdi:play-circle-outline
     id: media
