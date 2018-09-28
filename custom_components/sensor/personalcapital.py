@@ -159,7 +159,7 @@ class PersonalCapitalNetWorthSensor(Entity):
         """Get the latest state of the sensor."""
         result = self._pc.fetch('/newaccount/getAccounts')
 
-        if not result.json()['spHeader']['success']:
+        if not result or not result.json()['spHeader']['success']:
             self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             result = self._pc.fetch('/newaccount/getAccounts')
 
