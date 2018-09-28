@@ -272,8 +272,8 @@
       - service: python_script.meta_device_tracker
         data_template:
           entity_id: '{{entityid}}'
-      - condition: template
-        value_template: '{{fromstate != tostate}}'
+      # - condition: template
+      #   value_template: '{{fromstate != tostate}}'
       - service: logbook.log
         data_template:
           name: "Tracker updated: "

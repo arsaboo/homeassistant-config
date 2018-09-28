@@ -626,10 +626,10 @@ views:
         entity: camera.livingroom2
       - type: picture-entity
         entity: camera.front_door
-      # - type: picture-entity
-      #   entity: camera.worldtime
-      #   show_name: false
-      #   show_state: false
+      - type: picture-entity
+        entity: camera.worldtime
+        show_name: false
+        show_state: false
       - type: picture-entity
         entity: camera.ars_bloom
         show_name: false
@@ -765,8 +765,6 @@ views:
           - script.lifx_stop_effects
       - type: media-control
         entity: media_player.livingroomsonos
-      - type: media-control
-        entity: media_player.office
       - type: media-control
         entity: media_player.family_room_2
       - type: media-control

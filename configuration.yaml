@@ -330,12 +330,12 @@ camera:
     name: Meteogram
   - platform: arlo
   - platform: ring
+  - platform: generic
+    name: worldtime
+    still_image_url: https://imgs.xkcd.com/comics/now.png
   # - platform: unsplash
   #   api_key: !secret unsplash_key
   #   output_dir: /www/icons/
-  # - platform: generic
-  #   name: worldtime
-  #   still_image_url: https://imgs.xkcd.com/comics/now.png
   # - platform: generic
   #   name: LivingRoom_temperature
   #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'

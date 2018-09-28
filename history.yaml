@@ -4,6 +4,12 @@
       - binary_sensor.garagedoor
       - device_tracker.meta_rashmi
       - device_tracker.meta_alok
+      - device_tracker.pi_alokphone
+      - device_tracker.myiphone
+      - device_tracker.alokiosiphone
+      - device_tracker.alok_alok
+      - device_tracker.e1594e5321df414c82daf655d5282fca
+      - device_tracker.elantrase
       - alarm_control_panel.abode_alarm
       - media_player.living_room_tv
       - media_player.panasonic_viera_tv

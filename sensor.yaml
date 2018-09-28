@@ -9,6 +9,40 @@
       - stream_count_direct_play
       - stream_count_direct_stream
       - total_bandwidth
+  # - platform: tautulli
+  #   api_key: !secret tautulli_api
+  #   host: 192.168.2.212
+  #   port: 8181
+  #   attributes:
+  #     - audio_codec
+  #     - bandwidth
+  #     - bitrate
+  #     - channel_stream
+  #     - container
+  #     - full_title
+  #     - magic_title
+  #     - original_title
+  #     - player
+  #     - progress_percent
+  #     - quality_profile
+  #     - state
+  #     - stream_audio_codec
+  #     - stream_container
+  #     - stream_container_decision
+  #     - stream_subtitle_decision
+  #     - subtitle_format
+  #     - stream_subtitle_format
+  #     - stream_video_codec
+  #     - stream_video_decision
+  #     - transcode_audio_codec
+  #     - transcode_container
+  #     - transcode_hw_decoding
+  #     - transcode_hw_encode
+  #     - transcode_hw_encoding
+  #     - transcode_video_codec
+  #     - user
+  #     - video_codec
+  #     - video_decision
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
@@ -57,6 +91,7 @@
   #   host: !secret ha_url
   - platform: glances
     host: 192.168.2.212
+    version: 3
     resources:
       - 'disk_use_percent'
       - 'memory_use_percent'

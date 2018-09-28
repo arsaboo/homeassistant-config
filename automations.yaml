@@ -22,7 +22,7 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alokiosiphone
+        # - device_tracker.alokiosiphone
         - device_tracker.alok_alok
         - device_tracker.e1594e5321df414c82daf655d5282fca
         - device_tracker.rashmiappiphone
@@ -40,7 +40,11 @@
         entityid: '{{trigger.entity_id}}'
         fromstate: '{{trigger.from_state.state}}'
         tostate: '{{trigger.to_state.state}}'
-
+    # - service: logbook.log
+    #   data_template:
+    #     name: "Meta Tracker: "
+    #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}"
+    # - service: script.notify_me
 #################################################################
 ## Security System
 #################################################################
@@ -1366,7 +1370,7 @@
       data_template:
         command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
         device: 31747959
-        entity_id: remote.livingroom    
+        entity_id: remote.livingroom
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
