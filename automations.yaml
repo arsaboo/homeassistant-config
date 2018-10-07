@@ -313,42 +313,9 @@
             switch.downstairs_away
           {%- elif states('switch.upstairs_away') == 'on' -%}
             switch.upstairs_away
-          {%- elif states('switch.lyric_mode_off') == 'on' -%}
-            switch.lyric_mode_off
+          {%- elif states('switch.bedroom_away') == 'on' -%}
+            switch.bedroom_away
           {%- endif -%}
-
-- id: thermostat_lyric_input_select
-  alias: 'Thermostat - Set Lyric mode in input_select'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: climate.lyric_t5_thermostat
-  action:
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.lyricmode
-        option: '{{ trigger.to_state.state }}'
-    - condition: template
-      value_template: "{{ trigger.from_state.state in ['heat', 'cool'] }}"
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.lyricmode_hist
-        option: '{{ trigger.from_state.state }}'
-
-- id: thermostat_lyric_mode
-  alias: 'Thermostat - Lyric mode change'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: input_select.lyricmode
-  action:
-    - service_template: "script.lyric_mode_{{ trigger.to_state.state }}"
-    - condition: template
-      value_template: "{{ trigger.from_state.state in ['heat', 'cool'] }}"
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.lyricmode_hist
-        option: '{{ trigger.from_state.state }}'
 
 - id: enable_thermostat_away_mode
   alias: 'Enable thermostat away'
@@ -364,7 +331,7 @@
             {{states('input_select.abodestatus') == 'armed_away' and states('switch.upstairs_away') == 'off'}}
         - condition: template
           value_template: >
-            {{states('input_select.abodestatus') == 'armed_away' and states('switch.lyric_mode_off') == 'off'}}
+            {{states('input_select.abodestatus') == 'armed_away' and states('switch.bedroom_away') == 'off'}}
   trigger:
    - platform: time
      minutes: '/5'
@@ -377,8 +344,8 @@
             switch.downstairs_away
           {%- elif states('switch.upstairs_away') == 'off' -%}
             switch.upstairs_away
-          {%- elif states('switch.lyric_mode_off') == 'off' -%}
-            switch.lyric_mode_off
+          {%- elif states('switch.bedroom_away') == 'off' -%}
+            switch.bedroom_away
           {%- endif -%}
 
 - id: notify_camera_pictures

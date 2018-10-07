@@ -23,14 +23,6 @@
     password: !secret hikvision_password
   - platform: template
     switches:
-      lyric_mode_off:
-        friendly_name: Lyric off
-        value_template: "{{(states.climate.lyric_t5_thermostat.state|default({})) == 'off'}}"
-        turn_on:
-          - service: homeassistant.turn_on
-            entity_id: script.lyric_mode_off
-        turn_off:
-          - service_template: "script.lyric_mode_{{ states.input_select.lyricmode_hist.state }}"
       downstairs_away:
         friendly_name: Downstairs Away
         value_template: "{{(states.climate.downstairs.attributes|default({})).away_mode|default('off') == 'on'}}"

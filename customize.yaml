@@ -10,9 +10,6 @@
      climate.bedroom:
        friendly_name: EcobeeMaster
        entity_picture: /local/icons/Ecobee.png
-     climate.lyric_t5_thermostat:
-       friendly_name: LyricMaster
-       entity_picture: /local/icons/lyric.png
      input_select.hvacmode:
        icon: mdi:air-conditioner
 #devices

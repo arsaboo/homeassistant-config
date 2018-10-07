@@ -18,7 +18,6 @@
           - switch.downstairs_away
           - switch.upstairs_away
           - switch.bedroom_away
-          - switch.lyric_mode_off
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
       # - service: ifttt.trigger
@@ -57,37 +56,12 @@
           - switch.downstairs_away
           - switch.upstairs_away
           - switch.bedroom_away
-          - switch.lyric_mode_off
       - service: light.turn_off
         entity_id: group.living_room_lights
       # - service: ifttt.trigger
       #   data: {"event":"AbodeStandby", "value1":"Abode Standby"}
       # - service: homeassistant.turn_off
       #   entity_id: input_boolean.startrecording
-
-  lyric_mode_off:
-    alias: 'Lyric mode off'
-    sequence:
-      - service: climate.set_operation_mode
-        data:
-          entity_id: climate.lyric_t5_thermostat
-          operation_mode: 'off'
-
-  lyric_mode_cool:
-    alias: 'Lyric mode cool'
-    sequence:
-      - service: climate.set_operation_mode
-        data:
-          entity_id: climate.lyric_t5_thermostat
-          operation_mode: 'cool'
-
-  lyric_mode_heat:
-    alias: 'Lyric mode heat'
-    sequence:
-      - service: climate.set_operation_mode
-        data:
-          entity_id: climate.lyric_t5_thermostat
-          operation_mode: 'heat'
 
   tv_off:
     alias: 'Turn Television off'

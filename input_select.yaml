@@ -3,17 +3,6 @@
     options:
       - heat
       - cool
-  lyricmode:
-    name: Lyric Mode
-    options:
-      - heat
-      - cool
-      - 'off'
-  lyricmode_hist:
-    name: Previous Lyric Mode
-    options:
-      - heat
-      - cool
   abodestatus:
     name: Abode status
     options:

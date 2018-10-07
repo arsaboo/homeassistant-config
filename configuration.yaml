@@ -150,21 +150,11 @@ bloomsky:
 ecobee:
   api_key: !secret ecobee_key
   hold_temp: True
-# lyric:
-#   client_id: !secret lyric_client_id
-#   client_secret: !secret lyric_client_secret
 
 shell_command:
   image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
   facebox: bash /home/homeassistant/.homeassistant/shell_scripts/facebox.sh "{{camera}}"
-#   Using Stringify Maker requests
-# rest_command:
-#   lyric_mode_off:
-#     url: !secret lyric_mode_off
-#   lyric_mode_heat:
-#     url: !secret lyric_mode_heat
-#   lyric_mode_cool:
-#     url: !secret lyric_mode_cool
+
 rest_command:
   youtube:
     url: 'http://192.168.2.252:8001/api/v2/applications/111299001912'

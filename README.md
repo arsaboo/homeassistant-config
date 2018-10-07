@@ -31,7 +31,7 @@ docker create \
 
 ## Some of the devices and services that I use with HA
   * [Aeotec Z-Stick Gen5](https://www.amazon.com/dp/B00X0AWA6E/) for Z-Wave control
-    * I use a [z-wave dry contact relay](https://www.amazon.com/gp/product/B00ER6MH22/) along with a tilt sensor for automating my garage door. 
+    * I use a [z-wave dry contact relay](https://www.amazon.com/gp/product/B00ER6MH22/) along with a tilt sensor for automating my garage door.
     <img src="https://github.com/arsaboo/homeassistant-config/blob/master/z-wave_relay.png" alt="Z-wave Relay wiring" />
   * [Xiaomi Aqara](https://www.aliexpress.com/item/Original-Xiaomi-Smart-Gateway-2-Intelligent-Web-Wifi-Radio-and-Ringbell-Smart-Window-and-Door-Sensor/32816289388.html) for Zigbee sensors
     * Currently using [water](https://www.gearbest.com/home-smart-improvements/pp_668897.html), [temperature/humidity](https://www.gearbest.com/access-control/pp_626702.html), [door/window](https://www.gearbest.com/smart-light-bulb/pp_257677.html), and [human body](https://www.gearbest.com/alarm-systems/pp_659226.html) sensors
@@ -69,7 +69,6 @@ docker create \
     * [Notification for Android TV](https://home-assistant.io/components/notify.nfandroidtv/) to send visual notifications to Shield
   * Weather and Climate related
     * [Ecobee](https://home-assistant.io/components/ecobee/) thermostats in the main floor and kids rooms
-    * [Honeywell Lyric](/custom_components/climate/lyric.py) thermostat (currently integrated using a `custom_component`) in the master
     * [Wunderground](https://home-assistant.io/components/sensor.wunderground/) to integrate my weather station
     * [Bloomsky](https://home-assistant.io/components/bloomsky/) weather station
     [DarkSky](https://darksky.net/dev/) for weather data and forecasts
