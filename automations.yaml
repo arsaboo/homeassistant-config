@@ -22,7 +22,7 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        # - device_tracker.alokiosiphone
+        - device_tracker.alokiosiphone
         - device_tracker.alok_alok
         - device_tracker.e1594e5321df414c82daf655d5282fca
         - device_tracker.rashmiappiphone
@@ -602,6 +602,62 @@
 #################################################################
 ## Commute Times
 #################################################################
+
+- id: update_morning_commute_sensor
+  alias: "Commute - Update morning commute sensor"
+  initial_state: 'on'
+  trigger:
+    - platform: time
+      minutes: '/2'
+      seconds: 00
+  condition:
+    - condition: time
+      after: '08:00:00'
+      before: '11:00:00'
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+    - condition: state
+      entity_id: device_tracker.meta_alok
+      state: 'home'
+  action:
+    - service: sensor.google_travel_sensor_update
+      data:
+        entity_id: sensor.morning_commute
+
+- id: update_evening_commute_sensor
+  alias: "Commute - Update evening commute sensor"
+  initial_state: 'on'
+  trigger:
+    - platform: time
+      minutes: '/2'
+      seconds: 00
+  condition:
+    - condition: time
+      after: '17:00:00'
+      before: '20:00:00'
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+    - condition: template
+      value_template: >
+        {%- if states('device_tracker.meta_alok') -%}
+          {{ states('device_tracker.meta_alok') != 'home' }}
+        {%- else -%}
+          false
+        {%- endif -%}
+  action:
+    - service: sensor.google_travel_sensor_update
+      data:
+        entity_id: sensor.alok_to_home
 
 - id: morning_commute
   alias: "Morning Commute"
