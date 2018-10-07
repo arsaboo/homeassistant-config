@@ -239,9 +239,9 @@ cloud:
 
 google_assistant:
   project_id: !secret google_project_id
-  client_id: !secret google_client_id
-  access_token: !secret google_access_token
-  agent_user_id: !secret google_agent_user_id
+  # client_id: !secret google_client_id
+  # access_token: !secret google_access_token
+  # agent_user_id: !secret google_agent_user_id
   api_key: !secret google_project_api_key
   expose_by_default: false
   exposed_domains:
