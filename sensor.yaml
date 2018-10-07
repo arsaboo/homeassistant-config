@@ -160,18 +160,15 @@
 #Morning Commute Google Travel Time Sensor
   - platform: google_travel_time
     name: Morning Commute
+    scan_interval: 60000
     api_key: !secret google_key
     origin: !secret add_home
     destination: !secret add_buckhead
 #Evening Commute Google Travel Time Sensor
   - platform: google_travel_time
-    name: Evening Commute
-    api_key: !secret google_key
-    origin: !secret add_buckhead
-    destination: !secret add_home
-  - platform: google_travel_time
     name: Alok to Home
     friendly_name: "Commute to Home"
+    scan_interval: 60000
     api_key: !secret google_key
     origin: device_tracker.alok_alok
     destination: !secret add_home
