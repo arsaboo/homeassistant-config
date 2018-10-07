@@ -122,6 +122,10 @@ arlo:
   username: !secret arlo_user
   password: !secret arlo_password
   scan_interval: 120
+tuya:
+  username: !secret tuya_user
+  password: !secret tuya_password
+  country_code: 1
 alarm_control_panel:
   # - platform: ifttt
   #   name: "Abode"
