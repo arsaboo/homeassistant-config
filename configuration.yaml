@@ -467,6 +467,7 @@ media_player:
     host: 192.168.2.252
     name: Living Room TV
     mac: !secret samsungtvmac
+    timeout: 5
   - platform: alexa
     email: !secret amazon_user
     password: !secret amazon_pass
