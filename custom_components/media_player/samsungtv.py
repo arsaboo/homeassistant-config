@@ -30,7 +30,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Samsung TV Remote'
 DEFAULT_PORT = 55000
-DEFAULT_TIMEOUT = 0
+DEFAULT_TIMEOUT = 1
 
 KEY_PRESS_TIMEOUT = 1.2
 KNOWN_DEVICES_KEY = 'samsungtv_known_devices'
@@ -87,7 +87,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 class SamsungTVDevice(MediaPlayerDevice):
     """Representation of a Samsung TV."""
 
-    def __init__(self, host, port, name, mac, timeout=0):
+    def __init__(self, host, port, name, timeout, mac):
         """Initialize the Samsung device."""
         from samsungctl import exceptions
         from samsungctl import Remote
