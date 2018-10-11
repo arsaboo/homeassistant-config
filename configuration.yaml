@@ -29,7 +29,7 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads/camera/driveway'
 updater:
   include_used_components: true
-
+suggestions:
 # influxdb:
 #   host: 192.168.2.113
 #   include:
@@ -565,6 +565,8 @@ logger:
     homeassistant.components.python_script: warning
     # homeassistant.components.http.view: info
     custom_components.sensor.personalcapital: debug
+    homeassistant.components.suggestions: info
+    # homeassistant.components.device_tracker: info
 # Text to speech
 tts:
   - platform: google
