@@ -413,16 +413,16 @@ views:
       - type: entities
         title: Information
         entities:
-          - type: "custom:ext-weblink"
-            url: !secret commute_office_url
-            icon: mdi:car
-            entity: sensor.morning_commute
-          - entity: sensor.alok_to_home
-            url: !secret commute_home_url
-            type: "custom:ext-weblink"
-            icon: mdi:car
-          # - sensor.morning_commute
-          # - sensor.alok_to_home
+          # - type: "custom:ext-weblink"
+          #   url: !secret commute_office_url
+          #   icon: mdi:car
+          #   entity: sensor.morning_commute
+          # - entity: sensor.alok_to_home
+          #   url: !secret commute_home_url
+          #   type: "custom:ext-weblink"
+          #   icon: mdi:car
+          - sensor.morning_commute
+          - sensor.alok_to_home
           - sensor.plexspy
           - sensor.usdinr
 
@@ -894,7 +894,6 @@ views:
         show_header_toggle: false
         entities:
           - switch.developer_mode
-          - sensor.hassuptime
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
       - type: entities
@@ -955,9 +954,8 @@ views:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - type: history-graph
-        entities:
-          - sensor.personal_capital_investments
+      - type: sensor
+        entity: sensor.personal_capital_investments
       - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png

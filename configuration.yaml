@@ -29,7 +29,7 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads/camera/driveway'
 updater:
   include_used_components: true
-suggestions:
+# suggestions:
 # influxdb:
 #   host: 192.168.2.113
 #   include:
