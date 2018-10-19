@@ -86,7 +86,6 @@
 
   HASS Details:
     - switch.developer_mode
-    - sensor.hassuptime
     - sensor.ssl_certificate_expiry
     - input_select.current_theme
 

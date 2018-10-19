@@ -261,7 +261,6 @@
         icon_template: >-
           {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
           {{ audio_in[states.sensor.sonos_stereo.state] | default('mdi:volume-high', true) }}
-
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -272,22 +271,22 @@
               {{ item.name }}{%- if not loop.last %}, {% endif -%}
           {%- endfor -%}
           {%- endfor -%}
-      hassuptime:
-        friendly_name: "HASS Uptime"
-        value_template: >-
-          {% set uptime = states.sensor.uptime.state | round %}
-          {% set minutes = (uptime % 60) | int %}
-          {% set hours = ((uptime / 60) % 24) | int %}
-          {% set days = (uptime / 1440) | int %}
-          {%- if days > 0 -%}
-            {%- if days == 1 -%}
-              1 day
-            {%- else -%}
-              {{ days }} days
-            {%- endif -%}
-            {{ ', ' }}
-          {%- endif -%}
-          {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
+      # hassuptime:
+      #   friendly_name: "HASS Uptime"
+      #   value_template: >-
+      #     {% set uptime = states.sensor.uptime.state | round %}
+      #     {% set minutes = (uptime % 60) | int %}
+      #     {% set hours = ((uptime / 60) % 24) | int %}
+      #     {% set days = (uptime / 1440) | int %}
+      #     {%- if days > 0 -%}
+      #       {%- if days == 1 -%}
+      #         1 day
+      #       {%- else -%}
+      #         {{ days }} days
+      #       {%- endif -%}
+      #       {{ ', ' }}
+      #     {%- endif -%}
+      #     {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
       downstairs_hvac_runtime:
         friendly_name: "Downstairs HVAC Runtime"
         unit_of_measurement: "h"

@@ -25,7 +25,6 @@
       - sensor.cold_flu_risk
       - sensor.curr_future
       - sensor.pollen_level
-      - sensor.hassuptime
       - sensor.uptime
       - sensor.sonos_stereo
       - sensor.sonos_audio_in
