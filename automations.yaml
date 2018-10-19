@@ -1607,3 +1607,36 @@
       data:
         entity_id: media_player.family_room_2
         speech_enhance: false
+
+
+- id: ifttt_test
+  alias: IFTTT Test
+  initial_state: 'on'
+  trigger:
+    platform: event
+    event_type: ifttt_webhook_received
+  action:
+    - service: logbook.log
+      data_template:
+        name: "IFTTT event: "
+        message: >
+          {{trigger.event.data}}
+
+- id: webhook_geofency_test
+  alias: Webhook Geofency Test
+  initial_state: 'on'
+  trigger:
+    - platform: webhook
+      webhook_id: alok_buckhead
+  action:
+    # - service: device_tracker.see
+    #   data_template:
+    #     dev_id: b4445761f6c04b7f835fcfdc03b47111
+    #     gps:
+    #       - "{{trigger.json.latitude}}"
+    #       - "{{trigger.json.longitude}}"
+    - service: logbook.log
+      data_template:
+        name: "Geofency event: "
+        message: >
+          {{trigger.json.latitude}}
