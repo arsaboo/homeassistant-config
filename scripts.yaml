@@ -246,8 +246,8 @@
       - service: python_script.meta_device_tracker
         data_template:
           entity_id: '{{entityid}}'
-      # - condition: template
-      #   value_template: '{{fromstate != tostate}}'
+      - condition: template
+        value_template: '{{fromstate != tostate}}'
       - service: logbook.log
         data_template:
           name: "Tracker updated: "
@@ -342,6 +342,7 @@
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
           - image_processing.sighthound_porch
+          - image_processing.opencv_porch
       # - service: python_script.dark_sky_friendly_names
   discovery:
     alias: 'Play Discovery'
