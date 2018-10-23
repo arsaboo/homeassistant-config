@@ -35,14 +35,16 @@ views:
     title: Home
     # theme: darkorange
     cards:
-      - type: custom:monster-card
+      - id: be9e16a6df6b4540b0b798fa77f47eb5
+        type: custom:monster-card
         show_empty: false
         card:
           type: entities
         filter:
           include:
             - domain: configurator
-      - type: picture-elements
+      - id: 50d4710517c94030b5285f22da89b093
+        type: picture-elements
         # title: Main Level
         image: /local/floorplans/main.jpg
         elements:
@@ -50,8 +52,8 @@ views:
             entity: input_boolean.abodeupdate
             tap_action: toggle
             state_image:
-              'on': /local/icons/abode_enabled.png
-              'off': /local/icons/abode_disabled.png
+              on: /local/icons/abode_enabled.png
+              off: /local/icons/abode_disabled.png
             style:
               top: 4%
               left: 30%
@@ -60,8 +62,8 @@ views:
             entity: input_boolean.tvtime
             tap_action: toggle
             state_image:
-              'on': /local/icons/tv_enabled.png
-              'off': /local/icons/tv_disabled.png
+              on: /local/icons/tv_enabled.png
+              off: /local/icons/tv_disabled.png
             style:
               top: 4%
               left: 40%
@@ -70,8 +72,8 @@ views:
             entity: switch.security_armed
             tap_action: toggle
             state_image:
-              'on': /local/icons/security_armed_red.png
-              'off': /local/icons/security_disarmed.png
+              on: /local/icons/security_armed_red.png
+              off: /local/icons/security_disarmed.png
             style:
               top: 4%
               left: 50%
@@ -82,10 +84,10 @@ views:
             tap_action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              'on': /local/icons/light_bulb_on.png
+              on: /local/icons/light_bulb_on.png
             state_filter:
-              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 48%
               left: 11%
@@ -95,7 +97,7 @@ views:
             entity: camera.porch
             image: /local/icons/camera_porch_streaming.png
             state_image:
-              'recording': /local/icons/camera_porch_recording.png
+              recording: /local/icons/camera_porch_recording.png
             style:
               top: 90%
               left: 3%
@@ -105,7 +107,7 @@ views:
             entity: camera.patio
             image: /local/icons/camera_patio_streaming.png
             state_image:
-              'recording': /local/icons/camera_patio_recording.png
+              recording: /local/icons/camera_patio_recording.png
             style:
               top: 12%
               left: 3%
@@ -115,7 +117,7 @@ views:
             entity: camera.backyard
             image: /local/icons/camera_backyard_streaming.png
             state_image:
-              'recording': /local/icons/camera_backyard_recording.png
+              recording: /local/icons/camera_backyard_recording.png
             style:
               top: 12%
               left: 90%
@@ -136,7 +138,7 @@ views:
             entity: camera.driveway
             image: /local/icons/camera_driveway_streaming.png
             state_image:
-              'recording': /local/icons/camera_driveway_recording.png
+              recording: /local/icons/camera_driveway_recording.png
             style:
               top: 81.5%
               left: 90%
@@ -148,10 +150,10 @@ views:
             tap_action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              'on': /local/icons/light_bulb_on.png
+              on: /local/icons/light_bulb_on.png
             state_filter:
-              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 38%
               left: 50%
@@ -180,11 +182,11 @@ views:
             style:
               top: 43%
               left: 50%
-              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
-              'text-align': center
-              'font-size': 12px
-              'color': white
-              'font-family': Helvetica
+              background: center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              text-align: center
+              font-size: 12px
+              color: white
+              font-family: Helvetica
               # 'display': block
               # 'overflow': hidden
               # 'background-color': gray
@@ -211,10 +213,10 @@ views:
             tap_action: toggle
             image: /local/icons/tv_off2.png
             state_image:
-              'on': /local/icons/tv_on2.png
+              on: /local/icons/tv_on2.png
             state_filter:
-              'on': drop-shadow(-5px 0 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: drop-shadow(-5px 0 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 29%
               left: 68.3%
@@ -238,10 +240,10 @@ views:
             tap_action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              'on': /local/icons/light_bulb_on.png
+              on: /local/icons/light_bulb_on.png
             state_filter:
-              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 98%
               left: 20%
@@ -254,7 +256,7 @@ views:
               left: 32%
             # Garage
           - type: state-icon
-            entity:  binary_sensor.door_window_sensor_158d0001bf26df
+            entity: binary_sensor.door_window_sensor_158d0001bf26df
             style:
               top: 64%
               left: 56%
@@ -263,10 +265,10 @@ views:
             tap_action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              'on': /local/icons/light_bulb_on.png
+              on: /local/icons/light_bulb_on.png
             state_filter:
-              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 68%
               left: 78%
@@ -283,10 +285,10 @@ views:
             tap_action: toggle
             image: /local/icons/light_off.png
             state_image:
-              'on': /local/icons/light_on.png
+              on: /local/icons/light_on.png
             state_filter:
-              'on': drop-shadow(-5px -5px 10px gold)
-              'off': brightness(80%) saturate(0.8)
+              on: drop-shadow(-5px -5px 10px gold)
+              off: brightness(80%) saturate(0.8)
             style:
               top: 81%
               left: 63%
@@ -298,8 +300,8 @@ views:
             tap_action: toggle
             image: /local/icons/garage_door_closed.png
             state_image:
-              'open': /local/icons/garage_door_open.png
-              'closed': /local/icons/garage_door_closed.png
+              open: /local/icons/garage_door_open.png
+              closed: /local/icons/garage_door_closed.png
             style:
               top: 71%
               left: 74%
@@ -311,16 +313,16 @@ views:
             style:
               top: 80%
               left: 49%
-              'background-color': gray
-              'background': center / contain no-repeat url("/local/icons/ecobee_blank.png")
+              background-color: gray
+              background: center / contain no-repeat url("/local/icons/ecobee_blank.png")
               # 'background-color': red
               # 'border-radius': 100%
-              'text-align': center
-              'font-size': 12px
-              'color': white
-              'font-family': Helvetica
-              'display': block
-              'overflow': hidden
+              text-align: center
+              font-size: 12px
+              color: white
+              font-family: Helvetica
+              display: block
+              overflow: hidden
 
             # Dining
           - type: custom:thermostat-card
@@ -338,7 +340,8 @@ views:
             style:
               top: 89%
               left: 32%
-      - type: picture-elements
+      - id: d7dc21db546143a29307427f1b821636
+        type: picture-elements
         # title: Second Level
         image: /local/floorplans/second.jpg
         elements:
@@ -375,7 +378,8 @@ views:
               left: 15%
               width: 50px
               height: 50px
-      - type: horizontal-stack
+      - id: 06546ac2fe5f43e79a93c75604137d0a
+        type: horizontal-stack
         cards:
           - type: custom:alarm_control_panel-card
             entity: alarm_control_panel.abode_alarm
@@ -388,7 +392,8 @@ views:
             title: Arlo
             states:
               - arm_away
-      - type: entities
+      - id: dbffb53855224ef6b97994fcb8184dcf
+        type: entities
         title: Investments
         entities:
           - sensor.personal_capital_networth
@@ -410,7 +415,8 @@ views:
           - sensor.sp_futures_change_pct
           - type: divider
           - sensor.10_year_treasury
-      - type: entities
+      - id: 4a7140a250554dd6b4fd6e892679a71d
+        type: entities
         title: Information
         entities:
           # - type: "custom:ext-weblink"
@@ -426,7 +432,8 @@ views:
           - sensor.plexspy
           - sensor.usdinr
 
-      - type: entities
+      - id: 905d92b14f97458aa720660087fd3251
+        type: entities
         title: Lights
         entities:
           - entity: light.gateway_light_34ce00813670
@@ -439,14 +446,16 @@ views:
             type: custom:slider-entity-row
           - entity: light.lifxnrkitchen
             type: custom:slider-entity-row
-      - type: entities
+      - id: ba5cc3c14dc34dd3a50450c995a67318
+        type: entities
         title: Switches
         entities:
           - entity: switch.wemoswitch
             secondary_info: last-changed
           - entity: switch.wemoinsight
             secondary_info: last-changed
-      - type: entities
+      - id: 05a551ec32a245b0a63242b0d08fa056
+        type: entities
         title: Ring Doorbell
         entities:
           - binary_sensor.ring_front_door_ding
@@ -458,7 +467,8 @@ views:
     id: weather
     title: Weather
     cards:
-      - type: custom:dark-sky-weather-card
+      - id: 83a0f7d94e914e5f8a46048d0abf2e79
+        type: custom:dark-sky-weather-card
         entity_sun: sun.sun
         entity_daily_summary: sensor.dark_sky_daily_summary
         entity_current_conditions: sensor.dark_sky_icon
@@ -500,7 +510,8 @@ views:
       #       title: Living
       #       hvac:
       #         attribute: operation
-      - type: vertical-stack
+      - id: 4a4481c1b7934014b4e550319e223f7c
+        type: vertical-stack
         cards:
           - type: glance
             title: Downstairs Thermostat
@@ -548,7 +559,8 @@ views:
       # - type: "custom:weather-card"
       #   entity_weather: weather.yweather
       #   entity_sun: sun.sun
-      - type: entities
+      - id: c066453905924966bacb3c87af9ce8d3
+        type: entities
         title: Weather
         entities:
           - sensor.pws_weather
@@ -569,7 +581,8 @@ views:
       #     - sensor.forecast_5
       #     - sensor.forecast_6
       #     - sensor.forecast_7
-      - type: entities
+      - id: 696ce899a76d482a87653595081423cc
+        type: entities
         title: Room Sensors
         entities:
           - sensor.illumination_158d00016612af
@@ -589,46 +602,59 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
-      - type: picture-entity
+      - id: fd2afd8bbf3f4b58aef8dbd403549fe3
+        type: picture-entity
         entity: camera.meteogram
-      - type: picture-entity
+      - id: 8d8b4c4a0e494b278ba93ea016ae35cd
+        type: picture-entity
         entity: camera.wundergroundradar
-      - type: iframe
+      - id: 5e501cc7179141188b9f7f376a89d855
+        type: iframe
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
   - icon: mdi:cctv
     id: cameras
     title: Cameras
     cards:
-      - type: picture-entity
+      - id: a68c610c6bc14c41a30539b8c00effd6
+        type: picture-entity
         entity: camera.driveway
         show_name: false
         show_state: false
-      - type: picture-entity
+      - id: 570349a0a4084b169498c0bf110ed6af
+        type: picture-entity
         entity: camera.patio
         show_name: false
         show_state: false
-      - type: picture-entity
+      - id: 00e452b8eba1494c805f1a6bfbcbe1e3
+        type: picture-entity
         entity: camera.porch
         show_name: false
         show_state: false
-      - type: picture-entity
+      - id: 43f6f6e13d26488a9b8abe6315b77b47
+        type: picture-entity
         entity: camera.backyard
         show_name: false
         show_state: false
-      - type: picture-entity
+      - id: 08680d710332448d8cc3dd87bede7691
+        type: picture-entity
         entity: camera.arlo3
-      - type: picture-entity
+      - id: 2e939adffb4d40bda528abaa6aaf2256
+        type: picture-entity
         entity: camera.arlolivingroom
-      - type: picture-entity
+      - id: b13fce6d1f9542568fa56454716b9124
+        type: picture-entity
         entity: camera.livingroom2
-      - type: picture-entity
+      - id: 09d9f397db224062a0eafab87708afd1
+        type: picture-entity
         entity: camera.front_door
-      - type: picture-entity
+      - id: 7fd0af6cabbe41cea91a5a9e90b9de15
+        type: picture-entity
         entity: camera.worldtime
         show_name: false
         show_state: false
-      - type: picture-entity
+      - id: ef40de8b4019408ab716efed2eda5a27
+        type: picture-entity
         entity: camera.ars_bloom
         show_name: false
         show_state: false
@@ -641,7 +667,8 @@ views:
     id: media
     title: Media
     cards:
-      - type: entities
+      - id: fcb0fd50bf114be9b77be8be55b7ec5c
+        type: entities
         title: Entertainment
         show_header_toggle: false
         entities:
@@ -653,13 +680,14 @@ views:
           - sensor.total_tv_time
           - sensor.sonos_audio_in
           - script.tv_off
-      - type: vertical-stack
+      - id: 0bff7eafb9a24facb4223c25e44be920
+        type: vertical-stack
         cards:
           - type: horizontal-stack
             cards:
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
-              - type: "custom:button-card"
+              - type: custom:button-card
                 entity: switch.sonos_speech_enhance
                 name: Speech
                 icon: mdi:comment-check-outline
@@ -670,7 +698,7 @@ views:
                 style:
                   - font-size: 12px
                   - font-weight: bold
-              - type: "custom:button-card"
+              - type: custom:button-card
                 entity: switch.sonos_night_sound
                 name: Night
                 icon: mdi:weather-night
@@ -681,13 +709,13 @@ views:
                 style:
                   - font-size: 12px
                   - font-weight: bold
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
           - type: horizontal-stack
             cards:
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
@@ -699,7 +727,7 @@ views:
                   action: volume_down
                   data:
                     entity_id: media_player.family_room_2
-              - type: "custom:button-card"
+              - type: custom:button-card
                 entity: sensor.sonos_volume
                 color_type: icon
                 show_state: true
@@ -707,7 +735,7 @@ views:
                 style:
                   - height: 50px
                 action: more_info
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
@@ -719,13 +747,13 @@ views:
                   action: volume_up
                   data:
                     entity_id: media_player.family_room_2
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
           - type: horizontal-stack
             cards:
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:plex
@@ -733,7 +761,7 @@ views:
                 service:
                   domain: rest_command
                   action: plex
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:youtube
@@ -741,7 +769,7 @@ views:
                 service:
                   domain: rest_command
                   action: youtube
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:netflix
@@ -749,10 +777,11 @@ views:
                 service:
                   domain: rest_command
                   action: netflix
-              - type: "custom:button-card"
+              - type: custom:button-card
                 color_type: blank-card
 
-      - type: entities
+      - id: 4cb1e9976836491f9708276bf552f21f
+        type: entities
         title: Light Operations
         show_header_toggle: false
         entities:
@@ -761,23 +790,31 @@ views:
           - script.colorloop_start
           - script.disco_party
           - script.lifx_stop_effects
-      - type: media-control
+      - id: a62d0e7432dd433fa4158b6058a1293d
+        type: media-control
         entity: media_player.livingroomsonos
-      - type: media-control
+      - id: 8b1c423890f64067bd2fe0eefbe332e1
+        type: media-control
         entity: media_player.family_room_2
-      - type: media-control
+      - id: c0a4d235edb946ed940acbdf804fd332
+        type: media-control
         entity: media_player.kodi_nstv
-      - type: media-control
+      - id: 01db5cbdc14d45808eb00d0f529a3820
+        type: media-control
         entity: media_player.echo_dot_gen2
-      - type: media-control
+      - id: 2e379856f1f94190b6083f9941f2dad1
+        type: media-control
         entity: media_player.living_room_home
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
-      - type: media-control
+      - id: 2ee41baf661843e78a127a05b0a2934c
+        type: media-control
         entity: media_player.living_room_tv
-      - type: media-control
+      - id: 68b1aa39fb264de7a4052bded15c7264
+        type: media-control
         entity: media_player.shield
-      - type: media-control
+      - id: e28d5a7359514b81b2f94b0fe717699d
+        type: media-control
         entity: media_player.shield_android_tv
       # - type: media-control
       #   entity: media_player.plex_shield_android_tv
@@ -786,89 +823,92 @@ views:
     id: settings
     title: Settings
     cards:
-      - type: horizontal-stack
+      - id: 05ef9927e8a64463a73bd231b38f8846
+        type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.pi_rashmiphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/rashmi_owntracks_home.png
-              "not_home": /local/icons/rashmi_owntracks_not_home.png
+              home: /local/icons/rashmi_owntracks_home.png
+              not_home: /local/icons/rashmi_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmiappiphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/rashmi_ios_home.png
-              "not_home": /local/icons/rashmi_ios_not_home.png
+              home: /local/icons/rashmi_ios_home.png
+              not_home: /local/icons/rashmi_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmisiphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/rashmi_wifi_home.png
-              "not_home": /local/icons/rashmi_wifi_not_home.png
+              home: /local/icons/rashmi_wifi_home.png
+              not_home: /local/icons/rashmi_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.sonu_sonu
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/rashmi_life360_home.png
-              "not_home": /local/icons/rashmi_life360_not_home.png
+              home: /local/icons/rashmi_life360_home.png
+              not_home: /local/icons/rashmi_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.e1594e5321df414c82daf655d5282fca
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/rashmi_geofency_home.png
-              "not_home": /local/icons/rashmi_geofency_not_home.png
-      - type: horizontal-stack
+              home: /local/icons/rashmi_geofency_home.png
+              not_home: /local/icons/rashmi_geofency_not_home.png
+      - id: 93c8ed472245444782e900ac72ba3585
+        type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.pi_alokphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/alok_owntracks_home.png
-              "not_home": /local/icons/alok_owntracks_not_home.png
-              "Buckhead": /local/icons/alok_owntracks_not_home.png
-              "Downtown": /local/icons/alok_owntracks_not_home.png
+              home: /local/icons/alok_owntracks_home.png
+              not_home: /local/icons/alok_owntracks_not_home.png
+              Buckhead: /local/icons/alok_owntracks_not_home.png
+              Downtown: /local/icons/alok_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.alokiosiphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/alok_ios_home.png
-              "not_home": /local/icons/alok_ios_not_home.png
-              "Buckhead": /local/icons/alok_ios_not_home.png
-              "Downtown": /local/icons/alok_ios_not_home.png
+              home: /local/icons/alok_ios_home.png
+              not_home: /local/icons/alok_ios_not_home.png
+              Buckhead: /local/icons/alok_ios_not_home.png
+              Downtown: /local/icons/alok_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.myiphone
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/alok_wifi_home.png
-              "not_home": /local/icons/alok_wifi_not_home.png
+              home: /local/icons/alok_wifi_home.png
+              not_home: /local/icons/alok_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.alok_alok
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/alok_life360_home.png
-              "not_home": /local/icons/alok_life360_not_home.png
-              "Buckhead": /local/icons/alok_life360_not_home.png
-              "Downtown": /local/icons/alok_life360_not_home.png
+              home: /local/icons/alok_life360_home.png
+              not_home: /local/icons/alok_life360_not_home.png
+              Buckhead: /local/icons/alok_life360_not_home.png
+              Downtown: /local/icons/alok_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
             show_name: false
             show_state: false
             state_image:
-              "home": /local/icons/alok_geofency_home.png
-              "not_home": /local/icons/alok_geofency_not_home.png
-              "buckhead": /local/icons/alok_geofency_not_home.png
-              "downtown": /local/icons/alok_geofency_not_home.png
-      - type: horizontal-stack
+              home: /local/icons/alok_geofency_home.png
+              not_home: /local/icons/alok_geofency_not_home.png
+              buckhead: /local/icons/alok_geofency_not_home.png
+              downtown: /local/icons/alok_geofency_not_home.png
+      - id: e20fb9ff10fa49eabef4873b302a1527
+        type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.meta_alok
@@ -884,19 +924,21 @@ views:
           - type: picture-entity
             entity: device_tracker.meta_rashmi
             state_image:
-              "home": /local/icons/rashmi_home.png
-              "not_home": /local/icons/rashmi_not_home.png
+              home: /local/icons/rashmi_home.png
+              not_home: /local/icons/rashmi_not_home.png
             show_name: false
             show_state: false
 
-      - type: entities
+      - id: e89b4082ac7a4dcbae5fd9c832948654
+        type: entities
         title: HASS Details
         show_header_toggle: false
         entities:
           - switch.developer_mode
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
-      - type: entities
+      - id: 4f80e7420c574e1ba1feec6ba10ee8e7
+        type: entities
         title: Camera Processing
         show_header_toggle: false
         entities:
@@ -909,12 +951,14 @@ views:
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
+          - image_processing.opencv_porch
           - sensor.backyard_camera_tags
           - sensor.driveway_camera_tags
           - sensor.patio_camera_tags
           - sensor.porch_camera_tags
 
-      - type: entities
+      - id: f52bb29ecf334b1d891da53b383bd5b6
+        type: entities
         title: Network Details
         entities:
           - binary_sensor.pihole
@@ -926,7 +970,8 @@ views:
           - sensor.glances_cpu_load
           - sensor.glances_disk_used
           - sensor.glances_ram_used
-      - type: entities
+      - id: c1c70cd508774de893b171a11f5673a5
+        type: entities
         title: Arlo
         entities:
           - sensor.battery_level_arlolivingroom
@@ -938,7 +983,8 @@ views:
           - sensor.battery_level_arlo3
           - sensor.captured_today_arlo3
           - sensor.signal_strength_arlo3
-      - type: entities
+      - id: f45bc4c5d3774bb1bf7b230f9a826247
+        type: entities
         title: USCIS
         entities:
           - sensor.alok_485
@@ -949,14 +995,17 @@ views:
     id: test
     title: Testing
     cards:
-      - type: "custom:calendar-card"
+      - id: 4c3f5b251e2e4092a2b7b9f8301364b0
+        type: custom:calendar-card
         entities:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - type: sensor
+      - id: 6600bbb3b53e4d66ba560abe9a3b7bc7
+        type: sensor
         entity: sensor.personal_capital_investments
-      - type: picture-elements
+      - id: 549e8a9c3157457da71ee90bad9c40fa
+        type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png
         elements:
@@ -1276,7 +1325,8 @@ views:
             service_data:
               entity_id: remote.livingroom
               activity: PowerOff
-      - type: glance
+      - id: 5a6d3c0a5a9144c1bba3c7a37bba69bd
+        type: glance
         title: Devices
         entities:
           - entity: device_tracker.pi_rashmiphone
@@ -1299,19 +1349,22 @@ views:
             title: Life360
           - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
             title: Geofency
-      - type: map
+      - id: cdcab20aeb9344348c86ec60c443711a
+        type: map
         entities:
           - entity: device_tracker.meta_alok
           - entity: device_tracker.meta_rashmi
           - zone.home
-      - type: custom:monster-card
+      - id: d19435cdd0e04bfe8959580d6a19938c
+        type: custom:monster-card
         card:
           type: entities
           title: All Automations
         filter:
           include:
             - domain: automation
-      - type: horizontal-stack
+      - id: 6c45fa89ed7641cc920a6bc3dfa895d2
+        type: horizontal-stack
         cards:
           - type: custom:canvas-gauge-card
             entity: sensor.bedroom_humidity
@@ -1320,7 +1373,7 @@ views:
             shadow_height: 12%
             font_size: 1em
             gauge:
-              type: "radial-gauge"
+              type: radial-gauge
               width: 220
               height: 220
               minValue: 0
@@ -1328,11 +1381,12 @@ views:
               startAngle: 40
               ticksAngle: 280
               valueBox: false
-              units: "%"
-              majorTicks: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
+              units: '%'
+              majorTicks: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90',
+                '100']
               minorTicks: 2
               strokeTicks: true
-              highlights: [{"from": 80, "to": 100,"color": "rgba(200, 50, 50, .75)"}]
+              highlights: [{from: 80, to: 100, color: 'rgba(200, 50, 50, .75)'}]
               borders: false
           - type: custom:canvas-gauge-card
             entity: sensor.humidity_158d0001ab3c88
@@ -1341,7 +1395,7 @@ views:
             shadow_height: 12%
             font_size: 1em
             gauge:
-              type: "radial-gauge"
+              type: radial-gauge
               width: 220
               height: 220
               minValue: 0
@@ -1349,11 +1403,12 @@ views:
               startAngle: 40
               ticksAngle: 280
               valueBox: false
-              units: "%"
-              majorTicks: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
+              units: '%'
+              majorTicks: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90',
+                '100']
               minorTicks: 2
               strokeTicks: true
-              highlights: [{"from": 80, "to": 100,"color": "rgba(200, 50, 50, .75)"}]
+              highlights: [{from: 80, to: 100, color: 'rgba(200, 50, 50, .75)'}]
               borders: false
           - type: custom:canvas-gauge-card
             entity: sensor.upstairs_humidity
@@ -1362,7 +1417,7 @@ views:
             shadow_height: 12%
             font_size: 1em
             gauge:
-              type: "radial-gauge"
+              type: radial-gauge
               width: 220
               height: 220
               minValue: 0
@@ -1370,11 +1425,12 @@ views:
               startAngle: 40
               ticksAngle: 280
               valueBox: false
-              units: "%"
-              majorTicks: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
+              units: '%'
+              majorTicks: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90',
+                '100']
               minorTicks: 2
               strokeTicks: true
-              highlights: [{"from": 80, "to": 100,"color": "rgba(200, 50, 50, .75)"}]
+              highlights: [{from: 80, to: 100, color: 'rgba(200, 50, 50, .75)'}]
               borders: false
           - type: custom:canvas-gauge-card
             entity: sensor.humidity_158d0001ab3b2b
@@ -1383,7 +1439,7 @@ views:
             shadow_height: 12%
             font_size: 1em
             gauge:
-              type: "radial-gauge"
+              type: radial-gauge
               width: 220
               height: 220
               minValue: 0
@@ -1391,13 +1447,15 @@ views:
               startAngle: 40
               ticksAngle: 280
               valueBox: false
-              units: "%"
-              majorTicks: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
+              units: '%'
+              majorTicks: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90',
+                '100']
               minorTicks: 2
               strokeTicks: true
-              highlights: [{"from": 80, "to": 100,"color": "rgba(200, 50, 50, .75)"}]
+              highlights: [{from: 80, to: 100, color: 'rgba(200, 50, 50, .75)'}]
               borders: false
-      - type: entities
+      - id: e7b80e77f0e14837ac7b5b15662c615f
+        type: entities
         title: Camera Sensors
         entities:
           - binary_sensor.backyard_motion
