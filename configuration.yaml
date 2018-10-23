@@ -90,8 +90,9 @@ hue:
   bridges:
     - host: 192.168.2.229
       allow_hue_groups: false
+lifx:
+  light:
 light:
-  - platform: lifx
   # z-wave dimmer switch (http://amzn.to/2j1UEli)
   - platform: mqtt
     name: "Kitchen Lights"
