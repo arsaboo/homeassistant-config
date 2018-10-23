@@ -41,7 +41,7 @@ if newSource == 'gps':
     newLongitude = newState.attributes.get('longitude')
     newgpsAccuracy = newState.attributes.get('gps_accuracy')
 # If not, keep last known coordinates
-elif currentState.attributes.get('latitude') is not None:
+elif newSource is not None and currentState.attributes.get('latitude') is not None:
     newLatitude = currentState.attributes.get('latitude')
     newLongitude = currentState.attributes.get('longitude')
     newgpsAccuracy = currentState.attributes.get('gps_accuracy')
@@ -54,7 +54,7 @@ else:
 # Get Battery
 if newState.attributes.get('battery') is not None:
     newBattery = newState.attributes.get('battery')
-elif currentState.attributes.get('battery') is not None:
+elif currentState is not None and currentState.attributes.get('battery') is not None:
     newBattery = currentState.attributes.get('battery')
 else:
     newBattery = None
@@ -62,7 +62,7 @@ else:
 # Get velocity
 if newState.attributes.get('velocity') is not None:
     newVelocity = newState.attributes.get('velocity')
-elif currentState.attributes.get('velocity') is not None:
+elif currentState is not None and currentState.attributes.get('velocity') is not None:
     newVelocity = currentState.attributes.get('velocity')
 else:
     newVelocity = None
