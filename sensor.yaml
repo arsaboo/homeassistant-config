@@ -202,14 +202,14 @@
   #   base: USD
   #   quote:
   #     - INR
-  - platform: mqtt
-    state_topic: "owntracks/pi/rashmiphone/step"
-    name: "Steps Rashmi"
-    value_template: '{{ value_json.steps }}'
-  - platform: mqtt
-    state_topic: "owntracks/pi/alokphone/step"
-    name: "Steps Alok"
-    value_template: '{{ value_json.steps }}'
+  # - platform: mqtt
+  #   state_topic: "owntracks/pi/rashmiphone/step"
+  #   name: "Steps Rashmi"
+  #   value_template: '{{ value_json.steps }}'
+  # - platform: mqtt
+  #   state_topic: "owntracks/pi/alokphone/step"
+  #   name: "Steps Alok"
+  #   value_template: '{{ value_json.steps }}'
   - platform: command_line
     name: "PyPi HASS Version"
     command: python3 -c "import requests; print(requests.get('https://pypi.python.org/pypi/homeassistant/json').json()['info']['version'])"

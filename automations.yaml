@@ -1303,24 +1303,24 @@
     service: homeassistant.turn_off
     entity_id: switch.wemoswitch
 
-- id: get_iphone_steps
-  alias: Get steps from iPhone
-  initial_state: 'on'
-  trigger:
-    - platform: time
-      minutes: 30
-      seconds: 00
-  action:
-    - service: mqtt.publish
-      data:
-        topic: "owntracks/pi/alokphone/cmd"
-        payload_template: '{"_type" : "cmd", "action": "reportSteps"}'
-        qos: 2
-    - service: mqtt.publish
-      data:
-        topic: "owntracks/pi/rashmiphone/cmd"
-        payload_template: '{"_type" : "cmd", "action": "reportSteps"}'
-        qos: 2
+# - id: get_iphone_steps
+#   alias: Get steps from iPhone
+#   initial_state: 'on'
+#   trigger:
+#     - platform: time
+#       minutes: 30
+#       seconds: 00
+#   action:
+#     - service: mqtt.publish
+#       data:
+#         topic: "owntracks/pi/alokphone/cmd"
+#         payload_template: '{"_type" : "cmd", "action": "reportSteps"}'
+#         qos: 2
+#     - service: mqtt.publish
+#       data:
+#         topic: "owntracks/pi/rashmiphone/cmd"
+#         payload_template: '{"_type" : "cmd", "action": "reportSteps"}'
+#         qos: 2
 
 - id: uscis_update_notification
   alias: "USCIS - Notify on update"
