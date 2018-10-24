@@ -348,6 +348,66 @@
             switch.bedroom_away
           {%- endif -%}
 
+- id: impage_processing_scan
+  alias: 'Image Processing Scan'
+  initial_state: 'on'
+  trigger:
+     - platform: state
+       entity_id:
+         - binary_sensor.backyard_field_detection
+         - binary_sensor.driveway_field_detection
+         - binary_sensor.patio_field_detection
+         - binary_sensor.porch_field_detection
+         - binary_sensor.backyard_line_crossing
+         - binary_sensor.driveway_line_crossing
+         - binary_sensor.patio_line_crossing
+         - binary_sensor.porch_line_crossing
+  action:
+    - service: image_processing.scan
+      data_template:
+        entity_id: "image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    - service: image_processing.scan
+      data_template:
+        entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+
+- id: opencv_image_processing_notification
+  alias: 'OpenCV image processing'
+  initial_state: 'on'
+  trigger:
+   - platform: numeric_state
+     entity_id:
+       - image_processing.opencv_porch
+       - image_processing.opencv_patio
+       - image_processing.opencv_driveway
+       - image_processing.opencv_backyard
+     above: 0
+  action:
+    - service: logbook.log
+      data_template:
+        name: "OpenCV: "
+        message: >-
+          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.to_state.attributes.camera.split('.')[1] }}.
+
+- id: tf_image_processing_notification
+  alias: 'TF image processing'
+  initial_state: 'on'
+  trigger:
+   - platform: numeric_state
+     entity_id:
+       - image_processing.tensorflow_porch
+       - image_processing.tensorflow_patio
+       - image_processing.tensorflow_driveway
+       - image_processing.tensorflow_backyard
+     above: 0
+  action:
+    - service: logbook.log
+      data_template:
+        name: "TF: "
+        message: >-
+          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches }}.
+# {% for object in state_attr(trigger.entity_id,'matches').keys() if states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches[object][0].box[0] > 0.25 -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }}.
+
+
 - id: notify_camera_pictures
   alias: 'Notify camera pictures'
   initial_state: 'on'
@@ -399,22 +459,25 @@
           attachment:
             url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[0]].attributes.entity_picture }}"
             content-type: jpg
+    # - service: image_processing.scan
+    #   data_template:
+    #     entity_id: "image_processing.facebox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    # - service: image_processing.scan
+    #   data_template:
+    #     entity_id: "image_processing.tagbox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     - service: image_processing.scan
       data_template:
-        entity_id: "image_processing.facebox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-    - service: image_processing.scan
-      data_template:
-        entity_id: "image_processing.tagbox_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+        entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     # - service: shell_command.image_classify
     #   data_template:
     #     camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
     # - service: shell_command.facebox
     #   data_template:
     #     camera: "{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-    - service: camera.snapshot
-      data_template:
-        entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-        filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
+    # - service: camera.snapshot
+    #   data_template:
+    #     entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    #     filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
     - service: logbook.log
       data_template:
         name: "Camera activity: "

@@ -396,14 +396,36 @@ image_processing:
       - entity_id: camera.backyard
       - entity_id: camera.driveway
   - platform: opencv_darknet
-    name: Porch Object Detection
+    name: Camera Object Detection
+    scan_interval: 10000 # Default 10
     source:
+      - entity_id: camera.patio
       - entity_id: camera.porch
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
     options:
       detect_model: /home/homeassistant/.homeassistant/deps/yolov3-tiny.cfg
       weights: /home/homeassistant/.homeassistant/deps/yolov3-tiny.weights
       labels: /home/homeassistant/.homeassistant/deps/coco.names
       confidence: 0.55
+  - platform: tensorflow
+    confidence: 75
+    scan_interval: 10000
+    source:
+      - entity_id: camera.patio
+      - entity_id: camera.porch
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
+    file_out:
+      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
+      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    model:
+      graph: /home/homeassistant/.homeassistant/deps/frozen_inference_graph.pb
+      model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
+      labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
+      categories:
+        - person
+        - car
   # - platform: classificationbox
   #   scan_interval: 10000
   #   ip_address: 192.168.2.212
