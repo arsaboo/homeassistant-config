@@ -3,7 +3,6 @@
       - alarm_control_panel
       - climate
       - cover
-      - image_processing
       - input_boolean
       - input_select
       - light
@@ -40,8 +39,6 @@
       - sensor.ssl_certificate_expiry
       - sensor.steps_alok
       - sensor.steps_rashmi
-      - automation.set_volume
-      - automation.update_volume_slider
       - sensor.sonos_stereo
   exclude:
     domains:
