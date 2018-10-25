@@ -348,7 +348,7 @@
             switch.bedroom_away
           {%- endif -%}
 
-- id: impage_processing_scan
+- id: image_processing_scan
   alias: 'Image Processing Scan'
   initial_state: 'on'
   trigger:
@@ -375,13 +375,15 @@
   alias: 'OpenCV image processing'
   initial_state: 'on'
   trigger:
-   - platform: numeric_state
+   - platform: state
      entity_id:
        - image_processing.opencv_porch
        - image_processing.opencv_patio
        - image_processing.opencv_driveway
        - image_processing.opencv_backyard
-     above: 0
+  condition:
+    - condition: template
+      value_template: '{{ trigger.to_state.state |int > 0 }}'
   action:
     - service: logbook.log
       data_template:
@@ -393,58 +395,60 @@
   alias: 'TF image processing'
   initial_state: 'on'
   trigger:
-   - platform: numeric_state
+   - platform: state
      entity_id:
        - image_processing.tensorflow_porch
        - image_processing.tensorflow_patio
        - image_processing.tensorflow_driveway
        - image_processing.tensorflow_backyard
-     above: 0
   condition:
     - condition: template
-      value_template: >
-          {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-          {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
-
-          {% macro get_list(obj) %}
-            {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
-              {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
-            {%- endfor -%}
-          {% endmacro %}
-
-          {% macro run() %}
-            {%- for object in tags -%}
-            {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
-              {{- get_list(object).split(',')|list|unique|list|join|title }}
-            {%- endfor -%}
-          {% endmacro %}
-
-          {% set output = run() %}
-          {{ output == '' }} 
+      value_template: '{{ trigger.to_state.state |int > 0 }}'
+  # condition:
+  #   - condition: template
+  #     value_template: >
+  #         {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
+  #         {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
+  #
+  #         {% macro get_list(obj) %}
+  #           {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
+  #             {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
+  #           {%- endfor -%}
+  #         {% endmacro %}
+  #
+  #         {% macro run() %}
+  #           {%- for object in tags -%}
+  #           {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
+  #             {{- get_list(object).split(',')|list|unique|list|join|title }}
+  #           {%- endfor -%}
+  #         {% endmacro %}
+  #
+  #         {% set output = run() %}
+  #         {{ output == '' }}
   action:
     - service: logbook.log
       data_template:
         name: "TF: "
         message: >-
-          {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-          {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
-
-          {% macro get_list(obj) %}
-            {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
-              {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
-            {%- endfor -%}
-          {% endmacro %}
-
-          {% macro run() %}
-            {%- for object in tags -%}
-            {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
-              {{- get_list(object).split(',')|list|unique|list|join|title }}
-            {%- endfor -%}
-          {% endmacro %}
-
-          {% set output = run() %}
-          {{- output ~ ' detected in ' ~ camera if output != '' }}
-# {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches }}.
+          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches }}.
+# {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
+# {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
+#
+# {% macro get_list(obj) %}
+#   {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
+#     {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
+#   {%- endfor -%}
+# {% endmacro %}
+#
+# {% macro run() %}
+#   {%- for object in tags -%}
+#   {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
+#     {{- get_list(object).split(',')|list|unique|list|join|title }}
+#   {%- endfor -%}
+# {% endmacro %}
+#
+# {% set output = run() %}
+# {{- output ~ ' detected in ' ~ camera if output != '' }}
 
 # {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
 # {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
