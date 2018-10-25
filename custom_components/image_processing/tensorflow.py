@@ -31,10 +31,28 @@ CONF_GRAPH = 'graph'
 CONF_LABELS = 'labels'
 CONF_MODEL_DIR = 'model_dir'
 CONF_CATEGORIES = 'categories'
+CONF_CATEGORY = 'category'
+CONF_AREA = 'area'
+CONF_TOP = 'top'
+CONF_LEFT = 'left'
+CONF_BOTTOM = 'bottom'
+CONF_RIGHT = 'right'
 
 DEFAULT_MODEL_DIR = '/usr/src/app/tensorflow'
 DEFAULT_LABELS = ("{0}/object_detection/data/mscoco_label_map.pbtxt"
                   .format(DEFAULT_MODEL_DIR))
+
+AREA_SCHEMA = vol.Schema({
+    vol.Optional(CONF_TOP, default=0): cv.small_float,
+    vol.Optional(CONF_LEFT, default=0): cv.small_float,
+    vol.Optional(CONF_BOTTOM, default=1): cv.small_float,
+    vol.Optional(CONF_RIGHT, default=1): cv.small_float
+})
+
+CATEGORY_SCHEMA = vol.Schema({
+    vol.Required(CONF_CATEGORY): cv.string,
+    vol.Optional(CONF_AREA): AREA_SCHEMA
+})
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_FILE_OUT, default=[]):
@@ -43,8 +61,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.Required(CONF_GRAPH): cv.isfile,
         vol.Optional(CONF_LABELS, default=DEFAULT_LABELS): cv.isfile,
         vol.Optional(CONF_MODEL_DIR, default=DEFAULT_MODEL_DIR): cv.isdir,
+        vol.Optional(CONF_AREA): AREA_SCHEMA,
         vol.Optional(CONF_CATEGORIES, default=[]):
-            vol.All(cv.ensure_list, [cv.string])
+            vol.All(cv.ensure_list, [vol.Any(
+                cv.string,
+                CATEGORY_SCHEMA
+            )])
     })
 })
 
@@ -94,19 +116,12 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         label_map, max_num_classes=90, use_display_name=True)
     category_index = label_map_util.create_category_index(categories)
 
-    min_confidence = config.get(CONF_CONFIDENCE)
-
-    include_categories = model_config.get(CONF_CATEGORIES)
-
-    file_out = config.get(CONF_FILE_OUT)
-
     entities = []
 
     for camera in config[CONF_SOURCE]:
         entities.append(TensorFlowImageProcessor(
             hass, camera[CONF_ENTITY_ID], camera.get(CONF_NAME),
-            session, detection_graph, category_index,
-            min_confidence, include_categories, file_out))
+            session, detection_graph, category_index, config))
 
     add_entities(entities)
 
@@ -115,9 +130,10 @@ class TensorFlowImageProcessor(ImageProcessingEntity):
     """Representation of an TensorFlow image processor."""
 
     def __init__(self, hass, camera_entity, name, session, detection_graph,
-                 category_index, min_confidence, include_categories, file_out):
+                 category_index, config):
         """Initialize the TensorFlow entity."""
 
+        model_config = config.get(CONF_MODEL)
         self.hass = hass
         self._camera_entity = camera_entity
         if name:
@@ -127,9 +143,41 @@ class TensorFlowImageProcessor(ImageProcessingEntity):
         self._session = session
         self._detection_graph = detection_graph
         self._category_index = category_index
-        self._min_confidence = min_confidence
-        self._include_categories = include_categories
-        self._file_out = file_out
+        self._min_confidence = config.get(CONF_CONFIDENCE)
+        self._file_out = config.get(CONF_FILE_OUT)
+
+        # handle categories and specific detection areas
+        categories = model_config.get(CONF_CATEGORIES)
+        self._include_categories = []
+        self._category_areas = {}
+        for category in categories:
+            if isinstance(category, dict):
+                category_name = category.get(CONF_CATEGORY)
+                category_area = category.get(CONF_AREA)
+                self._include_categories.append(category_name)
+                self._category_areas[category_name] = [0, 0, 1, 1]
+                if category_area:
+                    self._category_areas[category_name] = [
+                        category_area.get(CONF_TOP),
+                        category_area.get(CONF_LEFT),
+                        category_area.get(CONF_BOTTOM),
+                        category_area.get(CONF_RIGHT)
+                    ]
+            else:
+                self._include_categories.append(category)
+                self._category_areas[category] = [0, 0, 1, 1]
+
+        # Handle global detection area
+        self._area = [0, 0, 1, 1]
+        area_config = model_config.get(CONF_AREA)
+        if area_config:
+            self._area = [
+                area_config.get(CONF_TOP),
+                area_config.get(CONF_LEFT),
+                area_config.get(CONF_BOTTOM),
+                area_config.get(CONF_RIGHT)
+            ]
+
         template.attach(hass, self._file_out)
 
         self._matches = {}
@@ -159,6 +207,15 @@ class TensorFlowImageProcessor(ImageProcessingEntity):
             ATTR_TOTAL_MATCHES: self._total_matches
         }
 
+    def _draw_box(self, draw, box, img_width, img_height, text = '', color = (255, 255, 0)):
+        ymin, xmin, ymax, xmax = box
+        (left, right, top, bottom) = (xmin * img_width, xmax * img_width,
+                                        ymin * img_height, ymax * img_height)
+        draw.line([(left, top), (left, bottom), (right, bottom),
+                    (right, top), (left, top)], width=5, fill=color)
+        if text:
+            draw.text((left, abs(top-15)), text, fill=color)
+
     def _save_image(self, image, matches, paths):
         from PIL import Image, ImageDraw
         import io
@@ -166,15 +223,24 @@ class TensorFlowImageProcessor(ImageProcessingEntity):
         img_width, img_height = img.size
         draw = ImageDraw.Draw(img)
 
-        for label, values in matches.items():
+        # Draw custom global region/area
+        if self._area != [0, 0, 1, 1]:
+            self._draw_box(draw, self._area,
+                           img_width, img_height,
+                           'Detection Area', (0, 255, 255))
+
+        for category, values in matches.items():
+            # Draw custom category regions/areas
+            if self._category_areas[category] != [0, 0, 1, 1]:
+                self._draw_box(draw, self._category_areas[category], img_width, img_height,
+                               "{} Detection Area".format(category.capitalize()), (0, 255, 0))
+
+            # Draw detected objects
             for instance in values:
-                score = "{0:.1f}".format(instance["score"])
-                ymin, xmin, ymax, xmax = instance["box"]
-                (left, right, top, bottom) = (xmin * img_width, xmax * img_width,
-                                                ymin * img_height, ymax * img_height)
-                draw.line([(left, top), (left, bottom), (right, bottom),
-                            (right, top), (left, top)], width=5, fill=(255, 255, 0))
-                draw.text((left, top-15), "{0} {1}%".format(label, score), fill=(255, 255, 0))
+                label = "{0} {1:.1f}%".format(category, instance["score"])
+                self._draw_box(draw, instance["box"],
+                               img_width, img_height,
+                               label, (255, 255, 0))
 
         for path in paths:
             _LOGGER.info("Saving results image to {}".format(path))
@@ -213,16 +279,37 @@ class TensorFlowImageProcessor(ImageProcessingEntity):
         total_matches = 0
         for box, score, obj_class in zip(boxes, scores, classes):
             score = score * 100
+            boxes = box.tolist()
+
+            # Exclude matches below min confidence value
             if score < self._min_confidence:
                 continue
+            
+            # Exclude matches outside global area definition
+            if (boxes[0] < self._area[0] or boxes[1] < self._area[1]
+                    or boxes[2] > self._area[2] or boxes[3] > self._area[3]):
+                continue
+            
             category = self._category_index[obj_class]['name']
+
+            # Exclude unlisted categories
             if self._include_categories and category not in self._include_categories:
                 continue
+
+            # Exclude matches outside category specific area definition
+            if (self._category_areas
+                    and (boxes[0] < self._category_areas[category][0]
+                    or boxes[1] < self._category_areas[category][1]
+                    or boxes[2] > self._category_areas[category][2]
+                    or boxes[3] > self._category_areas[category][3])):
+                continue
+
+            # If we got here, we should include it
             if category not in matches.keys():
                 matches[category] = []
             matches[category].append({
                 'score': float(score),
-                'box': box.tolist()
+                'box': boxes
             })
             total_matches += 1
 
