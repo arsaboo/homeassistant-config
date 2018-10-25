@@ -424,8 +424,10 @@ image_processing:
       model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
       labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
       categories:
-        - person
+        - person        
         - car
+        - bus
+        - truck
   # - platform: classificationbox
   #   scan_interval: 10000
   #   ip_address: 192.168.2.212
