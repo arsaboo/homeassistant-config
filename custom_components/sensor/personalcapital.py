@@ -13,7 +13,7 @@ from homeassistant.helpers.entity import Entity
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (PLATFORM_SCHEMA)
 
-__version__ = '0.0.2'
+__version__ = '0.0.1'
 
 REQUIREMENTS = ['personalcapital==1.0.1']
 
@@ -45,6 +45,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 _CONFIGURING = {}
 _LOGGER = logging.getLogger(__name__)
+
+_CACHE = {}
 
 def request_app_setup(hass, config, pc, add_devices, discovery_info=None):
     """Request configuration steps from the user."""
@@ -82,7 +84,7 @@ def request_app_setup(hass, config, pc, add_devices, discovery_info=None):
 
 def load_session(hass):
     try:
-        with open(hass.config.path(SESSION_FILE)) as data_file:    
+        with open(hass.config.path(SESSION_FILE)) as data_file:
             cookies = {}
             try:
                 cookies = json.load(data_file)
@@ -105,8 +107,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if len(session) > 0:
         pc.set_session(session)
 
+        _CACHE[CONF_EMAIL] = config.get(CONF_EMAIL)
+        _CACHE[CONF_PASSWORD] = config.get(CONF_PASSWORD)
+
         try:
-            pc.login(config.get(CONF_EMAIL), config.get(CONF_PASSWORD))
+            pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
             continue_setup_platform(hass, config, pc, add_devices, discovery_info)
         except RequireTwoFactorException:
             request_app_setup(hass, config, pc, add_devices, discovery_info)
@@ -155,8 +160,8 @@ class PersonalCapitalNetWorthSensor(Entity):
         result = self._pc.fetch('/newaccount/getAccounts')
 
         if not result or not result.json()['spHeader']['success']:
-          self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
-          result = self._pc.fetch('/newaccount/getAccounts')
+            self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            result = self._pc.fetch('/newaccount/getAccounts')
 
         spData = result.json()['spData']
         self._state = spData.get('networth', 0.0)
@@ -226,10 +231,9 @@ class PersonalCapitalCategorySensor(Entity):
         """Get the latest state of the sensor."""
         result = self._pc.fetch('/newaccount/getAccounts')
 
-        if not result or not result.json()['spHeader']['success']:
-          self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
-          result = self._pc.fetch('/newaccount/getAccounts')
-
+        if not result.json()['spHeader']['success']:
+            self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            result = self._pc.fetch('/newaccount/getAccounts')
 
         spData = result.json()['spData']
         self._state = spData.get(self._balanceName, 0.0)
