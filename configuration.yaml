@@ -329,6 +329,19 @@ camera:
   - platform: generic
     name: worldtime
     still_image_url: https://imgs.xkcd.com/comics/now.png
+  - platform: local_file
+    name: Driveway TF
+    file_path: /home/homeassistant/.homeassistant/downloads/camera/driveway_latest.jpg
+  - platform: local_file
+    name: Porch TF
+    file_path: /home/homeassistant/.homeassistant/downloads/camera/porch_latest.jpg
+  - platform: local_file
+    name: Patio TF
+    file_path: /home/homeassistant/.homeassistant/downloads/camera/patio_latest.jpg
+  - platform: local_file
+    name: Backyard TF
+    file_path: /home/homeassistant/.homeassistant/downloads/camera/backyard_latest.jpg
+
   # - platform: unsplash
   #   api_key: !secret unsplash_key
   #   output_dir: /www/icons/
@@ -424,7 +437,7 @@ image_processing:
       model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
       labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
       categories:
-        - person        
+        - person
         - car
         - bus
         - truck

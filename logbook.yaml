@@ -40,6 +40,15 @@
       - sensor.steps_alok
       - sensor.steps_rashmi
       - sensor.sonos_stereo
+      - automation.image_processing_scan
+      - image_processing.opencv_porch
+      - image_processing.opencv_patio
+      - image_processing.opencv_driveway
+      - image_processing.opencv_backyard
+      - image_processing.tensorflow_porch
+      - image_processing.tensorflow_patio
+      - image_processing.tensorflow_driveway
+      - image_processing.tensorflow_backyard
   exclude:
     domains:
       - sun

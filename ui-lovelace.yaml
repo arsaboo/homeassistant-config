@@ -7,8 +7,6 @@ resources:
     type: js
   - url: /local/custom_ui/monster-card.js?v=1
     type: js
-  - url: /local/custom_ui/alarm_control_panel-card.js?v=1.2
-    type: js
   - url: /local/custom_ui/thermostat-card.js?v=1.3
     type: module
   - url: /local/custom_ui/calendar-card.js
@@ -373,13 +371,13 @@ views:
       - id: 06546ac2fe5f43e79a93c75604137d0a
         type: horizontal-stack
         cards:
-          - type: custom:alarm_control_panel-card
+          - type: alarm-panel
             entity: alarm_control_panel.abode_alarm
             title: Abode
             states:
               - arm_home
               - arm_away
-          - type: custom:alarm_control_panel-card
+          - type: alarm-panel
             entity: alarm_control_panel.arlohome
             title: Arlo
             states:
@@ -650,6 +648,27 @@ views:
         entity: camera.ars_bloom
         show_name: false
         show_state: false
+      - id: d3c99655bd384b8f9ab2f2e700f38efc  # Automatically created id
+        type: picture-entity
+        entity: camera.driveway_tf
+        show_name: false
+        show_state: false
+      - id: 788edf04ecae462883cec383e0442774  # Automatically created id
+        type: picture-entity
+        entity: camera.porch_tf
+        show_name: false
+        show_state: false
+      - id: 66be5afadffd40df8d980d309ebf547f  # Automatically created id
+        type: picture-entity
+        entity: camera.patio_tf
+        show_name: false
+        show_state: false
+      - id: ad216511e71c4db8b98c35b77e83ae49  # Automatically created id
+        type: picture-entity
+        entity: camera.backyard_tf
+        show_name: false
+        show_state: false
+
       # - type: picture-entity
       #   entity: camera.unsplash
       #   show_name: false
