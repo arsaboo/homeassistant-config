@@ -2,13 +2,13 @@
 ## Customize
 #################################################################
      climate.downstairs:
-       friendly_name: EcobeeDown
+       friendly_name: Downstairs
        entity_picture: /local/icons/Ecobee.png
      climate.upstairs:
-       friendly_name: EcobeeUp
+       friendly_name: Upstairs
        entity_picture: /local/icons/Ecobee.png
      climate.bedroom:
-       friendly_name: EcobeeMaster
+       friendly_name: Master
        entity_picture: /local/icons/Ecobee.png
      input_select.hvacmode:
        icon: mdi:air-conditioner

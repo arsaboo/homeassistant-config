@@ -25,14 +25,6 @@ views:
     title: Home
     # theme: darkorange
     cards:
-      - id: be9e16a6df6b4540b0b798fa77f47eb5
-        type: custom:monster-card
-        show_empty: false
-        card:
-          type: entities
-        filter:
-          include:
-            - domain: configurator
       - id: 50d4710517c94030b5285f22da89b093
         type: picture-elements
         # title: Main Level
@@ -483,23 +475,15 @@ views:
         entity_forecast_icon_3: sensor.dark_sky_icon_3
         entity_forecast_icon_4: sensor.dark_sky_icon_4
         entity_forecast_icon_5: sensor.dark_sky_icon_5
-      # - type: horizontal-stack
-      #   cards:
-      #     - type: custom:thermostat-card
-      #       entity: climate.bedroom
-      #       title: Master
-      #       hvac:
-      #         attribute: operation
-      #     - type: custom:thermostat-card
-      #       entity: climate.upstairs
-      #       title: Kids
-      #       hvac:
-      #         attribute: operation
-      #     - type: custom:thermostat-card
-      #       entity: climate.downstairs
-      #       title: Living
-      #       hvac:
-      #         attribute: operation
+      - id: 703bd4ea1613484f88e03636c508f230  # Automatically created id
+        type: vertical-stack
+        cards:
+          - type: thermostat
+            entity: climate.downstairs
+          - type: thermostat
+            entity: climate.upstairs
+          - type: thermostat
+            entity: climate.bedroom
       - id: 4a4481c1b7934014b4e550319e223f7c
         type: vertical-stack
         cards:
