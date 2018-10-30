@@ -71,6 +71,10 @@
            {% else %}
              unknown
            {% endif %}
+      television:
+        friendly_name: TV
+        value_template: >-
+           {{states('media_player.family_room_2')=='playing' and state_attr('media_player.family_room_2','source')=='TV'}}
   - platform: hikvision
     host: 192.168.2.91
     name: Porch
