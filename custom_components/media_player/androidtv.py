@@ -229,7 +229,7 @@ def adb_wrapper(func):
         except self._exceptions:
             returns = None
             _LOGGER.error('Failed to execute an ADB command; will attempt to '
-                          're-establish the ADB connection in the next update %s', ex)
+                          're-establish the ADB connection in the next update')
             self._androidtv._adb = None
         finally:
             self._adb_lock = False
@@ -272,8 +272,6 @@ class AndroidTVDevice(MediaPlayerDevice):
         self._name = name
         self._state = STATE_UNKNOWN
         self._app_name = None
-        # self._running_apps = None
-        # self._current_app = None
 
     @adb_wrapper
     def update(self):
@@ -284,9 +282,9 @@ class AndroidTVDevice(MediaPlayerDevice):
             self._state = STATE_OFF
         elif self._androidtv.state == 'idle':
             self._state = STATE_IDLE
-        elif self._androidtv.state == 'play':
+        elif self._androidtv.state == 'playing':
             self._state = STATE_PLAYING
-        elif self._androidtv.state == 'pause':
+        elif self._androidtv.state == 'paused':
             self._state = STATE_PAUSED
         elif self._androidtv.state == 'standby':
             self._state = STATE_STANDBY
