@@ -229,7 +229,7 @@ def adb_wrapper(func):
         except self._exceptions:
             returns = None
             _LOGGER.error('Failed to execute an ADB command; will attempt to '
-                          're-establish the ADB connection in the next update')
+                          're-establish the ADB connection in the next update %s', ex)
             self._androidtv._adb = None
         finally:
             self._adb_lock = False
