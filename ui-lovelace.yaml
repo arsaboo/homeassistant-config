@@ -931,7 +931,6 @@ views:
         title: HASS Details
         show_header_toggle: false
         entities:
-          - switch.developer_mode
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
       - id: 4f80e7420c574e1ba1feec6ba10ee8e7

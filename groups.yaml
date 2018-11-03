@@ -76,16 +76,7 @@
       - group.all_automations
       - group.uscis
 
-  developer:
-    name: Developer
-    view: false
-    icon: mdi:developer-board
-    entities:
-      - group.catchall
-      - group.deaditems
-
   HASS Details:
-    - switch.developer_mode
     - sensor.ssl_certificate_expiry
     - input_select.current_theme
 
