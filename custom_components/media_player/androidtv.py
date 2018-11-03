@@ -17,6 +17,7 @@ import logging
 import os
 import time
 import voluptuous as vol
+from datetime import timedelta
 
 from homeassistant.components.media_player import (
     DOMAIN, SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK,
@@ -27,11 +28,15 @@ from homeassistant.components.media_player import (
 from homeassistant.const import (
     ATTR_ENTITY_ID, CONF_HOST, CONF_NAME, CONF_PORT, STATE_IDLE, STATE_PAUSED,
     STATE_PLAYING, STATE_OFF, STATE_STANDBY, STATE_UNKNOWN)
+from homeassistant.helpers.event import track_time_interval
 import homeassistant.helpers.config_validation as cv
+from homeassistant.util import Throttle
 
 REQUIREMENTS = ['androidtv==0.0.2']
 
 _LOGGER = logging.getLogger(__name__)
+
+TIME_BETWEEN_UPDATES = timedelta(seconds=30)
 
 SUPPORT_ANDROIDTV = (SUPPORT_NEXT_TRACK | SUPPORT_PAUSE |
                      SUPPORT_PLAY | SUPPORT_PREVIOUS_TRACK |
@@ -96,12 +101,18 @@ ACTIONS = {
 }
 
 KNOWN_APPS = {
+    "adultswim": "Adult Swim",
+    "crackle": "Crackle",
+    "crunchyroll": "Crunchyroll",
     "dream": "Screensaver",
+    "fxnow": "FXNOW",
+    "hulu": "Hulu",
     "kodi": "Kodi",
     "netflix": "Netflix",
     "plex": "Plex",
     "spotify": "Spotify",
     "tvlauncher": "Homescreen",
+    "xfinity": "Xfinity Stream",
     "youtube": "Youtube"
 }
 
@@ -134,7 +145,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
     adbkey = config.get(CONF_ADBKEY)
 
-    device = AndroidTVDevice(host, name, adbkey)
+    device = AndroidTVDevice(hass, host, name, adbkey)
     adb_log = " using adbkey='{0}'".format(adbkey) if adbkey else ""
     if not device._androidtv._adb:
         _LOGGER.warning("Could not connect to Android TV at %s%s",
@@ -254,12 +265,13 @@ def get_app_name(app_id):
 class AndroidTVDevice(MediaPlayerDevice):
     """Representation of an AndroidTv device."""
 
-    def __init__(self, host, name, adbkey):
+    def __init__(self, hass, host, name, adbkey):
         """Initialize the AndroidTV device."""
         from androidtv import AndroidTV  # pylint: disable=no-name-in-module
         from adb.adb_protocol import (
             InvalidCommandError, InvalidResponseError, InvalidChecksumError)
 
+        self._hass = hass
         self._host = host
         self._adbkey = adbkey
         self._androidtv = AndroidTV(host, adbkey)
@@ -273,6 +285,9 @@ class AndroidTVDevice(MediaPlayerDevice):
         self._state = STATE_UNKNOWN
         self._app_name = None
 
+        #track_time_interval(self._hass, self.update, TIME_BETWEEN_UPDATES)
+
+    #@Throttle(TIME_BETWEEN_UPDATES)
     @adb_wrapper
     def update(self):
         """Get the latest details from the device."""
@@ -358,6 +373,7 @@ class AndroidTVDevice(MediaPlayerDevice):
 
     def media_play_pause(self):
         """Send play/pause command."""
+        _LOGGER.info("Attempting to send play/pause command")
         self._androidtv.media_play_pause()
 
     def media_stop(self):
