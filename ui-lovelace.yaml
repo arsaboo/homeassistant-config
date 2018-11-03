@@ -360,7 +360,7 @@ views:
               left: 15%
               width: 50px
               height: 50px
-      - id: 06546ac2fe5f43e79a93c75604137d0a
+      - id: alarm_cards
         type: horizontal-stack
         cards:
           - type: alarm-panel
@@ -374,7 +374,7 @@ views:
             title: Arlo
             states:
               - arm_away
-      - id: dbffb53855224ef6b97994fcb8184dcf
+      - id: investments
         type: entities
         title: Investments
         entities:
@@ -383,18 +383,18 @@ views:
           - sensor.portfolioval
           - sensor.portfoliochange
           - sensor.portfoliochange2
-          - type: divider
-          - sensor.dow_futures
-          - sensor.dow_futures_change
-          - sensor.dow_futures_change_pct
-          - type: divider
-          - sensor.nasdaq_futures
-          - sensor.nasdaq_futures_change
-          - sensor.nasdaq_futures_change_pct
-          - type: divider
-          - sensor.sp_futures
-          - sensor.sp_futures_change
-          - sensor.sp_futures_change_pct
+          # - type: divider
+          # - sensor.dow_futures
+          # - sensor.dow_futures_change
+          # - sensor.dow_futures_change_pct
+          # - type: divider
+          # - sensor.nasdaq_futures
+          # - sensor.nasdaq_futures_change
+          # - sensor.nasdaq_futures_change_pct
+          # - type: divider
+          # - sensor.sp_futures
+          # - sensor.sp_futures_change
+          # - sensor.sp_futures_change_pct
           - type: divider
           - sensor.10_year_treasury
       - id: 4a7140a250554dd6b4fd6e892679a71d
@@ -788,6 +788,8 @@ views:
       - id: a62d0e7432dd433fa4158b6058a1293d
         type: media-control
         entity: media_player.livingroomsonos
+      - type: media-control
+        entity: media_player.shieldtv        
       - id: 8b1c423890f64067bd2fe0eefbe332e1
         type: media-control
         entity: media_player.family_room_2

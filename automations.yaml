@@ -367,9 +367,9 @@
     - service: image_processing.scan
       data_template:
         entity_id: "image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-    - service: image_processing.scan
-      data_template:
-        entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+    # - service: image_processing.scan
+    #   data_template:
+    #     entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
 
 - id: opencv_image_processing_notification
   alias: 'OpenCV image processing'
@@ -404,27 +404,26 @@
   condition:
     - condition: template
       value_template: '{{ trigger.to_state.state |int > 0 }}'
-  # condition:
-  #   - condition: template
-  #     value_template: >
-  #         {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-  #         {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
-  #
-  #         {% macro get_list(obj) %}
-  #           {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
-  #             {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
-  #           {%- endfor -%}
-  #         {% endmacro %}
-  #
-  #         {% macro run() %}
-  #           {%- for object in tags -%}
-  #           {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
-  #             {{- get_list(object).split(',')|list|unique|list|join|title }}
-  #           {%- endfor -%}
-  #         {% endmacro %}
-  #
-  #         {% set output = run() %}
-  #         {{ output == '' }}
+    # - condition: template
+    #   value_template: >
+    #       {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
+    #       {%- set tags = trigger.to_state.attributes.matches.keys()|list -%}
+    #
+    #       {% macro get_list(obj) %}
+    #         {%- for x in trigger.to_state.attributes.matches[obj]|list if x.box[0] > 0.25 -%}
+    #           {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
+    #         {%- endfor -%}
+    #       {% endmacro %}
+    #
+    #       {% macro run() %}
+    #         {%- for object in tags -%}
+    #         {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
+    #           {{- get_list(object).split(',')|list|unique|list|join|title }}
+    #         {%- endfor -%}
+    #       {% endmacro %}
+    #
+    #       {% set output = run() %}
+    #       {{ output == '' }}
   action:
     - service: logbook.log
       data_template:
@@ -1454,6 +1453,29 @@
         title: "{{ trigger.to_state.name }} status updated"
         message: >
           {{ states.sensor[trigger.entity_id.split('.')[1]].attributes.current_status }}
+
+- id: update_sensors
+  alias: Update Sensors
+  initial_state: on
+  trigger:
+    platform: time
+    hours: '/3'
+    minutes: 01
+    seconds: 00
+  action:
+      service: homeassistant.update_entity
+      data:
+        entity_id:
+          - sensor.forecast_0
+          - sensor.forecast_1
+          - sensor.forecast_2
+          - sensor.forecast_3
+          - sensor.forecast_4
+          - sensor.forecast_5
+          - sensor.forecast_6
+          - sensor.forecast_7
+          - sensor.battery_status
+          - sensor.emulated_hue_names
 #################################################################
 ## Harmony Remote
 #################################################################
@@ -1688,7 +1710,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: media_player.living_room_tv
+      entity_id: binary_sensor.television
       from: 'off'
       to: 'on'
   condition:
@@ -1709,7 +1731,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: media_player.living_room_tv
+      entity_id: binary_sensor.television
       to: 'off'
   condition:
     - condition: time
