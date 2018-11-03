@@ -29,17 +29,17 @@
       - last_capture
       - battery_level
       - signal_strength
-  - platform: futures_cnn
-    resources:
-      - sp
-      - sp_change_pct
-      - sp_change
-      - dow
-      - dow_change_pct
-      - dow_change
-      - nasdaq
-      - nasdaq_change_pct
-      - nasdaq_change
+  # - platform: futures_cnn
+  #   resources:
+  #     - sp
+  #     - sp_change_pct
+  #     - sp_change
+  #     - dow
+  #     - dow_change_pct
+  #     - dow_change
+  #     - nasdaq
+  #     - nasdaq_change_pct
+  #     - nasdaq_change
   - platform: uscis
     case_id: !secret alok_485
     friendly_name: Alok 485
@@ -150,17 +150,19 @@
       - temp_f
       - wind_string
       - relative_humidity
-  - platform: gearbest
-    currency: USD
-    items:
-      - url: https://www.gearbest.com/alarm-systems/pp_659226.html
-        name: Xiaomi Aqara Human Body Sensor
-      - url: https://www.gearbest.com/access-control/pp_626702.html
-        name: Xiaomi Aqara Temperature Humidity Sensor
-      - url: https://www.gearbest.com/ip-cameras/pp_693217.html
-        name: Xiaomi Dafang Camera
-      - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
-        name: Xiaomi Door Window Sensor
+  # - platform: gearbest
+  #   currency: USD
+  #   items:
+  #     - url: https://www.gearbest.com/alarm-systems/pp_659226.html
+  #       name: Xiaomi Aqara Human Body Sensor
+  #     - url: https://www.gearbest.com/access-control/pp_626702.html
+  #       name: Xiaomi Aqara Temperature Humidity Sensor
+  #     - url: https://www.gearbest.com/ip-cameras/pp_693217.html
+  #       name: Xiaomi Dafang Camera
+  #     - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
+  #       name: Xiaomi Door Window Sensor
+  - platform: sectorperformance
+    api_key: !secret alphavantage_key
   - platform: alpha_vantage
     api_key: !secret alphavantage_key
     foreign_exchange:
@@ -180,9 +182,6 @@
   #   state_topic: "owntracks/pi/alokphone/step"
   #   name: "Steps Alok"
   #   value_template: '{{ value_json.steps }}'
-  - platform: command_line
-    name: "PyPi HASS Version"
-    command: python3 -c "import requests; print(requests.get('https://pypi.python.org/pypi/homeassistant/json').json()['info']['version'])"
   # - platform: command_line
   #   name: "Download Grafana"
   #   command: !secret grafana_temperature
@@ -197,12 +196,12 @@
     unit_of_measurement: '%'
     scan_interval: 18000
     command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"
-  - platform: scrape
-    resource: http://money.cnn.com/data/premarket/
-    name: Curr Future
-    scan_interval: 86400
-    # select: ".wsod_bold.wsod_aRight span"
-    select: ".wsod_bold.wsod_aRight"
+  # - platform: scrape
+  #   resource: http://money.cnn.com/data/premarket/
+  #   name: Curr Future
+  #   scan_interval: 86400
+  #   # select: ".wsod_bold.wsod_aRight span"
+  #   select: ".wsod_bold.wsod_aRight"
   - platform: rest
     method: POST
     resource: http://192.168.2.253:1400/DeviceProperties/Control

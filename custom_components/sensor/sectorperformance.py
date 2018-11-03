@@ -20,7 +20,7 @@ _ENDPOINT = 'https://www.alphavantage.co/query?function=SECTOR&apikey='
 DEFAULT_NAME = 'Alphavantage'
 
 SCAN_INTERVAL = timedelta(minutes=5)
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 
 MONITORED_CONDITIONS = {
     'information_technology': ['Information Technology', '%', 'mdi:currency-usd'],
@@ -119,7 +119,6 @@ class SectorPerfAPI(object):
         try:
             self._rest.update()
             self.data = json.loads(self._rest.data)
-            _LOGGER.error(self.data)
             self.available = True
         except TypeError:
             _LOGGER.error("Unable to fetch data from Alphavantage")
