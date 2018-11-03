@@ -223,12 +223,9 @@ def adb_wrapper(func):
         attempts = 0
         while self._adb_lock and attempts < 5:
             attempts += 1
-            _LOGGER.error('Attempts in loop is %s and _adb_lock is %s', attempts, self._adb_lock)
             time.sleep(1)
-        _LOGGER.error('Attempts is %s and _adb_lock is %s and _adb_error is %s', attempts, self._adb_lock, self._adb_error)
         if (attempts == 4 and self._adb_lock) or self._adb_error:
             try:
-                _LOGGER.error('Reconnecting now')
                 self._androidtv.connect()
                 self._adb_error = False
             except self._exceptions:
