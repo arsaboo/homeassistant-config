@@ -339,10 +339,26 @@ views:
             hvac:
               attribute: operation
             style:
-              top: 65%
-              left: 80%
+              top: 79%
+              left: 92%
               width: 50px
               height: 50px
+            # Living Room
+          - type: image
+            entity: light.master_lights
+            tap_action: toggle
+            hold_action: more-info
+            image: /local/icons/light_bulb_off.png
+            state_image:
+              on: /local/icons/light_bulb_on.png
+            state_filter:
+              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              off: brightness(80%) saturate(0.8)
+            style:
+              top: 70%
+              left: 80%
+              width: 7%
+              padding: 50px 50px 100px 50px
             # Laundry
           - type: state-icon
             entity: binary_sensor.water_leak_sensor_158d0001d77800
@@ -420,7 +436,7 @@ views:
         entities:
           - entity: light.gateway_light_34ce00813670
             type: custom:slider-entity-row
-          - entity: light.hue_color_lamp_3
+          - entity: light.master_lights
             type: custom:slider-entity-row
           - entity: light.lifx3
             type: custom:slider-entity-row
@@ -789,7 +805,7 @@ views:
         type: media-control
         entity: media_player.livingroomsonos
       - type: media-control
-        entity: media_player.shieldtv        
+        entity: media_player.shieldtv
       - id: 8b1c423890f64067bd2fe0eefbe332e1
         type: media-control
         entity: media_player.family_room_2
@@ -955,16 +971,11 @@ views:
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
-          - sensor.backyard_camera_tags
-          - sensor.driveway_camera_tags
-          - sensor.patio_camera_tags
-          - sensor.porch_camera_tags
 
       - id: f52bb29ecf334b1d891da53b383bd5b6
         type: entities
         title: Network Details
         entities:
-          - binary_sensor.pihole
           - sensor.speedtest_download
           - sensor.pihole_dns_queries_today
           - sensor.pihole_domains_blocked
@@ -1004,7 +1015,7 @@ views:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - id: 6600bbb3b53e4d66ba560abe9a3b7bc7
+      - id: pc_investments
         type: sensor
         entity: sensor.personal_capital_investments
       - id: 549e8a9c3157457da71ee90bad9c40fa

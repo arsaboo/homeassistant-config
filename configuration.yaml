@@ -113,6 +113,12 @@ light:
       - light.lifx3
       - light.lifxnrguest
       - light.lifxnrkitchen
+  - platform: group
+    name: Master Lights
+    entities:
+      - light.hue_color_lamp_1
+      - light.hue_color_lamp_2
+      - light.hue_color_lamp_3
 wemo:
   static:
     - 192.168.2.104
@@ -177,6 +183,7 @@ cloud:
     filter:
       include_entities:
         - light.living_room_lights
+        - light.master_lights
         - input_boolean.abodeupdate
         - light.gateway_light_34ce00813670
         - light.kitchen_lights
@@ -216,6 +223,8 @@ cloud:
     entity_config:
       light.living_room_lights:
         room: living room
+      light.master_lights:
+        room: master bedroom
       switch.driveway:
         room: driveway
       switch.wemoporch:
@@ -234,9 +243,6 @@ cloud:
 
 google_assistant:
   project_id: !secret google_project_id
-  # client_id: !secret google_client_id
-  # access_token: !secret google_access_token
-  # agent_user_id: !secret google_agent_user_id
   api_key: !secret google_project_api_key
   expose_by_default: false
   exposed_domains:
@@ -245,6 +251,8 @@ google_assistant:
     light.living_room_lights:
       expose: true
       room: living room
+      light.master_lights:
+        room: master bedroom
     switch.driveway:
       expose: true
       room: driveway
@@ -505,7 +513,8 @@ media_player:
     host: 192.168.2.252
     name: Living Room TV
     mac: !secret samsungtvmac
-    # timeout: 5
+    port: 8001
+    timeout: 5
   - platform: alexa
     email: !secret amazon_user
     password: !secret amazon_pass

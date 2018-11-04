@@ -932,6 +932,7 @@
       entity_id:
         - group.living_room_lights
         - light.lifx5
+        - group.master_lights
       to: 'unavailable'
       for: '00:05:00'
   action:

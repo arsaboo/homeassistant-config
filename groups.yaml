@@ -140,7 +140,6 @@
     - sensor.usdinr
 
   Network Details:
-    - binary_sensor.pihole
     - sensor.speedtest_download
     - sensor.pihole_dns_queries_today
     - sensor.pihole_domains_blocked
