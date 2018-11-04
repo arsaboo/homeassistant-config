@@ -283,7 +283,7 @@ class AndroidTVDevice(MediaPlayerDevice):
 
         self._exceptions = (TypeError, ValueError, AttributeError,
                             InvalidCommandError, InvalidResponseError,
-                            InvalidChecksumError)
+                            InvalidChecksumError, BrokenPipeError)
 
         self._name = name
         self._state = STATE_UNKNOWN
