@@ -16,6 +16,7 @@ import functools
 import logging
 import os
 import time
+import asyncio
 import voluptuous as vol
 from datetime import timedelta
 
@@ -30,7 +31,6 @@ from homeassistant.const import (
     STATE_PLAYING, STATE_OFF, STATE_STANDBY, STATE_UNKNOWN)
 from homeassistant.helpers.event import track_time_interval
 import homeassistant.helpers.config_validation as cv
-from homeassistant.util import Throttle
 
 REQUIREMENTS = ['androidtv==0.0.2']
 
@@ -117,9 +117,9 @@ KNOWN_APPS = {
     "youtube": "Youtube"
 }
 
-ACTION_SERVICE = 'androidtv_action'
-INTENT_SERVICE = 'androidtv_intent'
-KEY_SERVICE = 'androidtv_key'
+SERVICE_ACTION = 'androidtv_action'
+SERVICE_INTENT = 'androidtv_intent'
+SERVICE_KEY = 'androidtv_key'
 
 SERVICE_ACTION_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.entity_ids,
@@ -136,17 +136,34 @@ SERVICE_KEY_SCHEMA = vol.Schema({
     vol.Required('key'): cv.string,
 })
 
+SERVICE_TO_METHOD = {
+    SERVICE_ACTION: {
+        'method': 'async_do_action',
+        'schema': SERVICE_ACTION_SCHEMA},
+    SERVICE_INTENT: {
+        'method': 'async_start_intent',
+        'schema': SERVICE_INTENT_SCHEMA},
+    SERVICE_KEY: {
+        'method': 'async_input_key',
+        'schema': SERVICE_KEY_SCHEMA},
+}
+
 DATA_KEY = '{}.androidtv'.format(DOMAIN)
 
 
 # pylint: disable=protected-access
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entities,
+                               discovery_info=None):
     """Set up the AndroidTV platform."""
+    if DATA_KEY not in hass.data:
+        hass.data[DATA_KEY] = dict()
     host = '{0}:{1}'.format(config.get(CONF_HOST), config.get(CONF_PORT))
     name = config.get(CONF_NAME)
     adbkey = config.get(CONF_ADBKEY)
 
     device = AndroidTVDevice(hass, host, name, adbkey)
+    await device._androidtv.connect()
+
     adb_log = " using adbkey='{0}'".format(adbkey) if adbkey else ""
     if not device._androidtv._adb:
         _LOGGER.warning("Could not connect to Android TV at %s%s",
@@ -170,63 +187,54 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     else:
         _LOGGER.info("Setup Android TV at %s%s", host, adb_log)
-        add_devices([device])
+        hass.data[DATA_KEY][config.get(CONF_HOST)] = device
+        async_add_entities([device], update_before_add=True)
 
-    def service_action(service):
-        """Dispatch service calls to target entities."""
+    async def async_service_handler(service):
+        """Map services to methods on MediaPlayerDevice."""
+        method = SERVICE_TO_METHOD.get(service.service)
+        if not method:
+            return
+
         params = {key: value for key, value in service.data.items()
-                  if key != ATTR_ENTITY_ID}
+                  if key != 'entity_id'}
+        entity_ids = service.data.get('entity_id')
+        if entity_ids:
+            target_players = [player
+                              for player in hass.data[DATA_KEY].values()
+                              if player.entity_id in entity_ids]
+        else:
+            target_players = hass.data[DATA_KEY].values()
 
-        entity_id = service.data.get(ATTR_ENTITY_ID)
-        target_devices = [dev for dev in hass.data[DATA_KEY].values()
-                          if dev.entity_id in entity_id]
+        update_tasks = []
+        for player in target_players:
+            await getattr(player, method['method'])(**params)
 
-        for target_device in target_devices:
-            target_device.do_action(params['action'])
+        for player in target_players:
+            if player.should_poll:
+                update_coro = player.async_update_ha_state(True)
+                update_tasks.append(update_coro)
 
-    def service_intent(service):
-        """Dispatch service calls to target entities."""
-        params = {key: value for key, value in service.data.items()
-                  if key != ATTR_ENTITY_ID}
+        if update_tasks:
+            await asyncio.wait(update_tasks, loop=hass.loop)
 
-        entity_id = service.data.get(ATTR_ENTITY_ID)
-        target_devices = [dev for dev in hass.data[DATA_KEY].values()
-                          if dev.entity_id in entity_id]
-
-        for target_device in target_devices:
-            target_device.start_intent(params['intent'])
-
-    def service_key(service):
-        """Dispatch service calls to target entities."""
-        params = {key: value for key, value in service.data.items()
-                  if key != ATTR_ENTITY_ID}
-
-        entity_id = service.data.get(ATTR_ENTITY_ID)
-        target_devices = [dev for dev in hass.data[DATA_KEY].values()
-                          if dev.entity_id in entity_id]
-
-        for target_device in target_devices:
-            target_device.input_key(params['key'])
-
-    hass.services.register(
-        DOMAIN, ACTION_SERVICE, service_action, schema=SERVICE_ACTION_SCHEMA)
-    hass.services.register(
-        DOMAIN, INTENT_SERVICE, service_intent, schema=SERVICE_INTENT_SCHEMA)
-    hass.services.register(
-        DOMAIN, KEY_SERVICE, service_key, schema=SERVICE_KEY_SCHEMA)
-
+    for service in SERVICE_TO_METHOD:
+        schema = SERVICE_TO_METHOD[service]['schema']
+        hass.services.async_register(
+            DOMAIN, service, async_service_handler,
+            schema=schema)
 
 def adb_wrapper(func):
     """Wait if previous ADB commands haven't finished."""
     @functools.wraps(func)
-    def _adb_wrapper(self, *args, **kwargs):
+    async def _adb_wrapper(self, *args, **kwargs):
         attempts = 0
         while self._adb_lock and attempts < 5:
             attempts += 1
-            time.sleep(1)
+            await asyncio.sleep(1)
         if (attempts == 4 and self._adb_lock) or self._adb_error:
             try:
-                self._androidtv.connect()
+                await self._androidtv.connect()
                 self._adb_error = False
             except self._exceptions:
                 _LOGGER.error('Failed to re-establish the ADB connection; '
@@ -238,7 +246,7 @@ def adb_wrapper(func):
 
         self._adb_lock = True
         try:
-            returns = func(self, *args, **kwargs)
+            returns = await func(self, *args, **kwargs)
         except self._exceptions:
             returns = None
             _LOGGER.error('Failed to execute an ADB command; will attempt to '
@@ -289,13 +297,9 @@ class AndroidTVDevice(MediaPlayerDevice):
         self._state = STATE_UNKNOWN
         self._app_name = None
 
-        #track_time_interval(self._hass, self.update, TIME_BETWEEN_UPDATES)
-
-    #@Throttle(TIME_BETWEEN_UPDATES)
-    @adb_wrapper
-    def update(self):
+    async def async_update(self):
         """Get the latest details from the device."""
-        self._androidtv.update()
+        await self._androidtv.update()
 
         if self._androidtv.state == 'off':
             self._state = STATE_OFF
@@ -316,6 +320,13 @@ class AndroidTVDevice(MediaPlayerDevice):
     def name(self):
         """Return the name of the device."""
         return self._name
+
+    @property
+    def should_poll(self):
+        """Return True if entity has to be polled for state."""
+        _LOGGER.debug("should_poll result is")
+        _LOGGER.debug(not (self._androidtv is None or self._androidtv._adb is None))
+        return not (self._androidtv is None or self._androidtv._adb is None)
 
     @property
     def state(self):
@@ -358,77 +369,83 @@ class AndroidTVDevice(MediaPlayerDevice):
         return SUPPORT_ANDROIDTV
 
     @adb_wrapper
-    def turn_on(self):
+    async def async_turn_on(self):
         """Instruct the tv to turn on."""
-        self._androidtv.turn_on()
+        await self._androidtv.turn_on()
+        self._state = STATE_ON
 
     @adb_wrapper
-    def turn_off(self):
+    async def async_turn_off(self):
         """Instruct the tv to turn off."""
-        self._androidtv.turn_off()
+        await self._androidtv.turn_off()
+        self._state = STATE_OFF
 
     @adb_wrapper
-    def media_play(self):
+    async def async_media_play(self):
         """Send play command."""
-        self._androidtv.media_play()
+        await self._androidtv.media_play()
         self._state = STATE_PLAYING
 
     @adb_wrapper
-    def media_pause(self):
+    async def async_media_pause(self):
         """Send pause command."""
-        self._androidtv.media_pause()
+        await self._androidtv.media_pause()
         self._state = STATE_PAUSED
 
     @adb_wrapper
-    def media_play_pause(self):
+    async def async_media_play_pause(self):
         """Send play/pause command."""
-        _LOGGER.info("Attempting to send play/pause command")
-        self._androidtv.media_play_pause()
+        if self._state == STATE_PAUSED:
+            await self._androidtv.media_play_pause()
+            self._state = STATE_PLAYING
+        else:
+            await self._androidtv.media_play_pause()
+            self._state = STATE_PAUSED
 
     @adb_wrapper
-    def media_stop(self):
+    async def async_media_stop(self):
         """Send stop command."""
-        self._androidtv.media_stop()
+        await self._androidtv.media_stop()
         self._state = STATE_IDLE
 
     @adb_wrapper
-    def mute_volume(self, mute):
+    async def async_mute_volume(self, mute):
         """Mute the volume."""
-        self._androidtv.mute_volume()
+        await self._androidtv.mute_volume()
         self._androidtv.muted = mute
 
     @adb_wrapper
-    def volume_up(self):
+    async def async_volume_up(self):
         """Increment the volume level."""
-        self._androidtv.volume_up()
+        await self._androidtv.volume_up()
 
     @adb_wrapper
-    def volume_down(self):
+    async def async_volume_down(self):
         """Decrement the volume level."""
-        self._androidtv.volume_down()
+        await self._androidtv.volume_down()
 
     @adb_wrapper
-    def media_previous_track(self):
+    async def async_media_previous_track(self):
         """Send previous track command."""
-        self._androidtv.media_previous()
+        await self._androidtv.media_previous()
 
     @adb_wrapper
-    def media_next_track(self):
+    async def async_media_next_track(self):
         """Send next track command."""
-        self._androidtv.media_next()
+        await self._androidtv.media_next()
 
     @adb_wrapper
-    def input_key(self, key):
+    async def async_input_key(self, key):
         """Input the key to the device."""
-        self._androidtv._key(key)
+        await self._androidtv._key(key)
 
     @adb_wrapper
-    def start_intent(self, uri):
+    async def async_start_intent(self, uri):
         """Start an intent on the device."""
-        self._androidtv._adb.Shell(
-            "am start -a android.intent.action.VIEW -d {}".format(uri))
+        await self._androidtv._adb.Shell(
+                "am start -a android.intent.action.VIEW -d {}".format(uri))
 
     @adb_wrapper
-    def do_action(self, action):
+    async def async_do_action(self, action):
         """Input the key corresponding to the action."""
-        self._androidtv._adb.Shell("input keyevent {}".format(ACTIONS[action]))
+        await self._androidtv._adb.Shell("input keyevent {}".format(ACTIONS[action]))
