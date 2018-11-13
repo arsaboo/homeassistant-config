@@ -1,6 +1,12 @@
 #################################################################
 ## Scripts
 #################################################################
+  set_hue_scene:
+    sequence:
+      - service: hue.hue_activate_scene
+        data_template:
+          group_name: "{{ group }}"
+          scene_name: "{{ scene }}"
   abodeaway:
     alias: 'Abode Arm'
     sequence:

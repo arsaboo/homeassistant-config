@@ -849,14 +849,33 @@
 ## Home Automation Related
 #################################################################
 
+- id: xiaomi_vibration_sensor_test
+  alias: Xiaomi Vibration sensor test
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: xiaomi_aqara.movement
+      event_data:
+        entity_id: binary_sensor.vibration_158d0002a51fc2
+        movement_type: tilt
+  action:
+    - service: light.toggle
+      data:
+        entity_id: light.master_lights
+    - service: logbook.log
+      data_template:
+        name: "Xiaomi event: "
+        message: >
+          {{trigger.event.data}}
+
 - id: micube_test
   alias: MiCube event test
-  initial_state: 'off'
+  initial_state: 'on'
   trigger:
     platform: event
     event_type: cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
+      entity_id: binary_sensor.cube_158d0001035aa7_2
   action:
     - service: logbook.log
       data_template:
@@ -868,44 +887,84 @@
             {{trigger.event.data.action_type}}
           {%- endif -%}
 
-- id: micube_volume
-  alias: "MiCube rotate - Volume livingroom home"
+- id: micube_brightness_rotate
+  alias: "MiCube rotate - Master lights"
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: media_player.family_room_2
-      state: 'playing'
+      entity_id: light.master_lights
+      state: 'on'
   trigger:
     platform: event
     event_type: cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
+      entity_id: binary_sensor.cube_158d0001035aa7_2
       action_type: rotate
   action:
-    - service: media_player.volume_set
+    - service: light.turn_on
       data_template:
-        entity_id: media_player.family_room_2
-        volume_level: >
-              {% set state = (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) -%}
-              {%-  if state > 1 -%}
-                 {%- set state  = 1 -%}
+        entity_id: light.master_lights
+        brightness: >
+              {% set state = (state_attr('light.master_lights','brightness') + trigger.event.data.action_value|int) -%}
+              {%-  if state > 255 -%}
+                 {%- set state  = 255 -%}
               {%-  elif state < 0 -%}
                  {%- set state  = 0 -%}
               {%- endif %}
               {{ state }}
-    - service: logbook.log
-      data_template:
-        name: "Volume changed: "
-        message: "{{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}"
-    - service: notify.shield
-      data_template:
-        title: "Home Assistant"
-        message: >
-          {%- if trigger.event.data.action_value > 0 -%}
-            Volume increased to {{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
-          {%- else -%}
-            Volume lowered to {{ (states.media_player.family_room_2.attributes.volume_level + (trigger.event.data.action_value|int)/90)|round(2) }}
-          {%- endif -%}
+
+- id: micube_scenes_reset
+  alias: "MiCube scene reset"
+  initial_state: on
+  condition:
+    - condition: state
+      entity_id: light.master_lights
+      state: 'on'
+  trigger:
+    platform: event
+    event_type: cube_action
+    event_data:
+      entity_id: binary_sensor.cube_158d0001035aa7_2
+      action_type: flip180
+  action:
+    service: script.set_hue_scene
+    data_template:
+      group: "Master"
+      scene: "Bright"
+
+- id: micube_master_scenes
+  alias: "MiCube Master scene"
+  initial_state: on
+  condition:
+    - condition: state
+      entity_id: light.master_lights
+      state: 'on'
+  trigger:
+    platform: event
+    event_type: cube_action
+    event_data:
+      entity_id: binary_sensor.cube_158d0001035aa7_2
+      action_type: flip90
+  action:
+    service: script.set_hue_scene
+    data_template:
+      group: "Master"
+      scene: >
+        {{ ['Arctic aurora', 'Starlight', 'Concentrate', 'Dimmed', 'Energize', 'Nightlight', 'Read', 'Relax', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+
+- id: micube_toggle_master
+  alias: "MiCube Toggle Master"
+  initial_state: on
+  trigger:
+    platform: event
+    event_type: cube_action
+    event_data:
+      entity_id: binary_sensor.cube_158d0001035aa7_2
+      action_type: tap_twice
+  action:
+    - service: light.toggle
+      data:
+        entity_id: light.master_lights
 
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
