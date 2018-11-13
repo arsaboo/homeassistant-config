@@ -399,18 +399,18 @@ views:
           - sensor.portfolioval
           - sensor.portfoliochange
           - sensor.portfoliochange2
-          # - type: divider
-          # - sensor.dow_futures
-          # - sensor.dow_futures_change
-          # - sensor.dow_futures_change_pct
-          # - type: divider
-          # - sensor.nasdaq_futures
-          # - sensor.nasdaq_futures_change
-          # - sensor.nasdaq_futures_change_pct
-          # - type: divider
-          # - sensor.sp_futures
-          # - sensor.sp_futures_change
-          # - sensor.sp_futures_change_pct
+          - type: divider
+          - sensor.dow_futures
+          - sensor.dow_futures_change
+          - sensor.dow_futures_change_pct
+          - type: divider
+          - sensor.nasdaq_futures
+          - sensor.nasdaq_futures_change
+          - sensor.nasdaq_futures_change_pct
+          - type: divider
+          - sensor.sp_futures
+          - sensor.sp_futures_change
+          - sensor.sp_futures_change_pct
           - type: divider
           - sensor.10_year_treasury
       - id: 4a7140a250554dd6b4fd6e892679a71d
@@ -1009,6 +1009,15 @@ views:
     id: test
     title: Testing
     cards:
+      - id: test_entities
+        type: entities
+        title: Test Entities
+        entities:
+          - type: divider
+          - sensor.tilt_angle_158d0002a51fc2
+          - sensor.coordination_158d0002a51fc2
+          - sensor.bed_activity_158d0002a51fc2
+          - binary_sensor.vibration_158d0002a51fc2
       - id: 4c3f5b251e2e4092a2b7b9f8301364b0
         type: custom:calendar-card
         entities:

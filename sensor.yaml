@@ -29,17 +29,17 @@
       - last_capture
       - battery_level
       - signal_strength
-  # - platform: futures_cnn
-  #   resources:
-  #     - sp
-  #     - sp_change_pct
-  #     - sp_change
-  #     - dow
-  #     - dow_change_pct
-  #     - dow_change
-  #     - nasdaq
-  #     - nasdaq_change_pct
-  #     - nasdaq_change
+  - platform: futures_cnn
+    resources:
+      - sp
+      - sp_change_pct
+      - sp_change
+      - dow
+      - dow_change_pct
+      - dow_change
+      - nasdaq
+      - nasdaq_change_pct
+      - nasdaq_change
   - platform: uscis
     case_id: !secret alok_485
     friendly_name: Alok 485
