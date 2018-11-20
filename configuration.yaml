@@ -23,10 +23,6 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
     - '/home/homeassistant/.homeassistant/downloads/camera/'
-    - '/home/homeassistant/.homeassistant/downloads/camera/porch'
-    - '/home/homeassistant/.homeassistant/downloads/camera/patio'
-    - '/home/homeassistant/.homeassistant/downloads/camera/backyard'
-    - '/home/homeassistant/.homeassistant/downloads/camera/driveway'
 updater:
   include_used_components: true
 # influxdb:
@@ -421,21 +417,41 @@ image_processing:
     scan_interval: 10000
     source:
       - entity_id: camera.patio
-      - entity_id: camera.porch
-      - entity_id: camera.backyard
-      - entity_id: camera.driveway
     file_out:
       - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+      # - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     model:
       graph: /home/homeassistant/.homeassistant/deps/frozen_inference_graph.pb
       model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
       labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
       categories:
         - person
-        - car
-        - bus
-        - truck
+  - platform: tensorflow
+    confidence: 75
+    scan_interval: 10000
+    source:
+      - entity_id: camera.backyard
+      - entity_id: camera.driveway
+      - entity_id: camera.porch
+    file_out:
+      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
+      # - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    model:
+      graph: /home/homeassistant/.homeassistant/deps/frozen_inference_graph.pb
+      model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
+      labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
+      categories:
+        - person
+        - category: bus
+          area:
+            top: 0.30
+        - category: truck
+          area:
+            top: 0.30
+        - category: car
+          area:
+            top: 0.30
+
   # - platform: classificationbox
   #   scan_interval: 10000
   #   ip_address: 192.168.2.212
@@ -528,12 +544,13 @@ device_tracker:
     password: !secret unifi_password
     verify_ssl: False
   - platform: geofency
+  - platform: googlehome
+    host: 192.168.2.72
   # - platform: asuswrt
   #   host: 192.168.2.1
   #   protocol: telnet
   #   username: !secret asus_username
   #   password: !secret asus_password
-
 telegram_bot:
   platform: polling
   api_key: !secret telegram_key
