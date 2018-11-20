@@ -343,6 +343,19 @@ views:
               left: 92%
               width: 50px
               height: 50px
+          - type: state-icon
+            entity: binary_sensor.motion_sensor_158d00016c53bf
+            style:
+              top: 55%
+              left: 80%
+          - type: state-label
+            entity: sensor.illumination_158d00016c53bf
+            style:
+              top: 78%
+              left: 80%
+              text-align: center
+              font-size: 12px
+              color: black
             # Living Room
           - type: image
             entity: light.master_lights
@@ -1026,7 +1039,7 @@ views:
           - calendar.us_holidays
       - id: pc_investments
         type: sensor
-        entity: sensor.personal_capital_investments
+        entity: sensor.illumination_158d00016c53bf
       - id: 549e8a9c3157457da71ee90bad9c40fa
         type: picture-elements
         # title: Main Level
