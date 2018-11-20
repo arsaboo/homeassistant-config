@@ -325,6 +325,12 @@
      sensor.illumination_158d00016daecc:
        friendly_name: Living Room Occupancy Sensor Brightness
        icon: mdi:brightness-7
+     sensor.illumination_158d00016c53bf:
+       friendly_name: Master Brightness
+       icon: mdi:brightness-7
+     binary_sensor.motion_sensor_158d00016c53bf:
+       friendly_name: Master Occupancy
+       homebridge_hidden: false
      sensor.illumination_158d00016612af:
        friendly_name: Upstairs Brightness
        icon: mdi:brightness-7

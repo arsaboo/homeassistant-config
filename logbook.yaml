@@ -40,7 +40,8 @@
       - sensor.steps_alok
       - sensor.steps_rashmi
       - sensor.sonos_stereo
-      - automation.image_processing_scan
+      - automation.turn_off_master_lights
+      - automation.turn_on_master_lights_on_motion
       - image_processing.opencv_porch
       - image_processing.opencv_patio
       - image_processing.opencv_driveway

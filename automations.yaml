@@ -1034,6 +1034,60 @@
           subtitle: "Looks like {{ trigger.to_state.name }} switch is turned off"
           push:
             badge: 0
+
+- id: master_lights_on
+  alias: 'Turn on Master lights on motion'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: time
+      after: '17:00:00'
+      before: '22:30:00'
+    - condition: state
+      entity_id: light.master_lights
+      state: 'off'
+    - condition: template
+      value_template: >
+        {%- if states.light.master_lights.last_changed -%}
+          {{ (as_timestamp(now()) - as_timestamp(states.light.master_lights.last_changed)) > 300 }}
+        {%- else -%}
+          true
+        {%- endif -%}
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: light.master_lights
+        brightness: 255
+    - delay: '00:00:05'
+    - service: script.set_hue_scene
+      data_template:
+        group: "Master"
+        scene: "Default"
+
+- id: master_lights_off
+  alias: 'Turn off Master lights'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      to: 'off'
+      for: '00:00:30'
+  condition:
+    - condition: time
+      after: '17:00:00'
+      before: '22:00:00'
+    - condition: state
+      entity_id: light.master_lights
+      state: 'on'
+  action:
+    - service: light.turn_off
+      data:
+        entity_id: light.master_lights
+
 - id: garage_lights_on
   alias: 'Turn on garage lights when door opened'
   initial_state: 'on'
