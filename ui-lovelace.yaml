@@ -478,7 +478,7 @@ views:
     id: weather
     title: Weather
     cards:
-      - id: 83a0f7d94e914e5f8a46048d0abf2e79
+      - id: dark_sky_animated_card
         type: custom:dark-sky-weather-card
         entity_sun: sun.sun
         entity_daily_summary: sensor.dark_sky_daily_summary
@@ -494,11 +494,11 @@ views:
         entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
         entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
         entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
-        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature
-        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_1
-        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_2
-        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_3
-        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_4
+        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature_1
+        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_2
+        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_3
+        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_4
+        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_5
         entity_forecast_icon_1: sensor.dark_sky_icon_1
         entity_forecast_icon_2: sensor.dark_sky_icon_2
         entity_forecast_icon_3: sensor.dark_sky_icon_3

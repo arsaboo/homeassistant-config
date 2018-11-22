@@ -5,6 +5,7 @@ sensor:
   - platform: darksky
     api_key: !secret darksky_key
     forecast:
+      - 0
       - 1
       - 2
       - 3
@@ -36,7 +37,7 @@ sensor:
       forecast_0:
         friendly_name: "Today"
         value_template: >
-          {{states.sensor.dark_sky_daytime_high_temperature.state|round(0)}}°/{{states.sensor.dark_sky_overnight_low_temperature.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability.state|round(0)}}%
+          {{states.sensor.dark_sky_daytime_high_temperature_0.state|round(0)}}°/{{states.sensor.dark_sky_overnight_low_temperature_0.state|round(0)}}°/{{states.sensor.dark_sky_precip_probability_0.state|round(0)}}%
         entity_picture_template: >-
           {{ '/local/icons/dark_sky/' ~ states.sensor.dark_sky_icon.state ~ '.png'}}
 
