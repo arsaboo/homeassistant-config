@@ -441,16 +441,18 @@ image_processing:
       model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
       labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
       categories:
-        - person
-        - category: bus
+        - category: person
           area:
-            top: 0.30
+            top: 0.20
+        - bus
         - category: truck
           area:
-            top: 0.30
+            top: 0.20
+            right: 0.20
         - category: car
           area:
-            top: 0.30
+            top: 0.20
+            right: 0.20
 
   # - platform: classificationbox
   #   scan_interval: 10000
@@ -534,7 +536,7 @@ media_player:
   # - platform: apple_tv
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
-
+geofency:
 device_tracker:
   - platform: owntracks
     max_gps_accuracy: 200
@@ -543,14 +545,14 @@ device_tracker:
     username: !secret unifi_username
     password: !secret unifi_password
     verify_ssl: False
-  - platform: geofency
-  - platform: googlehome
-    host: 192.168.2.72
-  # - platform: asuswrt
-  #   host: 192.168.2.1
-  #   protocol: telnet
-  #   username: !secret asus_username
-  #   password: !secret asus_password
+  # - platform: composite
+  #   name: alok composite
+  #   entity_id:
+  #     - device_tracker.myiphone
+  #     - device_tracker.pi_alokphone
+  #     - device_tracker.alokiosiphone
+  #     - device_tracker.alok_alok
+  #     - device_tracker.b4445761f6c04b7f835fcfdc03b47111
 telegram_bot:
   platform: polling
   api_key: !secret telegram_key
@@ -629,7 +631,6 @@ logger:
     homeassistant.components.python_script: warning
     # homeassistant.components.http.view: info
     custom_components.sensor.personalcapital: debug
-    custom_components.device_tracker.googlehome: info
     adb.adb_commands: debug
     adb.adb_protocol: debug
     # homeassistant.components.device_tracker: info
