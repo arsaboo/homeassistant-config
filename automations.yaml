@@ -977,7 +977,7 @@
     data_template:
       group: "Master"
       scene: >
-        {{ ['Arctic aurora', 'Starlight', 'Concentrate', 'Dimmed', 'Energize', 'Nightlight', 'Read', 'Relax', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+        {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
 
 - id: micube_toggle_master
   alias: "MiCube Toggle Master"
