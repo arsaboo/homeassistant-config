@@ -31,6 +31,7 @@
       - device_tracker.myiphone
       - device_tracker.alok_alok
       - device_tracker.b4445761f6c04b7f835fcfdc03b47111
+      - device_tracker.alok_composite
       - sensor.hvacmode
       - sensor.living_room
       - sensor.plexspy
@@ -40,6 +41,7 @@
       - sensor.steps_alok
       - sensor.steps_rashmi
       - sensor.sonos_stereo
+      - sensor.cube_last_action
       - automation.turn_off_master_lights
       - automation.turn_on_master_lights_on_motion
       - image_processing.opencv_porch

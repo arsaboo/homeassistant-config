@@ -57,6 +57,14 @@
        friendly_name: Rashmi Proximity
      proximity.alok:
        friendly_name: Alok Proximity
+     device_tracker.192168272_6470330e2dc3:
+       friendly_name: Alok iPhone BT
+     device_tracker.192168272_b853ac4196c1:
+       friendly_name: Rashmi iPhone BT
+     device_tracker.192168272_64200c8fb1cd:
+       friendly_name: Arnav iPad BT
+
+
  #weather
      sensor.ars_bloom_voltage:
        friendly_name: 'BloomSky Voltage'

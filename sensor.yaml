@@ -9,10 +9,10 @@
   #     - stream_count_direct_play
   #     - stream_count_direct_stream
   #     - total_bandwidth
-  - platform: tautulli
-    api_key: !secret tautulli_api
-    host: 192.168.2.212
-    port: 8181
+  # - platform: tautulli
+  #   api_key: !secret tautulli_api
+  #   host: 192.168.2.212
+  #   port: 8181
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
@@ -142,25 +142,14 @@
     api_key: !secret google_key
     origin: device_tracker.alok_alok
     destination: !secret add_home
-  - platform: wunderground
-    api_key: !secret wunderground_key
-    pws_id: !secret wunderground_pws
-    monitored_conditions:
-      - weather
-      - temp_f
-      - wind_string
-      - relative_humidity
-  # - platform: gearbest
-  #   currency: USD
-  #   items:
-  #     - url: https://www.gearbest.com/alarm-systems/pp_659226.html
-  #       name: Xiaomi Aqara Human Body Sensor
-  #     - url: https://www.gearbest.com/access-control/pp_626702.html
-  #       name: Xiaomi Aqara Temperature Humidity Sensor
-  #     - url: https://www.gearbest.com/ip-cameras/pp_693217.html
-  #       name: Xiaomi Dafang Camera
-  #     - url: https://www.gearbest.com/smart-light-bulb/pp_257677.html
-  #       name: Xiaomi Door Window Sensor
+  # - platform: wunderground
+  #   api_key: !secret wunderground_key
+  #   pws_id: !secret wunderground_pws
+  #   monitored_conditions:
+  #     - weather
+  #     - temp_f
+  #     - wind_string
+  #     - relative_humidity
   - platform: sectorperformance
     api_key: !secret alphavantage_key
   - platform: alpha_vantage
@@ -169,11 +158,6 @@
       - from: USD
         to: INR
         name: USDINR
-  # - platform: currencylayer
-  #   api_key: !secret currencylayer_key
-  #   base: USD
-  #   quote:
-  #     - INR
   # - platform: mqtt
   #   state_topic: "owntracks/pi/rashmiphone/step"
   #   name: "Steps Rashmi"
@@ -216,6 +200,14 @@
     sensors:
       # iframe_windy:
       #   value_template: iframe
+      cube_last_action:
+        friendly_name: "Cube last action"
+        value_template: >
+          {% if as_timestamp(now()) - as_timestamp(states.binary_sensor.cube_158d0001035aa7.last_updated) >50 %}
+            None
+          {% else %}
+            {{state_attr('binary_sensor.cube_158d0001035aa7', 'last_action')}}
+          {% endif %}
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"

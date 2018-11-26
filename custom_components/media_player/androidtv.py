@@ -18,31 +18,28 @@ import os
 import time
 import asyncio
 import voluptuous as vol
-from datetime import timedelta
 
 from homeassistant.components.media_player import (
     DOMAIN, SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK,
     PLATFORM_SCHEMA, SUPPORT_SELECT_SOURCE, SUPPORT_STOP, SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON, SUPPORT_VOLUME_SET, SUPPORT_VOLUME_MUTE,
-    SUPPORT_VOLUME_STEP, SUPPORT_PLAY, MediaPlayerDevice)
+    SUPPORT_VOLUME_STEP, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, MediaPlayerDevice)
 
 from homeassistant.const import (
     ATTR_ENTITY_ID, CONF_HOST, CONF_NAME, CONF_PORT, STATE_IDLE, STATE_PAUSED,
-    STATE_PLAYING, STATE_OFF, STATE_STANDBY, STATE_UNKNOWN)
-from homeassistant.helpers.event import track_time_interval
+    STATE_PLAYING, STATE_OFF, STATE_ON, STATE_STANDBY, STATE_UNKNOWN)
 import homeassistant.helpers.config_validation as cv
 
 REQUIREMENTS = ['androidtv==0.0.2']
 
 _LOGGER = logging.getLogger(__name__)
 
-TIME_BETWEEN_UPDATES = timedelta(seconds=30)
-
 SUPPORT_ANDROIDTV = (SUPPORT_NEXT_TRACK | SUPPORT_PAUSE |
                      SUPPORT_PLAY | SUPPORT_PREVIOUS_TRACK |
                      SUPPORT_TURN_OFF | SUPPORT_TURN_ON |
                      SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP |
-                     SUPPORT_VOLUME_SET | SUPPORT_STOP)
+                     SUPPORT_VOLUME_SET | SUPPORT_STOP |
+                     SUPPORT_PLAY_MEDIA)
 
 CONF_ADBKEY = 'adbkey'
 
@@ -224,42 +221,6 @@ async def async_setup_platform(hass, config, async_add_entities,
             DOMAIN, service, async_service_handler,
             schema=schema)
 
-def adb_wrapper(func):
-    """Wait if previous ADB commands haven't finished."""
-    @functools.wraps(func)
-    async def _adb_wrapper(self, *args, **kwargs):
-        attempts = 0
-        while self._adb_lock and attempts < 5:
-            attempts += 1
-            await asyncio.sleep(1)
-        if (attempts == 4 and self._adb_lock) or self._adb_error:
-            try:
-                await self._androidtv.connect()
-                self._adb_error = False
-            except self._exceptions:
-                _LOGGER.error('Failed to re-establish the ADB connection; '
-                              'will re-attempt in the next update.')
-                self._androidtv._adb = None
-                self._adb_lock = False
-                self._adb_error = True
-                return
-
-        self._adb_lock = True
-        try:
-            returns = await func(self, *args, **kwargs)
-        except self._exceptions:
-            returns = None
-            _LOGGER.error('Failed to execute an ADB command; will attempt to '
-                          're-establish the ADB connection in the next update')
-            self._androidtv._adb = None
-            self._adb_error = True
-        finally:
-            self._adb_lock = False
-
-        return returns
-
-    return _adb_wrapper
-
 
 def get_app_name(app_id):
     """Return the app name from its id and known apps."""
@@ -279,19 +240,11 @@ class AndroidTVDevice(MediaPlayerDevice):
     def __init__(self, hass, host, name, adbkey):
         """Initialize the AndroidTV device."""
         from androidtv import AndroidTV  # pylint: disable=no-name-in-module
-        from adb.adb_protocol import (
-            InvalidCommandError, InvalidResponseError, InvalidChecksumError)
 
         self._hass = hass
         self._host = host
         self._adbkey = adbkey
         self._androidtv = AndroidTV(host, adbkey)
-        self._adb_lock = False
-        self._adb_error = False
-
-        self._exceptions = (TypeError, ValueError, AttributeError,
-                            InvalidCommandError, InvalidResponseError,
-                            InvalidChecksumError, BrokenPipeError)
 
         self._name = name
         self._state = STATE_UNKNOWN
@@ -324,8 +277,6 @@ class AndroidTVDevice(MediaPlayerDevice):
     @property
     def should_poll(self):
         """Return True if entity has to be polled for state."""
-        _LOGGER.debug("should_poll result is")
-        _LOGGER.debug(not (self._androidtv is None or self._androidtv._adb is None))
         return not (self._androidtv is None or self._androidtv._adb is None)
 
     @property
@@ -343,11 +294,6 @@ class AndroidTVDevice(MediaPlayerDevice):
         """Return the volume level."""
         return self._androidtv.volume
 
-    # @property
-    # def source(self):
-    #     """Return the current playback device."""
-    #     return self._device
-
     @property
     def app_id(self):
         """ID of the current running app."""
@@ -358,94 +304,68 @@ class AndroidTVDevice(MediaPlayerDevice):
         """Name of the current running app."""
         return self._app_name
 
-    # @property
-    # def available(self):
-    #     """Return True if entity is available."""
-    #     return self._available
-
     @property
     def supported_features(self):
         """Flag media player features that are supported."""
         return SUPPORT_ANDROIDTV
 
-    @adb_wrapper
     async def async_turn_on(self):
         """Instruct the tv to turn on."""
         await self._androidtv.turn_on()
-        self._state = STATE_ON
 
-    @adb_wrapper
     async def async_turn_off(self):
         """Instruct the tv to turn off."""
         await self._androidtv.turn_off()
-        self._state = STATE_OFF
 
-    @adb_wrapper
     async def async_media_play(self):
         """Send play command."""
         await self._androidtv.media_play()
-        self._state = STATE_PLAYING
 
-    @adb_wrapper
     async def async_media_pause(self):
         """Send pause command."""
         await self._androidtv.media_pause()
-        self._state = STATE_PAUSED
 
-    @adb_wrapper
     async def async_media_play_pause(self):
         """Send play/pause command."""
-        if self._state == STATE_PAUSED:
-            await self._androidtv.media_play_pause()
-            self._state = STATE_PLAYING
-        else:
-            await self._androidtv.media_play_pause()
-            self._state = STATE_PAUSED
+        await self._androidtv.media_play_pause()
 
-    @adb_wrapper
     async def async_media_stop(self):
         """Send stop command."""
         await self._androidtv.media_stop()
-        self._state = STATE_IDLE
 
-    @adb_wrapper
+    async def async_play_media(self, media_type, media_id, **kwargs):
+        """Play media from a URL."""
+        await self._androidtv.cast_media(media_id)
+
     async def async_mute_volume(self, mute):
         """Mute the volume."""
         await self._androidtv.mute_volume()
         self._androidtv.muted = mute
 
-    @adb_wrapper
     async def async_volume_up(self):
         """Increment the volume level."""
         await self._androidtv.volume_up()
 
-    @adb_wrapper
     async def async_volume_down(self):
         """Decrement the volume level."""
         await self._androidtv.volume_down()
 
-    @adb_wrapper
     async def async_media_previous_track(self):
         """Send previous track command."""
         await self._androidtv.media_previous()
 
-    @adb_wrapper
     async def async_media_next_track(self):
         """Send next track command."""
         await self._androidtv.media_next()
 
-    @adb_wrapper
     async def async_input_key(self, key):
         """Input the key to the device."""
         await self._androidtv._key(key)
 
-    @adb_wrapper
     async def async_start_intent(self, uri):
         """Start an intent on the device."""
-        await self._androidtv._adb.Shell(
-                "am start -a android.intent.action.VIEW -d {}".format(uri))
+        await self._androidtv.start_intent(uri)
 
-    @adb_wrapper
     async def async_do_action(self, action):
         """Input the key corresponding to the action."""
-        await self._androidtv._adb.Shell("input keyevent {}".format(ACTIONS[action]))
+        await self._androidtv._key(ACTIONS[action])

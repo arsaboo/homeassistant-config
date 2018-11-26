@@ -159,12 +159,12 @@
            true
          {%- endif -%}
   trigger:
-   - platform: time
-     minutes: '/10'
-     seconds: 00
+    - platform: time
+      minutes: '/10'
+      seconds: 00
   action:
-     service: homeassistant.turn_on
-     entity_id: script.abodehome
+    - service: homeassistant.turn_on
+      entity_id: script.abodehome
 
 - id: abode_standby
   alias: 'Abode Standby'
@@ -172,37 +172,37 @@
   condition:
     condition: and
     conditions:
-     - condition: state
-       entity_id: group.household
-       state: 'home'
-     - condition: time
-       after: '08:15:00'
-       before: '21:45:00'
-     - condition: state
-       entity_id: input_boolean.abodeupdate
-       state: 'on'
-     - condition: template
-       value_template: >
-         {%- if states.input_select.abodestatus.last_changed -%}
-           {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
-         {%- else -%}
-           true
-         {%- endif -%}
-     - condition: or
-       conditions:
-        - condition: state
-          entity_id: input_select.abodestatus
-          state: 'armed_home'
-        - condition: state
-          entity_id: input_select.abodestatus
-          state: 'armed_away'
+      - condition: state
+        entity_id: group.household
+        state: 'home'
+      - condition: time
+        after: '08:15:00'
+        before: '21:45:00'
+      - condition: state
+        entity_id: input_boolean.abodeupdate
+        state: 'on'
+      - condition: template
+        value_template: >
+          {%- if states.input_select.abodestatus.last_changed -%}
+            {{ (as_timestamp(now()) - as_timestamp(states.input_select.abodestatus.last_changed)) > 300 }}
+          {%- else -%}
+            true
+          {%- endif -%}
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: input_select.abodestatus
+            state: 'armed_home'
+          - condition: state
+            entity_id: input_select.abodestatus
+            state: 'armed_away'
   trigger:
-   - platform: time
-     minutes: '/10'
-     seconds: 00
+    - platform: time
+      minutes: '/10'
+      seconds: 00
   action:
-     service: homeassistant.turn_on
-     entity_id: script.abodestandby
+    - service: homeassistant.turn_on
+      entity_id: script.abodestandby
 
 - id: abode_arm
   alias: 'Arm Abode'
@@ -266,11 +266,11 @@
        entity_id: input_boolean.abodeupdate
        state: 'on'
   trigger:
-    platform: time
-    at: '07:20:00'
+    - platform: time
+      at: '07:20:00'
   action:
-     service: homeassistant.turn_on
-     entity_id: script.abodestandby
+    - service: homeassistant.turn_on
+      entity_id: script.abodestandby
 
 - id: enable_recording
   alias: Enable Recording
@@ -302,9 +302,9 @@
       value_template: >
         {{states('input_select.abodestatus') == 'disarmed' and states('group.thermostats') == 'on'}}
   trigger:
-   - platform: time
-     minutes: '/5'
-     seconds: 00
+    - platform: time
+      minutes: '/5'
+      seconds: 00
   action:
     - service: homeassistant.turn_off
       data_template:
@@ -333,9 +333,9 @@
           value_template: >
             {{states('input_select.abodestatus') == 'armed_away' and states('switch.bedroom_away') == 'off'}}
   trigger:
-   - platform: time
-     minutes: '/5'
-     seconds: 00
+    - platform: time
+      minutes: '/5'
+      seconds: 00
   action:
     - service: homeassistant.turn_on
       data_template:
@@ -352,17 +352,17 @@
   alias: 'Image Processing Scan'
   initial_state: 'on'
   trigger:
-     - platform: state
-       entity_id:
-         - binary_sensor.backyard_field_detection
-         - binary_sensor.driveway_field_detection
-         - binary_sensor.patio_field_detection
-         - binary_sensor.porch_field_detection
-         - binary_sensor.backyard_line_crossing
-         - binary_sensor.driveway_line_crossing
-         - binary_sensor.patio_line_crossing
-         - binary_sensor.porch_line_crossing
-         - binary_sensor.ring_front_door_motion
+    - platform: state
+      entity_id:
+        - binary_sensor.backyard_field_detection
+        - binary_sensor.driveway_field_detection
+        - binary_sensor.patio_field_detection
+        - binary_sensor.porch_field_detection
+        - binary_sensor.backyard_line_crossing
+        - binary_sensor.driveway_line_crossing
+        - binary_sensor.patio_line_crossing
+        - binary_sensor.porch_line_crossing
+        - binary_sensor.ring_front_door_motion
   action:
     - service: image_processing.scan
       data_template:
@@ -375,12 +375,12 @@
   alias: 'OpenCV image processing'
   initial_state: 'on'
   trigger:
-   - platform: state
-     entity_id:
-       - image_processing.opencv_porch
-       - image_processing.opencv_patio
-       - image_processing.opencv_driveway
-       - image_processing.opencv_backyard
+    - platform: state
+      entity_id:
+        - image_processing.opencv_porch
+        - image_processing.opencv_patio
+        - image_processing.opencv_driveway
+        - image_processing.opencv_backyard
   condition:
     - condition: template
       value_template: '{{ trigger.to_state.state |int > 0 }}'
@@ -395,12 +395,12 @@
   alias: 'TF image processing'
   initial_state: 'on'
   trigger:
-   - platform: state
-     entity_id:
-       - image_processing.tensorflow_porch
-       - image_processing.tensorflow_patio
-       - image_processing.tensorflow_driveway
-       - image_processing.tensorflow_backyard
+    - platform: state
+      entity_id:
+        - image_processing.tensorflow_porch
+        - image_processing.tensorflow_patio
+        - image_processing.tensorflow_driveway
+        - image_processing.tensorflow_backyard
   condition:
     - condition: template
       value_template: '{{ trigger.to_state.state |int > 0 }}'
@@ -899,10 +899,10 @@
   alias: MiCube event test
   initial_state: 'on'
   trigger:
-    platform: event
-    event_type: cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7_2
+    - platform: event
+      event_type: xiaomi_aqara.cube_action
+      event_data:
+        entity_id: binary_sensor.cube_158d0001035aa7
   action:
     - service: logbook.log
       data_template:
@@ -923,9 +923,9 @@
       state: 'on'
   trigger:
     platform: event
-    event_type: cube_action
+    event_type: xiaomi_aqara.cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7_2
+      entity_id: binary_sensor.cube_158d0001035aa7
       action_type: rotate
   action:
     - service: light.turn_on
@@ -949,7 +949,7 @@
       state: 'on'
   trigger:
     platform: event
-    event_type: cube_action
+    event_type: xiaomi_aqara.cube_action
     event_data:
       entity_id: binary_sensor.cube_158d0001035aa7_2
       action_type: flip180
@@ -968,7 +968,7 @@
       state: 'on'
   trigger:
     platform: event
-    event_type: cube_action
+    event_type: xiaomi_aqara.cube_action
     event_data:
       entity_id: binary_sensor.cube_158d0001035aa7_2
       action_type: flip90
@@ -984,7 +984,7 @@
   initial_state: on
   trigger:
     platform: event
-    event_type: cube_action
+    event_type: xiaomi_aqara.cube_action
     event_data:
       entity_id: binary_sensor.cube_158d0001035aa7_2
       action_type: tap_twice
@@ -1044,19 +1044,57 @@
       from: 'off'
       to: 'on'
   condition:
-    - condition: time
-      after: '17:00:00'
-      before: '22:30:00'
-    - condition: state
-      entity_id: light.master_lights
-      state: 'off'
-    - condition: template
-      value_template: >
-        {%- if states.light.master_lights.last_changed -%}
-          {{ (as_timestamp(now()) - as_timestamp(states.light.master_lights.last_changed)) > 300 }}
-        {%- else -%}
-          true
-        {%- endif -%}
+    condition: or
+    conditions:
+      - condition: and
+        conditions:
+          - condition: time
+            after: '17:00:00'
+            before: '22:30:00'
+          - condition: state
+            entity_id: light.master_lights
+            state: 'off'
+      - condition: and
+        conditions:
+          - condition: time
+            after: '10:30:00'
+          - condition: time
+            before: '07:00:00'
+          - condition: state
+            entity_id: light.master_lights
+            state: 'off'
+          - condition: state
+            entity_id: input_select.abodestatus
+            state: 'disarmed'
+      - condition: and
+        conditions:
+          - condition: time
+            after: '10:30:00'
+          - condition: time
+            before: '07:00:00'
+          - condition: state
+            entity_id: light.master_lights
+            state: 'off'
+          - condition: template
+            value_template: >
+              {%- if states.automation.disarm_abode_from_away.attributes.last_triggered -%}
+                {{ (as_timestamp(now()) - as_timestamp(states.automation.disarm_abode_from_away.attributes.last_triggered)) < 500 }}
+              {%- else -%}
+                false
+              {%- endif -%}
+    # - condition: time
+    #   after: '17:00:00'
+    #   before: '22:30:00'
+    # - condition: state
+    #   entity_id: light.master_lights
+    #   state: 'off'
+    # - condition: template
+    #   value_template: >
+    #     {%- if states.light.master_lights.last_changed -%}
+    #       {{ (as_timestamp(now()) - as_timestamp(states.light.master_lights.last_changed)) > 300 }}
+    #     {%- else -%}
+    #       true
+    #     {%- endif -%}
   action:
     - service: light.turn_on
       data:
@@ -1075,7 +1113,7 @@
     - platform: state
       entity_id: binary_sensor.motion_sensor_158d00016c53bf
       to: 'off'
-      for: '00:00:30'
+      for: '00:02:00'
   condition:
     - condition: time
       after: '17:00:00'
