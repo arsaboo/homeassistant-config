@@ -989,6 +989,7 @@ views:
         title: Network Details
         entities:
           - sensor.speedtest_download
+          - switch.pihole
           - sensor.pihole_dns_queries_today
           - sensor.pihole_domains_blocked
           - sensor.pihole_ads_percentage_blocked_today

@@ -101,6 +101,18 @@
             data:
               entity_id: media_player.family_room_2
               speech_enhance: False
+# example of PiHole commands (PWHASH is the value of WEBPASSWORD in /etc/pihole/setupVars.conf)
+# pihole_status: "curl -X GET 'http://ip.ad.dr.ess/admin/api.php?status&auth=PWHASH'"
+# pihole_enable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?enable=300&auth=PWHASH'
+# pihole_disable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?disable=300&auth=PWHASH'
+  - platform: command_line
+    switches:
+      pihole:
+        command_on: !secret pihole_enable
+        command_off: !secret pihole_disable
+        command_state: !secret pihole_status
+        value_template: "{{ value_json.status == 'enabled' }}"
+        friendly_name: PiHole
 
   # - platform: command_line
   #   switches:
