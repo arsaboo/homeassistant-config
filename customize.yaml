@@ -23,7 +23,7 @@
      device_tracker.rashmisiphone:
        icon: mdi:cellphone-iphone
        friendly_name: Rashmi's iPhone
-     device_tracker.pi_rashmiphone:
+     device_tracker.rashmiphone_rashmiphone:
        icon: mdi:cellphone-iphone
        friendly_name: Rashmi's iPhone MQTT
      device_tracker.alokdelllatitude:

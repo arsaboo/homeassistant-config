@@ -537,9 +537,9 @@ media_player:
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
 geofency:
+owntracks:
+  max_gps_accuracy: 200
 device_tracker:
-  - platform: owntracks
-    max_gps_accuracy: 200
   - platform: unifi
     host: 192.168.2.163
     username: !secret unifi_username
@@ -549,7 +549,7 @@ device_tracker:
   #   name: alok composite
   #   entity_id:
   #     - device_tracker.myiphone
-  #     - device_tracker.pi_alokphone
+  #     - device_tracker.alokphone_alokphone
   #     - device_tracker.alokiosiphone
   #     - device_tracker.alok_alok
   #     - device_tracker.b4445761f6c04b7f835fcfdc03b47111

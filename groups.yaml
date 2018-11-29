@@ -271,12 +271,12 @@
     - device_tracker.meta_alok
 
   Devices:
-    - device_tracker.pi_rashmiphone
+    - device_tracker.rashmiphone_rashmiphone
     - device_tracker.rashmiappiphone
     - device_tracker.rashmisiphone
     - device_tracker.sonu_sonu
     - device_tracker.e1594e5321df414c82daf655d5282fca
-    - device_tracker.pi_alokphone
+    - device_tracker.alokphone_alokphone
     - device_tracker.alokiosiphone
     - device_tracker.myiphone
     - device_tracker.alok_alok

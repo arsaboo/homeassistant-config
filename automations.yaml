@@ -10,14 +10,14 @@
       entity_id:
         - device_tracker.myiphone
         - device_tracker.rashmisiphone
-        - device_tracker.pi_alokphone
-        - device_tracker.pi_rashmiphone
+        - device_tracker.alokphone_alokphone
+        - device_tracker.rashmiphone_rashmiphone
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.pi_alokphone
-        - device_tracker.pi_rashmiphone
+        - device_tracker.alokphone_alokphone
+        - device_tracker.rashmiphone_rashmiphone
       to: 'home'
       for: '00:00:30'
     - platform: state

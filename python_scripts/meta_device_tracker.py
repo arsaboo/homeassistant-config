@@ -6,10 +6,10 @@
 
 # OPTIONS
 # List the trackers for each individual
-RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.pi_rashmiphone',
+RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.rashmiphone_rashmiphone',
                   'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu',
                   'device_tracker.e1594e5321df414c82daf655d5282fca']
-AlokTrackers = ['device_tracker.myiphone', 'device_tracker.pi_alokphone',
+AlokTrackers = ['device_tracker.myiphone', 'device_tracker.alokphone_alokphone',
                 'device_tracker.alokiosiphone', 'device_tracker.alok_alok',
                 'device_tracker.elantrase', 'device_tracker.b4445761f6c04b7f835fcfdc03b47111']
 # Get the entity that triggered the automation

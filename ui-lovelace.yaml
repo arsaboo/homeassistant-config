@@ -852,7 +852,7 @@ views:
         type: horizontal-stack
         cards:
           - type: picture-entity
-            entity: device_tracker.pi_rashmiphone
+            entity: device_tracker.rashmiphone_rashmiphone
             show_name: false
             show_state: false
             state_image:
@@ -890,7 +890,7 @@ views:
         type: horizontal-stack
         cards:
           - type: picture-entity
-            entity: device_tracker.pi_alokphone
+            entity: device_tracker.alokphone_alokphone
             show_name: false
             show_state: false
             state_image:
@@ -1355,7 +1355,7 @@ views:
         type: glance
         title: Devices
         entities:
-          - entity: device_tracker.pi_rashmiphone
+          - entity: device_tracker.rashmiphone_rashmiphone
             title: Owntracks
           - entity: device_tracker.rashmiappiphone
             title: HA App
@@ -1365,7 +1365,7 @@ views:
             title: Life360
           - entity: device_tracker.e1594e5321df414c82daf655d5282fca
             title: Geofency
-          - entity: device_tracker.pi_alokphone
+          - entity: device_tracker.alokphone_alokphone
             title: Owntracks
           - entity: device_tracker.alokiosiphone
             title: HA App
