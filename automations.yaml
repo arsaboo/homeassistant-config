@@ -951,7 +951,7 @@
     platform: event
     event_type: xiaomi_aqara.cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7_2
+      entity_id: binary_sensor.cube_158d0001035aa7
       action_type: flip180
   action:
     service: script.set_hue_scene
@@ -970,7 +970,7 @@
     platform: event
     event_type: xiaomi_aqara.cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7_2
+      entity_id: binary_sensor.cube_158d0001035aa7
       action_type: flip90
   action:
     service: script.set_hue_scene
@@ -986,12 +986,31 @@
     platform: event
     event_type: xiaomi_aqara.cube_action
     event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7_2
+      entity_id: binary_sensor.cube_158d0001035aa7
       action_type: tap_twice
   action:
     - service: light.toggle
       data:
         entity_id: light.master_lights
+
+- id: turn_off_master_lights_at_night
+  alias: "Turn off Master lights if they randomly turn on at night"
+  initial_state: on
+  trigger:
+    - platform: state
+      entity_id:
+        - light.hue_color_lamp_1
+        - light.hue_color_lamp_2
+        - light.hue_color_lamp_1
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'armed_home'
+  action:
+    - service: light.turn_off
+      data_template:
+        entity_id: '{{trigger.entity_id}}'
 
 - id: prevent_overcharging
   alias: 'Prevent overcharging'
