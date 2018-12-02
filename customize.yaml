@@ -17,7 +17,7 @@
      device_tracker.myiphone:
        icon: mdi:cellphone-iphone
        friendly_name: Alok's iPhone
-     device_tracker.pi_alokphone:
+     device_tracker.alokphone_alokphone:
        icon: mdi:cellphone-iphone
        friendly_name: Alok's iPhone MQTT
      device_tracker.rashmisiphone:
