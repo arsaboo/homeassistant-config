@@ -33,6 +33,7 @@ MONITORED_CONDITIONS = {
     'materials': ['Materials', '%', 'mdi:currency-usd'],
     'communication_services': ['Communication Services', '%', 'mdi:currency-usd'],
     'energy': ['Energy', '%', 'mdi:currency-usd'],
+    'real_estate': ['Real Estate', '%', 'mdi:currency-usd'],
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -86,7 +87,7 @@ class SectorPerfSensor(Entity):
         try:
             return_value = self._api.data[
                 'Rank A: Real-Time Performance'][self._var_name]
-            return return_value
+            return float(return_value[:-1])
         except TypeError:
             return None
 
