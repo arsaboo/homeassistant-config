@@ -83,6 +83,5 @@ hass.states.set(metatrackerName, newStatus, {
     'longitude': newLongitude,
     'velocity': newVelocity,
     'update_source': triggeredEntity,
-    'custom_ui_state_card': 'state-card-custom-ui',
     'show_last_changed': 'true'
 })
