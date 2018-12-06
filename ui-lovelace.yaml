@@ -412,6 +412,7 @@ views:
       - id: investments
         type: entities
         title: Investments
+        show_header_toggle: false
         entities:
           - sensor.personal_capital_networth
           - sensor.personal_capital_investments
@@ -435,6 +436,7 @@ views:
       - id: 4a7140a250554dd6b4fd6e892679a71d
         type: entities
         title: Information
+        show_header_toggle: false
         entities:
           # - type: "custom:ext-weblink"
           #   url: !secret commute_office_url
@@ -474,6 +476,7 @@ views:
       - id: ring
         type: entities
         title: Ring Doorbell
+        show_header_toggle: false
         entities:
           - binary_sensor.ring_front_door_ding
           - binary_sensor.ring_front_door_motion
@@ -574,6 +577,7 @@ views:
       - id: c066453905924966bacb3c87af9ce8d3
         type: entities
         title: Weather
+        show_header_toggle: false
         entities:
           - sensor.dark_sky_summary
           # - sensor.pws_weather
@@ -597,6 +601,7 @@ views:
       - id: 696ce899a76d482a87653595081423cc
         type: entities
         title: Room Sensors
+        show_header_toggle: false
         entities:
           - sensor.illumination_158d00016612af
           - sensor.humidity_158d0001ab7d20
@@ -996,6 +1001,7 @@ views:
       - id: f52bb29ecf334b1d891da53b383bd5b6
         type: entities
         title: Network Details
+        show_header_toggle: false
         entities:
           - sensor.speedtest_download
           - switch.pihole
@@ -1009,6 +1015,7 @@ views:
       - id: c1c70cd508774de893b171a11f5673a5
         type: entities
         title: Arlo
+        show_header_toggle: false
         entities:
           - sensor.battery_level_arlolivingroom
           - sensor.captured_today_arlolivingroom
@@ -1022,6 +1029,7 @@ views:
       - id: f45bc4c5d3774bb1bf7b230f9a826247
         type: entities
         title: USCIS
+        show_header_toggle: false
         entities:
           - sensor.alok_485
           - sensor.rashmi_485
@@ -1554,6 +1562,7 @@ views:
       - id: e7b80e77f0e14837ac7b5b15662c615f
         type: entities
         title: Camera Sensors
+        show_header_toggle: false
         entities:
           - binary_sensor.backyard_motion
           - binary_sensor.backyard_field_detection
