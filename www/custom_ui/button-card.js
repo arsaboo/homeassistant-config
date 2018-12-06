@@ -97,7 +97,7 @@ class ButtonCard extends LitElement {
     const fontColor = this.getFontColorBasedOnBackgroundColor(color);
     return html`
     <style>
-    ha-icon {  
+    ha-icon {
       display: flex;
       margin: auto;
     }

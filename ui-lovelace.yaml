@@ -32,7 +32,8 @@ views:
         elements:
           - type: image
             entity: input_boolean.abodeupdate
-            tap_action: toggle
+            tap_action:
+              action: toggle
             state_image:
               on: /local/icons/abode_enabled.png
               off: /local/icons/abode_disabled.png
@@ -42,7 +43,8 @@ views:
               width: 7%
           - type: image
             entity: input_boolean.tvtime
-            tap_action: toggle
+            tap_action:
+              action: toggle
             state_image:
               on: /local/icons/tv_enabled.png
               off: /local/icons/tv_disabled.png
@@ -52,7 +54,8 @@ views:
               width: 7%
           - type: image
             entity: switch.security_armed
-            tap_action: toggle
+            tap_action:
+              action: toggle
             state_image:
               on: /local/icons/security_armed_red.png
               off: /local/icons/security_disarmed.png
@@ -63,7 +66,8 @@ views:
             # Kitchen
           - type: image
             entity: light.kitchen_lights
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
               on: /local/icons/light_bulb_on.png
@@ -129,7 +133,8 @@ views:
             # Living Room
           - type: image
             entity: light.living_room_lights
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
               on: /local/icons/light_bulb_on.png
@@ -192,7 +197,8 @@ views:
               left: 15%
           - type: image
             entity: input_boolean.tv
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/tv_off2.png
             state_image:
               on: /local/icons/tv_on2.png
@@ -219,7 +225,8 @@ views:
           #     left: 22%
           - type: image
             entity: switch.wemoporch
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
               on: /local/icons/light_bulb_on.png
@@ -244,7 +251,8 @@ views:
               left: 56%
           - type: image
             entity: light.lifx5
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
               on: /local/icons/light_bulb_on.png
@@ -256,15 +264,10 @@ views:
               left: 78%
               width: 7%
               padding: 50px 50px 100px 50px
-          # - type: state-icon
-          #   tap_action: toggle
-          #   entity: light.lifx5
-          #   style:
-          #     top: 65%
-          #     left: 78%
           - type: image
             entity: switch.driveway
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/light_off.png
             state_image:
               on: /local/icons/light_on.png
@@ -279,7 +282,8 @@ views:
               transform: none
           - type: image
             entity: cover.garagedoor
-            tap_action: toggle
+            tap_action:
+              action: toggle
             image: /local/icons/garage_door_closed.png
             state_image:
               open: /local/icons/garage_door_open.png
@@ -359,8 +363,10 @@ views:
             # Living Room
           - type: image
             entity: light.master_lights
-            tap_action: toggle
-            hold_action: more-info
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
             image: /local/icons/light_bulb_off.png
             state_image:
               on: /local/icons/light_bulb_on.png
@@ -465,7 +471,7 @@ views:
             secondary_info: last-changed
           - entity: switch.wemoinsight
             secondary_info: last-changed
-      - id: 05a551ec32a245b0a63242b0d08fa056
+      - id: ring
         type: entities
         title: Ring Doorbell
         entities:
@@ -504,7 +510,7 @@ views:
         entity_forecast_icon_3: sensor.dark_sky_icon_3
         entity_forecast_icon_4: sensor.dark_sky_icon_4
         entity_forecast_icon_5: sensor.dark_sky_icon_5
-      - id: 703bd4ea1613484f88e03636c508f230  # Automatically created id
+      - id: thermostats  # Automatically created id
         type: vertical-stack
         cards:
           - type: thermostat
@@ -528,7 +534,8 @@ views:
               - entity: sensor.downstairs_hvac_runtime
                 name: Runtime
               - entity: switch.downstairs_away
-                tap_action: toggle
+                tap_action:
+                  action: toggle
                 name: Away
           - type: glance
             title: Kids Room Thermostat
@@ -542,7 +549,8 @@ views:
               - entity: sensor.upstairs_hvac_runtime
                 name: Runtime
               - entity: switch.upstairs_away
-                tap_action: toggle
+                tap_action:
+                  action: toggle
                 name: Away
           - type: glance
             title: Master Thermostat
@@ -556,7 +564,8 @@ views:
               - entity: sensor.master_hvac_runtime
                 name: Runtime
               - entity: switch.bedroom_away
-                tap_action: toggle
+                tap_action:
+                  action: toggle
                 name: Away
 
       # - type: "custom:weather-card"
@@ -1022,6 +1031,137 @@ views:
     id: test
     title: Testing
     cards:
+      - id: sector_performance
+        type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Dow Futures
+                unit_of_measurement: '%'
+                entity: sensor.dow_futures_change_pct
+                min: -8
+                max: 8
+                severity:
+                  red: -8
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Technology
+                unit_of_measurement: '%'
+                entity: sensor.information_technology
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Real Estate
+                unit_of_measurement: '%'
+                entity: sensor.real_estate
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Finance
+                unit_of_measurement: '%'
+                entity: sensor.financials
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Industrial
+                unit_of_measurement: '%'
+                entity: sensor.industrials
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Utilities
+                unit_of_measurement: '%'
+                entity: sensor.utilities
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Materials
+                unit_of_measurement: '%'
+                entity: sensor.materials
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Telecom
+                unit_of_measurement: '%'
+                entity: sensor.communication_services
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Energy
+                unit_of_measurement: '%'
+                entity: sensor.energy
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Staples
+                unit_of_measurement: '%'
+                entity: sensor.consumer_staples
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Discretionary
+                unit_of_measurement: '%'
+                entity: sensor.consumer_discretionary
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
+              - type: gauge
+                name: Health
+                unit_of_measurement: '%'
+                entity: sensor.health_care
+                min: -6
+                max: 6
+                severity:
+                  red: -6
+                  yellow: -2
+                  green: 0
       - id: 4c3f5b251e2e4092a2b7b9f8301364b0
         type: custom:calendar-card
         entities:
@@ -1039,7 +1179,8 @@ views:
           - type: image
             image: /local/icons/music_right.png
             title: Right
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 79.5%
               left: 57%
@@ -1054,7 +1195,8 @@ views:
           - type: image
             image: /local/icons/music_left.png
             title: Left
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 79.5%
               left: 43%
@@ -1069,7 +1211,8 @@ views:
           - type: image
             image: /local/icons/music_up.png
             title: Up
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 72%
               left: 50%
@@ -1084,7 +1227,8 @@ views:
           - type: image
             image: /local/icons/music_down.png
             title: Down
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 87%
               left: 50%
@@ -1099,7 +1243,8 @@ views:
           - type: icon
             icon: mdi:minus
             title: Channel Down
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 89%
               left: 36.5%
@@ -1114,7 +1259,8 @@ views:
           - type: icon
             icon: mdi:plus
             title: Channel Up
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 70.5%
               left: 36.5%
@@ -1129,7 +1275,8 @@ views:
           - type: icon
             icon: mdi:volume-plus
             title: Volume Up
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 70.6%
               left: 67%
@@ -1144,7 +1291,8 @@ views:
           - type: icon
             icon: mdi:volume-minus
             title: Volume Down
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 88.8%
               left: 67%
@@ -1159,7 +1307,8 @@ views:
           - type: icon
             icon: mdi:circle
             title: Select
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 79.6%
               left: 49.6%
@@ -1177,7 +1326,8 @@ views:
           - type: icon
             icon: mdi:numeric-1-box-outline
             title: Number 1
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 27%
               left: 36.5%
@@ -1192,7 +1342,8 @@ views:
           - type: icon
             icon: mdi:numeric-2-box-outline
             title: Number 2
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 27%
               left: 51.5%
@@ -1207,7 +1358,8 @@ views:
           - type: icon
             icon: mdi:numeric-3-box-outline
             title: Number 3
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 27%
               left: 66%
@@ -1222,7 +1374,8 @@ views:
           - type: icon
             icon: mdi:numeric-4-box-outline
             title: Number 4
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 37%
               left: 36.5%
@@ -1237,7 +1390,8 @@ views:
           - type: icon
             icon: mdi:numeric-5-box-outline
             title: Number 5
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 37%
               left: 51.5%
@@ -1252,7 +1406,8 @@ views:
           - type: icon
             icon: mdi:numeric-6-box-outline
             title: Number 6
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 37%
               left: 66%
@@ -1267,7 +1422,8 @@ views:
           - type: icon
             icon: mdi:numeric-7-box-outline
             title: Number 7
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 47%
               left: 36.5%
@@ -1282,7 +1438,8 @@ views:
           - type: icon
             icon: mdi:numeric-8-box-outline
             title: Number 8
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 47%
               left: 51.5%
@@ -1297,7 +1454,8 @@ views:
           - type: icon
             icon: mdi:numeric-9-box-outline
             title: Number 9
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 47%
               left: 66%
@@ -1312,7 +1470,8 @@ views:
           - type: icon
             icon: mdi:numeric-0-box-outline
             title: Number 0
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 57%
               left: 51.5%
@@ -1327,7 +1486,8 @@ views:
           - type: icon
             icon: mdi:kodi
             title: Kodi
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 12%
               left: 36.7%
@@ -1341,7 +1501,8 @@ views:
           - type: icon
             icon: mdi:power
             title: Kodi
-            tap_action: call-service
+            tap_action:
+              action: call-service
             style:
               top: 12%
               left: 66%
@@ -1357,25 +1518,25 @@ views:
         title: Devices
         entities:
           - entity: device_tracker.rashmiphone_rashmiphone
-            title: Owntracks
+            name: Owntracks
           - entity: device_tracker.rashmiappiphone
-            title: HA App
+            name: HA App
           - entity: device_tracker.rashmisiphone
-            title: WiFi
+            name: WiFi
           - entity: device_tracker.sonu_sonu
-            title: Life360
+            name: Life360
           - entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            title: Geofency
+            name: Geofency
           - entity: device_tracker.alokphone_alokphone
-            title: Owntracks
+            name: Owntracks
           - entity: device_tracker.alokiosiphone
-            title: HA App
+            name: HA App
           - entity: device_tracker.myiphone
-            title: WiFi
+            name: WiFi
           - entity: device_tracker.alok_alok
-            title: Life360
+            name: Life360
           - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
-            title: Geofency
+            name: Geofency
       - id: cdcab20aeb9344348c86ec60c443711a
         type: map
         entities:
