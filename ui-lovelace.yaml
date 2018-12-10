@@ -35,8 +35,8 @@ views:
             tap_action:
               action: toggle
             state_image:
-              on: /local/icons/abode_enabled.png
-              off: /local/icons/abode_disabled.png
+              'on': /local/icons/abode_enabled.png
+              'off': /local/icons/abode_disabled.png
             style:
               top: 4%
               left: 30%
@@ -46,8 +46,8 @@ views:
             tap_action:
               action: toggle
             state_image:
-              on: /local/icons/tv_enabled.png
-              off: /local/icons/tv_disabled.png
+              'on': /local/icons/tv_enabled.png
+              'off': /local/icons/tv_disabled.png
             style:
               top: 4%
               left: 40%
@@ -57,8 +57,8 @@ views:
             tap_action:
               action: toggle
             state_image:
-              on: /local/icons/security_armed_red.png
-              off: /local/icons/security_disarmed.png
+              'on': /local/icons/security_armed_red.png
+              'off': /local/icons/security_disarmed.png
             style:
               top: 4%
               left: 50%
@@ -70,10 +70,10 @@ views:
               action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              on: /local/icons/light_bulb_on.png
+              'on': /local/icons/light_bulb_on.png
             state_filter:
-              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 48%
               left: 11%
@@ -83,7 +83,7 @@ views:
             entity: camera.porch
             image: /local/icons/camera_porch_streaming.png
             state_image:
-              recording: /local/icons/camera_porch_recording.png
+              'recording': /local/icons/camera_porch_recording.png
             style:
               top: 90%
               left: 3%
@@ -93,7 +93,7 @@ views:
             entity: camera.patio
             image: /local/icons/camera_patio_streaming.png
             state_image:
-              recording: /local/icons/camera_patio_recording.png
+              'recording': /local/icons/camera_patio_recording.png
             style:
               top: 12%
               left: 3%
@@ -103,7 +103,7 @@ views:
             entity: camera.backyard
             image: /local/icons/camera_backyard_streaming.png
             state_image:
-              recording: /local/icons/camera_backyard_recording.png
+              'recording': /local/icons/camera_backyard_recording.png
             style:
               top: 12%
               left: 90%
@@ -124,7 +124,7 @@ views:
             entity: camera.driveway
             image: /local/icons/camera_driveway_streaming.png
             state_image:
-              recording: /local/icons/camera_driveway_recording.png
+              'recording': /local/icons/camera_driveway_recording.png
             style:
               top: 81.5%
               left: 90%
@@ -137,10 +137,10 @@ views:
               action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              on: /local/icons/light_bulb_on.png
+              'on': /local/icons/light_bulb_on.png
             state_filter:
-              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 38%
               left: 50%
@@ -201,10 +201,10 @@ views:
               action: toggle
             image: /local/icons/tv_off2.png
             state_image:
-              on: /local/icons/tv_on2.png
+              'on': /local/icons/tv_on2.png
             state_filter:
-              on: drop-shadow(-5px 0 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': drop-shadow(-5px 0 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 29%
               left: 68.3%
@@ -229,10 +229,10 @@ views:
               action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              on: /local/icons/light_bulb_on.png
+              'on': /local/icons/light_bulb_on.png
             state_filter:
-              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 98%
               left: 20%
@@ -255,10 +255,10 @@ views:
               action: toggle
             image: /local/icons/light_bulb_off.png
             state_image:
-              on: /local/icons/light_bulb_on.png
+              'on': /local/icons/light_bulb_on.png
             state_filter:
-              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 68%
               left: 78%
@@ -270,10 +270,10 @@ views:
               action: toggle
             image: /local/icons/light_off.png
             state_image:
-              on: /local/icons/light_on.png
+              'on': /local/icons/light_on.png
             state_filter:
-              on: drop-shadow(-5px -5px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': drop-shadow(-5px -5px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 81%
               left: 63%
@@ -286,8 +286,8 @@ views:
               action: toggle
             image: /local/icons/garage_door_closed.png
             state_image:
-              open: /local/icons/garage_door_open.png
-              closed: /local/icons/garage_door_closed.png
+              'open': /local/icons/garage_door_open.png
+              'closed': /local/icons/garage_door_closed.png
             style:
               top: 71%
               left: 74%
@@ -369,10 +369,10 @@ views:
               action: more-info
             image: /local/icons/light_bulb_off.png
             state_image:
-              on: /local/icons/light_bulb_on.png
+              'on': /local/icons/light_bulb_on.png
             state_filter:
-              on: brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-              off: brightness(80%) saturate(0.8)
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
             style:
               top: 70%
               left: 80%
@@ -873,36 +873,36 @@ views:
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/rashmi_owntracks_home.png
-              not_home: /local/icons/rashmi_owntracks_not_home.png
+              'home': /local/icons/rashmi_owntracks_home.png
+              'not_home': /local/icons/rashmi_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmiappiphone
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/rashmi_ios_home.png
-              not_home: /local/icons/rashmi_ios_not_home.png
+              'home': /local/icons/rashmi_ios_home.png
+              'not_home': /local/icons/rashmi_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.rashmisiphone
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/rashmi_wifi_home.png
-              not_home: /local/icons/rashmi_wifi_not_home.png
+              'home': /local/icons/rashmi_wifi_home.png
+              'not_home': /local/icons/rashmi_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.sonu_sonu
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/rashmi_life360_home.png
-              not_home: /local/icons/rashmi_life360_not_home.png
+              'home': /local/icons/rashmi_life360_home.png
+              'not_home': /local/icons/rashmi_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.e1594e5321df414c82daf655d5282fca
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/rashmi_geofency_home.png
-              not_home: /local/icons/rashmi_geofency_not_home.png
+              'home': /local/icons/rashmi_geofency_home.png
+              'not_home': /local/icons/rashmi_geofency_not_home.png
       - id: 93c8ed472245444782e900ac72ba3585
         type: horizontal-stack
         cards:
@@ -911,63 +911,63 @@ views:
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/alok_owntracks_home.png
-              not_home: /local/icons/alok_owntracks_not_home.png
-              Buckhead: /local/icons/alok_owntracks_not_home.png
-              Downtown: /local/icons/alok_owntracks_not_home.png
+              'home': /local/icons/alok_owntracks_home.png
+              'not_home': /local/icons/alok_owntracks_not_home.png
+              'Buckhead': /local/icons/alok_owntracks_not_home.png
+              'Downtown': /local/icons/alok_owntracks_not_home.png
           - type: picture-entity
             entity: device_tracker.alokiosiphone
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/alok_ios_home.png
-              not_home: /local/icons/alok_ios_not_home.png
-              Buckhead: /local/icons/alok_ios_not_home.png
-              Downtown: /local/icons/alok_ios_not_home.png
+              'home': /local/icons/alok_ios_home.png
+              'not_home': /local/icons/alok_ios_not_home.png
+              'Buckhead': /local/icons/alok_ios_not_home.png
+              'Downtown': /local/icons/alok_ios_not_home.png
           - type: picture-entity
             entity: device_tracker.myiphone
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/alok_wifi_home.png
-              not_home: /local/icons/alok_wifi_not_home.png
+              'home': /local/icons/alok_wifi_home.png
+              'not_home': /local/icons/alok_wifi_not_home.png
           - type: picture-entity
             entity: device_tracker.alok_alok
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/alok_life360_home.png
-              not_home: /local/icons/alok_life360_not_home.png
-              Buckhead: /local/icons/alok_life360_not_home.png
-              Downtown: /local/icons/alok_life360_not_home.png
+              'home': /local/icons/alok_life360_home.png
+              'not_home': /local/icons/alok_life360_not_home.png
+              'Buckhead': /local/icons/alok_life360_not_home.png
+              'Downtown': /local/icons/alok_life360_not_home.png
           - type: picture-entity
             entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
             show_name: false
             show_state: false
             state_image:
-              home: /local/icons/alok_geofency_home.png
-              not_home: /local/icons/alok_geofency_not_home.png
-              buckhead: /local/icons/alok_geofency_not_home.png
-              downtown: /local/icons/alok_geofency_not_home.png
+              'home': /local/icons/alok_geofency_home.png
+              'not_home': /local/icons/alok_geofency_not_home.png
+              'buckhead': /local/icons/alok_geofency_not_home.png
+              'downtown': /local/icons/alok_geofency_not_home.png
       - id: e20fb9ff10fa49eabef4873b302a1527
         type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.meta_alok
             state_image:
-              home: /local/icons/alok_home.png
-              not_home: /local/icons/alok_not_home.png
-              buckhead: /local/icons/alok_not_home.png
-              Buckhead: /local/icons/alok_not_home.png
-              downtown: /local/icons/alok_not_home.png
-              Downtown: /local/icons/alok_not_home.png
+              'home': /local/icons/alok_home.png
+              'not_home': /local/icons/alok_not_home.png
+              'buckhead': /local/icons/alok_not_home.png
+              'Buckhead': /local/icons/alok_not_home.png
+              'downtown': /local/icons/alok_not_home.png
+              'Downtown': /local/icons/alok_not_home.png
             show_name: false
             show_state: false
           - type: picture-entity
             entity: device_tracker.meta_rashmi
             state_image:
-              home: /local/icons/rashmi_home.png
-              not_home: /local/icons/rashmi_not_home.png
+              'home': /local/icons/rashmi_home.png
+              'not_home': /local/icons/rashmi_not_home.png
             show_name: false
             show_state: false
 
