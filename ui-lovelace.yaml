@@ -832,6 +832,9 @@ views:
       - id: a62d0e7432dd433fa4158b6058a1293d
         type: media-control
         entity: media_player.livingroomsonos
+      - id: master_4k_fire_stick
+        type: media-control
+        entity: media_player.aloks_fire_tv_2
       - id: 8b1c423890f64067bd2fe0eefbe332e1
         type: media-control
         entity: media_player.family_room_2
@@ -1046,7 +1049,7 @@ views:
             cards:
               - type: gauge
                 name: Dow Futures
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.dow_futures_change_pct
                 min: -8
                 max: 8
@@ -1056,7 +1059,7 @@ views:
                   green: 0
               - type: gauge
                 name: Technology
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.information_technology
                 min: -6
                 max: 6
@@ -1066,7 +1069,7 @@ views:
                   green: 0
               - type: gauge
                 name: Real Estate
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.real_estate
                 min: -6
                 max: 6
@@ -1078,7 +1081,7 @@ views:
             cards:
               - type: gauge
                 name: Finance
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.financials
                 min: -6
                 max: 6
@@ -1088,7 +1091,7 @@ views:
                   green: 0
               - type: gauge
                 name: Industrial
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.industrials
                 min: -6
                 max: 6
@@ -1098,7 +1101,7 @@ views:
                   green: 0
               - type: gauge
                 name: Utilities
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.utilities
                 min: -6
                 max: 6
@@ -1110,7 +1113,7 @@ views:
             cards:
               - type: gauge
                 name: Materials
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.materials
                 min: -6
                 max: 6
@@ -1120,7 +1123,7 @@ views:
                   green: 0
               - type: gauge
                 name: Telecom
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.communication_services
                 min: -6
                 max: 6
@@ -1130,7 +1133,7 @@ views:
                   green: 0
               - type: gauge
                 name: Energy
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.energy
                 min: -6
                 max: 6
@@ -1142,7 +1145,7 @@ views:
             cards:
               - type: gauge
                 name: Staples
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.consumer_staples
                 min: -6
                 max: 6
@@ -1152,7 +1155,7 @@ views:
                   green: 0
               - type: gauge
                 name: Discretionary
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.consumer_discretionary
                 min: -6
                 max: 6
@@ -1162,7 +1165,7 @@ views:
                   green: 0
               - type: gauge
                 name: Health
-                unit_of_measurement: '%'
+                unit: '%'
                 entity: sensor.health_care
                 min: -6
                 max: 6
@@ -1176,7 +1179,7 @@ views:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - id: pc_investments
+      - id: master_brightness
         type: sensor
         entity: sensor.illumination_158d00016c53bf
       - id: 549e8a9c3157457da71ee90bad9c40fa
@@ -1579,6 +1582,16 @@ views:
           - binary_sensor.porch_field_detection
           - binary_sensor.porch_line_crossing
           - binary_sensor.porch_motion
+      - id: test
+        type: entity-button
+        entity: light.master_lights
+        icon: mdi:fridge
+        name: Kitchen
+        tap_action:
+          action: call-service
+          service: light.toggle
+          service_data:
+            entity_id: light.master_lights
       # - type: custom:monster-card
       #   card:
       #     type: entities

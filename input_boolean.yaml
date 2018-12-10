@@ -8,7 +8,6 @@
     icon: mdi:security
   abodeupdate:
     name: Abode Updates
-    initial: on
     icon: mdi:security
   startrecording:
     name: Camera Recording

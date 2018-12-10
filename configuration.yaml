@@ -23,6 +23,8 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
     - '/home/homeassistant/.homeassistant/downloads/camera/'
+lovelace:
+  mode: yaml
 updater:
   include_used_components: true
 # influxdb:
@@ -520,6 +522,10 @@ media_player:
     email: !secret amazon_user
     password: !secret amazon_pass
     url: "amazon.com"
+  # - platform: firetv
+  #   name: Fire Stick Master
+  #   host: 192.168.2.225
+  #   adbkey: /home/homeassistant/.homeassistant/deps/ftv4kstick/adbkey
   # - platform: androidtv
   #   host: 192.168.2.28
   #   name: ShieldTV
@@ -627,8 +633,8 @@ logger:
     homeassistant.components.python_script: warning
     # homeassistant.components.http.view: info
     custom_components.sensor.personalcapital: debug
-    adb.adb_commands: debug
-    adb.adb_protocol: debug
+    # adb.adb_commands: debug
+    # adb.adb_protocol: debug
     # homeassistant.components.device_tracker: info
 # Text to speech
 tts:
