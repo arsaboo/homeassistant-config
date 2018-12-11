@@ -1,18 +1,19 @@
-  # - platform: tautulli
-  #   host: 192.168.2.212:8181
-  #   ssl: false
-  #   verify_ssl: true
-  #   token: !secret tautulli_api
-  #   monitored_conditions:
-  #     - stream_count
-  #     - stream_count_transcode
-  #     - stream_count_direct_play
-  #     - stream_count_direct_stream
-  #     - total_bandwidth
-  # - platform: tautulli
-  #   api_key: !secret tautulli_api
-  #   host: 192.168.2.212
-  #   port: 8181
+  - platform: tautulli
+    host: 192.168.2.212
+    api_key: !secret tautulli_api
+    monitored_conditions:
+      - stream_count
+      - stream_count_transcode
+      - stream_count_direct_play
+      - stream_count_direct_stream
+      - total_bandwidth
+  - platform: deluge
+    host: 192.168.2.113
+    username: !secret deluge_user
+    password: !secret deluge_pass
+    monitored_variables:
+      - 'download_speed'
+      - 'upload_speed'
   - platform: sql
     db_url: !secret recorder_db_url
     queries:

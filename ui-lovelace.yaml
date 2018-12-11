@@ -1012,9 +1012,13 @@ views:
           - sensor.pihole_domains_blocked
           - sensor.pihole_ads_percentage_blocked_today
           - sensor.pihole_dns_unique_domains
+          - type: divider
           - sensor.glances_cpu_load
           - sensor.glances_disk_used
           - sensor.glances_ram_used
+          - type: divider
+          - sensor.deluge_down_speed
+          - sensor.deluge_up_speed
       - id: c1c70cd508774de893b171a11f5673a5
         type: entities
         title: Arlo

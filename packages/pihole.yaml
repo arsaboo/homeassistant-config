@@ -16,7 +16,6 @@ homeassistant:
 
     sensor.pihole_dns_unique_domains:
       friendly_name: Unique Domains
-      icon: mdi:approval
 
 sensor:
   - platform: pi_hole
