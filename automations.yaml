@@ -271,6 +271,8 @@
   action:
     - service: homeassistant.turn_on
       entity_id: script.abodestandby
+    - service: automation.turn_on
+      entity_id: automation.turn_off_master_lights
 
 - id: enable_recording
   alias: Enable Recording
@@ -967,17 +969,19 @@
       entity_id: light.master_lights
       state: 'on'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: flip90
+    - platform: event
+      event_type: xiaomi_aqara.cube_action
+      event_data:
+        entity_id: binary_sensor.cube_158d0001035aa7
+        action_type: flip90
   action:
-    service: script.set_hue_scene
-    data_template:
-      group: "Master"
-      scene: >
-        {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+    - service: script.set_hue_scene
+      data_template:
+        group: "Master"
+        scene: >
+          {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+    - service: automation.turn_on
+      entity_id: automation.turn_off_master_lights
 
 - id: micube_toggle_master
   alias: "MiCube Toggle Master"

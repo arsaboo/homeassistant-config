@@ -40,7 +40,7 @@ SCAN_INTERVAL = timedelta(minutes=30)
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_EMAIL): cv.string,
     vol.Required(CONF_PASSWORD): cv.string,
-    vol.Optional(CONF_UNIT_OF_MEASUREMENT, default='USD'): cv.string,
+    vol.Optional(CONF_UNIT_OF_MEASUREMENT, default='$'): cv.string,
 })
 
 _CONFIGURING = {}
