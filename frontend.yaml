@@ -6,7 +6,7 @@
     - /local/custom_ui/custom-weather-card.html
     - /local/custom_ui/custom-weather-animated.html
   themes:
-    oxfordblue:
+    oxfordblue: #Thanks Zac
       # Main colors
       primary-color: 'hsl(209, 34%, 30%)'       # Header
       accent-color: 'hsl(185, 77%, 34%)'                                                         # Accent color
