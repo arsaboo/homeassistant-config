@@ -8,26 +8,26 @@
   themes:
     oxfordblue: #Thanks Zac
       # Main colors
-      primary-color: 'hsl(209, 34%, 30%)'       # Header
-      accent-color: 'hsl(185, 77%, 34%)'                                                         # Accent color
-      dark-primary-color: 'hsl(211, 39%, 23%)'  # Hyperlinks
-      light-primary-color: 'hsl(210, 22%, 49%)' # Horizontal line in about
+      primary-color: 'hsl(209, 34%, 30%)'        # Header
+      accent-color: 'hsl(185, 77%, 34%)'         # Accent color
+      dark-primary-color: 'hsl(211, 39%, 23%)'   # Hyperlinks
+      light-primary-color: 'hsl(210, 22%, 49%)'  # Horizontal line in about
       # Text colors
-      primary-text-color: 'hsl(209, 61%, 16%)'                                                   # Primary text colour, here is referencing dark-primary-color
-      text-primary-color: '#FFF'                # Primary text colour
-      secondary-text-color: 'hsl(209, 23%, 60%)'                                                 # For secondary titles in more info boxes etc.
-      disabled-text-color: 'hsl(212, 33%, 89%)'                                                  # Disabled text colour
+      primary-text-color: 'hsl(209, 61%, 16%)'   # Primary text colour, here is referencing dark-primary-color
+      text-primary-color: '#FFF'                 # Primary text colour
+      secondary-text-color: 'hsl(209, 23%, 60%)' # For secondary titles in more info boxes etc.
+      disabled-text-color: 'hsl(212, 33%, 89%)'  # Disabled text colour
       # Background colors
-      primary-background-color: 'hsl(210, 36%, 96%)'                                             # Settings background
-      secondary-background-color: 'hsl(210, 36%, 96%)'                                           # Main card UI background
+      primary-background-color: 'hsl(210, 36%, 96%)'   # Settings background
+      secondary-background-color: 'hsl(210, 36%, 96%)' # Main card UI background
       sidebar-background-color: 'hsl(210, 36%, 96%)'
-      divider-color: 'rgba(0, 0, 0, .12)'       # Divider
+      divider-color: 'rgba(0, 0, 0, .12)'              # Divider
       # Table rows
-      table-row-background-color: 'hsl(210, 36%, 96%)'                                           # Table row
-      table-row-alternative-background-color: 'hsl(212, 33%, 92%)'                               # Table row alternative
+      table-row-background-color: 'hsl(210, 36%, 96%)' # Table row
+      table-row-alternative-background-color: 'hsl(212, 33%, 92%)' # Table row alternative
       # Nav Menu
-      paper-listbox-color: 'hsl(209, 61%, 16%)'                                                  # Navigation menu selection hoover
-      paper-listbox-background-color: 'hsl(210, 36%, 96%)'                                       # Navigation menu background
+      paper-listbox-color: 'hsl(209, 61%, 16%)'             # Navigation menu selection hoover
+      paper-listbox-background-color: 'hsl(210, 36%, 96%)'  # Navigation menu background
       paper-grey-50: 'var(--primary-text-color)'
       paper-grey-200: '#414A59'                 # Navigation menu selection
       # Paper card
@@ -41,10 +41,10 @@
       paper-tabs-selection-bar-color: 'green'
       # Labels
       label-badge-red: 'var(--accent-color)'
-      label-badge-blue: 'var(--accent-color)'          # References the brand colour label badge border
+      label-badge-blue: 'var(--accent-color)'             # References the brand colour label badge border
       ha-label-badge-color: 'var(--accent-color)'
       label-badge-text-color: 'var(--primary-text-color)' # Now same as label badge border but that's a matter of taste
-      label-badge-background-color: 'hsl(210, 36%, 96%)'                                         # Same, but can also be set to transparent here
+      label-badge-background-color: 'hsl(210, 36%, 96%)'  # Same, but can also be set to transparent here
       # Switches
       paper-toggle-button-checked-button-color: 'var(--accent-color)'
       paper-toggle-button-checked-bar-color: 'var(--accent-color)'
