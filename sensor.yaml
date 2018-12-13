@@ -69,7 +69,7 @@
       - 'processor_load'
   - platform: speedtest
     hour:
-      - 12
+      - 2
     monitored_conditions:
       - download
   - platform: history_stats

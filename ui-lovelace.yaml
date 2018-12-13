@@ -855,11 +855,6 @@ views:
       - id: 68b1aa39fb264de7a4052bded15c7264
         type: media-control
         entity: media_player.shield
-      - id: e28d5a7359514b81b2f94b0fe717699d
-        type: media-control
-        entity: media_player.shield_android_tv
-      # - type: media-control
-      #   entity: media_player.plex_shield_android_tv
 
   - icon: mdi:settings
     id: settings
@@ -1187,6 +1182,7 @@ views:
       - id: master_brightness
         type: sensor
         entity: sensor.illumination_158d00016c53bf
+        graph: line
       - id: 549e8a9c3157457da71ee90bad9c40fa
         type: picture-elements
         # title: Main Level
@@ -1559,47 +1555,149 @@ views:
           - entity: device_tracker.meta_alok
           - entity: device_tracker.meta_rashmi
           - zone.home
+      - id: camera_sensors
+        type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.backyard_motion
+                name: Backyard Motion
+                icon: mdi:run
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.backyard_line_crossing
+                name: Backyard Crossing
+                icon: mdi:format-vertical-align-center
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.backyard_field_detection
+                name: Backyard Detection
+                icon: mdi:aspect-ratio
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_motion
+                name: Patio Motion
+                icon: mdi:run
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_line_crossing
+                name: Patio Crossing
+                icon: mdi:format-vertical-align-center
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_field_detection
+                name: Patio Detection
+                icon: mdi:aspect-ratio
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.driveway_motion
+                name: Driveway Motion
+                icon: mdi:run
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.driveway_line_crossing
+                name: Driveway Crossing
+                icon: mdi:format-vertical-align-center
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.driveway_field_detection
+                name: Driveway Detection
+                icon: mdi:aspect-ratio
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_motion
+                name: Porch Motion
+                icon: mdi:run
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_line_crossing
+                name: Porch Crossing
+                icon: mdi:format-vertical-align-center
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_field_detection
+                name: Porch Detection
+                icon: mdi:aspect-ratio
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+      # - id: test
+      #   type: entity-button
+      #   entity: light.master_lights
+      #   icon: mdi:fridge
+      #   name: Kitchen
+      #   tap_action:
+      #     action: call-service
+      #     service: light.toggle
+      #     service_data:
+      #       entity_id: light.master_lights
       - id: d19435cdd0e04bfe8959580d6a19938c
         type: conditional
         conditions:
           - entity: input_boolean.devmode
             state: "on"
         card:
-          type: entities
-          title: All Automations
-        filter:
-          include:
-            - domain: automation
-      - id: e7b80e77f0e14837ac7b5b15662c615f
-        type: entities
-        title: Camera Sensors
-        show_header_toggle: false
-        entities:
-          - binary_sensor.backyard_motion
-          - binary_sensor.backyard_field_detection
-          - binary_sensor.backyard_line_crossing
-          - type: divider
-          - binary_sensor.driveway_motion
-          - binary_sensor.driveway_field_detection
-          - binary_sensor.driveway_line_crossing
-          - type: divider
-          - binary_sensor.patio_motion
-          - binary_sensor.patio_field_detection
-          - binary_sensor.patio_line_crossing
-          - type: divider
-          - binary_sensor.porch_field_detection
-          - binary_sensor.porch_line_crossing
-          - binary_sensor.porch_motion
-      - id: test
-        type: entity-button
-        entity: light.master_lights
-        icon: mdi:fridge
-        name: Kitchen
-        tap_action:
-          action: call-service
-          service: light.toggle
-          service_data:
-            entity_id: light.master_lights
           type: custom:monster-card
           card:
             type: entities
