@@ -242,15 +242,31 @@
       paper-slider-knob-start-color: "#cda34f"
       paper-slider-pin-color: "#cda34f"
       paper-slider-active-color: "#cda34f"
-    done1:
-      dark-primary-color: "#565656"
-      primary-color: "#C09F80"
-      light-primary-color: "#D7CEC7"
-      paper-toggle-button-checked-ink-color: "#76323F"
-      paper-toggle-button-checked-button-color: "#76323F"
-      paper-toggle-button-checked-bar-color: "#76323F"
-      paper-slider-knob-color: "#76323F"
-      paper-slider-knob-start-color: "#76323F"
-      paper-slider-pin-color: "#76323F"
-      paper-slider-active-color: "#76323F"
-      paper-slider-secondary-color: "#FFE0B2"
+    darkblue:
+      # Main Stuff #
+      primary-color: "#354E67" # Primary (most of the UI)
+      primary-background-color: "#FFFFFF" # Primary background colour (dialogs, e.t.c)
+      sidebar-background-color: "#FFFFFF"
+      sidebar-text_-_background: "#62717b"
+      sidebar-text_-_color: "#182E44"
+      secondary-background-color: "#FFFFFF" # Secondary background colour (main UI background)
+      paper-card-background-color: "#FFFFFF" # Card background colour
+      primary-text-color: "#182E44" # Primary text colour
+      secondary-text-color: "#182E44" # Secondary text colour
+      disabled-text-color: "#182E44" # Disabled text colour
+      divider-color: "#E4E4E8" # Divider colour
+      paper-card-header-color: "#FFFFFF" # Card header text colour
+      # Nav Menu #
+      paper-listbox-background-color: "#FFFFFF" # Listbox background colour
+      paper-grey-200: "#616161" # Listbox selected item background colour
+      # Switches #
+      paper-toggle-button-checked-ink-color: "#1B8D98"
+      paper-toggle-button-checked-button-color: "#1B8D98"
+      paper-toggle-button-checked-bar-color: "#8DC6CC"
+      # Sliders #
+      paper-slider-knob-color: "#1B8D98"
+      paper-slider-knob-start-color: "#1B8D98"
+      paper-slider-pin-color: "#1B8D98"
+      paper-slider-active-color: "#1B8D98"
+      paper-slider-secondary-color: "#1B8D98"
+      paper-item-icon_-_color: "#1B8D98"
