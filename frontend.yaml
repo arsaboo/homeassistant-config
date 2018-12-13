@@ -6,6 +6,64 @@
     - /local/custom_ui/custom-weather-card.html
     - /local/custom_ui/custom-weather-animated.html
   themes:
+    oxfordblue:
+      # Main colors
+      primary-color: 'hsl(209, 34%, 30%)'       # Header
+      accent-color: 'hsl(185, 77%, 34%)'                                                         # Accent color
+      dark-primary-color: 'hsl(211, 39%, 23%)'  # Hyperlinks
+      light-primary-color: 'hsl(210, 22%, 49%)' # Horizontal line in about
+      # Text colors
+      primary-text-color: 'hsl(209, 61%, 16%)'                                                   # Primary text colour, here is referencing dark-primary-color
+      text-primary-color: '#FFF'                # Primary text colour
+      secondary-text-color: 'hsl(209, 23%, 60%)'                                                 # For secondary titles in more info boxes etc.
+      disabled-text-color: 'hsl(212, 33%, 89%)'                                                  # Disabled text colour
+      # Background colors
+      primary-background-color: 'hsl(210, 36%, 96%)'                                             # Settings background
+      secondary-background-color: 'hsl(210, 36%, 96%)'                                           # Main card UI background
+      sidebar-background-color: 'hsl(210, 36%, 96%)'
+      divider-color: 'rgba(0, 0, 0, .12)'       # Divider
+      # Table rows
+      table-row-background-color: 'hsl(210, 36%, 96%)'                                           # Table row
+      table-row-alternative-background-color: 'hsl(212, 33%, 92%)'                               # Table row alternative
+      # Nav Menu
+      paper-listbox-color: 'hsl(209, 61%, 16%)'                                                  # Navigation menu selection hoover
+      paper-listbox-background-color: 'hsl(210, 36%, 96%)'                                       # Navigation menu background
+      paper-grey-50: 'var(--primary-text-color)'
+      paper-grey-200: '#414A59'                 # Navigation menu selection
+      # Paper card
+      paper-card-header-color: 'var(--accent-color)'  # Card header text colour
+      paper-card-background-color: '#FFF'             # Card background colour
+      paper-dialog-background-color: '#FFF'           # Card dialog background colour
+      paper-item-icon-color: 'var(--accent-color)'    # Icon color
+      paper-item-icon-active-color: '#F9C536'         # Icon color active
+      paper-item-icon_-_color: 'green'
+      paper-item-selected_-_background-color: '#434954'# Popup item select
+      paper-tabs-selection-bar-color: 'green'
+      # Labels
+      label-badge-red: 'var(--accent-color)'
+      label-badge-blue: 'var(--accent-color)'          # References the brand colour label badge border
+      ha-label-badge-color: 'var(--accent-color)'
+      label-badge-text-color: 'var(--primary-text-color)' # Now same as label badge border but that's a matter of taste
+      label-badge-background-color: 'hsl(210, 36%, 96%)'                                         # Same, but can also be set to transparent here
+      # Switches
+      paper-toggle-button-checked-button-color: 'var(--accent-color)'
+      paper-toggle-button-checked-bar-color: 'var(--accent-color)'
+      paper-toggle-button-checked-ink-color: 'var(--accent-color)'
+      paper-toggle-button-unchecked-button-color: 'var(--disabled-text-color)'
+      paper-toggle-button-unchecked-bar-color: 'var(--disabled-text-color)'
+      paper-toggle-button-unchecked-ink-color: 'var(--disabled-text-color)'
+      # Sliders
+      paper-slider-knob-color: 'var(--accent-color)'
+      paper-slider-knob-start-color: 'var(--accent-color)'
+      paper-slider-pin-color: 'var(--accent-color)'
+      paper-slider-active-color: 'var(--accent-color)'
+      paper-slider-container-color: 'linear-gradient(var(--primary-background-color), var(--secondary-background-color)) no-repeat'
+      paper-slider-secondary-color: 'var(--secondary-background-color)'
+      paper-slider-disabled-active-color: 'var(--disabled-text-color)'
+      paper-slider-disabled-secondary-color: 'var(--disabled-text-color)'
+      # Google colors
+      google-red-500: '#E45E65'
+      google-green-500: '#39E949'
     teal:
       # Main Stuff #
       primary-color: "#1DE9B6" # Primary (most of the UI)
