@@ -978,6 +978,7 @@ views:
         entities:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
+          - input_boolean.devmode
       - id: 4f80e7420c574e1ba1feec6ba10ee8e7
         type: entities
         title: Camera Processing
@@ -1559,7 +1560,10 @@ views:
           - entity: device_tracker.meta_rashmi
           - zone.home
       - id: d19435cdd0e04bfe8959580d6a19938c
-        type: custom:monster-card
+        type: conditional
+        conditions:
+          - entity: input_boolean.devmode
+            state: "on"
         card:
           type: entities
           title: All Automations
@@ -1596,10 +1600,10 @@ views:
           service: light.toggle
           service_data:
             entity_id: light.master_lights
-      # - type: custom:monster-card
-      #   card:
-      #     type: entities
-      #     title: Things that are probably broken
-      #   filter:
-      #     include:
-      #       - state: "unknown"
+          type: custom:monster-card
+          card:
+            type: entities
+            title: All Automations
+          filter:
+            include:
+              - domain: automation

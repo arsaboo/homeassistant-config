@@ -29,4 +29,8 @@
     name: Party Mode
     initial: off
     icon: mdi:theme-light-dark
+  devmode:
+    name: Developer Mode
+    initial: off
+    icon: mdi:tune
   weather:
