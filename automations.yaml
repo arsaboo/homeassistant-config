@@ -951,7 +951,7 @@
         group: "Master"
         scene: >
           {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
-    - service: automation.turn_on
+    - service: automation.turn_off
       entity_id: automation.turn_off_master_lights
 
 - id: micube_toggle_master
