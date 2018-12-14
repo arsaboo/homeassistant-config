@@ -43,6 +43,7 @@
     name: 'Current Theme'
     options:
      - 'default'
+     - 'oxfordblue'
      - 'teal'
      - 'darkorange'
      - 'darkred'

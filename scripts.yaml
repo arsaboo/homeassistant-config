@@ -274,6 +274,9 @@
   initialize_hass:
     alias: 'Initialize HASS after restart'
     sequence:
+      - service: frontend.set_theme
+        data:
+          name: "oxfordblue"
       - service: script.updatetracker
         data_template:
           entityid: 'device_tracker.sonu_sonu'
