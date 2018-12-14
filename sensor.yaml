@@ -7,13 +7,6 @@
       - stream_count_direct_play
       - stream_count_direct_stream
       - total_bandwidth
-  - platform: deluge
-    host: 192.168.2.113
-    username: !secret deluge_user
-    password: !secret deluge_pass
-    monitored_variables:
-      - 'download_speed'
-      - 'upload_speed'
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
