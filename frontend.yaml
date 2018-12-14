@@ -40,7 +40,7 @@
       paper-item-selected_-_background-color: '#434954'# Popup item select
       paper-tabs-selection-bar-color: 'green'
       # Labels
-      label-badge-red: 'var(--accent-color)'
+      label-badge-red: 'var(--google-red-500)'
       label-badge-blue: 'var(--accent-color)'             # References the brand colour label badge border
       ha-label-badge-color: 'var(--accent-color)'
       label-badge-text-color: 'var(--primary-text-color)' # Now same as label badge border but that's a matter of taste
@@ -62,34 +62,8 @@
       paper-slider-disabled-active-color: 'var(--disabled-text-color)'
       paper-slider-disabled-secondary-color: 'var(--disabled-text-color)'
       # Google colors
-      google-red-500: '#E45E65'
+      google-red-500: '#db3236'
       google-green-500: '#39E949'
-    teal:
-      # Main Stuff #
-      primary-color: "#1DE9B6" # Primary (most of the UI)
-      primary-background-color: "#303030" # Primary background colour (dialogs, e.t.c)
-      secondary-background-color: "#303030" # Secondary background colour (main UI background)
-      paper-card-background-color: "#424242" # Card background colour
-      paper-item-icon-color: "#1DE9B6" # Icon colour
-      primary-text-color: "#FFFFFF" # Primary text colour
-      secondary-text-color: "rgba(255, 255, 255, 0.7)" # Secondary text colour
-      disabled-text-color: "rgba(255, 255, 255, 0.5)" # Disabled text colour
-      divider-color: "rgba(255, 255, 255, 0.12)" # Divider colour
-      paper-card-header-color: "#FFFFFF" # Card header text colour
-      # Nav Menu #
-      paper-listbox-background-color: "#424242" # Listbox background colour
-      paper-listbox-color: "#FFFFFF" # Listbox text colour
-      paper-grey-200: "#616161" # Listbox selected item background colour
-      # Switches #
-      paper-toggle-button-checked-ink-color: "#1DE9B6"
-      paper-toggle-button-checked-button-color: "#1DE9B6"
-      paper-toggle-button-checked-bar-color: "#1DE9B6"
-      # Sliders #
-      paper-slider-knob-color: "#1DE9B6"
-      paper-slider-knob-start-color: "#1DE9B6"
-      paper-slider-pin-color: "#1DE9B6"
-      paper-slider-active-color: "#1DE9B6"
-      paper-slider-secondary-color: "#33F2D8"
     darkorange:
       primary-color: "#ff9800"
       light-primary-color: "#ffc947"
@@ -328,3 +302,29 @@
       paper-slider-active-color: "#1B8D98"
       paper-slider-secondary-color: "#1B8D98"
       paper-item-icon_-_color: "#1B8D98"
+    teal:
+      # Main Stuff #
+      primary-color: "#1DE9B6" # Primary (most of the UI)
+      primary-background-color: "#303030" # Primary background colour (dialogs, e.t.c)
+      secondary-background-color: "#303030" # Secondary background colour (main UI background)
+      paper-card-background-color: "#424242" # Card background colour
+      paper-item-icon-color: "#1DE9B6" # Icon colour
+      primary-text-color: "#FFFFFF" # Primary text colour
+      secondary-text-color: "rgba(255, 255, 255, 0.7)" # Secondary text colour
+      disabled-text-color: "rgba(255, 255, 255, 0.5)" # Disabled text colour
+      divider-color: "rgba(255, 255, 255, 0.12)" # Divider colour
+      paper-card-header-color: "#FFFFFF" # Card header text colour
+      # Nav Menu #
+      paper-listbox-background-color: "#424242" # Listbox background colour
+      paper-listbox-color: "#FFFFFF" # Listbox text colour
+      paper-grey-200: "#616161" # Listbox selected item background colour
+      # Switches #
+      paper-toggle-button-checked-ink-color: "#1DE9B6"
+      paper-toggle-button-checked-button-color: "#1DE9B6"
+      paper-toggle-button-checked-bar-color: "#1DE9B6"
+      # Sliders #
+      paper-slider-knob-color: "#1DE9B6"
+      paper-slider-knob-start-color: "#1DE9B6"
+      paper-slider-pin-color: "#1DE9B6"
+      paper-slider-active-color: "#1DE9B6"
+      paper-slider-secondary-color: "#33F2D8"

@@ -74,21 +74,25 @@
            {{states('media_player.family_room_2')=='playing' and state_attr('media_player.family_room_2','source')=='TV'}}
   - platform: hikvision
     host: 192.168.2.91
+    ssl: false
     name: Porch
     username: !secret hikvision_username
     password: !secret hikvision_password
   - platform: hikvision
     host: 192.168.2.92
+    ssl: false
     name: Backyard
     username: !secret hikvision_username
     password: !secret hikvision_password
   - platform: hikvision
     host: 192.168.2.93
+    ssl: false
     name: Patio
     username: !secret hikvision_username
     password: !secret hikvision_password
   - platform: hikvision
     host: 192.168.2.94
+    ssl: false
     name: Driveway
     username: !secret hikvision_username
     password: !secret hikvision_password

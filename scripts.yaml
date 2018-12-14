@@ -277,6 +277,10 @@
       - service: frontend.set_theme
         data:
           name: "oxfordblue"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.current_theme
+          option: "oxfordblue"
       - service: script.updatetracker
         data_template:
           entityid: 'device_tracker.sonu_sonu'
@@ -324,7 +328,6 @@
               {{ (state_attr('media_player.family_room_2', 'volume_level') * 100) | int }}
       - service: homeassistant.turn_on
         entity_id: script.classify_images
-
   classify_images:
     alias: 'Process all images'
     sequence:

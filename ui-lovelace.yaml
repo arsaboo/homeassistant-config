@@ -518,7 +518,6 @@ views:
         entity_summary_3: sensor.dark_sky_summary_3
         entity_summary_4: sensor.dark_sky_summary_4
         entity_summary_5: sensor.dark_sky_summary_5
-        tooltips: true
       - id: thermostats  # Automatically created id
         type: vertical-stack
         cards:
@@ -1197,6 +1196,193 @@ views:
                   red: -6
                   yellow: -2
                   green: 0
+      - id: camera_sensors
+        type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.backyard_motion
+                name: Backyard Motion
+                icon: mdi:run
+                action: more_info
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.backyard_line_crossing
+                name: Backyard Crossing
+                icon: mdi:format-vertical-align-center
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.backyard_field_detection
+                name: Backyard Intrusion
+                icon: mdi:aspect-ratio
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.backyard_face_detection
+                name: Backyard Face
+                icon: mdi:face-outline
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.patio_motion
+                name: Patio Motion
+                icon: mdi:run
+                action: more_info
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_line_crossing
+                name: Patio Crossing
+                icon: mdi:format-vertical-align-center
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_field_detection
+                name: Patio Intrusion
+                icon: mdi:aspect-ratio
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.patio_face_detection
+                name: Patio Face
+                icon: mdi:face-outline
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.driveway_motion
+                name: Driveway Motion
+                icon: mdi:run
+                action: more_info
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.driveway_line_crossing
+                name: Driveway Crossing
+                icon: mdi:format-vertical-align-center
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.driveway_field_detection
+                name: Driveway Intrusion
+                icon: mdi:aspect-ratio
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.driveway_face_detection
+                name: Driveway Face
+                icon: mdi:face-outline
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: binary_sensor.porch_motion
+                name: Porch Motion
+                icon: mdi:run
+                action: more_info
+                default_color: rgb(255, 255, 255)
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_line_crossing
+                name: Porch Crossing
+                icon: mdi:format-vertical-align-center
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_field_detection
+                name: Porch Intrusion
+                icon: mdi:aspect-ratio
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
+                entity: binary_sensor.porch_face_detection
+                name: Porch Face
+                icon: mdi:face-outline
+                action: more_info
+                color: rgb(250, 218, 79)
+                default_color: rgb(255, 255, 255)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
       - id: 4c3f5b251e2e4092a2b7b9f8301364b0
         type: custom:calendar-card
         entities:
@@ -1579,133 +1765,6 @@ views:
           - entity: device_tracker.meta_alok
           - entity: device_tracker.meta_rashmi
           - zone.home
-      - id: camera_sensors
-        type: vertical-stack
-        cards:
-          - type: horizontal-stack
-            cards:
-              - type: custom:button-card
-                entity: binary_sensor.backyard_motion
-                name: Backyard Motion
-                icon: mdi:run
-                default_color: rgb(255, 255, 255)
-                color: rgb(250, 218, 79)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.backyard_line_crossing
-                name: Backyard Crossing
-                icon: mdi:format-vertical-align-center
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.backyard_field_detection
-                name: Backyard Detection
-                icon: mdi:aspect-ratio
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.patio_motion
-                name: Patio Motion
-                icon: mdi:run
-                default_color: rgb(255, 255, 255)
-                color: rgb(250, 218, 79)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.patio_line_crossing
-                name: Patio Crossing
-                icon: mdi:format-vertical-align-center
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.patio_field_detection
-                name: Patio Detection
-                icon: mdi:aspect-ratio
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-          - type: horizontal-stack
-            cards:
-              - type: custom:button-card
-                entity: binary_sensor.driveway_motion
-                name: Driveway Motion
-                icon: mdi:run
-                default_color: rgb(255, 255, 255)
-                color: rgb(250, 218, 79)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.driveway_line_crossing
-                name: Driveway Crossing
-                icon: mdi:format-vertical-align-center
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.driveway_field_detection
-                name: Driveway Detection
-                icon: mdi:aspect-ratio
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.porch_motion
-                name: Porch Motion
-                icon: mdi:run
-                default_color: rgb(255, 255, 255)
-                color: rgb(250, 218, 79)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.porch_line_crossing
-                name: Porch Crossing
-                icon: mdi:format-vertical-align-center
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
-              - type: custom:button-card
-                entity: binary_sensor.porch_field_detection
-                name: Porch Detection
-                icon: mdi:aspect-ratio
-                color: rgb(250, 218, 79)
-                default_color: rgb(255, 255, 255)
-                color_type: icon
-                style:
-                  - font-size: 12px
-                  - text-transform: capitalize
       # - id: test
       #   type: entity-button
       #   entity: light.master_lights
