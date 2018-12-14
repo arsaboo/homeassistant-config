@@ -513,6 +513,12 @@ views:
         entity_forecast_icon_3: sensor.dark_sky_icon_3
         entity_forecast_icon_4: sensor.dark_sky_icon_4
         entity_forecast_icon_5: sensor.dark_sky_icon_5
+        entity_summary_1: sensor.dark_sky_summary_1
+        entity_summary_2: sensor.dark_sky_summary_2
+        entity_summary_3: sensor.dark_sky_summary_3
+        entity_summary_4: sensor.dark_sky_summary_4
+        entity_summary_5: sensor.dark_sky_summary_5
+        tooltips: true
       - id: thermostats  # Automatically created id
         type: vertical-stack
         cards:
@@ -719,6 +725,23 @@ views:
           - sensor.total_tv_time
           - sensor.sonos_audio_in
           - script.tv_off
+      - id: players
+        type: entities
+        title: Players
+        show_header_toggle: false
+        entities:
+          - media_player.livingroomsonos
+          - media_player.aloks_fire_tv_2
+          - media_player.family_room_2
+          - media_player.kodi_nstv
+          - media_player.echo_dot_gen2
+          - media_player.living_room_home
+          - media_player.living_room_speaker
+          - media_player.living_room_tv
+          - media_player.shield
+          # - media_player.shieldtv
+          # # - media_player.aftmm
+          # - media_player.fire_stick_master
       - id: 0bff7eafb9a24facb4223c25e44be920
         type: vertical-stack
         cards:
@@ -958,6 +981,8 @@ views:
               'Downtown': /local/icons/alok_not_home.png
             show_name: false
             show_state: false
+            hold_action:
+              action: toggle
           - type: picture-entity
             entity: device_tracker.meta_rashmi
             state_image:
@@ -965,6 +990,8 @@ views:
               'not_home': /local/icons/rashmi_not_home.png
             show_name: false
             show_state: false
+            hold_action:
+              action: toggle
 
       - id: e89b4082ac7a4dcbae5fd9c832948654
         type: entities
@@ -1012,9 +1039,6 @@ views:
           - sensor.glances_cpu_load
           - sensor.glances_disk_used
           - sensor.glances_ram_used
-          - type: divider
-          - sensor.deluge_down_speed
-          - sensor.deluge_up_speed
       - id: c1c70cd508774de893b171a11f5673a5
         type: entities
         title: Arlo
@@ -1191,14 +1215,14 @@ views:
           - type: image
             image: /local/icons/music_right.png
             title: Right
-            tap_action:
-              action: call-service
             style:
               top: 79.5%
               left: 57%
               width: 8%
               padding: 0px
               opacity: 0
+            tap_action:
+              action: call-service
             service: remote.send_command
             service_data:
               entity_id: remote.livingroom

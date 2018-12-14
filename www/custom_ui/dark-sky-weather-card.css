@@ -52,6 +52,10 @@
   margin-right: 1em;
 }
 
+.unit {
+  font-size: .8em;
+}
+
 .forecast {
   width: 100%;
   margin: 0 auto;
@@ -120,4 +124,40 @@
   left: 6em;
   word-wrap: break-word;
   width: 30%;
+}
+
+.fcasttooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.fcasttooltip .fcasttooltiptext {
+  visibility: hidden;
+  width: 110px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  left: 0%;
+  margin-left: -5px;
+}
+
+.fcasttooltip .fcasttooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.fcasttooltip:hover .fcasttooltiptext {
+  visibility: visible;
 }

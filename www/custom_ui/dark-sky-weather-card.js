@@ -94,37 +94,47 @@ class DarkSkyWeatherCard extends HTMLElement {
       condition: this.config.entity_forecast_icon_1,
       temphigh: this.config.entity_forecast_high_temp_1,
       templow: this.config.entity_forecast_low_temp_1,
+      summary: this.config.entity_summary_1,
     };
     const forecast2 = {
       date: forecastDate2,
       condition: this.config.entity_forecast_icon_2,
       temphigh: this.config.entity_forecast_high_temp_2,
       templow: this.config.entity_forecast_low_temp_2,
+      summary: this.config.entity_summary_2,
     };
     const forecast3 = {
       date: forecastDate3,
       condition: this.config.entity_forecast_icon_3,
       temphigh: this.config.entity_forecast_high_temp_3,
       templow: this.config.entity_forecast_low_temp_3,
+      summary: this.config.entity_summary_3,
     };
     const forecast4 = {
       date: forecastDate4,
       condition: this.config.entity_forecast_icon_4,
       temphigh: this.config.entity_forecast_high_temp_4,
       templow: this.config.entity_forecast_low_temp_4,
+      summary: this.config.entity_summary_4,
     };
     const forecast5 = {
       date: forecastDate5,
       condition: this.config.entity_forecast_icon_5,
       temphigh: this.config.entity_forecast_high_temp_5,
       templow: this.config.entity_forecast_low_temp_5,
+      summary: this.config.entity_summary_5,
     };
 
     const forecast = [forecast1, forecast2, forecast3, forecast4, forecast5];
 
+    //  Configuration Flag assignments
+    var fcastclass = this.config.tooltips ? "day fcasttooltip" : "day"
+    var tooltip = this.config.tooltips ? `` : ""
+    var icons = this.config.static_icons ? "static" : "animated"
 
+    //  Card HTML
     this.content.innerHTML = `
-      <span class="icon bigger" style="background: none, url(/local/icons/weather_icons/animated/${weatherIcons[currentConditions]}.svg) no-repeat; background-size: contain;">${currentConditions}</span>
+      <span class="icon bigger" style="background: none, url(/local/icons/weather_icons/${icons}/${weatherIcons[currentConditions]}.svg) no-repeat; background-size: contain;">${currentConditions}</span>
       <span class="temp">${temperature}</span><span class="tempc"> ${getUnit('temperature')}</span>
       <span>
         <ul class="variations right">
@@ -138,11 +148,12 @@ class DarkSkyWeatherCard extends HTMLElement {
       </span>
       <div class="forecast clear">
           ${forecast.map(daily => `
-              <div class="day">
+              <div class="${fcastclass}">
                   <span class="dayname">${(daily.date).toString().split(' ')[0]}</span>
-                  <br><i class="icon" style="background: none, url(/local/icons/weather_icons/animated/${weatherIcons[hass.states[daily.condition].state]}.svg) no-repeat; background-size: contain;"></i>
+                  <br><i class="icon" style="background: none, url(/local/icons/weather_icons/${icons}/${weatherIcons[hass.states[daily.condition].state]}.svg) no-repeat; background-size: contain;"></i>
                   <br><span class="highTemp">${Math.round(hass.states[daily.temphigh].state)}${getUnit('temperature')}</span>
                   <br><span class="lowTemp">${Math.round(hass.states[daily.templow].state)}${getUnit('temperature')}</span>
+                  <span class="fcasttooltiptext">${ this.config.tooltips ? hass.states[daily.summary].state : ""}</span>
               </div>`).join('')}
       </div>`;
   }
