@@ -1202,8 +1202,17 @@ views:
           - type: horizontal-stack
             cards:
               - type: custom:button-card
+                entity: switch.backyardmotion
+                name: Backyard
+                icon: mdi:camera
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
                 entity: binary_sensor.backyard_motion
-                name: Backyard Motion
+                name: Motion
                 icon: mdi:run
                 action: more_info
                 default_color: rgb(255, 255, 255)
@@ -1214,7 +1223,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.backyard_line_crossing
-                name: Backyard Crossing
+                name: Crossing
                 icon: mdi:format-vertical-align-center
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1225,7 +1234,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.backyard_field_detection
-                name: Backyard Intrusion
+                name: Intrusion
                 icon: mdi:aspect-ratio
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1236,7 +1245,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.backyard_face_detection
-                name: Backyard Face
+                name: Face
                 icon: mdi:face-outline
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1248,8 +1257,17 @@ views:
           - type: horizontal-stack
             cards:
               - type: custom:button-card
+                entity: switch.patiomotion
+                name: Patio
+                icon: mdi:camera
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
                 entity: binary_sensor.patio_motion
-                name: Patio Motion
+                name: Motion
                 icon: mdi:run
                 action: more_info
                 default_color: rgb(255, 255, 255)
@@ -1260,7 +1278,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.patio_line_crossing
-                name: Patio Crossing
+                name: Crossing
                 icon: mdi:format-vertical-align-center
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1271,7 +1289,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.patio_field_detection
-                name: Patio Intrusion
+                name: Intrusion
                 icon: mdi:aspect-ratio
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1294,8 +1312,17 @@ views:
           - type: horizontal-stack
             cards:
               - type: custom:button-card
+                entity: switch.drivewaymotion
+                name: Driveway
+                icon: mdi:camera
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
                 entity: binary_sensor.driveway_motion
-                name: Driveway Motion
+                name: Motion
                 icon: mdi:run
                 action: more_info
                 default_color: rgb(255, 255, 255)
@@ -1306,7 +1333,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.driveway_line_crossing
-                name: Driveway Crossing
+                name: Crossing
                 icon: mdi:format-vertical-align-center
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1317,7 +1344,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.driveway_field_detection
-                name: Driveway Intrusion
+                name: Intrusion
                 icon: mdi:aspect-ratio
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1328,7 +1355,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.driveway_face_detection
-                name: Driveway Face
+                name: Face
                 icon: mdi:face-outline
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1340,8 +1367,17 @@ views:
           - type: horizontal-stack
             cards:
               - type: custom:button-card
+                entity: switch.porchmotion
+                name: Porch
+                icon: mdi:camera
+                color: rgb(250, 218, 79)
+                color_type: icon
+                style:
+                  - font-size: 12px
+                  - text-transform: capitalize
+              - type: custom:button-card
                 entity: binary_sensor.porch_motion
-                name: Porch Motion
+                name: Motion
                 icon: mdi:run
                 action: more_info
                 default_color: rgb(255, 255, 255)
@@ -1352,7 +1388,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.porch_line_crossing
-                name: Porch Crossing
+                name: Crossing
                 icon: mdi:format-vertical-align-center
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1363,7 +1399,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.porch_field_detection
-                name: Porch Intrusion
+                name: Intrusion
                 icon: mdi:aspect-ratio
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1374,7 +1410,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.porch_face_detection
-                name: Porch Face
+                name: Face
                 icon: mdi:face-outline
                 action: more_info
                 color: rgb(250, 218, 79)
