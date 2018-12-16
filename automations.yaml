@@ -1051,7 +1051,7 @@
       - condition: and
         conditions:
           - condition: time
-            after: '10:30:00'
+            after: '22:30:00'
           - condition: time
             before: '07:00:00'
           - condition: state
@@ -1063,7 +1063,7 @@
       - condition: and
         conditions:
           - condition: time
-            after: '10:30:00'
+            after: '22:30:00'
           - condition: time
             before: '07:00:00'
           - condition: state
