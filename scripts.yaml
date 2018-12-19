@@ -233,7 +233,42 @@
           period: 1
           spread: 359
           change: 35
-
+  master_colorloop:
+    alias: 'Master start colorloop'
+    sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_1
+          brightness: 255
+          effect: colorloop
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_2
+          brightness: 255
+          effect: colorloop
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_3
+          brightness: 255
+          effect: colorloop
+  master_random:
+    alias: 'Master random'
+    sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_1
+          brightness: 255
+          effect: random
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_2
+          brightness: 255
+          effect: random
+      - service: light.turn_on
+        data:
+          entity_id: light.hue_color_lamp_3
+          brightness: 255
+          effect: random
   lifx_stop_effects:
     alias: 'Stop LIFX effects'
     sequence:

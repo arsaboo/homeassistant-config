@@ -457,13 +457,18 @@ views:
         entities:
           - entity: light.gateway_light_34ce00813670
             type: custom:slider-entity-row
-          - entity: light.master_lights
-            type: custom:slider-entity-row
           - entity: light.lifx3
             type: custom:slider-entity-row
           - entity: light.lifxnrguest
             type: custom:slider-entity-row
           - entity: light.lifxnrkitchen
+            type: custom:slider-entity-row
+          - type: divider
+          - entity: light.hue_color_lamp_1
+            type: custom:slider-entity-row
+          - entity: light.hue_color_lamp_2
+            type: custom:slider-entity-row
+          - entity: light.hue_color_lamp_3
             type: custom:slider-entity-row
       - id: ba5cc3c14dc34dd3a50450c995a67318
         type: entities
@@ -851,6 +856,8 @@ views:
           - script.colorloop_start
           - script.disco_party
           - script.lifx_stop_effects
+          - script.master_colorloop
+          - script.master_random
       - id: a62d0e7432dd433fa4158b6058a1293d
         type: media-control
         entity: media_player.livingroomsonos
