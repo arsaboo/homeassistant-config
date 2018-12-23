@@ -378,6 +378,12 @@ ifttt:
   key: !secret ifttt_key
 
 image_processing:
+  - platform: amazon_rekognition
+    aws_access_key_id: !secret aws_access_key_id
+    aws_secret_access_key: !secret aws_secret_access_key
+    scan_interval: 20000 # optional to limit calls to the API
+    source:
+      - entity_id: camera.driveway
   - platform: facebox
     scan_interval: 10000
     ip_address: 192.168.2.212

@@ -1029,9 +1029,9 @@ views:
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
+          - image_processing.rekognition_driveway
 
-      - id: f52bb29ecf334b1d891da53b383bd5b6
-        type: entities
+      - type: entities
         title: Network Details
         show_header_toggle: false
         entities:
