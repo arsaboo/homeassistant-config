@@ -17,6 +17,8 @@ resources:
     type: js
   - url: /local/custom_ui/button-card.js
     type: module
+  - url: /local/mini-media-player-bundle.js?v=0.0.1
+    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -1795,32 +1797,8 @@ views:
             service_data:
               entity_id: remote.livingroom
               activity: PowerOff
-      - id: 5a6d3c0a5a9144c1bba3c7a37bba69bd
-        type: glance
-        title: Devices
-        entities:
-          - entity: device_tracker.rashmiphone_rashmiphone
-            name: Owntracks
-          - entity: device_tracker.rashmiappiphone
-            name: HA App
-          - entity: device_tracker.rashmisiphone
-            name: WiFi
-          - entity: device_tracker.sonu_sonu
-            name: Life360
-          - entity: device_tracker.e1594e5321df414c82daf655d5282fca
-            name: Geofency
-          - entity: device_tracker.alokphone_alokphone
-            name: Owntracks
-          - entity: device_tracker.alokiosiphone
-            name: HA App
-          - entity: device_tracker.myiphone
-            name: WiFi
-          - entity: device_tracker.alok_alok
-            name: Life360
-          - entity: device_tracker.b4445761f6c04b7f835fcfdc03b47111
-            name: Geofency
-      - id: cdcab20aeb9344348c86ec60c443711a
-        type: map
+
+      - type: map
         entities:
           - entity: device_tracker.meta_alok
           - entity: device_tracker.meta_rashmi
@@ -1835,8 +1813,7 @@ views:
       #     service: light.toggle
       #     service_data:
       #       entity_id: light.master_lights
-      - id: d19435cdd0e04bfe8959580d6a19938c
-        type: conditional
+      - type: conditional
         conditions:
           - entity: input_boolean.devmode
             state: "on"

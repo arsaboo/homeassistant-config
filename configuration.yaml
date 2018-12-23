@@ -451,11 +451,11 @@ image_processing:
         - bus
         - category: truck
           area:
-            top: 0.20
+            bottom: 0.70
             right: 0.20
         - category: car
           area:
-            top: 0.20
+            bottom: 0.70
             right: 0.20
 
   # - platform: classificationbox
