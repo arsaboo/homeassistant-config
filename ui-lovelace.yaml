@@ -1045,8 +1045,25 @@ views:
           - sensor.glances_cpu_load
           - sensor.glances_disk_used
           - sensor.glances_ram_used
-      - id: c1c70cd508774de893b171a11f5673a5
-        type: entities
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: switch.arnavs_ipad
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: switch.lenovo_home
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: switch.rpi_aiy
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: switch.toshibaaio
+            tap_action:
+              action: toggle
+      - type: entities
         title: Arlo
         show_header_toggle: false
         entities:
