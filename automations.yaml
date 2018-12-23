@@ -733,7 +733,7 @@
     - condition: template
       value_template: >
         {%- if states('device_tracker.meta_alok') -%}
-          {{ states('device_tracker.meta_alok') != 'home' }}
+          {{ states('device_tracker.meta_alok')|lower in ('buckhead', 'downtown') }}
         {%- else -%}
           false
         {%- endif -%}
@@ -1052,7 +1052,6 @@
         conditions:
           - condition: time
             after: '22:30:00'
-          - condition: time
             before: '07:00:00'
           - condition: state
             entity_id: light.master_lights
@@ -1064,7 +1063,6 @@
         conditions:
           - condition: time
             after: '22:30:00'
-          - condition: time
             before: '07:00:00'
           - condition: state
             entity_id: light.master_lights
@@ -1076,19 +1074,6 @@
               {%- else -%}
                 false
               {%- endif -%}
-    # - condition: time
-    #   after: '17:00:00'
-    #   before: '22:30:00'
-    # - condition: state
-    #   entity_id: light.master_lights
-    #   state: 'off'
-    # - condition: template
-    #   value_template: >
-    #     {%- if states.light.master_lights.last_changed -%}
-    #       {{ (as_timestamp(now()) - as_timestamp(states.light.master_lights.last_changed)) > 300 }}
-    #     {%- else -%}
-    #       true
-    #     {%- endif -%}
   action:
     - service: light.turn_on
       data:
