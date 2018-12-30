@@ -9,6 +9,9 @@
   abodeupdate:
     name: Abode Updates
     icon: mdi:security
+  homeautomation:
+    name: Home Automation
+    icon: mdi:home-automation
   startrecording:
     name: Camera Recording
     initial: off

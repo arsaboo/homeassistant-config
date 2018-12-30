@@ -1,4 +1,3 @@
-
   abode_updates:
     name: Abode updates are off
     done_message: Abode updates enabled
@@ -9,3 +8,13 @@
     skip_first: True
     notifiers:
       - ios_abode_updates
+  home_automation:
+    name: Home automation is disabled
+    done_message: Home automation enabled
+    entity_id: input_boolean.homeautomation
+    state: 'off'
+    repeat: 30
+    can_acknowledge: True
+    skip_first: True
+    notifiers:
+      - ios_home_automation

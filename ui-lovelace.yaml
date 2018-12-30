@@ -65,6 +65,17 @@ views:
               top: 4%
               left: 50%
               width: 7%
+          - type: image
+            entity: input_boolean.homeautomation
+            tap_action:
+              action: toggle
+            state_image:
+              'on': /local/icons/automation_enabled.png
+              'off': /local/icons/automation_disabled.png
+            style:
+              top: 4%
+              left: 60%
+              width: 7%
             # Kitchen
           - type: image
             entity: light.kitchen_lights

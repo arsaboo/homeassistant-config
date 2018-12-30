@@ -25,3 +25,12 @@
             authenticationRequired: no
             destructive: yes
             behavior: 'default'
+      - name: Home Automation
+        identifier: 'home_automation'
+        actions:
+          - identifier: 'ENABLE_HOME_AUTOMATION'
+            title: 'Enable Home Automation'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'

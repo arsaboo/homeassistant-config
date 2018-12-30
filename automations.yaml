@@ -1382,7 +1382,7 @@
       state: 'off'
       for: '00:02:00'
     - condition: state
-      entity_id: input_boolean.abodeupdate
+      entity_id: input_boolean.homeautomation
       state: 'on'
     - condition: template
       value_template: >
@@ -1506,6 +1506,18 @@
   action:
     - service: homeassistant.turn_on
       entity_id: input_boolean.abodeupdate
+
+- id: turn_on_home_automation
+  alias: 'Turn on Home automation'
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: ENABLE_HOME_AUTOMATION
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.homeautomation
 
 - id: turn_on_lights_randomly
   alias: Turn lights on randomly
