@@ -160,10 +160,34 @@
   #   state_topic: "owntracks/pi/alokphone/step"
   #   name: "Steps Alok"
   #   value_template: '{{ value_json.steps }}'
-  # - platform: command_line
-  #   name: "Download Grafana"
-  #   command: !secret grafana_temperature
-  #   scan_interval: 120
+  - platform: command_line
+    name: Grafana temp down
+    command: !secret grafana_temp_down
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana mode down
+    command: !secret grafana_mode_down
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana temp up
+    command: !secret grafana_temp_up
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana mode up
+    command: !secret grafana_mode_up
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana temp master
+    command: !secret grafana_temp_master
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana mode master
+    command: !secret grafana_mode_master
+    scan_interval: 120
+  - platform: command_line
+    name: Grafana portfolio
+    command: !secret grafana_portfolio
+    scan_interval: 120
   - platform: command_line
     name: SSL certificate expiry
     unit_of_measurement: days

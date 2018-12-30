@@ -536,17 +536,7 @@ views:
         entity_summary_3: sensor.dark_sky_summary_3
         entity_summary_4: sensor.dark_sky_summary_4
         entity_summary_5: sensor.dark_sky_summary_5
-      - id: thermostats  # Automatically created id
-        type: vertical-stack
-        cards:
-          - type: thermostat
-            entity: climate.downstairs
-          - type: thermostat
-            entity: climate.upstairs
-          - type: thermostat
-            entity: climate.bedroom
-      - id: 4a4481c1b7934014b4e550319e223f7c
-        type: vertical-stack
+      - type: vertical-stack
         cards:
           - type: glance
             title: Downstairs Thermostat
@@ -597,8 +587,7 @@ views:
       # - type: "custom:weather-card"
       #   entity_weather: weather.yweather
       #   entity_sun: sun.sun
-      - id: c066453905924966bacb3c87af9ce8d3
-        type: entities
+      - type: entities
         title: Weather
         show_header_toggle: false
         entities:
@@ -653,6 +642,51 @@ views:
         type: iframe
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
+  - icon: mdi:chart-line
+    id: grafana
+    title: Grafana
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: thermostat
+            entity: climate.downstairs
+          - type: picture-entity
+            entity: camera.grafana_temp_down
+            show_name: false
+            show_state: false
+          - type: picture-entity
+            entity: camera.grafana_mode_down
+            show_name: false
+            show_state: false
+      - type: vertical-stack
+        cards:
+          - type: thermostat
+            entity: climate.upstairs
+          - type: picture-entity
+            entity: camera.grafana_temp_up
+            show_name: false
+            show_state: false
+          - type: picture-entity
+            entity: camera.grafana_mode_up
+            show_name: false
+            show_state: false
+      - type: vertical-stack
+        cards:
+          - type: thermostat
+            entity: climate.bedroom
+          - type: picture-entity
+            entity: camera.grafana_temp_master
+            show_name: false
+            show_state: false
+          - type: picture-entity
+            entity: camera.grafana_mode_master
+            show_name: false
+            show_state: false
+      - type: picture-entity
+        entity: camera.grafana_portfolio
+        show_name: false
+        show_state: false
+
   - icon: mdi:cctv
     id: cameras
     title: Cameras
@@ -1074,6 +1108,19 @@ views:
               action: toggle
           - type: entity-button
             entity: switch.toshibaaio
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: switch.samsung_tv
+            tap_action:
+              action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            entity: switch.rpi_aiy
+            state_image:
+              'on': /local/icons/rpi_disabled.jpg
+              'off': /local/icons/rpi_enabled.jpg
             tap_action:
               action: toggle
       - type: entities

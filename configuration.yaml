@@ -27,20 +27,21 @@ lovelace:
   mode: yaml
 updater:
   include_used_components: true
-# influxdb:
-#   host: 192.168.2.113
-#   include:
-#     entities:
-#        - sensor.temperature_158d0001ab3b2b
-#        - sensor.humidity_158d0001ab3b2b
-#        - sensor.temperature_158d0001ab7d20
-#        - sensor.humidity_158d0001ab7d20
-#        - sensor.portfolioval
-#        - sensor.pws_temp_f
-#        - sensor.downstairsthermoper
-#        - sensor.upstairsthermoper
-#        - climate.downstairs
-#        - climate.upstairs
+influxdb:
+  host: 192.168.2.113
+  include:
+    entities:
+       - sensor.temperature_158d0001ab3b2b
+       - sensor.humidity_158d0001ab3b2b
+       - sensor.temperature_158d0001ab7d20
+       - sensor.humidity_158d0001ab7d20
+       - sensor.humidity_158d0001ab3c88
+       - sensor.temperature_158d0001ab3c88
+       - sensor.portfolioval
+       - sensor.dark_sky_temperature
+       - climate.downstairs
+       - climate.upstairs
+       - climate.bedroom
 python_script:
 weather:
   - platform: yweather
@@ -279,7 +280,8 @@ http:
   ip_ban_enabled: True
   login_attempts_threshold: 2
   trusted_networks:
-    - 192.168.2.0/24
+    - 192.168.2.40
+    - 192.168.2.212
 
 # Discover some devices automatically
 discovery:
@@ -339,9 +341,27 @@ camera:
   #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
   #   username: !secret grafana_user
   #   password: !secret grafana_pass
-  # - platform: local_file
-  #   name: Grafana_temperature
-  #   file_path: /home/homeassistant/.homeassistant/downloads/temperature.png
+  - platform: local_file
+    name: Grafana portfolio
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/portfolio.png
+  - platform: local_file
+    name: Grafana temp down
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/down_temp.png
+  - platform: local_file
+    name: Grafana mode down
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/down_mode.png
+  - platform: local_file
+    name: Grafana temp up
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/up_temp.png
+  - platform: local_file
+    name: Grafana mode up
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/up_mode.png
+  - platform: local_file
+    name: Grafana temp master
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_temp.png
+  - platform: local_file
+    name: Grafana mode master
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_mode.png
   # - platform: ring
   # - platform: opencv
   #   camera: camera.porch
@@ -606,6 +626,16 @@ notify:
             push:
               badge: 0
               category: "abode_updates"
+  - platform: group
+    name: ios_home_automation
+    services:
+      - service: ios_alokiosiphone
+        data:
+          title: 'Enable Home automation?'
+          data:
+            push:
+              badge: 0
+              category: "home_automation"
   - platform: nfandroidtv
     name: Shield
     host: 192.168.2.28
