@@ -970,18 +970,21 @@
 
 - id: turn_off_master_lights_at_night
   alias: "Turn off Master lights if they randomly turn on at night"
-  initial_state: on
+  initial_state: off
   trigger:
     - platform: state
       entity_id:
         - light.hue_color_lamp_1
         - light.hue_color_lamp_2
-        - light.hue_color_lamp_1
+        - light.hue_color_lamp_3
       to: 'on'
   condition:
     - condition: state
       entity_id: input_select.abodestatus
       state: 'armed_home'
+    - condition: time
+      after: '22:30:00'
+      before: '05:00:00'      
   action:
     - service: light.turn_off
       data_template:
