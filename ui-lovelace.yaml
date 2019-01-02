@@ -1094,35 +1094,51 @@ views:
           - sensor.glances_ram_used
       - type: horizontal-stack
         cards:
-          - type: entity-button
+          - type: custom:button-card
             entity: switch.arnavs_ipad
-            tap_action:
-              action: toggle
-          - type: entity-button
+            name: iPad
+            icon: mdi:tablet-ipad
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
+          - type: custom:button-card
             entity: switch.lenovo_home
-            tap_action:
-              action: toggle
-          - type: entity-button
+            name: Lenovo
+            icon: mdi:laptop-windows
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
+          - type: custom:button-card
             entity: switch.rpi_aiy
-            tap_action:
-              action: toggle
-          - type: entity-button
+            name: RPi AIY
+            icon: mdi:raspberrypi
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
+          - type: custom:button-card
             entity: switch.toshibaaio
-            tap_action:
-              action: toggle
-          - type: entity-button
+            name: Toshiba
+            icon: mdi:desktop-mac-dashboard
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
+          - type: custom:button-card
             entity: switch.samsung_tv
-            tap_action:
-              action: toggle
-      - type: horizontal-stack
-        cards:
-          - type: picture-entity
-            entity: switch.rpi_aiy
-            state_image:
-              'on': /local/icons/rpi_disabled.jpg
-              'off': /local/icons/rpi_enabled.jpg
-            tap_action:
-              action: toggle
+            name: Samsung TV
+            icon: mdi:television-classic
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
       - type: entities
         title: Arlo
         show_header_toggle: false
