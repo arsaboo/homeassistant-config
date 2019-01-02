@@ -37,6 +37,7 @@ influxdb:
        - sensor.humidity_158d0001ab7d20
        - sensor.humidity_158d0001ab3c88
        - sensor.temperature_158d0001ab3c88
+       - sensor.living_room_temperature
        - sensor.portfolioval
        - sensor.dark_sky_temperature
        - climate.downstairs
