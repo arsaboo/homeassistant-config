@@ -548,6 +548,8 @@ media_player:
     email: !secret amazon_user
     password: !secret amazon_pass
     url: "amazon.com"
+    include_devices:
+      - "Echo Dot Gen2"
   # - platform: firetv
   #   name: Fire Stick Master
   #   host: 192.168.2.225
