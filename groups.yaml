@@ -19,7 +19,6 @@
     view: yes
     icon: mdi:weather-cloudy
     entities:
-      - group.yahooweathercard
       - group.weather
       - group.weather_card_forecast
       - group.room_sensors

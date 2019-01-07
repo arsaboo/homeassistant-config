@@ -44,10 +44,7 @@ influxdb:
        - climate.upstairs
        - climate.bedroom
 python_script:
-weather:
-  - platform: yweather
-    name: yweather
-    woeid: !secret woeid
+# weather:
   # - platform: darksky
   #   api_key: !secret darksky_key
 # enable_debug:

@@ -72,7 +72,6 @@ docker create \
     * [Wunderground](https://home-assistant.io/components/sensor.wunderground/) to integrate my weather station
     * [Bloomsky](https://home-assistant.io/components/bloomsky/) weather station
     [DarkSky](https://darksky.net/dev/) for weather data and forecasts
-    * [Yahoo Weather](https://home-assistant.io/components/weather.yweather/) for weather card
     * [Pollen](https://home-assistant.io/components/sensor.pollen/) sensor for allergy related information
 
 ## My Home Assistant dashboard
