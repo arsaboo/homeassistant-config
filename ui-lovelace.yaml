@@ -27,8 +27,7 @@ views:
     title: Home
     # theme: darkorange
     cards:
-      - id: 50d4710517c94030b5285f22da89b093
-        type: picture-elements
+      - type: picture-elements
         # title: Main Level
         image: /local/floorplans/main.jpg
         elements:
@@ -339,8 +338,7 @@ views:
             style:
               top: 89%
               left: 32%
-      - id: d7dc21db546143a29307427f1b821636
-        type: picture-elements
+      - type: picture-elements
         # title: Second Level
         image: /local/floorplans/second.jpg
         elements:
@@ -408,8 +406,7 @@ views:
               left: 15%
               width: 50px
               height: 50px
-      - id: alarm_cards
-        type: horizontal-stack
+      - type: horizontal-stack
         cards:
           - type: alarm-panel
             entity: alarm_control_panel.abode_alarm
@@ -422,8 +419,7 @@ views:
             title: Arlo
             states:
               - arm_away
-      - id: investments
-        type: entities
+      - type: entities
         title: Investments
         show_header_toggle: false
         entities:
@@ -446,8 +442,7 @@ views:
           - sensor.sp_futures_change_pct
           - type: divider
           - sensor.10_year_treasury
-      - id: 4a7140a250554dd6b4fd6e892679a71d
-        type: entities
+      - type: entities
         title: Information
         show_header_toggle: false
         entities:
@@ -464,8 +459,7 @@ views:
           - sensor.plexspy
           - sensor.usdinr
 
-      - id: 905d92b14f97458aa720660087fd3251
-        type: entities
+      - type: entities
         title: Lights
         entities:
           - entity: light.gateway_light_34ce00813670
@@ -505,53 +499,6 @@ views:
     cards:
       - type: "custom:weather-card"
         entity: weather.dark_sky
-      - type: vertical-stack
-        cards:
-          - type: glance
-            title: Downstairs Thermostat
-            entities:
-              - entity: sensor.downstairsthermoper
-                name: Operation
-              - entity: sensor.downstairs_humidity
-                name: Humidity
-              - entity: sensor.living_room_temperature
-                name: Temperature
-              - entity: sensor.downstairs_hvac_runtime
-                name: Runtime
-              - entity: switch.downstairs_away
-                tap_action:
-                  action: toggle
-                name: Away
-          - type: glance
-            title: Kids Room Thermostat
-            entities:
-              - entity: sensor.upstairsthermoper
-                name: Operation
-              - entity: sensor.upstairs_humidity
-                name: Humidity
-              - entity: sensor.upstairs_temperature
-                name: Temperature
-              - entity: sensor.upstairs_hvac_runtime
-                name: Runtime
-              - entity: switch.upstairs_away
-                tap_action:
-                  action: toggle
-                name: Away
-          - type: glance
-            title: Master Thermostat
-            entities:
-              - entity: sensor.masterthermoper
-                name: Operation
-              - entity: sensor.bedroom_humidity
-                name: Humidity
-              - entity: sensor.master_temperature
-                name: Temperature
-              - entity: sensor.master_hvac_runtime
-                name: Runtime
-              - entity: switch.bedroom_away
-                tap_action:
-                  action: toggle
-                name: Away
       - type: entities
         title: Weather
         show_header_toggle: false
@@ -559,7 +506,6 @@ views:
           - sensor.dark_sky_summary
           # - sensor.pws_weather
           # - sensor.pws_wind_string
-          - sensor.dark_sky_cloud_coverage
           - sensor.pollen_level
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
@@ -585,8 +531,7 @@ views:
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
           - sensor.leeoalarmstatus
-      - id: fd2afd8bbf3f4b58aef8dbd403549fe3
-        type: picture-entity
+      - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
       #   type: picture-entity
@@ -602,6 +547,20 @@ views:
         cards:
           - type: thermostat
             entity: climate.downstairs
+          - type: glance
+            entities:
+              - entity: sensor.downstairsthermoper
+                name: Operation
+              - entity: sensor.downstairs_humidity
+                name: Humidity
+              - entity: sensor.living_room_temperature
+                name: Temperature
+              - entity: sensor.downstairs_hvac_runtime
+                name: Runtime
+              - entity: switch.downstairs_away
+                tap_action:
+                  action: toggle
+                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_down
             show_name: false
@@ -614,6 +573,20 @@ views:
         cards:
           - type: thermostat
             entity: climate.upstairs
+          - type: glance
+            entities:
+              - entity: sensor.upstairsthermoper
+                name: Operation
+              - entity: sensor.upstairs_humidity
+                name: Humidity
+              - entity: sensor.upstairs_temperature
+                name: Temperature
+              - entity: sensor.upstairs_hvac_runtime
+                name: Runtime
+              - entity: switch.upstairs_away
+                tap_action:
+                  action: toggle
+                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_up
             show_name: false
@@ -626,6 +599,20 @@ views:
         cards:
           - type: thermostat
             entity: climate.bedroom
+          - type: glance
+            entities:
+              - entity: sensor.masterthermoper
+                name: Operation
+              - entity: sensor.bedroom_humidity
+                name: Humidity
+              - entity: sensor.master_temperature
+                name: Temperature
+              - entity: sensor.master_hvac_runtime
+                name: Runtime
+              - entity: switch.bedroom_away
+                tap_action:
+                  action: toggle
+                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_master
             show_name: false
@@ -643,80 +630,60 @@ views:
     id: cameras
     title: Cameras
     cards:
-      - id: a68c610c6bc14c41a30539b8c00effd6
-        type: picture-entity
+      - type: picture-entity
         entity: camera.driveway
         show_name: false
         show_state: false
-      - id: 570349a0a4084b169498c0bf110ed6af
-        type: picture-entity
+      - type: picture-entity
         entity: camera.patio
         show_name: false
         show_state: false
-      - id: 00e452b8eba1494c805f1a6bfbcbe1e3
-        type: picture-entity
+      - type: picture-entity
         entity: camera.porch
         show_name: false
         show_state: false
-      - id: 43f6f6e13d26488a9b8abe6315b77b47
-        type: picture-entity
+      - type: picture-entity
         entity: camera.backyard
         show_name: false
         show_state: false
-      - id: 08680d710332448d8cc3dd87bede7691
-        type: picture-entity
+      - type: picture-entity
         entity: camera.arlo3
-      - id: 2e939adffb4d40bda528abaa6aaf2256
-        type: picture-entity
+      - type: picture-entity
         entity: camera.arlolivingroom
-      - id: b13fce6d1f9542568fa56454716b9124
-        type: picture-entity
+      - type: picture-entity
         entity: camera.livingroom2
-      - id: 09d9f397db224062a0eafab87708afd1
-        type: picture-entity
+      - type: picture-entity
         entity: camera.front_door
-      - id: 7fd0af6cabbe41cea91a5a9e90b9de15
-        type: picture-entity
+      - type: picture-entity
         entity: camera.worldtime
         show_name: false
         show_state: false
-      - id: ef40de8b4019408ab716efed2eda5a27
-        type: picture-entity
+      - type: picture-entity
         entity: camera.ars_bloom
         show_name: false
         show_state: false
-      - id: d3c99655bd384b8f9ab2f2e700f38efc  # Automatically created id
-        type: picture-entity
+      - type: picture-entity
         entity: camera.driveway_tf
         show_name: false
         show_state: false
-      - id: 788edf04ecae462883cec383e0442774  # Automatically created id
-        type: picture-entity
+      - type: picture-entity
         entity: camera.porch_tf
         show_name: false
         show_state: false
-      - id: 66be5afadffd40df8d980d309ebf547f  # Automatically created id
-        type: picture-entity
+      - type: picture-entity
         entity: camera.patio_tf
         show_name: false
         show_state: false
-      - id: ad216511e71c4db8b98c35b77e83ae49  # Automatically created id
-        type: picture-entity
+      - type: picture-entity
         entity: camera.backyard_tf
         show_name: false
         show_state: false
-
-      # - type: picture-entity
-      #   entity: camera.unsplash
-      #   show_name: false
-      #   show_state: false
 
   - icon: mdi:play-circle-outline
     id: media
     title: Media
     cards:
-      - id: fcb0fd50bf114be9b77be8be55b7ec5c
-        type: entities
+      - type: entities
         title: Entertainment
         show_header_toggle: false
         entities:
@@ -728,13 +695,11 @@ views:
           - sensor.total_tv_time
           - sensor.sonos_audio_in
           - script.tv_off
-      - id: players
-        type: entities
+      - type: entities
         title: Players
         show_header_toggle: false
         entities:
           - media_player.livingroomsonos
-          - media_player.aloks_fire_tv_2
           - media_player.family_room_2
           - media_player.kodi_nstv
           - media_player.echo_dot_gen2
@@ -745,8 +710,7 @@ views:
           # - media_player.shieldtv
           # # - media_player.aftmm
           # - media_player.fire_stick_master
-      - id: 0bff7eafb9a24facb4223c25e44be920
-        type: vertical-stack
+      - type: vertical-stack
         cards:
           - type: horizontal-stack
             cards:
@@ -845,8 +809,7 @@ views:
               - type: custom:button-card
                 color_type: blank-card
 
-      - id: 4cb1e9976836491f9708276bf552f21f
-        type: entities
+      - type: entities
         title: Light Operations
         show_header_toggle: false
         entities:
@@ -857,39 +820,28 @@ views:
           - script.lifx_stop_effects
           - script.master_colorloop
           - script.master_random
-      - id: a62d0e7432dd433fa4158b6058a1293d
-        type: media-control
+      - type: media-control
         entity: media_player.livingroomsonos
-      - id: master_4k_fire_stick
-        type: media-control
-        entity: media_player.aloks_fire_tv_2
-      - id: 8b1c423890f64067bd2fe0eefbe332e1
-        type: media-control
+      - type: media-control
         entity: media_player.family_room_2
-      - id: c0a4d235edb946ed940acbdf804fd332
-        type: media-control
+      - type: media-control
         entity: media_player.kodi_nstv
-      - id: 01db5cbdc14d45808eb00d0f529a3820
-        type: media-control
+      - type: media-control
         entity: media_player.echo_dot_gen2
-      - id: 2e379856f1f94190b6083f9941f2dad1
-        type: media-control
+      - type: media-control
         entity: media_player.living_room_home
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
-      - id: 2ee41baf661843e78a127a05b0a2934c
-        type: media-control
+      - type: media-control
         entity: media_player.living_room_tv
-      - id: 68b1aa39fb264de7a4052bded15c7264
-        type: media-control
+      - type: media-control
         entity: media_player.shield
 
   - icon: mdi:settings
     id: settings
     title: Settings
     cards:
-      - id: 05ef9927e8a64463a73bd231b38f8846
-        type: horizontal-stack
+      - type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.rashmiphone_rashmiphone
@@ -926,8 +878,7 @@ views:
             state_image:
               'home': /local/icons/rashmi_geofency_home.png
               'not_home': /local/icons/rashmi_geofency_not_home.png
-      - id: 93c8ed472245444782e900ac72ba3585
-        type: horizontal-stack
+      - type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.alokphone_alokphone
@@ -972,8 +923,7 @@ views:
               'not_home': /local/icons/alok_geofency_not_home.png
               'buckhead': /local/icons/alok_geofency_not_home.png
               'downtown': /local/icons/alok_geofency_not_home.png
-      - id: e20fb9ff10fa49eabef4873b302a1527
-        type: horizontal-stack
+      - type: horizontal-stack
         cards:
           - type: picture-entity
             entity: device_tracker.meta_alok
@@ -998,16 +948,14 @@ views:
             hold_action:
               action: toggle
 
-      - id: e89b4082ac7a4dcbae5fd9c832948654
-        type: entities
+      - type: entities
         title: HASS Details
         show_header_toggle: false
         entities:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
           - input_boolean.devmode
-      - id: 4f80e7420c574e1ba1feec6ba10ee8e7
-        type: entities
+      - type: entities
         title: Camera Processing
         show_header_toggle: false
         entities:
@@ -1104,8 +1052,7 @@ views:
           - sensor.battery_level_arlo3
           - sensor.captured_today_arlo3
           - sensor.signal_strength_arlo3
-      - id: f45bc4c5d3774bb1bf7b230f9a826247
-        type: entities
+      - type: entities
         title: USCIS
         show_header_toggle: false
         entities:
@@ -1117,8 +1064,7 @@ views:
     id: test
     title: Testing
     cards:
-      - id: sector_performance
-        type: vertical-stack
+      - type: vertical-stack
         cards:
           - type: horizontal-stack
             cards:
@@ -1248,8 +1194,7 @@ views:
                   red: -6
                   yellow: -2
                   green: 0
-      - id: camera_sensors
-        type: vertical-stack
+      - type: vertical-stack
         cards:
           - type: horizontal-stack
             cards:
@@ -1471,18 +1416,15 @@ views:
                 style:
                   - font-size: 12px
                   - text-transform: capitalize
-      - id: 4c3f5b251e2e4092a2b7b9f8301364b0
-        type: custom:calendar-card
+      - type: custom:calendar-card
         entities:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - id: master_brightness
-        type: sensor
+      - type: sensor
         entity: sensor.illumination_158d00016c53bf
         graph: line
-      - id: 549e8a9c3157457da71ee90bad9c40fa
-        type: picture-elements
+      - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png
         elements:

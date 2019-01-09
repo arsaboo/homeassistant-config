@@ -333,9 +333,9 @@ camera:
   # - platform: generic
   #   still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
   #   name: WundergroundRadar
-  # - platform: generic
-  #   name: worldtime
-  #   still_image_url: https://imgs.xkcd.com/comics/now.png
+  - platform: generic
+    name: worldtime
+    still_image_url: https://imgs.xkcd.com/comics/now.png
   # - platform: generic
   #   name: LivingRoom_temperature
   #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'

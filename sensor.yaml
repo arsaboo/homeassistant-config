@@ -2,8 +2,6 @@
     api_key: !secret darksky_key
     monitored_conditions:
       - summary
-      - cloud_cover
-      - icon
       - daily_summary
       - hourly_summary
     update_interval:
