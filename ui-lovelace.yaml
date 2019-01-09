@@ -984,10 +984,6 @@ views:
         entities:
           - sensor.speedtest_download
           - switch.pihole
-          - sensor.pihole_dns_queries_today
-          - sensor.pihole_domains_blocked
-          - sensor.pihole_ads_percentage_blocked_today
-          - sensor.pihole_dns_unique_domains
           - type: divider
           - sensor.glances_cpu_load
           - sensor.glances_disk_used
