@@ -24,10 +24,10 @@
       entity_id:
         - device_tracker.alokiosiphone
         - device_tracker.alok_alok
-        - device_tracker.e1594e5321df414c82daf655d5282fca
+        - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
         - device_tracker.rashmiappiphone
         - device_tracker.sonu_sonu
-        - device_tracker.b4445761f6c04b7f835fcfdc03b47111
+        - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
     - platform: state
       entity_id:
         - device_tracker.myiphone
@@ -1935,7 +1935,7 @@
   action:
     # - service: device_tracker.see
     #   data_template:
-    #     dev_id: b4445761f6c04b7f835fcfdc03b47111
+    #     dev_id: b4445761_f6c0_4b7f_835f_cfdc03b47111
     #     gps:
     #       - "{{trigger.json.latitude}}"
     #       - "{{trigger.json.longitude}}"
