@@ -20,10 +20,11 @@ URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.remote.control?name={}"
 SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.remote.control?name={}"
 
 
-class RemoteWebsocket(websocket.WebSocketApp):
+class RemoteWebsocket(object):
     """Object for remote control connection."""
 
     def __init__(self, config):
+
         if sys.platform.startswith('win'):
             path = os.path.join(os.path.expandvars('%appdata%'), 'samsungctl')
         else:
@@ -42,94 +43,86 @@ class RemoteWebsocket(websocket.WebSocketApp):
 
         self.config = config
 
-        self.open_event = threading.Event()
         self.auth_event = threading.Event()
         self.receive_event = threading.Event()
         self.receive_lock = threading.Lock()
         self.close_event = threading.Event()
         self._registered_callbacks = []
         self._receive_callbacks = []
+        self._loop_event = threading.Event()
+        self._thread = None
         self.sock = None
 
         self.open()
 
-    def on_open(self, *_):
-        logger.debug('Websocket Connection Opened')
-        self.open_event.set()
+    def loop(self):
+        while not self._loop_event.isSet():
+            try:
+                data = self.sock.recv()
+                if data:
+                    self.on_message(data)
+            except:
+                pass
+
+        self.sock = None
 
     def open(self):
-        def do():
-            token = ''
-            all_tokens = []
+        token = ''
+        all_tokens = []
 
-            with open(self.token_file, 'r') as f:
-                tokens = f.read()
+        with open(self.token_file, 'r') as f:
+            tokens = f.read()
 
-            for line in tokens.split('\n'):
-                if not line.strip():
-                    continue
-                if line.startswith(self.config["host"] + ':'):
-                    token = line
-                else:
-                    all_tokens += [line]
-
-            if token:
-                all_tokens += [token]
-                token = token.replace(self.config["host"] + ':', '')
-                logger.debug('using saved token: ' + token)
-                token = "&token=" + token
-
-            if all_tokens:
-                with open(self.token_file, 'w') as f:
-                    f.write('\n'.join(all_tokens) + '\n')
-
-            with self.receive_lock:
-                if self.sock is not None:
-                    self.close()
-
-                if token or self.config['port'] == 8002:
-                    self.config['port'] = 8002
-                    url = SSL_URL_FORMAT.format(
-                        self.config["host"],
-                        self.config["port"],
-                        self._serialize_string(self.config["name"])
-                    ) + token
-
-                else:
-                    self.config['port'] = 8001
-                    url = URL_FORMAT.format(
-                        self.config["host"],
-                        self.config["port"],
-                        self._serialize_string(self.config["name"])
-                    )
-
-                super(RemoteWebsocket, self).__init__(url)
-
-            if token or self.config['port'] == 8002:
-                self.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+        for line in tokens.split('\n'):
+            if not line.strip():
+                continue
+            if line.startswith(self.config["host"] + ':'):
+                token = line
             else:
-                self.run_forever()
+                all_tokens += [line]
 
-        self.open_event.clear()
+        if token:
+            all_tokens += [token]
+            token = token.replace(self.config["host"] + ':', '')
+            logger.debug('using saved token: ' + token)
+            token = "&token=" + token
+
+        if all_tokens:
+            with open(self.token_file, 'w') as f:
+                f.write('\n'.join(all_tokens) + '\n')
+
+        if self.sock is not None:
+            self.close()
+
+        if token or self.config['port'] == 8002:
+            self.config['port'] = 8002
+            sslopt = {"cert_reqs": ssl.CERT_NONE}
+            url = SSL_URL_FORMAT.format(
+                self.config["host"],
+                self.config["port"],
+                self._serialize_string(self.config["name"])
+            ) + token
+
+        else:
+            self.config['port'] = 8001
+            sslopt = {}
+            url = URL_FORMAT.format(
+                self.config["host"],
+                self.config["port"],
+                self._serialize_string(self.config["name"])
+            )
+
+        self.sock = websocket.create_connection(url, sslopt=sslopt)
+
         self.auth_event.clear()
         self.receive_event.clear()
-
-        threading.Thread(target=do).start()
-
-        self.open_event.wait(5.0)
-        if not self.open_event.isSet():
-            raise RuntimeError('Connection Failure')
+        self._thread = threading.Thread(target=self.loop)
+        self._thread.start()
 
         self.auth_event.wait(30.0)
         if not self.auth_event.isSet():
             self.close()
             raise RuntimeError('Auth Failure')
-
-    def on_close(self, *_):
-        logger.debug('Websocket Connection Closed')
-
-    def on_error(self, *args):
-        logger.error('Websocket error: %s', args)
 
     def __enter__(self):
         return self
@@ -140,8 +133,8 @@ class RemoteWebsocket(websocket.WebSocketApp):
     def close(self):
         """Close the connection."""
         if self.sock is not None:
-            with self.receive_lock:
-                websocket.WebSocketApp.close(self)
+            self._loop_event.set()
+            self.sock.close()
 
     def send(self, method, **params):
         with self.receive_lock:
@@ -150,7 +143,7 @@ class RemoteWebsocket(websocket.WebSocketApp):
                 params=params
             )
             self.receive_event.clear()
-            self.send(json.dumps(payload))
+            self.sock.send(json.dumps(payload))
 
     def control(self, key, cmd='Click'):
         """
@@ -231,11 +224,7 @@ class RemoteWebsocket(websocket.WebSocketApp):
     def register_receive_callback(self, callback, key, data):
         self._registered_callbacks += [[callback, key, data]]
 
-    def on_message(self, *args):
-        if len(args) == 1:
-            message = args[0]
-        else:
-            message = args[1]
+    def on_message(self, message):
 
         response = json.loads(message)
         logger.debug('incoming message: ' + message)

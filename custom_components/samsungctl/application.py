@@ -512,5 +512,3 @@ class AppData(object):
 
             event.wait(3.0)
             return icon[0]
-
-
