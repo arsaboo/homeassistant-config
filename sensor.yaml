@@ -1,3 +1,14 @@
+  - platform: darksky
+    api_key: !secret darksky_key
+    monitored_conditions:
+      - summary
+      - cloud_cover
+      - icon
+      - daily_summary
+      - hourly_summary
+    update_interval:
+      minutes: 20
+  - platform: season
   - platform: tautulli
     host: 192.168.2.212
     api_key: !secret tautulli_api

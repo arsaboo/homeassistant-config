@@ -396,7 +396,6 @@
           - image_processing.tagbox_patio
           - image_processing.tagbox_driveway
           - image_processing.tagbox_porch
-      # - service: python_script.dark_sky_friendly_names
   discovery:
     alias: 'Play Discovery'
     sequence:

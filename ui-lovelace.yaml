@@ -1,6 +1,6 @@
 resources:
   - url: /local/custom_ui/weather-card.js
-    type: js
+    type: module
   - url: /local/custom_ui/circle-sensor-card.js
     type: module
   - url: /local/custom_ui/dark-sky-weather-card.js?v=1
@@ -505,37 +505,8 @@ views:
     id: weather
     title: Weather
     cards:
-      - id: dark_sky_animated_card
-        type: custom:dark-sky-weather-card
-        entity_sun: sun.sun
-        entity_daily_summary: sensor.dark_sky_daily_summary
-        entity_current_conditions: sensor.dark_sky_icon
-        entity_humidity: sensor.dark_sky_humidity
-        entity_pressure: sensor.dark_sky_pressure
-        entity_temperature: sensor.dark_sky_temperature
-        entity_visibility: sensor.dark_sky_visibility
-        entity_wind_bearing: sensor.dark_sky_wind_bearing
-        entity_wind_speed: sensor.dark_sky_wind_speed
-        entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1
-        entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2
-        entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
-        entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
-        entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
-        entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature_1
-        entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_2
-        entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_3
-        entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_4
-        entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_5
-        entity_forecast_icon_1: sensor.dark_sky_icon_1
-        entity_forecast_icon_2: sensor.dark_sky_icon_2
-        entity_forecast_icon_3: sensor.dark_sky_icon_3
-        entity_forecast_icon_4: sensor.dark_sky_icon_4
-        entity_forecast_icon_5: sensor.dark_sky_icon_5
-        entity_summary_1: sensor.dark_sky_summary_1
-        entity_summary_2: sensor.dark_sky_summary_2
-        entity_summary_3: sensor.dark_sky_summary_3
-        entity_summary_4: sensor.dark_sky_summary_4
-        entity_summary_5: sensor.dark_sky_summary_5
+      - type: "custom:weather-card"
+        entity: weather.dark_sky
       - type: vertical-stack
         cards:
           - type: glance
@@ -583,10 +554,6 @@ views:
                 tap_action:
                   action: toggle
                 name: Away
-
-      # - type: "custom:weather-card"
-      #   entity_weather: weather.yweather
-      #   entity_sun: sun.sun
       - type: entities
         title: Weather
         show_header_toggle: false
@@ -599,19 +566,7 @@ views:
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
           - sensor.dark_sky_daily_summary
-      # - type: entities
-      #   title: Forecast
-      #   entities:
-      #     - sensor.forecast_0
-      #     - sensor.forecast_1
-      #     - sensor.forecast_2
-      #     - sensor.forecast_3
-      #     - sensor.forecast_4
-      #     - sensor.forecast_5
-      #     - sensor.forecast_6
-      #     - sensor.forecast_7
-      - id: 696ce899a76d482a87653595081423cc
-        type: entities
+      - type: entities
         title: Room Sensors
         show_header_toggle: false
         entities:
