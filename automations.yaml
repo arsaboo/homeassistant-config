@@ -984,7 +984,7 @@
       state: 'armed_home'
     - condition: time
       after: '22:30:00'
-      before: '05:00:00'      
+      before: '05:00:00'
   action:
     - service: light.turn_off
       data_template:
@@ -1639,14 +1639,6 @@
       service: homeassistant.update_entity
       data:
         entity_id:
-          - sensor.forecast_0
-          - sensor.forecast_1
-          - sensor.forecast_2
-          - sensor.forecast_3
-          - sensor.forecast_4
-          - sensor.forecast_5
-          - sensor.forecast_6
-          - sensor.forecast_7
           - sensor.battery_status
           - sensor.emulated_hue_names
 #################################################################

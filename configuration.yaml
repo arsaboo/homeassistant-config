@@ -39,14 +39,16 @@ influxdb:
        - sensor.temperature_158d0001ab3c88
        - sensor.living_room_temperature
        - sensor.portfolioval
+       - sensor.personal_capital_investments
        - sensor.dark_sky_temperature
        - climate.downstairs
        - climate.upstairs
        - climate.bedroom
 python_script:
-# weather:
-  # - platform: darksky
-  #   api_key: !secret darksky_key
+weather:
+  - platform: darksky
+    api_key: !secret darksky_key
+    mode: daily
 # enable_debug:
 
 panel_custom:

@@ -483,16 +483,14 @@ views:
             type: custom:slider-entity-row
           - entity: light.hue_color_lamp_3
             type: custom:slider-entity-row
-      - id: ba5cc3c14dc34dd3a50450c995a67318
-        type: entities
+      - type: entities
         title: Switches
         entities:
           - entity: switch.wemoswitch
             secondary_info: last-changed
           - entity: switch.wemoinsight
             secondary_info: last-changed
-      - id: ring
-        type: entities
+      - type: entities
         title: Ring Doorbell
         show_header_toggle: false
         entities:
@@ -593,8 +591,7 @@ views:
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
       #   type: picture-entity
       #   entity: camera.wundergroundradar
-      - id: 5e501cc7179141188b9f7f376a89d855
-        type: iframe
+      - type: iframe
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
   - icon: mdi:chart-line
