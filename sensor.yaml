@@ -4,6 +4,7 @@
       - summary
       - daily_summary
       - hourly_summary
+      - temperature
     update_interval:
       minutes: 20
   - platform: season
