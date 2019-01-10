@@ -437,9 +437,9 @@ views:
           - sensor.nasdaq_futures_change
           - sensor.nasdaq_futures_change_pct
           - type: divider
-          - sensor.sp_futures
-          - sensor.sp_futures_change
-          - sensor.sp_futures_change_pct
+          - sensor.s_p_futures
+          - sensor.s_p_futures_change
+          - sensor.s_p_futures_change_pct
           - type: divider
           - sensor.10_year_treasury
       - type: entities

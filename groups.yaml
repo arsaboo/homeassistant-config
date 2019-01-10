@@ -223,9 +223,9 @@
     - sensor.nasdaq_futures
     - sensor.nasdaq_futures_change
     - sensor.nasdaq_futures_change_pct
-    - sensor.sp_futures
-    - sensor.sp_futures_change
-    - sensor.sp_futures_change_pct
+    - sensor.s_p_futures
+    - sensor.s_p_futures_change
+    - sensor.s_p_futures_change_pct
     - sensor.10_year_treasury
 
   Camera Switches:
