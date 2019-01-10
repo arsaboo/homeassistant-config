@@ -23,6 +23,7 @@ const weatherIconsDay = {
 const weatherIconsNight = {
   ...weatherIconsDay,
   clear: "night",
+  "clear-night": "night",
   sunny: "night",
   partlycloudy: "cloudy-night-3",
   "windy-variant": "cloudy-night-3",
