@@ -14,7 +14,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (PLATFORM_SCHEMA)
 from homeassistant.util import Throttle
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 
 REQUIREMENTS = ['personalcapital==1.0.1']
 
@@ -37,7 +37,7 @@ ATTR_OTHER_LIABILITIES = 'other_liabilities'
 ATTR_CREDIT = 'credit_cards'
 ATTR_LOANS = 'loans'
 
-SCAN_INTERVAL = timedelta(minutes=5)
+SCAN_INTERVAL = timedelta(minutes=15)
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=30)
 
 SENSOR_TYPES = {
@@ -140,7 +140,7 @@ def continue_setup_platform(hass, config, pc, add_devices, discovery_info=None):
     if "personalcapital" in _CONFIGURING:
         hass.components.configurator.request_done(_CONFIGURING.pop("personalcapital"))
 
-    rest_pc = PersonalCapitalAccountData(pc)
+    rest_pc = PersonalCapitalAccountData(pc, config)
     uom = config[CONF_UNIT_OF_MEASUREMENT]
     sensors = []
     categories = config[CONF_CATEGORIES] if len(config[CONF_CATEGORIES]) > 0 else SENSOR_TYPES.keys()
@@ -299,9 +299,10 @@ class PersonalCapitalCategorySensor(Entity):
 class PersonalCapitalAccountData(object):
     """Get data from personalcapital.com"""
 
-    def __init__(self, pc):
+    def __init__(self, pc, config):
         self._pc = pc
         self.data = None
+        self._config = config
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
@@ -309,5 +310,5 @@ class PersonalCapitalAccountData(object):
         self.data = self._pc.fetch('/newaccount/getAccounts')
 
         if not self.data or not self.data.json()['spHeader']['success']:
-            self._pc.login(_CACHE[CONF_EMAIL], _CACHE[CONF_PASSWORD])
+            self._pc.login(self._config[CONF_EMAIL], self._config[CONF_PASSWORD])
             self.data = self._pc.fetch('/newaccount/getAccounts')
