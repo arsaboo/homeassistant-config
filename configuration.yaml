@@ -40,6 +40,9 @@ influxdb:
        - sensor.living_room_temperature
        - sensor.portfolioval
        - sensor.personal_capital_investments
+       - sensor.personal_capital_assets
+       - sensor.personal_capital_liabilities
+       - sensor.personal_capital_networth
        - sensor.dark_sky_temperature
        - climate.downstairs
        - climate.upstairs
@@ -344,6 +347,9 @@ camera:
   - platform: local_file
     name: Grafana portfolio
     file_path: /home/homeassistant/.homeassistant/downloads/grafana/portfolio.png
+  - platform: local_file
+    name: Grafana networth
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/networth.png
   - platform: local_file
     name: Grafana temp down
     file_path: /home/homeassistant/.homeassistant/downloads/grafana/down_temp.png
