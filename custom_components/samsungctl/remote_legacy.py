@@ -7,6 +7,7 @@ import time
 import codecs
 import sys
 from . import exceptions
+from .utils import LogIt, LogItWithReturn
 
 logger = logging.getLogger('samsungctl')
 
@@ -14,6 +15,7 @@ logger = logging.getLogger('samsungctl')
 class RemoteLegacy(object):
     """Object for remote control connection."""
 
+    @LogIt
     def __init__(self, config):
         """Make a new connection."""
         if not config["port"]:
@@ -44,6 +46,7 @@ class RemoteLegacy(object):
     def __exit__(self, type, value, traceback):
         self.close()
 
+    @LogIt
     def close(self):
         """Close the connection."""
         if self.connection:
@@ -51,6 +54,7 @@ class RemoteLegacy(object):
             self.connection = None
             logging.debug("Connection closed.")
 
+    @LogIt
     def control(self, key):
         """Send a control command."""
         if not self.connection:
@@ -66,6 +70,7 @@ class RemoteLegacy(object):
 
     _key_interval = 0.2
 
+    @LogIt
     def _read_response(self, first_time=False):
         header = self.connection.recv(3)
         tv_name_len = int(codecs.encode(header[1:3], 'hex'), 16)
@@ -100,6 +105,7 @@ class RemoteLegacy(object):
         raise exceptions.UnhandledResponse(response)
 
     @staticmethod
+    @LogItWithReturn
     def _serialize_string(string, raw=False):
         if isinstance(string, str):
             if sys.version_info[0] > 2:

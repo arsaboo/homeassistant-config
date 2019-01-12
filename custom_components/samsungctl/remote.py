@@ -5,10 +5,14 @@ from .remote_legacy import RemoteLegacy
 from .remote_websocket import RemoteWebsocket
 import logging
 
+logger = logging.getLogger('samsungctl')
+
 
 class Remote:
     def __init__(self, config, log_level=None):
         logging.basicConfig(format="%(message)s", level=log_level)
+        if log_level is not None:
+            logger.setLevel(log_level)
 
         if config["method"] == "legacy":
             self.remote = RemoteLegacy(config)
