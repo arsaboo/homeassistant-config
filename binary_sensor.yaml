@@ -1,13 +1,13 @@
-  - platform: 'bayesian2'
-    prior: 0.25
-    name: 'Alok test'
-    probability_threshold: 0.95
-    observations:
-      - entity_id: 'device_tracker.alokphone_alokphone'
-        prob_given_true: 0.1
-        prob_given_false: 0.9
-        platform: 'state'
-        to_state: 'not_home'
+  # - platform: 'bayesian2'
+  #   prior: 0.25
+  #   name: 'Alok test'
+  #   probability_threshold: 0.95
+  #   observations:
+  #     - entity_id: 'device_tracker.alokphone_alokphone'
+  #       prob_given_true: 0.1
+  #       prob_given_false: 0.9
+  #       platform: 'state'
+  #       to_state: 'not_home'
   - platform: 'bayesian'
     prior: 0.75
     name: 'Rashmi Home'

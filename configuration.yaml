@@ -39,10 +39,10 @@ influxdb:
        - sensor.temperature_158d0001ab3c88
        - sensor.living_room_temperature
        - sensor.portfolioval
-       - sensor.personal_capital_investments
-       - sensor.personal_capital_assets
-       - sensor.personal_capital_liabilities
-       - sensor.personal_capital_networth
+       - sensor.pc_investments
+       - sensor.pc_assets
+       - sensor.pc_liabilities
+       - sensor.pc_networth
        - sensor.dark_sky_temperature
        - climate.downstairs
        - climate.upstairs
@@ -548,7 +548,7 @@ media_player:
     host: 192.168.2.252
     name: Living Room TV
     mac: !secret samsungtvmac
-    port: 8001
+    port: 8002
     timeout: 5
   - platform: alexa
     email: !secret amazon_user
@@ -676,7 +676,6 @@ logger:
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
     # homeassistant.components.http.view: info
-    custom_components.sensor.personalcapital: debug
     # adb.adb_commands: debug
     # adb.adb_protocol: debug
     # homeassistant.components.device_tracker: info
