@@ -118,7 +118,7 @@ class SamsungTVDevice(MediaPlayerDevice):
             'timeout': timeout,
         }
 
-        if self._config['port'] == 8001:
+        if self._config['port'] == 8002:
             self._config['method'] = 'websocket'
         else:
             self._config['method'] = 'legacy'

@@ -9,6 +9,11 @@ logger = logging.getLogger('samsungctl')
 logger.addHandler(NullHandler())
 logging.basicConfig(format="%(message)s", level=None)
 
+
+LOG_LEVEL_DEBUG = logging.DEBUG
+LOG_LEVEL_INFO = logging.INFO
+LOG_LEVEL_ERROR = logging.ERROR
+
 __title__ = "samsungctl"
 __version__ = "0.8.0b"
 __url__ = "https://github.com/kdschlosser/samsungctl"

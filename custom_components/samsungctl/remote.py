@@ -3,10 +3,13 @@
 from . import exceptions
 from .remote_legacy import RemoteLegacy
 from .remote_websocket import RemoteWebsocket
+import logging
 
 
 class Remote:
-    def __init__(self, config):
+    def __init__(self, config, log_level=None):
+        logging.basicConfig(format="%(message)s", level=log_level)
+
         if config["method"] == "legacy":
             self.remote = RemoteLegacy(config)
         elif config["method"] == "websocket":
