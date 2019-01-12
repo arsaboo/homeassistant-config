@@ -22,8 +22,8 @@ const weatherIconsDay = {
 
 const weatherIconsNight = {
   ...weatherIconsDay,
-  clear: "night",
   "clear-night": "night",
+  clear: "night",
   sunny: "night",
   partlycloudy: "cloudy-night-3",
   "windy-variant": "cloudy-night-3",
@@ -48,6 +48,24 @@ const windDirections = [
   "NNW",
   "N",
 ];
+
+const fireEvent = (
+  node,
+  type,
+  detail,
+  options
+) => {
+  options = options || {};
+  detail = detail === null || detail === undefined ? {} : detail;
+  const event = new Event(type, {
+    bubbles: options.bubbles === undefined ? true : options.bubbles,
+    cancelable: Boolean(options.cancelable),
+    composed: options.composed === undefined ? true : options.composed,
+  });
+  event.detail = detail;
+  node.dispatchEvent(event);
+  return event;
+};
 
 function hasConfigOrEntityChanged(element, changedProps) {
   if (changedProps.has("_config")) {
@@ -97,8 +115,7 @@ class WeatherCard extends LitElement {
 
     return html`
       ${this.renderStyle()}
-      <ha-card>
-        <div class="card">
+      <ha-card @click="${this._handleClick}">
           <span
             class="icon bigger"
             style="background: none, url(/local/icons/weather_icons/animated/${
@@ -159,7 +176,6 @@ class WeatherCard extends LitElement {
                 )
             }
           </div>
-        </div>
       </ha-card>
     `;
   }
@@ -182,6 +198,10 @@ class WeatherCard extends LitElement {
       }
   }
 
+  _handleClick() {
+    fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+  }
+
   getCardSize() {
     return 3;
   }
@@ -189,17 +209,18 @@ class WeatherCard extends LitElement {
   renderStyle() {
     return html`
       <style>
-          .clear {
-            clear: both;
-          }
-
-          .card {
+          ha-card {
+            cursor: pointer;
             margin: auto;
             padding-top: 2.5em;
             padding-bottom: 1.3em;
             padding-left: 1em;
             padding-right:1em;
             position: relative;
+          }
+
+          .clear {
+            clear: both;
           }
 
           .ha-icon {

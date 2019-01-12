@@ -1,5 +1,5 @@
 resources:
-  - url: /local/custom_ui/weather-card.js?v=0.1
+  - url: /local/custom_ui/weather-card.js?v=0.21
     type: module
   - url: /local/custom_ui/pc-card.js?v=0
     type: module
