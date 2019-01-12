@@ -8,13 +8,14 @@ https://github.com/custom-components/sensor.personalcapital
 import logging
 import voluptuous as vol
 import json
+import time
 from datetime import timedelta
 from homeassistant.helpers.entity import Entity
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (PLATFORM_SCHEMA)
 from homeassistant.util import Throttle
 
-__version__ = '0.0.5'
+__version__ = '0.0.8'
 
 REQUIREMENTS = ['personalcapital==1.0.1']
 
@@ -192,7 +193,7 @@ class PersonalCapitalNetWorthSensor(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Personal Capital Networth'
+        return 'PC Networth'
 
     @property
     def state(self):
@@ -241,13 +242,12 @@ class PersonalCapitalCategorySensor(Entity):
         """Initialize the sensor."""
         self.hass = hass
         self._rest = rest
-        self._name = f'Personal Capital {SENSOR_TYPES[sensor_type][3]}'
+        self._name = f'PC {SENSOR_TYPES[sensor_type][3]}'
         self._productType = SENSOR_TYPES[sensor_type][0]
         self._accountType = SENSOR_TYPES[sensor_type][1]
         self._balanceName = SENSOR_TYPES[sensor_type][2]
         self._state = None
         self._unit_of_measurement = unit_of_measurement
-        self.hass.data[self._productType] = {}
 
     def update(self):
         """Get the latest state of the sensor."""
@@ -255,12 +255,11 @@ class PersonalCapitalCategorySensor(Entity):
         data = self._rest.data.json()['spData']
         self._state = data.get(self._balanceName, 0.0)
         accounts = data.get('accounts')
+        self.hass.data[self._productType] = {'accounts': []}
 
         for account in accounts:
-            if self._productType == account.get('productType') and \
-               (self._accountType == '' or self._accountType == account.get('accountType', '')) and \
-               account.get('closeDate', '') == '':
-                self.hass.data[self._productType][account.get('name', '')] = {
+            if self._productType == account.get('productType') and account.get('closeDate', '') == '':
+                self.hass.data[self._productType].get('accounts').append({
                     "name": account.get('name', ''),
                     "firm_name": account.get('firmName', ''),
                     "logo": account.get('logoPath', ''),
@@ -268,7 +267,8 @@ class PersonalCapitalCategorySensor(Entity):
                     "account_type": account.get('accountType', ''),
                     "url": account.get('homeUrl', ''),
                     "currency": account.get('currency', ''),
-                }
+                    "refreshed": howLongAgo(account.get('lastRefreshed', 0)) + ' ago',
+                })
 
     @property
     def name(self):
@@ -312,3 +312,18 @@ class PersonalCapitalAccountData(object):
         if not self.data or not self.data.json()['spHeader']['success']:
             self._pc.login(self._config[CONF_EMAIL], self._config[CONF_PASSWORD])
             self.data = self._pc.fetch('/newaccount/getAccounts')
+
+
+def howLongAgo(last_epoch):
+    a = last_epoch
+    b = time.time()
+    c = b - a
+    days = c // 86400
+    hours = c // 3600 % 24
+    minutes = c // 60 % 60
+
+    if days > 0:
+        return str(round(days)) + ' days'
+    if hours > 0:
+        return str(round(hours)) + ' hours'
+    return str(round(minutes)) + ' minutes'

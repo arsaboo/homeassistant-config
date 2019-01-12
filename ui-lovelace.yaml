@@ -1,5 +1,7 @@
 resources:
-  - url: /local/custom_ui/weather-card.js
+  - url: /local/custom_ui/weather-card.js?v=0.1
+    type: module
+  - url: /local/custom_ui/pc-card.js?v=0
     type: module
   - url: /local/custom_ui/circle-sensor-card.js
     type: module
@@ -423,8 +425,8 @@ views:
         title: Investments
         show_header_toggle: false
         entities:
-          - sensor.personal_capital_networth
-          - sensor.personal_capital_investments
+          - sensor.pc_networth
+          - sensor.pc_investments
           - sensor.portfolioval
           - sensor.portfoliochange
           - sensor.portfoliochange2
@@ -1063,6 +1065,7 @@ views:
     id: test
     title: Testing
     cards:
+      - type: custom:pc-card
       - type: vertical-stack
         cards:
           - type: horizontal-stack
