@@ -21,7 +21,7 @@
     db_url: !secret recorder_db_url
     queries:
       - name: Portfolio morning
-        query: "SELECT state FROM states WHERE entity_id='sensor.pc_investments' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) = 1 or DATEDIFF(NOW(), last_changed) = 2 or DATEDIFF(NOW(), last_changed) = 3 or DATEDIFF(NOW(), last_changed) = 4)) ORDER BY last_changed desc LIMIT 1;"
+        query: "SELECT state FROM states WHERE entity_id='sensor.pc_investment' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) = 1 or DATEDIFF(NOW(), last_changed) = 2 or DATEDIFF(NOW(), last_changed) = 3 or DATEDIFF(NOW(), last_changed) = 4)) ORDER BY last_changed desc LIMIT 1;"
         column: 'state'
         unit_of_measurement: $
   - platform: personalcapital
@@ -356,7 +356,7 @@
         friendly_name: "Portfolio Change (PC)"
         unit_of_measurement: "$"
         value_template: >-
-           {{(states('sensor.pc_investments')|float - states('sensor.portfolio_morning')|float)|round (2)}}
+           {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
       hvacmode:
         friendly_name: "HVAC Mode"
         value_template: >-

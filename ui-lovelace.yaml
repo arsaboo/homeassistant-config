@@ -1,7 +1,7 @@
 resources:
   - url: /local/custom_ui/weather-card.js?v=0.21
     type: module
-  - url: /local/custom_ui/pc-card.js?v=0
+  - url: /local/custom_ui/pc-card.js?v=0.2
     type: module
   - url: /local/custom_ui/circle-sensor-card.js
     type: module
@@ -426,7 +426,7 @@ views:
         show_header_toggle: false
         entities:
           - sensor.pc_networth
-          - sensor.pc_investments
+          - sensor.pc_investment
           - sensor.portfolioval
           - sensor.portfoliochange
           - sensor.portfoliochange2

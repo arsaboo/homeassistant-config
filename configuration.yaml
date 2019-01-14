@@ -39,9 +39,7 @@ influxdb:
        - sensor.temperature_158d0001ab3c88
        - sensor.living_room_temperature
        - sensor.portfolioval
-       - sensor.pc_investments
-       - sensor.pc_assets
-       - sensor.pc_liabilities
+       - sensor.pc_investment
        - sensor.pc_networth
        - sensor.dark_sky_temperature
        - climate.downstairs
