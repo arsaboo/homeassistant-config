@@ -27,6 +27,13 @@
   - platform: personalcapital
     email: !secret pc_username
     password: !secret pc_password
+    monitored_categories:
+      - investment
+      - mortgage
+      - cash
+      - other_asset
+      - credit
+      - loan
   - platform: arlo
     monitored_conditions:
       - captured_today

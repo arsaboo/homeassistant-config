@@ -15,7 +15,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (PLATFORM_SCHEMA)
 from homeassistant.util import Throttle
 
-__version__ = '0.0.9'
+__version__ = '0.1.0'
 
 REQUIREMENTS = ['personalcapital==1.0.1']
 
@@ -30,25 +30,25 @@ DATA_PERSONAL_CAPITAL = 'personalcapital_cache'
 ATTR_NETWORTH = 'networth'
 ATTR_ASSETS = 'assets'
 ATTR_LIABILITIES = 'liabilities'
-ATTR_INVESTMENTS = 'investments'
-ATTR_MORTGAGES = 'mortgages'
+ATTR_INVESTMENT = 'investment'
+ATTR_MORTGAGE = 'mortgage'
 ATTR_CASH = 'cash'
-ATTR_OTHER_ASSETS = 'other_assets'
-ATTR_OTHER_LIABILITIES = 'other_liabilities'
-ATTR_CREDIT = 'credit_cards'
-ATTR_LOANS = 'loans'
+ATTR_OTHER_ASSET = 'other_asset'
+ATTR_OTHER_LIABILITY = 'other_liability'
+ATTR_CREDIT = 'credit'
+ATTR_LOAN = 'loan'
 
-SCAN_INTERVAL = timedelta(minutes=30)
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
+SCAN_INTERVAL = timedelta(minutes=15)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=30)
 
 SENSOR_TYPES = {
-    ATTR_INVESTMENTS: ['INVESTMENT', '', 'investmentAccountsTotal', 'Investment', False],
-    ATTR_MORTGAGES: ['MORTGAGE', '', 'mortgageAccountsTotal', 'Mortgage', True],
+    ATTR_INVESTMENT: ['INVESTMENT', '', 'investmentAccountsTotal', 'Investment', False],
+    ATTR_MORTGAGE: ['MORTGAGE', '', 'mortgageAccountsTotal', 'Mortgage', True],
     ATTR_CASH: ['BANK', 'Cash', 'cashAccountsTotal', 'Cash', False],
-    ATTR_OTHER_ASSETS: ['OTHER_ASSETS', '', 'otherAssetAccountsTotal', 'Other Asset', False],
-    ATTR_OTHER_LIABILITIES: ['OTHER_LIABILITIES', '', 'otherLiabilitiesAccountsTotal', 'Other Liability', True],
+    ATTR_OTHER_ASSET: ['OTHER_ASSETS', '', 'otherAssetAccountsTotal', 'Other Asset', False],
+    ATTR_OTHER_LIABILITY: ['OTHER_LIABILITIES', '', 'otherLiabilitiesAccountsTotal', 'Other Liability', True],
     ATTR_CREDIT: ['CREDIT_CARD', '', 'creditCardAccountsTotal', 'Credit', True],
-    ATTR_LOANS: ['LOAN', '', 'loanAccountsTotal', 'Loan', True],
+    ATTR_LOAN: ['LOAN', '', 'loanAccountsTotal', 'Loan', True],
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
