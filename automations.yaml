@@ -368,7 +368,12 @@
   action:
     - service: image_processing.scan
       data_template:
-        entity_id: "image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+        entity_id: >
+          {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
+            image_processing.tensorflow_porch
+          {% else %}
+            image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
+          {% endif %}
     # - service: image_processing.scan
     #   data_template:
     #     entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"

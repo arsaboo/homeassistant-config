@@ -1,12 +1,10 @@
 resources:
-  - url: /local/custom_ui/weather-card.js?v=0.21
+  - url: /local/custom_ui/weather-card.js?v=0.22
     type: module
   - url: /local/custom_ui/pc-card.js?v=0.2
     type: module
   - url: /local/custom_ui/circle-sensor-card.js
     type: module
-  - url: /local/custom_ui/dark-sky-weather-card.js?v=1
-    type: js
   - url: /local/custom_ui/monster-card.js?v=1
     type: js
   - url: /local/custom_ui/thermostat-card.js?v=1.3
@@ -17,7 +15,7 @@ resources:
     type: js
   - url: /local/custom_ui/slider-entity-row.js?v=0.3
     type: js
-  - url: /local/custom_ui/button-card.js
+  - url: /local/custom_ui/button-card.js?v=0.11
     type: module
   - url: /local/mini-media-player-bundle.js?v=0.0.1
     type: module
@@ -408,59 +406,26 @@ views:
               left: 15%
               width: 50px
               height: 50px
-      - type: horizontal-stack
-        cards:
-          - type: alarm-panel
-            entity: alarm_control_panel.abode_alarm
-            title: Abode
-            states:
-              - arm_home
-              - arm_away
-          - type: alarm-panel
-            entity: alarm_control_panel.arlohome
-            title: Arlo
-            states:
-              - arm_away
       - type: entities
         title: Investments
         show_header_toggle: false
         entities:
           - sensor.pc_networth
           - sensor.pc_investment
-          - sensor.portfolioval
-          - sensor.portfoliochange
           - sensor.portfoliochange2
           - type: divider
           - sensor.dow_futures
-          - sensor.dow_futures_change
-          - sensor.dow_futures_change_pct
-          - type: divider
           - sensor.nasdaq_futures
-          - sensor.nasdaq_futures_change
-          - sensor.nasdaq_futures_change_pct
-          - type: divider
           - sensor.s_p_futures
-          - sensor.s_p_futures_change
-          - sensor.s_p_futures_change_pct
-          - type: divider
           - sensor.10_year_treasury
       - type: entities
         title: Information
         show_header_toggle: false
         entities:
-          # - type: "custom:ext-weblink"
-          #   url: !secret commute_office_url
-          #   icon: mdi:car
-          #   entity: sensor.morning_commute
-          # - entity: sensor.alok_to_home
-          #   url: !secret commute_home_url
-          #   type: "custom:ext-weblink"
-          #   icon: mdi:car
           - sensor.morning_commute
           - sensor.alok_to_home
           - sensor.plexspy
           - sensor.usdinr
-
       - type: entities
         title: Lights
         entities:
@@ -486,21 +451,35 @@ views:
             secondary_info: last-changed
           - entity: switch.wemoinsight
             secondary_info: last-changed
+      - type: horizontal-stack
+        cards:
+          - type: alarm-panel
+            entity: alarm_control_panel.abode_alarm
+            title: Abode
+            states:
+              - arm_home
+              - arm_away
+          - type: alarm-panel
+            entity: alarm_control_panel.arlohome
+            title: Arlo
+            states:
+              - arm_away
       - type: entities
         title: Ring Doorbell
         show_header_toggle: false
         entities:
           - binary_sensor.ring_front_door_ding
           - binary_sensor.ring_front_door_motion
-          - sensor.ring_front_door_last_activity
           - sensor.ring_front_door_last_ding
           - sensor.ring_front_door_last_motion
+
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
     cards:
       - type: "custom:weather-card"
         entity: weather.dark_sky
+        icons: '/local/icons/weather_icons/animated/'
       - type: entities
         title: Weather
         show_header_toggle: false
