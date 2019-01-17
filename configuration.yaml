@@ -402,6 +402,20 @@ ifttt:
   key: !secret ifttt_key
 
 image_processing:
+  - platform: deepstack_object
+    ip_address: 192.168.2.212
+    port: 5000
+    scan_interval: 20000
+    target: person
+    source:
+      - entity_id: camera.patio
+        name: deepstack_patio
+      - entity_id: camera.porch
+        name: deepstack_porch
+      - entity_id: camera.driveway
+        name: deepstack_driveway
+      - entity_id: camera.backyard
+        name: deepstack_backyard
   - platform: amazon_rekognition
     aws_access_key_id: !secret aws_access_key_id
     aws_secret_access_key: !secret aws_secret_access_key

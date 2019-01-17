@@ -952,6 +952,10 @@ views:
           - image_processing.tensorflow_patio
           - image_processing.tensorflow_driveway
           - image_processing.tensorflow_backyard
+          - image_processing.deepstack_porch
+          - image_processing.deepstack_patio
+          - image_processing.deepstack_driveway
+          - image_processing.deepstack_backyard
           - image_processing.facebox_backyard
           - image_processing.facebox_patio
           - image_processing.facebox_driveway
@@ -975,7 +979,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: custom:button-card
-            entity: switch.arnavs_ipad
+            entity: switch.arnav_s_ipad
             name: iPad
             icon: mdi:tablet-ipad
             color: rgb(250, 218, 79)

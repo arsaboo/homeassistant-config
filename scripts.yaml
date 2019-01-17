@@ -388,6 +388,10 @@
           - image_processing.tensorflow_patio
           - image_processing.tensorflow_driveway
           - image_processing.tensorflow_backyard
+          - image_processing.deepstack_porch
+          - image_processing.deepstack_patio
+          - image_processing.deepstack_driveway
+          - image_processing.deepstack_backyard          
           - image_processing.facebox_backyard
           - image_processing.facebox_patio
           - image_processing.facebox_driveway

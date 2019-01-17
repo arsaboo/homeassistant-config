@@ -374,6 +374,14 @@
           {% else %}
             image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
           {% endif %}
+    - service: image_processing.scan
+      data_template:
+        entity_id: >
+          {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
+            image_processing.deepstack_porch
+          {% else %}
+            image_processing.deepstack_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
+          {% endif %}
     # - service: image_processing.scan
     #   data_template:
     #     entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
@@ -408,6 +416,10 @@
         - image_processing.tensorflow_patio
         - image_processing.tensorflow_driveway
         - image_processing.tensorflow_backyard
+        - image_processing.deepstack_porch
+        - image_processing.deepstack_patio
+        - image_processing.deepstack_driveway
+        - image_processing.deepstack_backyard
   condition:
     - condition: template
       value_template: '{{ trigger.to_state.state |int > 0 }}'
@@ -437,6 +449,25 @@
         name: "TF: "
         message: >-
           {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches }}.
+- id: deepstack_image_processing_notification
+  alias: 'Deepstack image processing'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - image_processing.deepstack_porch
+        - image_processing.deepstack_patio
+        - image_processing.deepstack_driveway
+        - image_processing.deepstack_backyard
+  condition:
+    - condition: template
+      value_template: '{{ trigger.to_state.state |int > 0 }}'
+  action:
+    - service: logbook.log
+      data_template:
+        name: "Deepstack: "
+        message: >-
+          {% for object in state_attr(trigger.entity_id,'predictions').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.predictions }}.          
 # {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
 # {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
 #
