@@ -147,6 +147,8 @@ views:
             entity: light.living_room_lights
             tap_action:
               action: toggle
+            hold_action:
+              action: more-info
             image: /local/icons/light_bulb_off.png
             state_image:
               'on': /local/icons/light_bulb_on.png
