@@ -236,7 +236,7 @@ def send_wol(mac_address):
     hex_mac = struct.pack('BBBBBB', *hex_mac)
 
     # create the magic packet from MAC address
-    packet = '\xff' * 6 + hex_mac * 16
+    packet = b'\xff' * 6 + hex_mac * 16
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.sendto(packet, ('255.255.255.255', 9))
