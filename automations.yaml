@@ -159,9 +159,8 @@
            true
          {%- endif -%}
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/10'
-      seconds: 00
   action:
     - service: homeassistant.turn_on
       entity_id: script.abodehome
@@ -197,9 +196,8 @@
             entity_id: input_select.abodestatus
             state: 'armed_away'
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/10'
-      seconds: 00
   action:
     - service: homeassistant.turn_on
       entity_id: script.abodestandby
@@ -304,9 +302,8 @@
       value_template: >
         {{states('input_select.abodestatus') == 'disarmed' and states('group.thermostats') == 'on'}}
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/5'
-      seconds: 00
   action:
     - service: homeassistant.turn_off
       data_template:
@@ -335,9 +332,8 @@
           value_template: >
             {{states('input_select.abodestatus') == 'armed_away' and states('switch.bedroom_away') == 'off'}}
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/5'
-      seconds: 00
   action:
     - service: homeassistant.turn_on
       data_template:
@@ -467,7 +463,7 @@
       data_template:
         name: "Deepstack: "
         message: >-
-          {% for object in state_attr(trigger.entity_id,'predictions').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.predictions }}.          
+          {% for object in state_attr(trigger.entity_id,'predictions').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.predictions }}.
 # {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
 # {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
 #
@@ -726,9 +722,8 @@
   alias: "Commute - Update morning commute sensor"
   initial_state: 'on'
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/2'
-      seconds: 00
   condition:
     - condition: time
       after: '08:00:00'
@@ -752,9 +747,8 @@
   alias: "Commute - Update evening commute sensor"
   initial_state: 'on'
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/2'
-      seconds: 00
   condition:
     - condition: time
       after: '17:00:00'
@@ -1230,9 +1224,8 @@
       entity_id: binary_sensor.living_room_occupancy
       state: 'on'
   trigger:
-   - platform: time
+   - platform: time_pattern
      minutes: '/15'
-     seconds: 00
   action:
      service: light.turn_on
      entity_id: light.gateway_light_34ce00813670
@@ -1254,9 +1247,8 @@
       entity_id: binary_sensor.living_room_occupancy
       state: 'on'
   trigger:
-   - platform: time
+   - platform: time_pattern
      minutes: '/15'
-     seconds: 00
   action:
      service: ifttt.trigger
      data_template: {"event":"leeocolor", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
@@ -1269,9 +1261,8 @@
       after: '19:15:00'
       before: '07:45:00'
   trigger:
-   - platform: time
+   - platform: time_pattern
      minutes: '/15'
-     seconds: 00
   action:
      service: ifttt.trigger
      data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
@@ -1307,7 +1298,7 @@
   alias: "Turn Lifx Party Mode On"
   initial_state: 'off'
   trigger:
-    - platform: time
+    - platform: time_pattern
       seconds: '/3'
   condition:
     - condition: state
@@ -1402,7 +1393,7 @@
   alias: 'Reset Garage Relay'
   initial_state: 'on'
   trigger:
-    - platform: time
+    - platform: time_pattern
       seconds: '/5'
   condition:
     - condition: state
@@ -1481,7 +1472,7 @@
          entity_id: input_select.abodestatus
          state: 'armed_away'
   trigger:
-    - platform: time
+    - platform: time_pattern
       minutes: '/5'
   action:
     - service: switch.turn_on
@@ -1607,9 +1598,8 @@
        entity_id: switch.wemoswitch
        state: 'off'
   trigger:
-   - platform: time
+   - platform: time_pattern
      minutes: '/10'
-     seconds: 00
   action:
     service: homeassistant.turn_on
     entity_id: switch.wemoswitch
@@ -1667,10 +1657,8 @@
   alias: Update Sensors
   initial_state: on
   trigger:
-    platform: time
+    platform: time_pattern
     hours: '/3'
-    minutes: 01
-    seconds: 00
   action:
       service: homeassistant.update_entity
       data:
