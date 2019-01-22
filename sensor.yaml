@@ -1,3 +1,7 @@
+  - platform: moon
+    app_id: !secret here_app_id
+    app_code: !secret here_app_code
+    zipcode: !secret home_zip
   - platform: darksky
     api_key: !secret darksky_key
     monitored_conditions:
@@ -235,6 +239,17 @@
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
     value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
     # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
+  # - platform: rest
+  #   resource: !secret here_weather
+  #   name: Moon Rise
+  #   scan_interval: 86400
+  #   value_template: '{{value_json.astronomy.astronomy[0].moonrise}}'
+  #   json_attributes:
+  #     - moonset
+  #     - moonPhaseDesc
+  #     - moonPhase
+  #     - sunrise
+  #     - sunset
   - platform: template
     sensors:
       # iframe_windy:
