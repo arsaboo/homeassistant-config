@@ -482,15 +482,15 @@
       pollen_level:
         friendly_name: 'Pollen Level'
         value_template: >-
-          {{ state_attr('sensor.allergy_index_forecasted_average_2', 'rating') }}
+          {{ state_attr('sensor.allergy_index_forecasted_average', 'rating') }}
         entity_picture_template: >-
-          {{ '/local/icons/' ~ state_attr('sensor.allergy_index_forecasted_average_2', 'rating').lower().replace('/', '-') ~ '.png'}}
+          {{ '/local/icons/' ~ state_attr('sensor.allergy_index_forecasted_average', 'rating').lower().replace('/', '-') ~ '.png'}}
       cold_flu_risk:
         friendly_name: 'Cold & Flu Risk'
         value_template: >-
-          {{ state_attr('sensor.cold__flu_forecasted_average_2', 'rating') }}
+          {{ state_attr('sensor.cold_flu_forecasted_average', 'rating') }}
         entity_picture_template: >-
-          {{ '/local/icons/' ~ state_attr('sensor.cold__flu_forecasted_average_2', 'rating').lower().replace('/', '-') ~ '.png'}}
+          {{ '/local/icons/' ~ state_attr('sensor.cold_flu_forecasted_average', 'rating').lower().replace('/', '-') ~ '.png'}}
       emulated_hue_names:
         friendly_name: "Emulated Hue Names"
         value_template: >-
