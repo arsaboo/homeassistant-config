@@ -28,7 +28,6 @@
       - sensor.uptime
       - sensor.sonos_stereo
       - sensor.sonos_audio_in
-      - sensor.time__date
       - sensor.ssl_certificate_expiry
       - switch.pihole
       - switch.garage_relay_switch
