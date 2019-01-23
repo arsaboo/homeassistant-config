@@ -6,7 +6,9 @@ https://home-assistant.io/components/sensor.moon/
 """
 import logging
 import json
-from datetime import timedelta
+import time
+import calendar
+from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
@@ -26,8 +28,15 @@ DEFAULT_NAME = 'Moon'
 CONF_APP_ID = "app_id"
 CONF_APP_CODE = "app_code"
 CONF_ZIPCODE = 'zipcode'
+ATTR_FORECAST = 'forecast'
 ATTR_MOONRISE = 'moonrise'
 ATTR_MOONSET = 'moonset'
+ATTR_SUNRISE = "sunrise"
+ATTR_SUNSET = "sunset"
+ATTR_MOONPHASE = "moonPhase"
+ATTR_MOONPHASE_DESC = "moonPhaseDesc"
+ATTR_ICON_NAME = "iconName"
+ATTR_FEED_CREATION = "feedCreation"
 ICON = 'mdi:brightness-3'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -64,21 +73,7 @@ class MoonSensor(Entity):
     @property
     def state(self):
         """Return the state of the device."""
-        if self._state == 0:
-            return 'new_moon'
-        if self._state < 7:
-            return 'waxing_crescent'
-        if self._state == 7:
-            return 'first_quarter'
-        if self._state < 14:
-            return 'waxing_gibbous'
-        if self._state == 14:
-            return 'full_moon'
-        if self._state < 21:
-            return 'waning_gibbous'
-        if self._state == 21:
-            return 'last_quarter'
-        return 'waning_crescent'
+        return self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONPHASE_DESC]
 
     @property
     def icon(self):
@@ -88,17 +83,33 @@ class MoonSensor(Entity):
     @property
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
-        attr = {}
-        attr[ATTR_MOONRISE] = self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE]
-        attr[ATTR_MOONSET] = self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET]
-        return attr
+        attributes = {
+            ATTR_MOONRISE: self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],
+            ATTR_MOONSET: self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],
+            ATTR_SUNRISE: self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],
+            ATTR_SUNSET: self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],
+            ATTR_FEED_CREATION: datetime.fromtimestamp(calendar.timegm(time.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"))),
+            ATTR_FORECAST: self.hass.data['forecasts']
+        }
+        return attributes
 
     async def async_update(self):
         """Get the time and updates the states."""
-        from astral import Astral
+        forecasts = self._moon_here.data['astronomy']['astronomy']
+        _LOGGER.error(forecasts)
+        self.hass.data['forecasts'] = []
 
-        today = dt_util.as_local(dt_util.utcnow()).date()
-        self._state = Astral().moon_phase(today)
+        for forecast in forecasts:
+            self.hass.data.get('forecasts').append({
+                ATTR_MOONRISE: forecast.get(ATTR_MOONRISE),
+                ATTR_MOONSET: forecast.get(ATTR_MOONSET),
+                ATTR_SUNRISE: forecast.get(ATTR_SUNRISE),
+                ATTR_SUNSET: forecast.get(ATTR_SUNSET),
+                ATTR_MOONPHASE: forecast.get(ATTR_MOONPHASE),
+                ATTR_MOONPHASE_DESC: forecast.get(ATTR_MOONPHASE_DESC),
+                ATTR_ICON_NAME: forecast.get(ATTR_ICON_NAME),
+            })
+        self.hass.data['forecasts'].pop(0)
 
 
 class MoonPhaseHereAPI(object):
