@@ -8,7 +8,8 @@ import logging
 import json
 import time
 import calendar
-from datetime import datetime, timedelta
+import datetime
+from datetime import timedelta
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
@@ -84,11 +85,11 @@ class MoonSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attributes = {
-            ATTR_MOONRISE: self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],
-            ATTR_MOONSET: self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],
-            ATTR_SUNRISE: self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],
-            ATTR_SUNSET: self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],
-            ATTR_FEED_CREATION: datetime.fromtimestamp(calendar.timegm(time.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"))),
+            ATTR_MOONRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],"%I:%M%p").strftime('%H:%M:%S'),
+            ATTR_MOONSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],"%I:%M%p").strftime('%H:%M:%S'),
+            ATTR_SUNRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],"%I:%M%p").strftime('%H:%M:%S'),
+            ATTR_SUNSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],"%I:%M%p").strftime('%H:%M:%S'),
+            ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"),
             ATTR_FORECAST: self.hass.data['forecasts']
         }
         return attributes
