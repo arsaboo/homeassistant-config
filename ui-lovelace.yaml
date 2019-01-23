@@ -457,13 +457,13 @@ views:
         cards:
           - type: alarm-panel
             entity: alarm_control_panel.abode_alarm
-            title: Abode
+            name: Abode
             states:
               - arm_home
               - arm_away
           - type: alarm-panel
             entity: alarm_control_panel.arlohome
-            title: Arlo
+            name: Arlo
             states:
               - arm_away
       - type: entities
