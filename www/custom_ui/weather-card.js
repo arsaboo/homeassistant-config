@@ -73,7 +73,8 @@ function hasConfigOrEntityChanged(element, changedProps) {
     return (
       oldHass.states[element._config.entity] !==
         element.hass.states[element._config.entity] ||
-      oldHass.states["sun.sun"] !== element.hass.states["sun.sun"]
+      oldHass.states["sun.sun"] !== element.hass.states["sun.sun"] ||
+      oldHass.states["sensor.moon"] !== element.hass.states["sensor.moon"]
     );
   }
 
@@ -112,6 +113,13 @@ class WeatherCard extends LitElement {
     );
     const next_setting = new Date(
       this.hass.states["sun.sun"].attributes.next_setting
+    );
+
+    const moon_rise = new Date(
+      this.hass.states["sensor.moon"].attributes.moonrise
+    );
+    const moon_set = new Date(
+      this.hass.states["sensor.moon"].attributes.moonset
     );
 
     return html`
@@ -160,6 +168,11 @@ class WeatherCard extends LitElement {
                 ><ha-icon icon="mdi:weather-sunset-up"></ha-icon
               ></span>
               ${next_rising.toLocaleTimeString()}
+              <br />
+              <span class="ha-icon"
+                ><ha-icon icon="mdi:weather-night"></ha-icon
+              ></span>
+              ${moon_rise.toLocaleTimeString()}
             </li>
             <li>
               <span class="ha-icon"><ha-icon icon="mdi:gauge"></ha-icon></span
@@ -178,6 +191,11 @@ class WeatherCard extends LitElement {
                 ><ha-icon icon="mdi:weather-sunset-down"></ha-icon
               ></span>
               ${next_setting.toLocaleTimeString()}
+              <br />
+              <span class="ha-icon"
+                ><ha-icon icon="mdi:theme-light-dark"></ha-icon
+              ></span>
+              ${moon_set.toLocaleTimeString()}
             </li>
           </ul>
         </span>

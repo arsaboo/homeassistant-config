@@ -85,10 +85,10 @@ class MoonSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attributes = {
-            ATTR_MOONRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],"%I:%M%p").strftime('%H:%M:%S'),
-            ATTR_MOONSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],"%I:%M%p").strftime('%H:%M:%S'),
-            ATTR_SUNRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],"%I:%M%p").strftime('%H:%M:%S'),
-            ATTR_SUNSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],"%I:%M%p").strftime('%H:%M:%S'),
+            ATTR_MOONRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],"%I:%M%p"),
+            ATTR_MOONSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],"%I:%M%p"),
+            ATTR_SUNRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],"%I:%M%p"),
+            ATTR_SUNSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],"%I:%M%p"),
             ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"),
             ATTR_FORECAST: self.hass.data['forecasts']
         }
@@ -97,7 +97,6 @@ class MoonSensor(Entity):
     async def async_update(self):
         """Get the time and updates the states."""
         forecasts = self._moon_here.data['astronomy']['astronomy']
-        _LOGGER.error(forecasts)
         self.hass.data['forecasts'] = []
 
         for forecast in forecasts:
