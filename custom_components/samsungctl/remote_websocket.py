@@ -6,9 +6,8 @@ import json
 import logging
 import threading
 import ssl
-import os
-import sys
 import websocket
+import requests
 import time
 from . import exceptions
 from . import application
@@ -27,27 +26,12 @@ class RemoteWebsocket(object):
 
     @LogIt
     def __init__(self, config):
-        if sys.platform.startswith('win'):
-            path = os.path.join(os.path.expandvars('%appdata%'), 'samsungctl')
-        else:
-            path = os.path.join(os.path.expanduser('~'), '.samsungctl')
-
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        token_file = os.path.join(path, "token.txt")
-
-        if not os.path.exists(token_file):
-            with open(token_file, 'w') as f:
-                f.write('')
-
-        self.token_file = token_file
-
         self.config = config
 
         self._loop_event = threading.Event()
         self.receive_lock = threading.Lock()
         self._power_event = threading.Event()
+        self.send_event = threading.Event()
         self._registered_callbacks = []
         self._thread = None
         self._mac_address = None
@@ -58,7 +42,7 @@ class RemoteWebsocket(object):
     @LogItWithReturn
     def mac_address(self):
         if self._mac_address is None:
-            _mac_address = wake_on_lan.get_mac_address(self.config['host'])
+            _mac_address = wake_on_lan.get_mac_address(self.config.host)
             if _mac_address is None:
                 _mac_address = ''
 
@@ -72,10 +56,18 @@ class RemoteWebsocket(object):
         if not self._running:
             try:
                 self.open()
+                return True
             except RuntimeError:
-                pass
+                return False
 
-        return self.sock is not None
+        try:
+            requests.get(
+                ' http://{0}:8001/api/v2/'.format(self.config.host),
+                timeout=2
+            )
+            return True
+        except requests.HTTPError:
+            return False
 
     @power.setter
     @LogIt
@@ -86,38 +78,43 @@ class RemoteWebsocket(object):
             except RuntimeError:
                 pass
 
-        self._power_event.clear()
-
         if value and self.sock is None:
             if self.mac_address:
-                error_count = 0
+                count = 0
+                wake_on_lan.send_wol(self.mac_address)
+                self._power_event.wait(10)
 
-                while not self._power_event.isSet() and error_count < 6:
-                    wake_on_lan.send_wol(self.mac_address)
-                    self._power_event.wait(10)
-                    try:
-                        self.open()
-                    except RuntimeError:
-                        error_count += 1
+                try:
+                    self.open()
+                except:
+                    while not self._power_event.isSet() and count < 6:
+                        wake_on_lan.send_wol(self.mac_address)
+                        self._power_event.wait(2)
+                        try:
+                            self.open()
+                            break
+                        except:
+                            count += 1
 
-                if error_count == 6:
-                    logger.error(
-                        'Unable to power on the TV, check network connectivity'
-                    )
+                    if count == 6:
+                        logger.error(
+                            'Unable to power on the TV, '
+                            'check network connectivity'
+                        )
 
         elif not value and self.sock is not None:
-            self.control('KEY_POWEROFF')
-            self._power_event.wait(5.0)
+            self.control('KEY_POWER')
+            self._power_event.wait(2.0)
 
             if not self._power_event.isSet():
                 logger.info(
-                    'unable to power off TV using command KEY_POWEROFF. '
-                    'Trying command KEY_POWER'
+                    'unable to power off TV using command KEY_POWER. '
+                    'Trying command KEY_POWEROFF'
                 )
                 with self.receive_lock:
                     params = dict(
                         Cmd='Click',
-                        DataOfCmd='KEY_POWER',
+                        DataOfCmd='KEY_POWEROFF',
                         Option="false",
                         TypeOfRemote="SendRemoteKey"
                     )
@@ -125,7 +122,7 @@ class RemoteWebsocket(object):
                     logger.info("Sending control command: " + str(params))
                     self.send("ms.remote.control", **params)
 
-                self._power_event.wait(5.0)
+                self._power_event.wait(2.0)
 
             if not self._power_event.isSet():
                 logger.error('Unable to power off the TV')
@@ -150,49 +147,30 @@ class RemoteWebsocket(object):
     @LogIt
     def open(self):
         with self.receive_lock:
-            token = ''
-            all_tokens = []
-
-            with open(self.token_file, 'r') as f:
-                tokens = f.read()
-
-            for line in tokens.split('\n'):
-                if not line.strip():
-                    continue
-                if line.startswith(self.config["host"] + ':'):
-                    token = line
-                else:
-                    all_tokens += [line]
-
-            if token:
-                all_tokens += [token]
-                token = token.replace(self.config["host"] + ':', '')
-                logger.debug('using saved token: ' + token)
-                token = "&token=" + token
-
-            if all_tokens:
-                with open(self.token_file, 'w') as f:
-                    f.write('\n'.join(all_tokens) + '\n')
-
             if self.sock is not None:
                 self.close()
 
-            if self.config['port'] == 8002:
-                self.config['port'] = 8002
+            if self.config.port == 8002:
+                if self.config.token:
+                    logger.debug('using saved token: ' + self.config.token)
+                    token = "&token=" + self.config.token
+                else:
+                    token = ''
+
                 sslopt = {"cert_reqs": ssl.CERT_NONE}
                 url = SSL_URL_FORMAT.format(
-                    self.config["host"],
-                    self.config["port"],
-                    self._serialize_string(self.config["name"])
+                    self.config.host,
+                    self.config.port,
+                    self._serialize_string(self.config.name)
                 ) + token
 
             else:
-                self.config['port'] = 8001
+                self.config.port = 8001
                 sslopt = {}
                 url = URL_FORMAT.format(
-                    self.config["host"],
-                    self.config["port"],
-                    self._serialize_string(self.config["name"])
+                    self.config.host,
+                    self.config.port,
+                    self._serialize_string(self.config.name)
                 )
 
             try:
@@ -211,11 +189,11 @@ class RemoteWebsocket(object):
                     'ms.channel.connect'
                 )
 
-                if self.config['port'] == 8001:
+                if self.config.port == 8001:
                     logger.debug(
                         "Websocket connection failed. Trying ssl connection"
                     )
-                    self.config['port'] = 8002
+                    self.config.port = 8002
                     self.open()
                 else:
                     self.close()
@@ -223,20 +201,11 @@ class RemoteWebsocket(object):
 
             def auth_callback(data):
                 if 'data' in data and 'token' in data["data"]:
-                    with open(self.token_file, "r") as token_file:
-                        token_data = token_file.read().split('\n')
+                    self.config.token = data['data']["token"]
 
-                    for lne in token_data[:]:
-                        if line.startswith(self.config['host'] + ':'):
-                            token_data.remove(lne)
-
-                    token_data += [
-                        self.config['host'] + ':' + data['data']["token"]
-                    ]
-
-                    logger.debug('new token: ' + token_data[-1])
-                    with open(self.token_file, "w") as token_file:
-                        token_file.write('\n'.join(token_data) + '\n')
+                    logger.debug('new token: ' + self.config.token)
+                    if self.config.path:
+                        self.config.save()
 
                 logger.debug("Access granted.")
                 auth_event.set()
@@ -286,6 +255,14 @@ class RemoteWebsocket(object):
     @LogIt
     def send(self, method, **params):
         if self.sock is None:
+            if method != 'ms.remote.control':
+                if not self._running:
+                    try:
+                        self.open()
+                        return self.send(method, **params)
+                    except RuntimeError:
+                        pass
+
             logger.info('Is the TV on???')
             return
 
@@ -294,6 +271,7 @@ class RemoteWebsocket(object):
             params=params
         )
         self.sock.send(json.dumps(payload))
+        self.send_event.wait(0.2)
 
     @LogIt
     def control(self, key, cmd='Click'):
@@ -627,29 +605,31 @@ class Mouse(object):
             with self._remote.receive_lock:
 
                 @LogIt
-                def imeStart(_):
+                def ime_start(_):
                     self._ime_start_event.set()
+
                 @LogIt
-                def imeUpdate(_):
+                def ime_update(_):
                     self._ime_update_event.set()
+
                 @LogIt
-                def touchEnable(_):
+                def touch_enable(_):
                     self._touch_enable_event.set()
 
                 self._remote.register_receive_callback(
-                    imeStart,
+                    ime_start,
                     'event',
                     'ms.remote.imeStart'
                 )
 
                 self._remote.register_receive_callback(
-                    imeUpdate,
+                    ime_update,
                     'event',
                     'ms.remote.imeUpdate'
                 )
 
                 self._remote.register_receive_callback(
-                    touchEnable,
+                    touch_enable,
                     'event',
                     'ms.remote.touchEnable'
                 )

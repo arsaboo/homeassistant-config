@@ -17,6 +17,7 @@ try:
     from . import exceptions
     from . import Remote
     from . import key_mappings
+    from .config import Config
 
 except ValueError:
     import sys
@@ -34,6 +35,7 @@ except ValueError:
     from samsungctl import exceptions
     from samsungctl import Remote
     from samsungctl import key_mappings
+    from samsungctl.config import Config
 
 
 def _read_config():
@@ -162,6 +164,11 @@ def main():
         help="TV hostname or IP address"
     )
     parser.add_argument(
+        "--token",
+        default=None,
+        help="token for TV's >= 2014"
+    )
+    parser.add_argument(
         "--port",
         type=int,
         help="TV port number (TCP)"
@@ -188,7 +195,6 @@ def main():
         type=float,
         help="socket timeout in seconds (0 = no timeout)"
     )
-
     parser.add_argument(
         "--start-app",
         help="start an application --start-app \"Netflix\""
@@ -238,13 +244,15 @@ def main():
         logging.error("Error: --host must be set")
         return
 
+    config = Config(**config)
+    config.log_level = log_level
     try:
-        with Remote(config, log_level) as remote:
+        with Remote(config) as remote:
             if args.interactive:
                 logging.getLogger().setLevel(logging.ERROR)
                 from . import interactive
                 interactive.run(remote)
-            elif config["method"] == 'websocket' and args.start_app:
+            elif config.method == 'websocket' and args.start_app:
                 app = remote.get_application(args.start_app)
                 if args.app_metadata:
                     app.run(args.app_metadata)
@@ -262,8 +270,8 @@ def main():
         logging.error("Error: Connection closed!")
     except exceptions.AccessDenied:
         logging.error("Error: Access denied!")
-    except exceptions.UnknownMethod:
-        logging.error("Error: Unknown method '{}'".format(config["method"]))
+    except exceptions.ConfigUnknownMethod:
+        logging.error("Error: Unknown method '{}'".format(config.method))
     except socket.timeout:
         logging.error("Error: Timed out!")
     except OSError as e:

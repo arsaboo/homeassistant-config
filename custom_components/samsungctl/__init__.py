@@ -22,3 +22,4 @@ __author_email__ = "kevin.g.schlosser@gmail.com"
 __license__ = "MIT"
 
 from .remote import Remote # NOQA
+from .config import Config # NOQA

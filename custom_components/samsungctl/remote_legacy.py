@@ -18,33 +18,31 @@ class RemoteLegacy(object):
     @LogIt
     def __init__(self, config):
         """Make a new connection."""
-        if not config["port"]:
-            config["port"] = 55000
+
+        self.config = config
+        self.connection = None
+
+    @LogIt
+    def open(self):
 
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        if config["timeout"]:
-            self.connection.settimeout(config["timeout"])
+        if self.config.timeout:
+            self.connection.settimeout(self.config.timeout)
 
-        self.connection.connect((config["host"], config["port"]))
+        self.connection.connect((config.host, config.port))
 
         payload = (
             b"\x64\x00" +
-            self._serialize_string(config["description"]) +
-            self._serialize_string(config["id"]) +
-            self._serialize_string(config["name"])
+            self._serialize_string(self.config.description) +
+            self._serialize_string(self.config.id) +
+            self._serialize_string(self.config.name)
         )
         packet = b"\x00\x00\x00" + self._serialize_string(payload, True)
 
         logger.info("Sending handshake.")
         self.connection.send(packet)
         self._read_response(True)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.close()
 
     @LogIt
     def close(self):
