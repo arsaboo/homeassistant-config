@@ -248,10 +248,10 @@ views:
               'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
               'off': brightness(80%) saturate(0.8)
             style:
-              top: 98%
+              top: 93.5%
               left: 20%
               width: 7%
-              padding: 50px 50px 100px 50px
+              padding: 10px
           - type: state-icon
             entity: binary_sensor.ring_front_door_motion
             style:
@@ -274,10 +274,10 @@ views:
               'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
               'off': brightness(80%) saturate(0.8)
             style:
-              top: 68%
+              top: 62%
               left: 78%
               width: 7%
-              padding: 50px 50px 100px 50px
+              padding: 10px
           - type: image
             entity: switch.driveway
             tap_action:
@@ -289,10 +289,10 @@ views:
               'on': drop-shadow(-5px -5px 10px gold)
               'off': brightness(80%) saturate(0.8)
             style:
-              top: 81%
-              left: 63%
+              top: 79.5%
+              left: 72%
               width: 7%
-              padding: 0 50px 100px 50px
+              padding: 10px
               transform: none
           - type: image
             entity: cover.garagedoor
@@ -387,10 +387,10 @@ views:
               'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
               'off': brightness(80%) saturate(0.8)
             style:
-              top: 70%
+              top: 66%
               left: 80%
               width: 7%
-              padding: 50px 50px 100px 50px
+              padding: 10px
             # Laundry
           - type: state-icon
             entity: binary_sensor.water_leak_sensor_158d0001d77800
