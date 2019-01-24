@@ -9,6 +9,7 @@ import datetime
 import json
 import logging
 import time
+import pytz
 from datetime import timedelta
 
 import homeassistant.helpers.config_validation as cv
@@ -96,7 +97,8 @@ class MoonSensor(Entity):
 
     def format_time(self, strtime):
         try:
-            return datetime.datetime.strptime(strtime,"%I:%M%p")
+            unaware = datetime.datetime.strptime(strtime,"%I:%M%p")
+            return pytz.utc.localize(unaware)
         except:
             return "NA"
 
