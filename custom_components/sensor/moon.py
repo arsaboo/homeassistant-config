@@ -9,17 +9,17 @@ import datetime
 import json
 import logging
 import time
-import pytz
 from datetime import timedelta
-from pytz import timezone
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
+import pytz
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import CONF_NAME
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
+from pytz import timezone
 
 _LOGGER = logging.getLogger(__name__)
 _ENDPOINT = 'https://weather.api.here.com/weather/1.0/report.json?product=forecast_astronomy&'
@@ -99,7 +99,7 @@ class MoonSensor(Entity):
 
     def format_time(self, strtime):
         try:
-            unaware = datetime.datetime.strptime(strtime,"%I:%M%p")
+            unaware = datetime.datetime.strptime(strtime, "%I:%M%p")
             return eastern.localize(unaware)
         except ValueError:
             return "NA"
