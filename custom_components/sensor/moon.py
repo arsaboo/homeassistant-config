@@ -11,6 +11,7 @@ import logging
 import time
 import pytz
 from datetime import timedelta
+from pytz import timezone
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
@@ -25,6 +26,7 @@ _ENDPOINT = 'https://weather.api.here.com/weather/1.0/report.json?product=foreca
 
 SCAN_INTERVAL = timedelta(minutes=5)
 MIN_TIME_BETWEEN_UPDATES = timedelta(hours=6)
+eastern = timezone('US/Eastern')
 
 DEFAULT_NAME = 'Moon'
 CONF_APP_ID = "app_id"
@@ -90,7 +92,7 @@ class MoonSensor(Entity):
             ATTR_MOONSET: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET]),
             ATTR_SUNRISE: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE]),
             ATTR_SUNSET: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET]),
-            ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC')),
             ATTR_FORECAST: self.hass.data['forecasts']
         }
         return attributes
@@ -98,8 +100,8 @@ class MoonSensor(Entity):
     def format_time(self, strtime):
         try:
             unaware = datetime.datetime.strptime(strtime,"%I:%M%p")
-            return pytz.utc.localize(unaware)
-        except:
+            return eastern.localize(unaware)
+        except ValueError:
             return "NA"
 
     async def async_update(self):
