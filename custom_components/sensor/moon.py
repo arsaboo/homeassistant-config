@@ -4,11 +4,11 @@ Support for tracking the moon phases.
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/sensor.moon/
 """
-import logging
-import json
-import time
 import calendar
 import datetime
+import json
+import logging
+import time
 from datetime import timedelta
 
 import homeassistant.helpers.config_validation as cv
@@ -85,26 +85,31 @@ class MoonSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attributes = {
-            ATTR_MOONRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE],"%I:%M%p"),
-            ATTR_MOONSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET],"%I:%M%p"),
-            ATTR_SUNRISE: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE],"%I:%M%p"),
-            ATTR_SUNSET: datetime.datetime.strptime(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET],"%I:%M%p"),
+            ATTR_MOONRISE: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONRISE]),
+            ATTR_MOONSET: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_MOONSET]),
+            ATTR_SUNRISE: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE]),
+            ATTR_SUNSET: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET]),
             ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ"),
             ATTR_FORECAST: self.hass.data['forecasts']
         }
         return attributes
 
+    def format_time(self, strtime):
+        try:
+            return datetime.datetime.strptime(strtime,"%I:%M%p")
+        except:
+            return "NA"
+
     async def async_update(self):
         """Get the time and updates the states."""
         forecasts = self._moon_here.data['astronomy']['astronomy']
         self.hass.data['forecasts'] = []
-
         for forecast in forecasts:
             self.hass.data.get('forecasts').append({
-                ATTR_MOONRISE: forecast.get(ATTR_MOONRISE),
-                ATTR_MOONSET: forecast.get(ATTR_MOONSET),
-                ATTR_SUNRISE: forecast.get(ATTR_SUNRISE),
-                ATTR_SUNSET: forecast.get(ATTR_SUNSET),
+                ATTR_MOONRISE: self.format_time(forecast.get(ATTR_MOONRISE)),
+                ATTR_MOONSET: self.format_time(forecast.get(ATTR_MOONSET)),
+                ATTR_SUNRISE: self.format_time(forecast.get(ATTR_SUNRISE)),
+                ATTR_SUNSET: self.format_time(forecast.get(ATTR_SUNSET)),
                 ATTR_MOONPHASE: forecast.get(ATTR_MOONPHASE),
                 ATTR_MOONPHASE_DESC: forecast.get(ATTR_MOONPHASE_DESC),
                 ATTR_ICON_NAME: forecast.get(ATTR_ICON_NAME),
