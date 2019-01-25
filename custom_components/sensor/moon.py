@@ -44,6 +44,9 @@ ATTR_FEED_CREATION = "feedCreation"
 ICON = 'mdi:brightness-3'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+    vol.Required(CONF_APP_ID): cv.string,
+    vol.Required(CONF_APP_CODE): cv.string,
+    vol.Required(CONF_ZIPCODE): cv.string,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 })
 
@@ -56,7 +59,6 @@ async def async_setup_platform(
     zipcode = config.get(CONF_ZIPCODE)
     name = config.get(CONF_NAME)
     moon_here = MoonPhaseHereAPI(app_id, app_code, zipcode)
-
     async_add_entities([MoonSensor(name, moon_here)], True)
 
 
@@ -85,6 +87,11 @@ class MoonSensor(Entity):
         return ICON
 
     @property
+    def available(self):
+        """Could the device be accessed during the last update call."""
+        return self._moon_here.available
+
+    @property
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attributes = {
@@ -102,6 +109,7 @@ class MoonSensor(Entity):
             unaware = datetime.datetime.strptime(strtime, "%I:%M%p")
             return eastern.localize(unaware)
         except ValueError:
+            _LOGGER.debug("Invalid time encountered: %s", strtime)
             return "NA"
 
     async def async_update(self):
@@ -130,6 +138,7 @@ class MoonPhaseHereAPI(object):
 
         resource = "{}app_id={}&app_code={}&zipcode={}".format(
             _ENDPOINT, app_id, app_code, zipcode)
+        _LOGGER.error("Moon sensor updated")
         self._rest = RestData('GET', resource, None, None, None, False)
         self.data = None
         self.available = True
