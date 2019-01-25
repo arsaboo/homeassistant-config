@@ -453,6 +453,11 @@ views:
             secondary_info: last-changed
           - entity: switch.wemoinsight
             secondary_info: last-changed
+          - entity: switch.aeon_switch
+            secondary_info: last-changed
+          - entity: switch.0220013568c63aa78156
+            secondary_info: last-changed
+
       - type: horizontal-stack
         cards:
           - type: alarm-panel
