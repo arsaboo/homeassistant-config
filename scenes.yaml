@@ -4,5 +4,5 @@
 
   - name: Colorloop
     entities:
-      group.living_room_lights: on
+      light.living_room_lights: on
         lifx_effect_colorloop

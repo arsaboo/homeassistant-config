@@ -41,6 +41,7 @@ ATTR_MOONPHASE = "moonPhase"
 ATTR_MOONPHASE_DESC = "moonPhaseDesc"
 ATTR_ICON_NAME = "iconName"
 ATTR_FEED_CREATION = "feedCreation"
+ATTR_LAST_UPDATED = 'last_updated'
 ICON = 'mdi:brightness-3'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -100,6 +101,7 @@ class MoonSensor(Entity):
             ATTR_SUNRISE: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNRISE]),
             ATTR_SUNSET: self.format_time(self._moon_here.data['astronomy']['astronomy'][0][ATTR_SUNSET]),
             ATTR_FEED_CREATION: datetime.datetime.strptime(self._moon_here.data[ATTR_FEED_CREATION], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC')),
+            ATTR_LAST_UPDATED: self._moon_here._last_updated,
             ATTR_FORECAST: self.hass.data['forecasts']
         }
         return attributes
@@ -151,6 +153,7 @@ class MoonPhaseHereAPI(object):
         try:
             self._rest.update()
             self.data = json.loads(self._rest.data)
+            self._last_updated = dt_util.as_local(dt_util.now())
             _LOGGER.error("Moon sensor updated")
             self.available = True
         except TypeError:

@@ -1332,7 +1332,7 @@
       to: 'off'
   action:
     - service: light.turn_on
-      entity_id: group.living_room_lights
+      entity_id: light.living_room_lights
       data:
         rgb_color: [255, 255, 255]
         brightness: 250
@@ -1563,7 +1563,7 @@
   action:
     - service: light.turn_on
       data:
-        entity_id: group.living_room_lights
+        entity_id: light.living_room_lights
 
 - id: turn_off_lights_in_2_hours
   alias: Turn off lights 2 hours
@@ -1573,7 +1573,7 @@
       entity_id: input_select.abodestatus
       state: 'armed_away'
     - condition: state
-      entity_id: group.living_room_lights
+      entity_id: light.living_room_lights
       state: 'on'
   trigger:
     platform: sun
@@ -1582,7 +1582,7 @@
   action:
     - service: light.turn_off
       data:
-        entity_id: group.living_room_lights
+        entity_id: light.living_room_lights
 
 ## Humidifier
 - id: turn_on_humidifier

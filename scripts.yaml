@@ -63,7 +63,7 @@
           - switch.upstairs_away
           - switch.bedroom_away
       - service: light.turn_off
-        entity_id: group.living_room_lights
+        entity_id: light.living_room_lights
       # - service: ifttt.trigger
       #   data: {"event":"AbodeStandby", "value1":"Abode Standby"}
       # - service: homeassistant.turn_off
@@ -217,7 +217,7 @@
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: group.living_room_lights
+          entity_id: light.living_room_lights
           brightness: 255
           period: 15
           spread: 359
@@ -228,7 +228,7 @@
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: group.living_room_lights
+          entity_id: light.living_room_lights
           brightness: 255
           period: 1
           spread: 359
@@ -274,9 +274,9 @@
     sequence:
       - service: light.lifx_effect_stop
         data:
-          entity_id: group.all_lights
+          entity_id: light.all_lights
       - service: light.turn_on
-        entity_id: group.living_room_lights
+        entity_id: light.living_room_lights
         data:
           rgb_color: [255, 255, 255]
           brightness: 250
@@ -391,7 +391,7 @@
           - image_processing.deepstack_porch
           - image_processing.deepstack_patio
           - image_processing.deepstack_driveway
-          - image_processing.deepstack_backyard          
+          - image_processing.deepstack_backyard
           - image_processing.facebox_backyard
           - image_processing.facebox_patio
           - image_processing.facebox_driveway
