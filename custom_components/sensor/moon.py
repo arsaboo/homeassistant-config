@@ -51,15 +51,15 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 
-async def async_setup_platform(
-        hass, config, async_add_entities, discovery_info=None):
+def setup_platform(
+        hass, config, add_devices, discovery_info=None):
     """Set up the Moon sensor."""
     app_id = config.get(CONF_APP_ID)
     app_code = config.get(CONF_APP_CODE)
     zipcode = config.get(CONF_ZIPCODE)
     name = config.get(CONF_NAME)
     moon_here = MoonPhaseHereAPI(app_id, app_code, zipcode)
-    async_add_entities([MoonSensor(name, moon_here)], True)
+    add_devices([MoonSensor(name, moon_here)], True)
 
 
 class MoonSensor(Entity):
@@ -112,7 +112,7 @@ class MoonSensor(Entity):
             _LOGGER.debug("Invalid time encountered: %s", strtime)
             return "NA"
 
-    async def async_update(self):
+    def update(self):
         """Get the time and updates the states."""
         forecasts = self._moon_here.data['astronomy']['astronomy']
         self.hass.data['forecasts'] = []
@@ -127,6 +127,8 @@ class MoonSensor(Entity):
                 ATTR_ICON_NAME: forecast.get(ATTR_ICON_NAME),
             })
         self.hass.data['forecasts'].pop(0)
+        self._moon_here.update()
+
 
 
 class MoonPhaseHereAPI(object):
