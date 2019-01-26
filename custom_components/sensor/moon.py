@@ -138,7 +138,6 @@ class MoonPhaseHereAPI(object):
 
         resource = "{}app_id={}&app_code={}&zipcode={}".format(
             _ENDPOINT, app_id, app_code, zipcode)
-        _LOGGER.error("Moon sensor updated")
         self._rest = RestData('GET', resource, None, None, None, False)
         self.data = None
         self.available = True
@@ -150,6 +149,7 @@ class MoonPhaseHereAPI(object):
         try:
             self._rest.update()
             self.data = json.loads(self._rest.data)
+            _LOGGER.error("Moon sensor updated")
             self.available = True
         except TypeError:
             _LOGGER.error("Unable to fetch data from Here")
