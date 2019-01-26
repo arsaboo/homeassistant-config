@@ -37,7 +37,6 @@
       - cash
       - other_asset
       - credit
-      - loan
   - platform: arlo
     monitored_conditions:
       - captured_today
