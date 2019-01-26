@@ -154,8 +154,8 @@ class MoonPhaseHereAPI(object):
             self._rest.update()
             self.data = json.loads(self._rest.data)
             self._last_updated = dt_util.as_local(dt_util.now())
-            _LOGGER.error("Moon sensor updated")
+            _LOGGER.debug("Moon sensor updated")
             self.available = True
         except TypeError:
-            _LOGGER.error("Unable to fetch data from Here")
+            _LOGGER.debug("Unable to fetch data from Here")
             self.available = False
