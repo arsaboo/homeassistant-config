@@ -153,7 +153,7 @@ class MoonPhaseHereAPI(object):
         try:
             self._rest.update()
             self.data = json.loads(self._rest.data)
-            self._last_updated = dt_util.as_local(dt_util.now())
+            self._last_updated = dt_util.now().isoformat()
             _LOGGER.debug("Moon sensor updated")
             self.available = True
         except TypeError:
