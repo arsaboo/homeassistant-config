@@ -207,11 +207,11 @@
   - platform: command_line
     name: Grafana portfolio
     command: !secret grafana_portfolio
-    scan_interval: 120
+    scan_interval: 600
   - platform: command_line
     name: Grafana networth
     command: !secret grafana_networth
-    scan_interval: 120
+    scan_interval: 600
   - platform: command_line
     name: SSL certificate expiry
     unit_of_measurement: days
