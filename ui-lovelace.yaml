@@ -15,7 +15,7 @@ resources:
     type: js
   - url: /local/custom_ui/slider-entity-row.js?v=0.3
     type: js
-  - url: /local/custom_ui/button-card.js?v=0.11
+  - url: /local/custom_ui/button-card.js?v=0.12
     type: module
   - url: /local/mini-media-player-bundle.js?v=0.0.1
     type: module

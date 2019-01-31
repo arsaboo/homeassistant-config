@@ -1,7 +1,5 @@
-import {
-  LitElement,
-  html,
-} from 'https://unpkg-gcp.firebaseapp.com/@polymer/lit-element@0.5.2/lit-element.js?module';
+var LitElement = LitElement || Object.getPrototypeOf(customElements.get("hui-error-entity-row"));
+var html = LitElement.prototype.html;
 
 class ButtonCard extends LitElement {
   static get properties() {
@@ -11,27 +9,24 @@ class ButtonCard extends LitElement {
     };
   }
 
-  _render({
-    hass,
-    config
-  }) {
-    const state = hass.states[config.entity];
-    switch (config.color_type) {
+  render() {
+    const state = this.__hass.states[this.config.entity];
+    switch (this.config.color_type) {
       case 'blank-card':
-        return this.blankCardColoredHtml(state, config);
+        return this.blankCardColoredHtml(state, this.config);
       case 'label-card':
-        return this.labelCardColoredHtml(state, config);
+        return this.labelCardColoredHtml(state, this.config);
       case 'card':
-        return this.cardColoredHtml(state, config);
+        return this.cardColoredHtml(state, this.config);
       case 'icon':
       default:
-        return this.iconColoredHtml(state, config);
+        return this.iconColoredHtml(state, this.config);
     }
   }
 
 
   getFontColorBasedOnBackgroundColor(backgroundColor) {
-    const parsedRgbColor = backgroundColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+    const parsedRgbColor= backgroundColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
     const parsedBackgroundColor = parsedRgbColor ? parsedRgbColor : this.hexToRgb(backgroundColor.substring(1));
     let fontColor = ''; // don't override by default
     if (parsedBackgroundColor) {
@@ -40,7 +35,7 @@ class ButtonCard extends LitElement {
       if (luminance > 0.5) {
         fontColor = 'rgb(62, 62, 62)'; // bright colors - black font
       } else {
-        fontColor = 'rgb(234, 234, 234)'; // dark colors - white font
+        fontColor = 'rgb(234, 234, 234)';// dark colors - white font
       }
     }
     return fontColor;
@@ -52,22 +47,20 @@ class ButtonCard extends LitElement {
     var g = (bigint >> 8) & 255;
     var b = bigint & 255;
 
-    return [, r, g, b];
+    return [,r,g,b];
   }
 
 
   buildCssColorAttribute(state, config) {
     let color = config.color;
     if (state) {
-      let configState = config.state ? config.state.find(configState => {
-        return configState.value === state.state;
-      }) : false;
-      if (configState) {
+      let configState = config.state ? config.state.find(configState => { return configState.value === state.state; }) : false;
+      if(configState){
         color = configState.color ? configState.color : config.color_off;
         if (configState.color === 'auto') {
           color = state.attributes.rgb_color ? `rgb(${state.attributes.rgb_color.join(',')})` : configState.default_color;
         }
-      } else {
+      }else{
         if (config.color === 'auto') {
           color = state.attributes.rgb_color ? `rgb(${state.attributes.rgb_color.join(',')})` : config.default_color;
         }
@@ -86,13 +79,18 @@ class ButtonCard extends LitElement {
       }
       return iconOff;
     }
+    let configState = config.state ? config.state.find(configState => { return configState.value === state.state; }) : false;
+    if (configState && configState.icon) {
+      const icon = configState.icon;
+      return icon;
+    }
     return iconOff;
   }
 
   blankCardColoredHtml(state, config) {
     const color = this.buildCssColorAttribute(state, config);
     const fontColor = this.getFontColorBasedOnBackgroundColor(color);
-    return html `
+    return html`
     <ha-card style="color: ${fontColor}; background-color: ${color}; ${config.card_style}" on-tap="${ev => this._toggle(state, config)}">
     </ha-card>
     `;
@@ -101,7 +99,7 @@ class ButtonCard extends LitElement {
   labelCardColoredHtml(state, config) {
     const color = this.buildCssColorAttribute(state, config);
     const fontColor = this.getFontColorBasedOnBackgroundColor(color);
-    return html `
+    return html`
     <style>
     ha-icon {
       display: flex;
@@ -127,7 +125,7 @@ class ButtonCard extends LitElement {
   cardColoredHtml(state, config) {
     const color = this.buildCssColorAttribute(state, config);
     const fontColor = this.getFontColorBasedOnBackgroundColor(color);
-    return html `
+    return html`
     <style>
     ha-icon {
       display: flex;
@@ -139,7 +137,7 @@ class ButtonCard extends LitElement {
       text-align: center;
     }
     </style>
-    <ha-card style="color: ${fontColor};" on-tap="${ev => this._toggle(state, config)}">
+    <ha-card style="color: ${fontColor};" @tap="${ev => this._toggle(state, config)}">
       <paper-button style="background-color: ${color}; ${config.card_style}">
       <div>
         ${config.icon ? html`<ha-icon style="width: ${config.size}; height: ${config.size};" icon="${config.icon}"></ha-icon>` : ''}
@@ -154,7 +152,7 @@ class ButtonCard extends LitElement {
   iconColoredHtml(state, config) {
     const color = this.buildCssColorAttribute(state, config);
     const icon = this.buildIcon(state, config);
-    return html `
+    return html`
     <style>
     ha-icon {
       display: flex;
@@ -166,7 +164,7 @@ class ButtonCard extends LitElement {
       text-align: center;
     }
     </style>
-    <ha-card on-tap="${ev => this._toggle(state, config)}">
+    <ha-card @tap="${ev => this._toggle(state, config)}">
       <paper-button style="${config.card_style}">
       <div>
         ${config.icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: ${config.size};" icon="${icon}"></ha-icon>` : ''}
@@ -182,9 +180,8 @@ class ButtonCard extends LitElement {
     // if (!config.entity) {
     //   throw new Error('You need to define entity');
     // }
-    this.config = config;
+    this.config = {...config};
     this.config.color = config.color ? config.color : 'var(--primary-text-color)';
-    this.config.state = config.state;
     this.config.size = config.size ? config.size : '40%';
     let cardStyle = '';
     if (config.style) {
@@ -214,22 +211,19 @@ class ButtonCard extends LitElement {
           entity_id: state.entity_id,
         });
         break;
-      case 'more_info':
-        {
-          const node = this.shadowRoot;
-          const options = {};
-          const detail = {
-            entityId: state.entity_id
-          };
-          const event = new Event('hass-more-info', {
-            bubbles: options.bubbles === undefined ? true : options.bubbles,
-            cancelable: Boolean(options.cancelable),
-            composed: options.composed === undefined ? true : options.composed,
-          });
-          event.detail = detail;
-          node.dispatchEvent(event);
-          return event;
-        }
+      case 'more_info': {
+        const node = this.shadowRoot;
+        const options = {};
+        const detail = { entityId: state.entity_id };
+        const event = new Event('hass-more-info', {
+          bubbles: options.bubbles === undefined ? true : options.bubbles,
+          cancelable: Boolean(options.cancelable),
+          composed: options.composed === undefined ? true : options.composed,
+        });
+        event.detail = detail;
+        node.dispatchEvent(event);
+        return event;
+      }
       case 'service':
         this.hass.callService(config.service.domain, config.service.action, config.service.data);
         break;
