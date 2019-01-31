@@ -27,6 +27,7 @@ lovelace:
   mode: yaml
 updater:
   include_used_components: true
+system_health:
 influxdb:
   host: 192.168.2.113
   include:
@@ -51,12 +52,6 @@ weather:
     api_key: !secret darksky_key
     mode: daily
 # enable_debug:
-
-panel_custom:
-  - name: no-love
-    sidebar_title: No love
-    sidebar_icon: mdi:heart-off
-    webcomponent_path: /home/homeassistant/.homeassistant/panels/no-love.html
 
 zone:
   name: Home
@@ -312,7 +307,7 @@ camera:
     username: !secret synology_username
     password: !secret synology_password
     timeout: 15
-    verify_ssl: False
+    verify_ssl: false
   - platform: arlo
   - platform: ring
   - platform: local_file
