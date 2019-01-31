@@ -5,8 +5,6 @@ resources:
     type: module
   - url: /local/custom_ui/circle-sensor-card.js
     type: module
-  - url: /local/custom_ui/monster-card.js?v=1
-    type: js
   - url: /local/custom_ui/thermostat-card.js?v=1.3
     type: module
   - url: /local/custom_ui/calendar-card.js
@@ -17,8 +15,13 @@ resources:
     type: js
   - url: /local/custom_ui/button-card.js?v=0.12
     type: module
-  - url: /local/mini-media-player-bundle.js?v=0.0.1
+  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.1
     type: module
+  - url: /local/custom_ui/card-tools.js?v=0.1
+    type: js
+  - url: /local/custom_ui/auto-entities.js?v=0.1
+    type: js
+
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -420,6 +423,14 @@ views:
           - sensor.nasdaq_futures
           - sensor.s_p_futures
           - sensor.10_year_treasury
+      - type: custom:auto-entities
+        card:
+          type: glance
+        filter:
+          include:
+            - area: 'Master'
+              domain: light
+              state: "off"
       - type: entities
         title: Information
         show_header_toggle: false
@@ -1783,7 +1794,7 @@ views:
           - entity: input_boolean.devmode
             state: "on"
         card:
-          type: custom:monster-card
+          type: custom:auto-entities
           card:
             type: entities
             title: All Automations
