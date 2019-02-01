@@ -38,7 +38,7 @@ ATTR_OTHER_LIABILITY = 'other_liability'
 ATTR_CREDIT = 'credit'
 ATTR_LOAN = 'loan'
 
-SCAN_INTERVAL = timedelta(minutes=15)
+SCAN_INTERVAL = timedelta(minutes=5)
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=30)
 
 SENSOR_TYPES = {
