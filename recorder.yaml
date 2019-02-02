@@ -31,7 +31,6 @@
       - sensor.ssl_certificate_expiry
       - switch.pihole
       - switch.garage_relay_switch
-      - sensor.hvacmode
       - sensor.downstairs_hvac_runtime
       - sensor.upstairs_hvac_runtime
       - sensor.master_hvac_runtime

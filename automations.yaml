@@ -1370,25 +1370,6 @@
         - switch.driveway
         - switch.wemoporch
 
-- id: set_hvac_mode
-  alias: 'Set HVAC Mode'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: sensor.hvacmode
-      to: 'heat'
-    - platform: state
-      entity_id: sensor.hvacmode
-      to: 'cool'
-  action:
-    - service: input_select.select_option
-      data_template:
-        entity_id: input_select.hvacmode
-        option: '{{ trigger.to_state.state }}'
-    - service: logbook.log
-      data_template:
-        name: "HVAC Mode changed to: "
-        message: '{{ trigger.to_state.state }}'
 - id: reset_garage_relay
   alias: 'Reset Garage Relay'
   initial_state: 'on'

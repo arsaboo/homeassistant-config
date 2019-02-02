@@ -378,20 +378,6 @@
         unit_of_measurement: "$"
         value_template: >-
            {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
-      hvacmode:
-        friendly_name: "HVAC Mode"
-        value_template: >-
-          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
-            heat
-          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
-            cool
-          {%- endif -%}
-        icon_template: >-
-          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
-            mdi:fire
-          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
-            mdi:snowflake
-          {%- endif -%}
       # ringvideourl:
       #   friendly_name: "Ring Video URL"
       #   value_template: >-
