@@ -437,6 +437,9 @@ views:
           - entity: light.gateway_light_34ce00813670
             type: custom:slider-entity-row
             toggle: true
+          - entity: light.kitchen
+            type: custom:slider-entity-row
+            toggle: true
           - entity: light.lifx3
             type: custom:slider-entity-row
             toggle: true
@@ -963,32 +966,6 @@ views:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
           - input_boolean.devmode
-      - type: entities
-        title: Camera Processing
-        show_header_toggle: false
-        entities:
-          - script.classify_images
-          - image_processing.opencv_porch
-          - image_processing.opencv_patio
-          - image_processing.opencv_driveway
-          - image_processing.opencv_backyard
-          - image_processing.tensorflow_porch
-          - image_processing.tensorflow_patio
-          - image_processing.tensorflow_driveway
-          - image_processing.tensorflow_backyard
-          - image_processing.deepstack_porch
-          - image_processing.deepstack_patio
-          - image_processing.deepstack_driveway
-          - image_processing.deepstack_backyard
-          - image_processing.facebox_backyard
-          - image_processing.facebox_patio
-          - image_processing.facebox_driveway
-          - image_processing.facebox_porch
-          - image_processing.tagbox_backyard
-          - image_processing.tagbox_patio
-          - image_processing.tagbox_driveway
-          - image_processing.tagbox_porch
-          - image_processing.rekognition_driveway
 
       - type: entities
         title: Network Details
@@ -1425,14 +1402,23 @@ views:
                 style:
                   - font-size: 12px
                   - text-transform: capitalize
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Camera Processing
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: "script.classify_images"
+            - domain: image_processing
+          exclude:
+            - state: "unknown"
+
       - type: custom:calendar-card
         entities:
           - calendar.personal
           - calendar.work
           - calendar.us_holidays
-      - type: sensor
-        entity: sensor.illumination_158d00016c53bf
-        graph: line
       - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png
@@ -1774,12 +1760,6 @@ views:
             service_data:
               entity_id: remote.livingroom
               activity: PowerOff
-
-      - type: map
-        entities:
-          - entity: device_tracker.meta_alok
-          - entity: device_tracker.meta_rashmi
-          - zone.home
       # - id: test
       #   type: entity-button
       #   entity: light.master_lights
