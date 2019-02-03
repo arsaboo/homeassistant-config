@@ -43,7 +43,7 @@ from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers import device_registry as dr
 import homeassistant.helpers.config_validation as cv
 
-REQUIREMENTS = ['androidtv==0.0.4']
+REQUIREMENTS = ['androidtv==0.0.5']
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -32,6 +32,13 @@
     host: 192.168.2.163
     username: !secret unifi_username
     password: !secret unifi_password
+    name: MotoE
+    verify_ssl: false
+    mac_address: !secret motoe_mac
+  - platform: unifi_access_switch
+    host: 192.168.2.163
+    username: !secret unifi_username
+    password: !secret unifi_password
     name: Arnav's iPad
     verify_ssl: false
     mac_address: !secret arnav_ipad_mac
