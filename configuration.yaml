@@ -534,6 +534,10 @@ media_player:
   #   host: 192.168.2.225
   #   adb_server_ip: 192.168.2.233
   #   adbkey: /home/homeassistant/.homeassistant/deps/ftv4kstick/adbkey
+  - platform: firetv
+    host: 192.168.2.225
+    name: "FTV Master"
+    adb_server_ip: 192.168.2.233
   - platform: androidtv
     host: 192.168.2.28
     name: ShieldTV
