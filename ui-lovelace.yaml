@@ -711,8 +711,7 @@ views:
           - media_player.living_room_speaker
           - media_player.living_room_tv
           - media_player.shieldtv
-          # # - media_player.aftmm
-          # - media_player.fire_stick_master
+          - media_player.ftv_master
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -830,16 +829,15 @@ views:
       - type: media-control
         entity: media_player.kodi_nstv
       - type: media-control
-        entity: media_player.echo_dot_gen2
-      - type: media-control
         entity: media_player.living_room_home
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
       - type: media-control
         entity: media_player.living_room_tv
       - type: media-control
-        entity: media_player.shield
-
+        entity: media_player.shieldtv
+      - type: media-control
+        entity: media_player.ftv_master
   - icon: mdi:settings
     id: settings
     title: Settings
