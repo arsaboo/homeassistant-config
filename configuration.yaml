@@ -421,31 +421,6 @@ image_processing:
         name: deepstack_driveway
       - entity_id: camera.backyard
         name: deepstack_backyard
-  - platform: amazon_rekognition
-    aws_access_key_id: !secret aws_access_key_id
-    aws_secret_access_key: !secret aws_secret_access_key
-    scan_interval: 20000 # optional to limit calls to the API
-    source:
-      - entity_id: camera.driveway
-  - platform: facebox
-    scan_interval: 10000
-    ip_address: 192.168.2.212
-    port: 8082
-    source:
-      - entity_id: camera.patio
-      - entity_id: camera.porch
-      - entity_id: camera.backyard
-      - entity_id: camera.driveway
-  - platform: tagbox
-    scan_interval: 10000 # Default 10
-    ip_address: 192.168.2.212
-    confidence: 50
-    port: 8081
-    source:
-      - entity_id: camera.patio
-      - entity_id: camera.porch
-      - entity_id: camera.backyard
-      - entity_id: camera.driveway
   - platform: opencv_darknet
     name: Camera Object Detection
     scan_interval: 10000 # Default 10
@@ -500,50 +475,31 @@ image_processing:
           area:
             bottom: 0.70
             right: 0.20
-
-  # - platform: classificationbox
+  # - platform: facebox
   #   scan_interval: 10000
   #   ip_address: 192.168.2.212
-  #   port: 8083
-  #   confidence: 50
+  #   port: 8082
   #   source:
-  #     - entity_id: camera.porch
-  # - platform: sighthound
-  #   api_key: sighthound_api
-  #   scan_interval: 10000
-  #   source:
-  #     - entity_id: camera.porch
-# image_processing:
-#   - platform: clarifai
-#     name: general_classifier
-#     api_key: !secret clarifai_api
-#     model_id: a403429f2ddf4b49b307e318f00e528b
-#     file_path: /home/homeassistant/.homeassistant/downloads/porch.jpg
-
-# android_ip_webcam:
-#   - host: 192.168.2.176
-#     name: motoe
-#     scan_interval: 1
-# image_processing:
-#   - platform: opencv
-#     name: OpenCV
-#     source:
-#       - entity_id: camera.porch
-#     classifier:
-#       body:
-#         file: /home/homeassistant/.homeassistant/classifier/haarcascade_fullbody.xml
-#         neighbors: 4
-  # - platform: dlib_face_detect
-  #   source:
-  #     - entity_id: camera.porch
-  #       name: "Face Detected porch"
-  #     - entity_id: camera.backyard
-  #       name: "Face Detected backyard"
-  #     - entity_id: camera.driveway
-  #       name: "Face Detected driveway"
   #     - entity_id: camera.patio
-  #       name: "Face Detected patio"
-
+  #     - entity_id: camera.porch
+  #     - entity_id: camera.backyard
+  #     - entity_id: camera.driveway
+  # - platform: tagbox
+  #   scan_interval: 10000 # Default 10
+  #   ip_address: 192.168.2.212
+  #   confidence: 50
+  #   port: 8081
+  #   source:
+  #     - entity_id: camera.patio
+  #     - entity_id: camera.porch
+  #     - entity_id: camera.backyard
+  #     - entity_id: camera.driveway
+  # - platform: amazon_rekognition
+  #   aws_access_key_id: !secret aws_access_key_id
+  #   aws_secret_access_key: !secret aws_secret_access_key
+  #   scan_interval: 20000 # optional to limit calls to the API
+  #   source:
+  #     - entity_id: camera.driveway
 sonos:
   media_player:
     hosts:
@@ -576,11 +532,13 @@ media_player:
   # - platform: firetv
   #   name: Fire Stick Master
   #   host: 192.168.2.225
+  #   adb_server_ip: 192.168.2.233
   #   adbkey: /home/homeassistant/.homeassistant/deps/ftv4kstick/adbkey
-  # - platform: androidtv
-  #   host: 192.168.2.28
-  #   name: ShieldTV
-  #   adbkey: /home/homeassistant/.homeassistant/deps/.android/adbkey
+  - platform: androidtv
+    host: 192.168.2.28
+    name: ShieldTV
+    adb_server_ip: 192.168.2.233
+    # adbkey: /home/homeassistant/.homeassistant/deps/.android/adbkey
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
