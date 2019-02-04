@@ -210,7 +210,6 @@ class BayesianBinarySensor(BinarySensorDevice):
 
     def _process_template(self, entity_observation):
         """Add entity to current_obs if template is true."""
-        entity = entity_observation['entity_id']
         template = entity_observation.get(CONF_VALUE_TEMPLATE)
         template.hass = self.hass
         should_trigger = condition.async_template(
