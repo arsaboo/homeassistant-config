@@ -164,6 +164,7 @@ class BayesianBinarySensor(BinarySensorDevice):
 
             self.hass.async_add_job(self.async_update_ha_state, True)
 
+        _LOGGER.error("entities = %s", self.entity_obs)
         async_track_state_change(
             self.hass, self.entity_obs, async_threshold_sensor_state_listener)
 
