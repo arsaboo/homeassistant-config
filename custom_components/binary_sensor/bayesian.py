@@ -56,7 +56,7 @@ STATE_SCHEMA = vol.Schema({
 TEMPLATE_SCHEMA = vol.Schema({
     CONF_PLATFORM: CONF_TEMPLATE,
     vol.Required(CONF_VALUE_TEMPLATE): cv.template,
-    vol.Required(CONF_ENTITY_ID): cv.entity_id,
+    #vol.Required(CONF_ENTITY_ID): cv.entity_id,
     vol.Required(CONF_P_GIVEN_T): vol.Coerce(float),
     vol.Optional(CONF_P_GIVEN_F): vol.Coerce(float)
 }, required=True)
@@ -112,8 +112,18 @@ class BayesianBinarySensor(BinarySensorDevice):
 
         self.current_obs = OrderedDict({})
 
-        to_observe = set(obs['entity_id'] for obs in self._observations)
+        # to_observe = set(obs.get('entity_id') for obs in self._observations if 'entity_id' in obs)
+        # for  obs in self._observations:
+        #     if 'template' in obs:
+        #         to_observe += obs.get(CONF_VALUE_TEMPLATE).extract_entities()
+        #to_observe = set(obs['entity_id'] for obs in self._observations)
 
+        to_observe = set()
+        for  obs in self._observations:
+            if 'entity_id' in obs:
+                to_observe += set([obs.get('entity_id')])
+            if 'template' in obs:
+               to_observe += set(obs.get(CONF_VALUE_TEMPLATE).extract_entities())
         self.entity_obs = dict.fromkeys(to_observe, [])
 
         for ind, obs in enumerate(self._observations):
