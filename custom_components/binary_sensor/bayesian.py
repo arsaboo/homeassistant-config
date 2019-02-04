@@ -120,6 +120,7 @@ class BayesianBinarySensor(BinarySensorDevice):
 
         to_observe = set()
         for  obs in self._observations:
+            _LOGGER.error("Obs = %s", obs)
             if 'entity_id' in obs:
                 to_observe.update(set([obs.get('entity_id')]))
             if 'template' in obs:
