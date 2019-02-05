@@ -56,7 +56,6 @@ STATE_SCHEMA = vol.Schema({
 TEMPLATE_SCHEMA = vol.Schema({
     CONF_PLATFORM: CONF_TEMPLATE,
     vol.Required(CONF_VALUE_TEMPLATE): cv.template,
-    #vol.Required(CONF_ENTITY_ID): cv.entity_id,
     vol.Required(CONF_P_GIVEN_T): vol.Coerce(float),
     vol.Optional(CONF_P_GIVEN_F): vol.Coerce(float)
 }, required=True)
@@ -112,21 +111,12 @@ class BayesianBinarySensor(BinarySensorDevice):
 
         self.current_obs = OrderedDict({})
 
-        # to_observe = set(obs.get('entity_id') for obs in self._observations if 'entity_id' in obs)
-        # for  obs in self._observations:
-        #     if 'template' in obs:
-        #         to_observe += obs.get(CONF_VALUE_TEMPLATE).extract_entities()
-        #to_observe = set(obs['entity_id'] for obs in self._observations)
-
         to_observe = set()
-        _LOGGER.error("observations: %s", self._observations)
         for  obs in self._observations:
-            _LOGGER.error("Obs = %s", obs)
             if 'entity_id' in obs:
                 to_observe.update(set([obs.get('entity_id')]))
             if 'value_template' in obs:
                 to_observe.update(set(obs.get(CONF_VALUE_TEMPLATE).extract_entities()))
-        _LOGGER.error("to_observe = %s", to_observe)
         self.entity_obs = dict.fromkeys(to_observe, [])
 
         for ind, obs in enumerate(self._observations):
@@ -167,7 +157,6 @@ class BayesianBinarySensor(BinarySensorDevice):
 
             self.hass.async_add_job(self.async_update_ha_state, True)
 
-        _LOGGER.error("entities = %s", self.entity_obs)
         async_track_state_change(
             self.hass, self.entity_obs, async_threshold_sensor_state_listener)
 
