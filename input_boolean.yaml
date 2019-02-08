@@ -36,4 +36,7 @@
     name: Developer Mode
     initial: off
     icon: mdi:tune
-  weather:
+  sleeping:
+    name: Sleeping
+    initial: off
+    icon: mdi:sleep

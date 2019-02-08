@@ -1046,6 +1046,15 @@ views:
     id: test
     title: Testing
     cards:
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Vibration sensor
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: "*158d0002a51fc2*"
+            - entity_id: input_boolean.sleeping      
       - type: custom:pc-card
       - type: vertical-stack
         cards:
@@ -1410,7 +1419,6 @@ views:
             - domain: image_processing
           exclude:
             - state: "unknown"
-
       - type: custom:calendar-card
         entities:
           - calendar.personal

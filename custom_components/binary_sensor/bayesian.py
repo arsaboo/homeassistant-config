@@ -112,11 +112,12 @@ class BayesianBinarySensor(BinarySensorDevice):
         self.current_obs = OrderedDict({})
 
         to_observe = set()
-        for  obs in self._observations:
+        for obs in self._observations:
             if 'entity_id' in obs:
                 to_observe.update(set([obs.get('entity_id')]))
             if 'value_template' in obs:
-                to_observe.update(set(obs.get(CONF_VALUE_TEMPLATE).extract_entities()))
+                to_observe.update(
+                    set(obs.get(CONF_VALUE_TEMPLATE).extract_entities()))
         self.entity_obs = dict.fromkeys(to_observe, [])
 
         for ind, obs in enumerate(self._observations):

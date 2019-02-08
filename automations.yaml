@@ -271,6 +271,8 @@
       entity_id: script.abodestandby
     - service: automation.turn_on
       entity_id: automation.turn_off_master_lights
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.sleeping
 
 - id: enable_recording
   alias: Enable Recording
@@ -887,11 +889,7 @@
       event_type: xiaomi_aqara.movement
       event_data:
         entity_id: binary_sensor.vibration_158d0002a51fc2
-        movement_type: tilt
   action:
-    - service: light.toggle
-      data:
-        entity_id: light.master_lights
     - service: logbook.log
       data_template:
         name: "Xiaomi event: "
@@ -1133,6 +1131,9 @@
     - condition: state
       entity_id: light.master_lights
       state: 'on'
+    - condition: state
+      entity_id: media_player.ftv_master
+      state: 'off'
   action:
     - service: light.turn_off
       data:
@@ -1931,21 +1932,22 @@
         message: >
           {{trigger.event.data}}
 
-- id: webhook_geofency_test
-  alias: Webhook Geofency Test
-  initial_state: 'on'
+- alias: 'Sleeping - turn on'
+  initial_state: True
+  hide_entity: true
   trigger:
-    - platform: webhook
-      webhook_id: alok_buckhead
+    platform: event
+    event_type: xiaomi_aqara.movement
+    event_data:
+      entity_id: binary_sensor.vibration_158d0002a51fc2
+      movement_type: vibrate
+  condition:
+    - condition: time
+      after: '21:00:00'
+      before: '06:00:00'
+    - condition: state
+      entity_id: input_boolean.sleeping
+      state: 'off'
   action:
-    # - service: device_tracker.see
-    #   data_template:
-    #     dev_id: b4445761_f6c0_4b7f_835f_cfdc03b47111
-    #     gps:
-    #       - "{{trigger.json.latitude}}"
-    #       - "{{trigger.json.longitude}}"
-    - service: logbook.log
-      data_template:
-        name: "Geofency event: "
-        message: >
-          {{trigger.json.latitude}}
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.sleeping

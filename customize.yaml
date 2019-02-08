@@ -96,11 +96,6 @@ sensor.dark_sky_daily_summary:
   friendly_name: Daily Summary
 sensor.dark_sky_hourly_summary:
   friendly_name: Hourly Summary
-input_boolean.weather:
-  custom_ui_state_card: custom-weather-card
-  config:
-    weather: weather.yweather
-    sun: sun.sun
 sensor.iframe_windy:
   custom_ui_state_card: state-card-iframe
   config:
@@ -149,8 +144,6 @@ sensor.evening_commute:
   icon: mdi:car
 sensor.garagedoor:
   icon: mdi:glassdoor
-media_player.shieldtv:
-  friendly_name: ShieldTV Cast
 media_player.my_shield_android_tv:
   friendly_name: Shield TV
 thermostat.main_floor:
