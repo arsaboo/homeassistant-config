@@ -1,5 +1,7 @@
 class CalendarCard extends HTMLElement {
   set hass(hass) {
+    this._hass = hass;
+
     if (!this.content) {
       const card = document.createElement('ha-card');
       card.header = this.config.name;
@@ -7,11 +9,18 @@ class CalendarCard extends HTMLElement {
       this.content.style.padding = '0 16px 16px';
       card.appendChild(this.content);
       this.appendChild(card);
-      moment.locale(hass.language);
     }
 
-    this._hass = hass;
+    this.init();
+  }
 
+  init() {
+    if(typeof(moment) == "undefined") {
+      setTimeout(() => this.init(), 200);
+      return;
+    }
+
+    moment.locale(this._hass.language);
     this
       .getAllEvents(this.config.entities)
       .then(events => this.updateHtmlIfNecessary(events))
