@@ -12,7 +12,7 @@ import homeassistant.helpers.config_validation as cv
 
 
 # Home Assistant depends on 3rd party packages for API specific code.
-REQUIREMENTS = ['pyunifi==2.13']
+REQUIREMENTS = ['pyunifi==2.16']
 
 _LOGGER = logging.getLogger(__name__)
 CONF_PORT = 'port'
