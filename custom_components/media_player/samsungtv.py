@@ -8,8 +8,8 @@ import asyncio
 from datetime import timedelta
 import logging
 import socket
-import subprocess
-import sys
+import threading
+import os
 
 import voluptuous as vol
 
@@ -17,35 +17,56 @@ from homeassistant.components.media_player import (
     MEDIA_TYPE_CHANNEL, PLATFORM_SCHEMA, SUPPORT_NEXT_TRACK, SUPPORT_PAUSE,
     SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP,
-    MediaPlayerDevice)
+    SUPPORT_VOLUME_SET, SUPPORT_SELECT_SOURCE, MediaPlayerDevice)
 from homeassistant.const import (
-    CONF_HOST, CONF_MAC, CONF_NAME, CONF_PORT, CONF_TIMEOUT, STATE_OFF,
-    STATE_ON, STATE_UNKNOWN)
+    CONF_HOST,
+    CONF_NAME,
+    CONF_METHOD,
+    STATE_OFF,
+    STATE_ON
+)
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import dt as dt_util
 
-REQUIREMENTS = ['samsungctl[websocket]==0.7.1', 'wakeonlan==1.1.6']
+
+REQUIREMENTS = [
+    'https://github.com/kdschlosser/'
+    'samsungctl/archive/develop.zip#samsungctl==0.8.4b'
+]
+
+SAMSUNG_CONFIG_PATH = 'samsung_tv'
+
+ICON = 'mdi:television'
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Samsung TV Remote'
-DEFAULT_PORT = 55000
-DEFAULT_TIMEOUT = 1
+DEFAULT_DESCRIPTION = socket.gethostname()
+
+CONF_DESCRIPTION =  'description'
 
 KEY_PRESS_TIMEOUT = 1.2
 KNOWN_DEVICES_KEY = 'samsungtv_known_devices'
 
-SUPPORT_SAMSUNGTV = SUPPORT_PAUSE | SUPPORT_VOLUME_STEP | \
-    SUPPORT_VOLUME_MUTE | SUPPORT_PREVIOUS_TRACK | \
-    SUPPORT_NEXT_TRACK | SUPPORT_TURN_OFF | SUPPORT_PLAY | SUPPORT_PLAY_MEDIA
+SUPPORT_SAMSUNGTV = (
+    SUPPORT_PAUSE |
+    SUPPORT_VOLUME_STEP |
+    SUPPORT_VOLUME_MUTE |
+    SUPPORT_PREVIOUS_TRACK |
+    SUPPORT_NEXT_TRACK |
+    SUPPORT_TURN_OFF |
+    SUPPORT_PLAY |
+    SUPPORT_PLAY_MEDIA |
+    SUPPORT_VOLUME_SET |
+    SUPPORT_SELECT_SOURCE
+)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
+    vol.Optional(CONF_METHOD): cv.string,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
-    vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
+    vol.Optional(CONF_DESCRIPTION, default=DEFAULT_DESCRIPTION): cv.string,
 })
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Samsung TV platform."""
@@ -54,21 +75,31 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         known_devices = set()
         hass.data[KNOWN_DEVICES_KEY] = known_devices
 
+    config_path = hass.config.path(SAMSUNG_CONFIG_PATH)
+
+    if not os.path.exists(config_path):
+        os.mkdir(config_path)
+
+    import samsungctl
+
+    uuid = None
     # Is this a manual configuration?
     if config.get(CONF_HOST) is not None:
         host = config.get(CONF_HOST)
-        port = config.get(CONF_PORT)
         name = config.get(CONF_NAME)
-        mac = config.get(CONF_MAC)
-        timeout = config.get(CONF_TIMEOUT)
+        description = config.get(CONF_DESCRIPTION)
+        method = config.get(CONF_METHOD)
+
     elif discovery_info is not None:
         tv_name = discovery_info.get('name')
         model = discovery_info.get('model_name')
         host = discovery_info.get('host')
         name = "{} ({})".format(tv_name, model)
-        port = DEFAULT_PORT
-        timeout = DEFAULT_TIMEOUT
-        mac = None
+        description = DEFAULT_DESCRIPTION
+        method = None
+        udn = discovery_info.get('udn')
+        if udn and udn.startswith('uuid:'):
+            uuid = udn[len('uuid:'):]
     else:
         _LOGGER.warning("Cannot determine device")
         return
@@ -78,114 +109,222 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     ip_addr = socket.gethostbyname(host)
     if ip_addr not in known_devices:
         known_devices.add(ip_addr)
-        add_entities([SamsungTVDevice(host, port, name, timeout, mac)])
-        _LOGGER.info("Samsung TV %s:%d added as '%s'", host, port, name)
+
+        samsung_config = samsungctl.Config.load(config_path)(
+            host=host,
+            name=name,
+            description=description,
+            method=method,
+        )
+
+        if not samsung_config.paired and samsung_config.method == 'encrypted':
+            request_configuration(samsung_config, uuid, hass, add_entities)
+        else:
+            add_entities([SamsungTVDevice(samsung_config, uuid)])
+        _LOGGER.debug("Samsung TV %s added as '%s'", host, config.get(CONF_NAME))
     else:
-        _LOGGER.info("Ignoring duplicate Samsung TV %s:%d", host, port)
+        _LOGGER.debug("Ignoring duplicate Samsung TV %s", host)
+
+_CONFIGURING = {}
+
+
+def request_configuration(samsung_config, uuid, hass, add_entities):
+    """Request configuration steps from the user."""
+    host = samsung_config.host
+    name = samsung_config.name
+
+    configurator = hass.components.configurator
+
+    import samsungctl
+    event = threading.Event()
+    pin = []
+    count = 0
+
+    def get_pin():
+        global count
+
+        def samsung_configuration_callback(data):
+            """Handle the entry of user PIN."""
+            pin.append(data.get('pin'))
+            event.set()
+
+        if count == 3:
+            _LOGGER.error(name + " TV: Pin entry failed")
+            return False
+
+        if host in _CONFIGURING:
+            count += 1
+            configurator.notify_errors(
+                _CONFIGURING[host], "Failed to register, please try again."
+            )
+            del pin[:]
+            event.clear()
+        else:
+            _CONFIGURING[host] = configurator.request_config(
+                name,
+                samsung_configuration_callback,
+                description='Enter the Pin shown on your Samsung TV.',
+                description_image="/static/images/smart-tv.png",
+                submit_caption="Confirm",
+                fields=[{'id': 'pin', 'name': 'Enter the pin', 'type': ''}]
+            )
+
+        event.wait(30)
+
+        if not event.isSet():
+            count += 1
+            return None
+
+        return pin[0]
+
+    samsung_config.get_pin = get_pin
+    try:
+        remote = samsungctl.Remote(samsung_config)
+        remote.open()
+        add_entities(
+            [SamsungTVDevice(samsung_config, uuid)]
+        )
+    except:
+        return
 
 
 class SamsungTVDevice(MediaPlayerDevice):
     """Representation of a Samsung TV."""
 
-    def __init__(self, host, port, name, timeout, mac):
+    def __init__(self, config, uuid):
         """Initialize the Samsung device."""
-        import custom_components.samsungctl as samsungctl
-        from custom_components.samsungctl import exceptions
-        from custom_components.samsungctl import Remote
-        import wakeonlan
+        from samsungctl import exceptions
+        from samsungctl import Remote
+
         # Save a reference to the imported classes
         self._exceptions_class = exceptions
         self._remote_class = Remote
-        self._name = name
-        self._mac = mac
-        self._wol = wakeonlan
-        # Assume that the TV is not muted
-        self._muted = False
-        # Assume that the TV is in Play mode
+        self._config = config
+
+        self._name = self._config.name
+        self._mac = self._config.mac
+        self._uuid = uuid
         self._playing = True
-        self._state = STATE_UNKNOWN
+        self._state = None
         self._remote = None
+        self._key_source = False
+        self._mute = False
+        self._sources = []
+        self._source = ''
+        self._volume = 0.0
+
+        self._supported_features = SUPPORT_SAMSUNGTV
+        if self._config.method != 'legacy':
+            self._supported_features |= SUPPORT_TURN_ON
+
         # Mark the end of a shutdown command (need to wait 15 seconds before
         # sending the next command to avoid turning the TV back ON).
         self._end_of_power_off = None
-        # Generate a configuration for the Samsung library
-        self._config = {
-            'name': 'HomeAssistant',
-            'description': name,
-            'id': 'ha.component.samsung',
-            'port': port,
-            'host': host,
-            'timeout': timeout,
-        }
 
-        if self._config['port'] == 8002:
-            self._config['method'] = 'websocket'
-        else:
-            self._config['method'] = 'legacy'
+        # Mark the end of the TV powering on.need to wait 20 seconds before
+        # sending any commands.
+        self._end_of_power_on = None
+        # Generate a configuration for the Samsung library
+
+        self._remote = self._remote_class(self._config)
+        self._config.save()
 
     def update(self):
         """Update state of device."""
-        if sys.platform == 'win32':
-            timeout_arg = '-w {}000'.format(self._config['timeout'])
-            _ping_cmd = [
-                'ping', '-n 3', timeout_arg, self._config['host']]
-        else:
-            timeout_arg = '-W{}'.format(self._config['timeout'])
-            _ping_cmd = [
-                'ping', '-n', '-q',
-                '-c3', timeout_arg, self._config['host']]
 
-        ping = subprocess.Popen(
-            _ping_cmd,
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        try:
-            ping.communicate()
-            self._state = STATE_ON if ping.returncode == 0 else STATE_OFF
-        except subprocess.CalledProcessError:
+        if self._power_off_in_progress():
+            _LOGGER.debug(self._name + ' TV: Powering Off')
             self._state = STATE_OFF
 
-    def get_remote(self):
-        """Create or return a remote control instance."""
-        if self._remote is None:
-            # We need to create a new instance to reconnect.
-            self._remote = self._remote_class(self._config)
+        elif self._power_on_in_progress():
+            _LOGGER.debug(self._name + ' TV: Powering On')
+            self._state = STATE_ON
+        else:
+            power = self._remote.power
+            if power is True:
+                _LOGGER.debug(self._name + ' TV: Power is On')
+                self._state = STATE_ON
+            else:
+                _LOGGER.debug(self._name + ' TV: Power is Off')
+                self._state = STATE_OFF
 
-        return self._remote
+        sources = self._remote.sources
+        if sources is None:
+            if self._state == STATE_OFF:
+                self._sources = []
+            else:
+                self._sources = [
+                    'Source',
+                    'Component 1',
+                    'Component 2',
+                    'AV 1',
+                    'AV 2',
+                    'AV 3',
+                    'S Video 1',
+                    'S Video 2',
+                    'S Video 3',
+                    'HDMI',
+                    'HDMI 1',
+                    'HDMI 2',
+                    'HDMI 3',
+                    'HDMI 4',
+                    'FM-Radio',
+                    'DVI',
+                    'DVR',
+                    'TV',
+                    'Analog TV',
+                    'Digital TV'
+                ]
+
+                self._key_source = True
+
+        source = self._remote.source
+        if source is None:
+            if self._state == STATE_OFF:
+                self._source = 'TV OFF'
+            else:
+                self._source = 'Unknown'
+        else:
+            label = source.label
+            name = source.name
+
+            if name != label:
+                name = label + ':' + name
+
+            self._source = name
+
+        volume = self._remote.volume
+        _LOGGER.debug(self._name + ' TV: Volume = ' + str(volume))
+        if volume is not None:
+            self._volume = volume / 100.0
+
+        mute = self._remote.mute
+        _LOGGER.debug(self._name + ' TV: Mute = ' + str(mute))
+        if mute is None:
+            self._mute = False
+        else:
+            self._mute = mute
 
     def send_key(self, key):
         """Send a key to the tv and handles exceptions."""
-        if self._power_off_in_progress() \
-                and key not in ('KEY_POWER', 'KEY_POWEROFF'):
-            _LOGGER.info("TV is powering off, not sending command: %s", key)
-            return
-        try:
-            # recreate connection if connection was dead
-            retry_count = 1
-            for _ in range(retry_count + 1):
-                try:
-                    self.get_remote().control(key)
-                    break
-                except (self._exceptions_class.ConnectionClosed,
-                        BrokenPipeError):
-                    # BrokenPipe can occur when the commands is sent to fast
-                    self._remote = None
-            self._state = STATE_ON
-        except (self._exceptions_class.UnhandledResponse,
-                self._exceptions_class.AccessDenied):
-            # We got a response so it's on.
-            self._state = STATE_ON
-            self._remote = None
-            _LOGGER.debug("Failed sending command %s", key, exc_info=True)
-            return
-        except OSError:
-            self._state = STATE_OFF
-            self._remote = None
         if self._power_off_in_progress():
-            self._state = STATE_OFF
+            _LOGGER.debug(self._name + " TV: powering off, not sending command: %s", key)
+            return
 
-    def _power_off_in_progress(self):
-        return self._end_of_power_off is not None and \
-               self._end_of_power_off > dt_util.utcnow()
+        elif self._power_on_in_progress():
+            _LOGGER.debug(self._name + " TV: powering on, not sending command: %s", key)
+            return
+
+        if self._state == STATE_OFF:
+            _LOGGER.debug(self._name + " TV: powered off, not sending command: %s", key)
+            return
+
+        self._remote.control(key)
+
+    @property
+    def unique_id(self) -> str:
+        """Return the unique ID of the device."""
+        return self._uuid
 
     @property
     def name(self):
@@ -198,31 +337,38 @@ class SamsungTVDevice(MediaPlayerDevice):
         return self._state
 
     @property
-    def is_volume_muted(self):
-        """Boolean if volume is currently muted."""
-        return self._muted
-
-    @property
     def supported_features(self):
         """Flag media player features that are supported."""
-        if self._mac:
-            return SUPPORT_SAMSUNGTV | SUPPORT_TURN_ON
-        return SUPPORT_SAMSUNGTV
+        return self._supported_features
 
-    def turn_off(self):
-        """Turn off media player."""
-        self._end_of_power_off = dt_util.utcnow() + timedelta(seconds=15)
+    def select_source(self, source):
+        """Select input source."""
+        if self._key_source:
+            if source == 'Analog TV':
+                source = 'ANTENA'
 
-        if self._config['method'] == 'websocket':
-            self.send_key('KEY_POWER')
+            elif source == 'Digital TV':
+                source = 'DTV'
+
+            source = source.upper().replace('-', '_').replace(' ', '')
+            source = 'KEY_' + source
+            _LOGGER.debug(self._name + ' TV: changing source to ' + source)
+            self.send_key(source)
         else:
-            self.send_key('KEY_POWEROFF')
-        # Force closing of remote session to provide instant UI feedback
-        try:
-            self.get_remote().close()
-            self._remote = None
-        except OSError:
-            _LOGGER.debug("Could not establish connection.")
+            if ':' in source:
+                source = source.rsplit(':', 1)[-1]
+            _LOGGER.debug(self._name + ' TV: changing source to ' + source)
+            self._remote.source = source
+
+    @property
+    def source(self):
+        """Name of the current input source."""
+        return self._source
+
+    @property
+    def source_list(self):
+        """List of available input sources."""
+        return self._sources
 
     def volume_up(self):
         """Volume up the media player."""
@@ -232,9 +378,23 @@ class SamsungTVDevice(MediaPlayerDevice):
         """Volume down media player."""
         self.send_key('KEY_VOLDOWN')
 
+    @property
+    def volume_level(self):
+        """Volume level of the media player scalar volume. 0.0-1.0."""
+        return self._volume
+
+    def set_volume_level(self, volume):
+        """Set volume level, convert scalar volume. 0.0-1.0 to percent 0-100"""
+        self._remote.volume = int(volume * 100)
+
     def mute_volume(self, mute):
         """Send mute command."""
-        self.send_key('KEY_MUTE')
+        self._remote.mute = mute
+
+    @property
+    def is_volume_muted(self):
+        """Boolean if volume is currently muted."""
+        return self._mute
 
     def media_play_pause(self):
         """Simulate play pause media player."""
@@ -264,23 +424,101 @@ class SamsungTVDevice(MediaPlayerDevice):
     async def async_play_media(self, media_type, media_id, **kwargs):
         """Support changing a channel."""
         if media_type != MEDIA_TYPE_CHANNEL:
-            _LOGGER.error('Unsupported media type')
+            _LOGGER.error(self._name + ' TV: Unsupported media type')
             return
 
         # media_id should only be a channel number
         try:
             cv.positive_int(media_id)
         except vol.Invalid:
-            _LOGGER.error('Media ID must be positive integer')
+            _LOGGER.error(self._name + ' TV: Media ID must be positive integer')
             return
 
         for digit in media_id:
             await self.hass.async_add_job(self.send_key, 'KEY_' + digit)
             await asyncio.sleep(KEY_PRESS_TIMEOUT, self.hass.loop)
 
+    @property
+    def app_id(self):
+        """ID of the current running app."""
+        return None
+
+    @property
+    def app_name(self):
+        """Name of the current running app."""
+        return None
+
     def turn_on(self):
         """Turn the media player on."""
-        if self._mac:
-            self._wol.send_magic_packet(self._mac)
+
+        if self._power_on_in_progress():
+            return
+
+        if self._config.mac:
+            self._end_of_power_on = dt_util.utcnow() + timedelta(seconds=20)
+
+            if self._power_off_in_progress():
+                self._end_of_power_on += (
+                    dt_util.utcnow() - self._end_of_power_off
+                )
+
+            def do():
+                _LOGGER.debug(self._name + ' TV: Power on process started')
+                event = threading.Event()
+                while self._power_off_in_progress():
+                    event.wait(0.5)
+
+                self._remote.power = True
+
+            t = threading.Thread(target=do)
+            t.daemon = True
+            t.start()
+        elif self._config.method != 'legacy':
+            _LOGGER.debug(
+                self._name + " TV: There was a problem detecting the TV's MAC address, "
+                "you will have to update the MAC address in the Home "
+                "Assistant config file manually."
+            )
+
         else:
-            self.send_key('KEY_POWERON')
+            _LOGGER.debug(
+                self._name + " TV: Legacy TV's (2008 - 2013) do not support "
+                "being powered on remotely."
+            )
+
+    def _power_on_in_progress(self):
+        return (
+            self._end_of_power_on is not None and
+            self._end_of_power_on > dt_util.utcnow()
+        )
+
+    def turn_off(self):
+        """Turn off media player."""
+
+        if self._power_off_in_progress():
+            return
+
+        self._end_of_power_off = dt_util.utcnow() + timedelta(seconds=15)
+
+        if self._power_on_in_progress():
+            self._end_of_power_off += (
+                dt_util.utcnow() - self._end_of_power_on
+            )
+
+        def do():
+            _LOGGER.debug(self._name + ' TV: Power off process started')
+            event = threading.Event()
+            while self._power_on_in_progress():
+                event.wait(0.5)
+
+            self._remote.power = False
+
+        t = threading.Thread(target=do)
+        t.daemon = True
+        t.start()
+
+    def _power_off_in_progress(self):
+        return (
+            self._end_of_power_off is not None and
+            self._end_of_power_off > dt_util.utcnow()
+        )
