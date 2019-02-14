@@ -15,7 +15,7 @@ resources:
     type: js
   - url: /local/custom_ui/button-card.js?v=0.12
     type: module
-  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.1
+  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.2
     type: module
   - url: /local/custom_ui/card-tools.js?v=0.1
     type: js
@@ -709,7 +709,7 @@ views:
           - media_player.echo_dot_gen2
           - media_player.living_room_home
           - media_player.living_room_speaker
-          - media_player.living_room_tv
+          - media_player.samsungctl
           - media_player.shieldtv
           - media_player.ftv_master
       - type: vertical-stack
@@ -832,6 +832,8 @@ views:
         entity: media_player.living_room_home
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
+      - type: media-control
+        entity: media_player.samsungctl
       - type: media-control
         entity: media_player.living_room_tv
       - type: media-control
@@ -1054,7 +1056,9 @@ views:
         filter:
           include:
             - entity_id: "*158d0002a51fc2*"
-            - entity_id: input_boolean.sleeping      
+            - entity_id: input_boolean.sleeping
+            - entity_id: '*_bed*'
+            - entity_id: sensor.bed_weight_average_mean
       - type: custom:pc-card
       - type: vertical-stack
         cards:

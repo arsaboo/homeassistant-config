@@ -13,7 +13,7 @@
       - input_select.livingroomharmony
       - sensor.living_room
       - sensor.dark_sky_summary
-      - sensor.total_tv_time
+      - sensor.total_tv_time   
       - zwave.garage_door_tilt_sensor
       - automation.change_leeo_color
       - automation.change_leeo_upstairs_color

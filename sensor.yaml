@@ -85,9 +85,15 @@
       - 2
     monitored_conditions:
       - download
+  - platform: statistics
+    name: Bed Weight Average
+    entity_id: sensor.master_bed_weight
+    sampling_size: 30
+    max_age:
+      minutes: 5
   - platform: history_stats
     name: Total TV Time
-    entity_id: media_player.living_room_tv
+    entity_id: media_player.samsungctl
     state: 'on'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
@@ -172,6 +178,9 @@
       - from: USD
         to: INR
         name: USDINR
+  - platform: mqtt
+    name: "Master Bed Weight"
+    state_topic: "/load/masterbed/WeightChanA"
   # - platform: mqtt
   #   state_topic: "owntracks/pi/rashmiphone/step"
   #   name: "Steps Rashmi"
