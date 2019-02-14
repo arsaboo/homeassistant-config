@@ -80,11 +80,6 @@
       - 'disk_use_percent'
       - 'memory_use_percent'
       - 'processor_load'
-  - platform: speedtest
-    hour:
-      - 2
-    monitored_conditions:
-      - download
   - platform: statistics
     name: Bed Weight Average
     entity_id: sensor.master_bed_weight
@@ -157,7 +152,6 @@
 #Evening Commute Google Travel Time Sensor
   - platform: google_travel_time
     name: Alok to Home
-    friendly_name: "Commute to Home"
     scan_interval: 60000
     api_key: !secret google_key
     origin: device_tracker.alok_alok

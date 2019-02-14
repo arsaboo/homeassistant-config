@@ -3,15 +3,6 @@
     entities:
       - binary_sensor.garagedoor
       - device_tracker.meta_rashmi
+      - person.rashmi
       - device_tracker.meta_alok
-      - device_tracker.alokphone_alokphone
-      - device_tracker.myiphone
-      - device_tracker.alokiosiphone
-      - device_tracker.alok_alok
-      - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
-      - device_tracker.elantrase
-      - alarm_control_panel.abode_alarm
-      - media_player.living_room_tv
-      - media_player.panasonic_viera_tv
-      - alarm_control_panel.arlohome_2
-      - alarm_control_panel.arlohome
+      - person.alok

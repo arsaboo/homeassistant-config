@@ -965,6 +965,8 @@ views:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
           - input_boolean.devmode
+          - person.alok
+          - person.rashmi
 
       - type: entities
         title: Network Details
