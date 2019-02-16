@@ -217,18 +217,45 @@
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: light.living_room_lights
+          entity_id: light.lifx3
           brightness: 255
           period: 15
           spread: 359
           change: 35
-
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: light.lifxnrguest
+          brightness: 255
+          period: 15
+          spread: 359
+          change: 35
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: light.lifxnrkitchen
+          brightness: 255
+          period: 15
+          spread: 359
+          change: 35
   disco_party:
     alias: 'Start Party Mode'
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: light.living_room_lights
+          entity_id: light.lifx3
+          brightness: 255
+          period: 1
+          spread: 359
+          change: 35
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: light.lifxnrguest
+          brightness: 255
+          period: 1
+          spread: 359
+          change: 35
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id: light.lifxnrkitchen
           brightness: 255
           period: 1
           spread: 359
@@ -274,7 +301,10 @@
     sequence:
       - service: light.lifx_effect_stop
         data:
-          entity_id: light.all_lights
+          entity_id:
+            - light.lifxnrkitchen
+            - light.lifxnrguest
+            - light.lifx3
       - service: light.turn_on
         entity_id: light.living_room_lights
         data:
