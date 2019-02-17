@@ -115,10 +115,10 @@ wemo:
     - 192.168.2.130
     - 192.168.2.206
     - 192.168.2.237
-arlo:
+aarlo:
   username: !secret arlo_user
   password: !secret arlo_password
-  scan_interval: 120
+  # scan_interval: 120
 tuya:
   username: !secret tuya_user
   password: !secret tuya_password
@@ -131,6 +131,9 @@ alarm_control_panel:
     event_arm_away: arlo_alarm_arm_away
     event_disarm: arlo_alarm_disarm
     optimistic: true
+  - platform: aarlo
+    home_mode_name: Home
+    away_mode_name: armed
   # - platform: arlo
 xiaomi_aqara:
   gateways:
@@ -308,7 +311,8 @@ camera:
   #   password: !secret synology_password
   #   timeout: 15
   #   verify_ssl: false
-  - platform: arlo
+  - platform: aarlo
+    ffmpeg_arguments: '-pred 1 -q:v 2'
   - platform: ring
   - platform: local_file
     name: Driveway TF
