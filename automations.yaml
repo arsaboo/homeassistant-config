@@ -1,6 +1,24 @@
 ###############################################################
 ## Presence
 ################################################################
+
+- id: person_logging
+  alias: 'Log person changes'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - person.alok
+        - person.rashmi
+  condition:
+    - condition: template
+      value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
+  action:
+    - service: logbook.log
+      data_template:
+        name: "Person: "
+        message: "{{trigger.to_state.name}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}} by {{ trigger.to_state.attributes.source }}"
+
 - id: update_meta_tracker
   alias: "Update Device Meta Tracker"
   initial_state: 'on'
