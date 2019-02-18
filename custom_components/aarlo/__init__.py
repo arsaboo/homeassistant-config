@@ -41,7 +41,7 @@ DB_MOTION_TIME = timedelta(seconds=30)
 DB_DING_TIME   = timedelta(seconds=10)
 RECENT_TIME    = timedelta(minutes=10)
 LAST_FORMAT    = '%m-%d %H:%M'
-CONF_DIR       = '/config/.aarlo'
+CONF_DIR       = ''
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -71,6 +71,8 @@ def setup(hass, config):
     recent_time  = conf.get(CONF_RECENT_TIME).total_seconds()
     last_format  = conf.get(CONF_LAST_FORMAT)
     conf_dir     = conf.get(CONF_CONF_DIR)
+    if conf_dir == '':
+        conf_dir = hass.config.config_dir + '/.aarlo'
 
     try:
         from custom_components.aarlo.pyaarlo import PyArlo
