@@ -17,7 +17,7 @@
       - service: alarm_control_panel.alarm_arm_away
         entity_id:
           - alarm_control_panel.abode_alarm
-          - alarm_control_panel.arlohome
+          - alarm_control_panel.aarlo_arlohome
           - alarm_control_panel.abode
       - service: switch.turn_on
         entity_id:
@@ -41,7 +41,7 @@
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.abode
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.arlohome
+        entity_id: alarm_control_panel.aarlo_arlohome
       # - service: ifttt.trigger
       #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
@@ -55,7 +55,7 @@
       - service: alarm_control_panel.alarm_disarm
         entity_id:
           - alarm_control_panel.abode_alarm
-          - alarm_control_panel.arlohome
+          - alarm_control_panel.aarlo_arlohome
           - alarm_control_panel.abode
       - service: switch.turn_off
         entity_id:
@@ -217,21 +217,10 @@
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: light.lifx3
-          brightness: 255
-          period: 15
-          spread: 359
-          change: 35
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id: light.lifxnrguest
-          brightness: 255
-          period: 15
-          spread: 359
-          change: 35
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id: light.lifxnrkitchen
+          entity_id:
+            - light.lifx3
+            - light.lifxnrguest
+            - light.lifxnrkitchen
           brightness: 255
           period: 15
           spread: 359
@@ -241,21 +230,10 @@
     sequence:
       - service: light.lifx_effect_colorloop
         data:
-          entity_id: light.lifx3
-          brightness: 255
-          period: 1
-          spread: 359
-          change: 35
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id: light.lifxnrguest
-          brightness: 255
-          period: 1
-          spread: 359
-          change: 35
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id: light.lifxnrkitchen
+          entity_id:
+            - light.lifx3
+            - light.lifxnrguest
+            - light.lifxnrkitchen
           brightness: 255
           period: 1
           spread: 359
@@ -369,7 +347,7 @@
       #     state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: alarm_control_panel.ifttt_push_alarm_state
         data_template:
-          entity_id: alarm_control_panel.arlohome
+          entity_id: alarm_control_panel.aarlo_arlohome
           state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: input_select.select_option
         data_template:
@@ -485,3 +463,10 @@
         data:
           entity_id: media_player.kodi_nstv
           method: VideoLibrary.Clean
+
+  sonos_speech_toggle:
+    alias: Sonos - toggle speech mode
+    sequence:
+        service: homeassistant.toggle
+        data:
+          entity_id: switch.sonos_speech_enhance

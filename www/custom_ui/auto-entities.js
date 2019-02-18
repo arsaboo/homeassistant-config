@@ -158,6 +158,9 @@ class AutoEntities extends cardTools.litElement() {
     return entities;
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     if(this.entities.length === 0 && this._config.show_empty === false)
       return cardTools.litHtml()``;

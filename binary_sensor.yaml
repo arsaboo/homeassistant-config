@@ -57,6 +57,11 @@
         prob_given_false: 0.1
         platform: 'state'
         to_state: 'home'
+  - platform: aarlo
+    monitored_conditions:
+    - motion
+    - sound
+    - ding
   - platform: template
     sensors:
       garagedoor:

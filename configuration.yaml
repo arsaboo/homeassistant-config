@@ -132,7 +132,6 @@ alarm_control_panel:
     event_disarm: arlo_alarm_disarm
     optimistic: true
   - platform: aarlo
-    home_mode_name: Home
     away_mode_name: armed
   # - platform: arlo
 xiaomi_aqara:
@@ -511,26 +510,7 @@ sonos:
       - 192.168.2.150
       - 192.168.2.253
 sun:
-# samsungtv:
-#     host: 192.168.2.252
-#     name: Living Room TV
 person:
-  - name: Alok
-    id: aloksaboo
-    device_trackers:
-      - device_tracker.myiphone
-      - device_tracker.alokphone_alokphone
-      - device_tracker.alokiosiphone
-      - device_tracker.alok_alok
-      - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
-  - name: Rashmi
-    id: rashmisaboo
-    device_trackers:
-      - device_tracker.rashmisiphone
-      - device_tracker.rashmiphone_rashmiphone
-      - device_tracker.rashmiappiphone
-      - device_tracker.sonu_sonu
-      - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
 media_player:
   - platform: kodi
     host: 192.168.2.28
@@ -542,7 +522,15 @@ media_player:
   #   host: 192.168.2.242
   #   port: 55000
   #   name: Panasonic Viera TV
-
+  # - platform: samsungtv
+  #   host: 192.168.2.252
+  #   name: Living Room TV
+  # - platform: alexa
+  #   email: !secret amazon_user
+  #   password: !secret amazon_pass
+  #   url: "amazon.com"
+  #   include_devices:
+  #     - "Echo Dot Gen2"
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
@@ -551,25 +539,25 @@ media_player:
   # - platform: apple_tv
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
-# androidtv:
-#   - platform: media_player
-#     host: 192.168.2.225
-#     name: "FTV Master"
-#     adb_server_ip: 192.168.2.233
-#   - platform: media_player
-#     host: 192.168.2.28
-#     name: "ShieldTV"
-#     adb_server_ip: 192.168.2.233
-#     adb_server_port: 5037
-#     apps:
-#       "amazon": "Amazon Premium Video"
-#       "youtube": "Youtube"
-#       "kodi": "Kodi"
-#       "netflix": "Netflix"
+  # - platform: androidtv
+  #   host: 192.168.2.225
+  #   name: "FTV Master"
+  #   adb_server_ip: 192.168.2.233
+  # - platform: androidtv
+  #   host: 192.168.2.28
+  #   name: "ShieldTV"
+  #   adb_server_ip: 192.168.2.233
+  #   adb_server_port: 5037
+  #   apps:
+  #     "amazon": "Amazon Premium Video"
+  #     "youtube": "Youtube"
+  #     "kodi": "Kodi"
+  #     "netflix": "Netflix"
 geofency:
 speedtestdotnet:
   monitored_conditions:
     - download
+    - upload
 owntracks:
   max_gps_accuracy: 200
 device_tracker:
@@ -578,6 +566,8 @@ device_tracker:
     username: !secret unifi_username
     password: !secret unifi_password
     verify_ssl: False
+    monitored_conditions:
+      - rssi
   # - platform: composite
   #   name: alok composite
   #   entity_id:
@@ -711,12 +701,6 @@ mqtt:
   password: !secret mqtt_password
 
 alexa:
-  # - platform: media_player
-  #   email: !secret amazon_user
-  #   password: !secret amazon_pass
-  #   url: "amazon.com"
-  #   include_devices:
-  #     - "Echo Dot Gen2"
 dialogflow:
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml

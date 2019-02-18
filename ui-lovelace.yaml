@@ -17,6 +17,8 @@ resources:
     type: module
   - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.2
     type: module
+  - url: /local/custom_ui/mini-graph-card-bundle.js?v=0.0.1
+    type: module
   - url: /local/custom_ui/card-tools.js?v=0.1
     type: js
   - url: /local/custom_ui/auto-entities.js?v=0.1
@@ -471,7 +473,7 @@ views:
           - entity: switch.0220013568c63aa78156
             secondary_info: last-changed
 
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
           - type: alarm-panel
             entity: alarm_control_panel.abode_alarm
@@ -484,6 +486,12 @@ views:
             name: Arlo
             states:
               - arm_away
+          - type: alarm-panel
+            entity: alarm_control_panel.aarlo_arlohome
+            name: Aarlo
+            states:
+              - arm_home
+              - arm_away
       - type: entities
         title: Ring Doorbell
         show_header_toggle: false
@@ -492,7 +500,6 @@ views:
           - binary_sensor.ring_front_door_motion
           - sensor.ring_front_door_last_ding
           - sensor.ring_front_door_last_motion
-
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
@@ -651,11 +658,11 @@ views:
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.arlo3
+        entity: camera.aarlo_arlo3
       - type: picture-entity
-        entity: camera.arlolivingroom
+        entity: camera.aarlo_arlolivingroom
       - type: picture-entity
-        entity: camera.livingroom2
+        entity: camera.aarlo_livingroom2
       - type: picture-entity
         entity: camera.front_door
       - type: picture-entity
@@ -822,24 +829,26 @@ views:
           - script.lifx_stop_effects
           - script.master_colorloop
           - script.master_random
-      - type: media-control
+      - type: custom:mini-media-player
         entity: media_player.livingroomsonos
-      - type: media-control
+        artwork: cover
+      - type: custom:mini-media-player
         entity: media_player.family_room_2
+        artwork: cover
       - type: media-control
         entity: media_player.kodi_nstv
       - type: media-control
         entity: media_player.living_room_home
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
-      - type: media-control
-        entity: media_player.samsungctl
-      - type: media-control
-        entity: media_player.living_room_tv
-      - type: media-control
-        entity: media_player.shieldtv
-      - type: media-control
-        entity: media_player.ftv_master
+      # - type: media-control
+      #   entity: media_player.samsungctl
+      # - type: media-control
+      #   entity: media_player.living_room_tv
+      # - type: media-control
+      #   entity: media_player.shieldtv
+      # - type: media-control
+      #   entity: media_player.ftv_master
   - icon: mdi:settings
     id: settings
     title: Settings
@@ -966,7 +975,9 @@ views:
           - input_select.current_theme
           - input_boolean.devmode
           - person.alok
+          - sensor.alok_rssi
           - person.rashmi
+          - sensor.rashmi_rssi
 
       - type: entities
         title: Network Details
@@ -1025,19 +1036,15 @@ views:
             style:
               - font-size: 12px
               - text-transform: capitalize
-      - type: entities
-        title: Arlo
-        show_header_toggle: false
-        entities:
-          - sensor.battery_level_arlolivingroom
-          - sensor.captured_today_arlolivingroom
-          - sensor.signal_strength_arlolivingroom
-          - sensor.battery_level_livingroom2
-          - sensor.captured_today_livingroom2
-          - sensor.signal_strength_livingroom2
-          - sensor.battery_level_arlo3
-          - sensor.captured_today_arlo3
-          - sensor.signal_strength_arlo3
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Arlo
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: "*aarlo_battery*"
+            - entity_id: "*aarlo_signal*"
       - type: entities
         title: USCIS
         show_header_toggle: false
@@ -1793,3 +1800,9 @@ views:
           filter:
             include:
               - domain: automation
+      - type: custom:mini-graph-card
+        entities:
+          - sensor.speedtest_download
+          - sensor.speedtest_upload
+        name: Speedtest
+        points: true
