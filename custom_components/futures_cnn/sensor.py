@@ -112,8 +112,10 @@ class CNNFuturesSensor(Entity):
         fut_ch = self.rest.data[position]
         if "+" in fut_ch:
             value = float(fut_ch.split("+")[1])
-        else:
+        elif "-" in fut_ch:
             value = -1 * float(fut_ch.split("-")[1])
+        else:
+            value = 0
         return value
 
 
@@ -121,8 +123,10 @@ class CNNFuturesSensor(Entity):
         fut_ch = self.rest.data[position].strip().split("%")[0]
         if "+" in fut_ch:
             value = float(fut_ch.split("+")[1])
-        else:
+        elif "-" in fut_ch:
             value = -1 * float(fut_ch.split("-")[1])
+        else:
+            value = 0
         return value
 
     def update(self):

@@ -1047,8 +1047,11 @@ views:
         show_header_toggle: false
         entities:
           - sensor.alok_485
+          - sensor.alok_131
           - sensor.rashmi_485
+          - sensor.rashmi_131
           - sensor.arnav_485
+          - sensor.arnav_131
 
   - icon: mdi:test-tube
     id: test
@@ -1061,7 +1064,6 @@ views:
           show_header_toggle: false
         filter:
           include:
-            - entity_id: "*158d0002a51fc2*"
             - entity_id: input_boolean.sleeping
             - entity_id: '*_bed*'
             - entity_id: sensor.bed_weight_average_mean
@@ -1803,3 +1805,4 @@ views:
           - sensor.speedtest_upload
         name: Speedtest
         points: true
+        animate: true

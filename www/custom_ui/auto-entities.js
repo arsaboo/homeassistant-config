@@ -9,7 +9,7 @@ class AutoEntities extends cardTools.litElement() {
     this.data = {};
 
     this.entities = this.get_entities() || [];
-    this.card = cardTools.createCard({entities: this.entities, ...config.card});
+    this.card = cardTools.createCard(Object.assign({entities: this.entities}, config.card));
   }
 
 
@@ -134,7 +134,7 @@ class AutoEntities extends cardTools.litElement() {
           const add = this.match_filter(this._hass, Object.keys(this._hass.states), f);
           let toAdd = [];
           add.forEach((i) => {
-            toAdd.push({entity: Object.keys(this._hass.states)[i], ...f.options});
+            toAdd.push(Object.assign({entity: Object.keys(this._hass.states)[i]}, f.options));
           });
           toAdd.sort((a,b) => {
             if (a.entity < b.entity) return -1;
@@ -203,7 +203,7 @@ class AutoEntities extends cardTools.litElement() {
       const newEntities = this.entities.map((e) => e.entity);
 
       if(!this._compare_arrays(oldEntities, newEntities)) {
-        this.card.setConfig({entities: this.entities, ...this._config.card});
+        this.card.setConfig(Object.assign({entities: this.entities}, this._config.card));
         this.requestUpdate();
       }
     });
