@@ -9,7 +9,7 @@
       - daily_summary
       - hourly_summary
       - temperature
-    update_interval:
+    scan_interval:
       minutes: 20
   - platform: season
   - platform: tautulli
@@ -39,8 +39,6 @@
       - credit
   - platform: aarlo
     monitored_conditions:
-      - captured_today
-      - last_capture
       - battery_level
       - signal_strength
   - platform: futures_cnn
@@ -54,6 +52,15 @@
       - nasdaq
       - nasdaq_change_pct
       - nasdaq_change
+  - platform: uscis
+    case_id: !secret alok_131
+    friendly_name: Alok 131
+  - platform: uscis
+    case_id: !secret arnav_131
+    friendly_name: Arnav 131
+  - platform: uscis
+    case_id: !secret rashmi_131
+    friendly_name: Rashmi 131
   - platform: uscis
     case_id: !secret alok_485
     friendly_name: Alok 485
@@ -264,6 +271,12 @@
           {% else %}
             {{state_attr('binary_sensor.cube_158d0001035aa7', 'last_action')}}
           {% endif %}
+      alok_rssi:
+        friendly_name: "Alok RSSI"
+        value_template: "{{state_attr('device_tracker.myiphone', 'rssi')}}"
+      rashmi_rssi:
+        friendly_name: "Rashmi RSSI"
+        value_template: "{{state_attr('device_tracker.rashmisiphone', 'rssi')}}"
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"

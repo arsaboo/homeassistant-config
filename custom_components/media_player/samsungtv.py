@@ -7,21 +7,18 @@ https://home-assistant.io/components/media_player.samsungtv/
 import asyncio
 from datetime import timedelta
 import logging
-import socket
 import threading
 import os
 
 import voluptuous as vol
 
-from homeassistant.components.media_player import (
+from homeassistant.components.media_player.const import (
     MEDIA_TYPE_CHANNEL, PLATFORM_SCHEMA, SUPPORT_NEXT_TRACK, SUPPORT_PAUSE,
     SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP,
     SUPPORT_VOLUME_SET, SUPPORT_SELECT_SOURCE, MediaPlayerDevice)
 from homeassistant.const import (
-    CONF_HOST,
     CONF_NAME,
-    CONF_METHOD,
     STATE_OFF,
     STATE_ON
 )
@@ -30,8 +27,8 @@ from homeassistant.util import dt as dt_util
 
 
 REQUIREMENTS = [
-    'https://github.com/kdschlosser/'
-    'samsungctl/archive/develop.zip#samsungctl==0.8.61b'
+     'https://github.com/kdschlosser/'
+     'samsungctl/archive/develop.zip#samsungctl==0.8.62b'
 ]
 
 SAMSUNG_CONFIG_PATH = 'samsung_tv'
@@ -56,10 +53,8 @@ ICON_UNKNOWN = 'mdi:help'
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_NAME = 'Samsung TV Remote'
-DEFAULT_DESCRIPTION = socket.gethostname()
-
-CONF_DESCRIPTION =  'description'
+CONF_DESCRIPTION = 'description'
+CONF_ADD = 'add_tv'
 
 KEY_PRESS_TIMEOUT = 1.2
 KNOWN_DEVICES_KEY = 'samsungtv_known_devices'
@@ -77,137 +72,213 @@ SUPPORT_SAMSUNGTV = (
     SUPPORT_SELECT_SOURCE
 )
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_HOST): cv.string,
-    vol.Optional(CONF_METHOD): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_DESCRIPTION, default=DEFAULT_DESCRIPTION): cv.string,
+
+SAMSUNG_TV_SCHEMA = vol.Schema({
+    vol.Optional(CONF_NAME): cv.string,
+    vol.Optional(CONF_DESCRIPTION): cv.string,
+    vol.Optional(CONF_ADD): cv.boolean,
 })
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Set up the Samsung TV platform."""
-    known_devices = hass.data.get(KNOWN_DEVICES_KEY)
-    if known_devices is None:
-        known_devices = set()
-        hass.data[KNOWN_DEVICES_KEY] = known_devices
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({})
 
+
+def setup_platform(hass, config, add_entities, _=None):
+    """Set up the Samsung TV platform."""
+
+    t = threading.Thread(
+        target=scan_devices,
+        args=(hass, add_entities)
+    )
+    t.daemon = True
+    t.start()
+
+
+_CONFIGURING = {}
+
+
+def scan_devices(hass, add_entities):
     config_path = hass.config.path(SAMSUNG_CONFIG_PATH)
 
     if not os.path.exists(config_path):
         os.mkdir(config_path)
 
+    known_devices = hass.data.get(KNOWN_DEVICES_KEY, set())
+    hass.data[KNOWN_DEVICES_KEY] = known_devices
+
     import samsungctl
+    from samsungctl.upnp.discover import discover
 
-    uuid = None
-    # Is this a manual configuration?
-    if config.get(CONF_HOST) is not None:
-        host = config.get(CONF_HOST)
-        name = config.get(CONF_NAME)
-        description = config.get(CONF_DESCRIPTION)
-        method = config.get(CONF_METHOD)
+    config_files = list(
+        os.path.join(config_path, file) for file in os.listdir(config_path)
+        if file.endswith('config')
+    )
+    entities = []
 
-    elif discovery_info is not None:
-        tv_name = discovery_info.get('name')
-        model = discovery_info.get('model_name')
-        host = discovery_info.get('host')
-        name = "{} ({})".format(tv_name, model)
-        description = DEFAULT_DESCRIPTION
-        method = None
-        udn = discovery_info.get('udn')
-        if udn and udn.startswith('uuid:'):
-            uuid = udn[len('uuid:'):]
-    else:
-        _LOGGER.warning("Cannot determine device")
-        return
+    for config_file in config_files:
+        _LOGGER.debug(config_file)
+        config = samsungctl.Config.load(config_file)
+        known_devices.add(config.uuid)
+        entities += [SamsungTVDevice(config)]
+    add_entities(entities)
 
-    # Only add a device once, so discovered devices do not override manual
-    # config.
-    ip_addr = socket.gethostbyname(host)
-    if ip_addr not in known_devices:
-        known_devices.add(ip_addr)
+    event = threading.Event()
 
-        samsung_config = samsungctl.Config.load(config_path)(
-            host=host,
-            name=name,
-            description=description,
-            method=method,
+    while True:
+        for found_config in discover():
+            if found_config.uuid in known_devices:
+                continue
+
+            _LOGGER.debug(str(found_config))
+
+            known_devices.add(found_config.uuid)
+
+            no_include = os.path.join(
+                config_path,
+                found_config.uuid + '.noinclude'
+            )
+
+            if os.path.exists(no_include):
+                continue
+
+            if found_config.uuid not in _CONFIGURING:
+                add_device(found_config, hass, config_path, add_entities)
+
+        event.wait(60.0)
+
+
+def add_device(samsung_config, hass, config_path, add_entities):
+    model = samsung_config.model
+    uuid = samsung_config.uuid
+
+    event = threading.Event()
+
+    def samsung_configuration_callback(data):
+        """Handle the entry of user PIN."""
+        display_name = data.get('display_name')
+        description = data.get('description')
+        mac = data.get('mac')
+
+        if display_name is None:
+            display_name = samsung_config.display_name
+        if description is None:
+            description = samsung_config.description
+        if mac is None:
+            mac = samsung_config.mac
+
+        samsung_config.display_name = display_name
+        samsung_config.description = description
+        samsung_config.mac = mac
+
+        samsung_config.path = os.path.join(
+            config_path,
+            samsung_config.uuid + '.config'
         )
 
-        if not samsung_config.paired and samsung_config.method == 'encrypted':
-            request_configuration(samsung_config, uuid, hass, add_entities)
+        hass.components.configurator.request_done(_CONFIGURING.pop(uuid))
+
+        if samsung_config.method == 'encrypted':
+            request_configuration(samsung_config, hass, add_entities)
         else:
-            add_entities([SamsungTVDevice(samsung_config, uuid)])
-        _LOGGER.info("Samsung TV %s added as '%s'", host, config.get(CONF_NAME))
-    else:
-        _LOGGER.info("Ignoring duplicate Samsung TV %s", host)
+            add_entities([SamsungTVDevice(samsung_config)])
 
-_CONFIGURING = {}
+        event.set()
+
+    def do():
+        event.wait(600.0)
+        if not event.isSet():
+            path = os.path.join(
+                config_path,
+                samsung_config.uuid + '.noinclude'
+            )
+
+            with open(path, 'w') as f:
+                f.write('')
+
+            hass.components.configurator.request_done(_CONFIGURING.pop(uuid))
+
+    t = threading.Thread(target=do)
+    t.daemon = True
+    t.start()
+
+    _CONFIGURING[uuid] = hass.components.configurator.request_config(
+        model,
+        samsung_configuration_callback,
+        description='New TV discovered, would you like to add the TV?',
+        description_image="/static/images/smart-tv.png",
+        submit_caption="Accept",
+        fields=[
+            dict(
+                id='display_name',
+                name='Name: ' + samsung_config.display_name,
+                type=''
+            ),
+            dict(
+                id='description',
+                name='Description: ' + samsung_config.description,
+                type=''
+            ),
+            dict(
+                id='mac',
+                name='MAC Address : ' + str(samsung_config.mac),
+                type=''
+            )
+        ]
+    )
 
 
-def request_configuration(samsung_config, uuid, hass, add_entities):
+def request_configuration(samsung_config, hass, add_entities):
     """Request configuration steps from the user."""
-    host = samsung_config.host
-    name = samsung_config.name
 
     configurator = hass.components.configurator
 
     import samsungctl
-    event = threading.Event()
-    pin = []
+
+    pin = ['']
     count = 0
 
     def get_pin():
         global count
 
-        def samsung_configuration_callback(data):
-            """Handle the entry of user PIN."""
-            pin.append(data.get('pin'))
-            event.set()
-
         if count == 3:
-            _LOGGER.error(name + " TV: Pin entry failed")
+            _LOGGER.error(
+                samsung_config.display_name + " TV: Pin entry failed"
+            )
             return False
-
-        if host in _CONFIGURING:
-            count += 1
-            configurator.notify_errors(
-                _CONFIGURING[host], "Failed to register, please try again."
-            )
-            del pin[:]
-            event.clear()
-        else:
-            _CONFIGURING[host] = configurator.request_config(
-                name,
-                samsung_configuration_callback,
-                description='Enter the Pin shown on your Samsung TV.',
-                description_image="/static/images/smart-tv.png",
-                submit_caption="Confirm",
-                fields=[{'id': 'pin', 'name': 'Enter the pin', 'type': ''}]
-            )
-
-        event.wait(30)
-
-        if not event.isSet():
-            count += 1
-            return None
 
         return pin[0]
 
     samsung_config.get_pin = get_pin
-    try:
-        remote = samsungctl.Remote(samsung_config)
-        remote.open()
-        add_entities(
-            [SamsungTVDevice(samsung_config, uuid)]
-        )
-    except:
-        return
+
+    def samsung_configuration_callback(data):
+        """Handle the entry of user PIN."""
+        global count
+        pin[0] = data.get('pin')
+
+        try:
+            _ = samsungctl.Remote(samsung_config)
+            add_entities([SamsungTVDevice(samsung_config)])
+        except:
+            if samsung_config.uuid in _CONFIGURING:
+                count += 1
+                configurator.notify_errors(
+                    _CONFIGURING[samsung_config.uuid],
+                    "Failed to register, please try again."
+                )
+
+    _CONFIGURING[samsung_config.uuid] = configurator.request_config(
+        samsung_config.display_name,
+        samsung_configuration_callback,
+        description='Enter the Pin shown on your Samsung TV.',
+        description_image="/static/images/smart-tv.png",
+        submit_caption="Confirm",
+        fields=[{'id': 'pin', 'name': 'Enter the pin', 'type': ''}]
+    )
 
 
 class SamsungTVDevice(MediaPlayerDevice):
     """Representation of a Samsung TV."""
 
-    def __init__(self, config, uuid):
+    def __init__(self, config):
         """Initialize the Samsung device."""
         from samsungctl import exceptions
         from samsungctl import Remote
@@ -216,10 +287,8 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._exceptions_class = exceptions
         self._remote_class = Remote
         self._config = config
-
-        self._name = self._config.name
         self._mac = self._config.mac
-        self._uuid = uuid
+        self._uuid = self._config.uuid
         self._playing = True
         self._state = None
         self._remote = None
@@ -251,24 +320,29 @@ class SamsungTVDevice(MediaPlayerDevice):
         # Generate a configuration for the Samsung library
 
         self._remote = self._remote_class(self._config)
-        self._config.save()
 
     def update(self):
         """Update state of device."""
         if self._power_off_in_progress():
-            _LOGGER.debug(self._name + ' TV: Powering Off')
+            _LOGGER.debug(
+                self._config.display_name + ' TV: Powering Off'
+            )
             self._state = STATE_OFF
             self._icon = ICON_TV_OFF
             # self._entity_image = self._tv_image
 
         elif self._power_on_in_progress():
-            _LOGGER.debug(self._name + ' TV: Powering On')
+            _LOGGER.debug(
+                self._config.display_name + ' TV: Powering On'
+            )
             self._state = STATE_OFF
             self._icon = ICON_TV_OFF
             # self._entity_image = self._tv_image
         else:
             power = self._remote.power
             if power is True and self._remote.is_connected:
+                self._config.save()
+
                 if self._tv_image is None:
                     tv_image = self._remote.icon
                     if tv_image is not None:
@@ -374,21 +448,29 @@ class SamsungTVDevice(MediaPlayerDevice):
                     self._icon = ICON_UNKNOWN
 
                 volume = self._remote.volume
-                _LOGGER.debug(self._name + ' TV: Volume = ' + str(volume))
+                _LOGGER.debug(
+                    self._config.display_name + ' TV: Volume = ' + str(volume)
+                )
                 if volume is not None:
                     self._volume = volume / 100.0
 
                 mute = self._remote.mute
-                _LOGGER.debug(self._name + ' TV: Mute = ' + str(mute))
+                _LOGGER.debug(
+                    self._config.display_name + ' TV: Mute = ' + str(mute)
+                )
                 if mute is None:
                     self._mute = False
                 else:
                     self._mute = mute
 
-                _LOGGER.debug(self._name + ' TV: Power is On')
+                _LOGGER.debug(
+                    self._config.display_name + ' TV: Power is On'
+                )
                 self._state = STATE_ON
             else:
-                _LOGGER.debug(self._name + ' TV: Power is Off')
+                _LOGGER.debug(
+                    self._config.display_name + ' TV: Power is Off'
+                )
                 # self._entity_image = self._tv_image
                 self._icon = ICON_TV_OFF
                 self._state = STATE_OFF
@@ -396,15 +478,27 @@ class SamsungTVDevice(MediaPlayerDevice):
     def send_key(self, key):
         """Send a key to the tv and handles exceptions."""
         if self._power_off_in_progress():
-            _LOGGER.info(self._name + " TV: powering off, not sending command: %s", key)
+            _LOGGER.info(
+                self._config.display_name +
+                " TV: powering off, not sending command: %s",
+                key
+            )
             return
 
         elif self._power_on_in_progress():
-            _LOGGER.info(self._name + " TV: powering on, not sending command: %s", key)
+            _LOGGER.info(
+                self._config.display_name +
+                " TV: powering on, not sending command: %s",
+                key
+            )
             return
 
         if self._state == STATE_OFF:
-            _LOGGER.info(self._name + " TV: powered off, not sending command: %s", key)
+            _LOGGER.info(
+                self._config.display_name +
+                " TV: powered off, not sending command: %s",
+                key
+            )
             return
 
         self._remote.control(key)
@@ -422,12 +516,12 @@ class SamsungTVDevice(MediaPlayerDevice):
     @property
     def unique_id(self) -> str:
         """Return the unique ID of the device."""
-        return self._uuid
+        return '{' + self._config.uuid + '}'
 
     @property
     def name(self):
         """Return the name of the device."""
-        return self._name
+        return self._config.display_name
 
     @property
     def state(self):
@@ -450,7 +544,9 @@ class SamsungTVDevice(MediaPlayerDevice):
 
             source = source.upper().replace('-', '_').replace(' ', '')
             source = 'KEY_' + source
-            _LOGGER.debug(self._name + ' TV: changing source to ' + source)
+            _LOGGER.debug(
+                self._config.display_name + ' TV: changing source to ' + source
+            )
             self.send_key(source)
         else:
             if 'APP' in source:
@@ -462,7 +558,9 @@ class SamsungTVDevice(MediaPlayerDevice):
 
             if ':' in source:
                 source = source.rsplit(':', 1)[-1]
-            _LOGGER.debug(self._name + ' TV: changing source to ' + source)
+            _LOGGER.debug(
+                self._config.display_name + ' TV: changing source to ' + source
+            )
             self._remote.source = source
 
     @property
@@ -529,14 +627,19 @@ class SamsungTVDevice(MediaPlayerDevice):
     async def async_play_media(self, media_type, media_id, **kwargs):
         """Support changing a channel."""
         if media_type != MEDIA_TYPE_CHANNEL:
-            _LOGGER.error(self._name + ' TV: Unsupported media type')
+            _LOGGER.error(
+                self._config.display_name + ' TV: Unsupported media type'
+            )
             return
 
         # media_id should only be a channel number
         try:
             cv.positive_int(media_id)
         except vol.Invalid:
-            _LOGGER.error(self._name + ' TV: Media ID must be positive integer')
+            _LOGGER.error(
+                self._config.display_name +
+                ' TV: Media ID must be positive integer'
+            )
             return
 
         for digit in media_id:
@@ -568,7 +671,9 @@ class SamsungTVDevice(MediaPlayerDevice):
                 )
 
             def do():
-                _LOGGER.debug(self._name + ' TV: Power on process started')
+                _LOGGER.debug(
+                    self._config.display_name + ' TV: Power on process started'
+                )
                 event = threading.Event()
                 while self._power_off_in_progress():
                     event.wait(0.5)
@@ -580,14 +685,16 @@ class SamsungTVDevice(MediaPlayerDevice):
             t.start()
         elif self._config.method != 'legacy':
             _LOGGER.info(
-                self._name + " TV: There was a problem detecting the TV's MAC address, "
+                self._config.display_name +
+                " TV: There was a problem detecting the TV's MAC address, "
                 "you will have to update the MAC address in the Home "
                 "Assistant config file manually."
             )
 
         else:
             _LOGGER.info(
-                self._name + " TV: Legacy TV's (2008 - 2013) do not support "
+                self._config.display_name +
+                " TV: Legacy TV's (2008 - 2013) do not support "
                 "being powered on remotely."
             )
 
@@ -611,7 +718,9 @@ class SamsungTVDevice(MediaPlayerDevice):
             )
 
         def do():
-            _LOGGER.debug(self._name + ' TV: Power off process started')
+            _LOGGER.debug(
+                self._config.display_name + ' TV: Power off process started'
+            )
             event = threading.Event()
             while self._power_on_in_progress():
                 event.wait(0.5)

@@ -481,11 +481,11 @@ views:
             states:
               - arm_home
               - arm_away
-          - type: alarm-panel
-            entity: alarm_control_panel.arlohome
-            name: Arlo
-            states:
-              - arm_away
+          # - type: alarm-panel
+          #   entity: alarm_control_panel.arlohome
+          #   name: Arlo
+          #   states:
+          #     - arm_away
           - type: alarm-panel
             entity: alarm_control_panel.aarlo_arlohome
             name: Aarlo
@@ -706,19 +706,16 @@ views:
           - sensor.total_tv_time
           - sensor.sonos_audio_in
           - script.tv_off
-      - type: entities
-        title: Players
-        show_header_toggle: false
-        entities:
-          - media_player.livingroomsonos
-          - media_player.family_room_2
-          - media_player.kodi_nstv
-          - media_player.echo_dot_gen2
-          - media_player.living_room_home
-          - media_player.living_room_speaker
-          - media_player.samsungctl
-          - media_player.shieldtv
-          - media_player.ftv_master
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Players
+          show_header_toggle: false
+        filter:
+          include:
+            - domain: "media_player"
+          exclude:
+            - state: "unavailable"
       - type: vertical-stack
         cards:
           - type: horizontal-stack
