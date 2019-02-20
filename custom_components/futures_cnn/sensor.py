@@ -3,16 +3,14 @@
 @ Description : CNN Futures - It queries CNN website to obtain futures data
 
 @ Notes:        Copy this file and place it in your
-                "Home Assistant Config folder\custom_components\sensor\" folder
-                You may have to install two additional packages
-                sudo apt-get install libxslt1.1 libxml2-dev
-                The following resources are supported: sp, sp_change_pct, sp_change
-                dow, dow_change_pct, dow_change, nasdaq, nasdaq_change_pct, nasdaq_change
+                "Home Assistant Config folder\futures_cnn\" folder
+                The following resources are supported: sp, sp_change_pct, sp_change, dow, dow_change_pct, dow_change, nasdaq, nasdaq_change_pct, nasdaq_change
                 Check the configuration in sensor.yaml (search for futures_cnn).
 """
 
 from datetime import datetime, timedelta
 import logging
+import requests
 
 import voluptuous as vol
 
@@ -22,12 +20,12 @@ from homeassistant.const import (CONF_NAME, CONF_RESOURCES, ATTR_ATTRIBUTION)
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 
-REQUIREMENTS = ['raschietto']
+REQUIREMENTS = ['beautifulsoup4==4.7.1']
 
 _LOGGER = logging.getLogger(__name__)
 _RESOURCE = 'http://money.cnn.com/data/premarket/'
 
-CONF_ATTRIBUTION = "Data provided by CNN.com"
+ATTRIBUTION = "Data provided by CNN.com"
 DEFAULT_ICON = 'mdi:currency-usd'
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -102,39 +100,52 @@ class CNNFuturesSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attr = {}
-        attr[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
+        attr[ATTR_ATTRIBUTION] = ATTRIBUTION
         return attr
 
-    def futures(self, position):
-        return float(self.rest.data[position].split("\n")[0].replace(',',''))
+    @property
+    def available(self):
+        """Could the device be accessed during the last update call."""
+        return self.rest.available
 
     def futures_change(self, position):
-        return float(self.rest.data[position].split("\n")[0])
+        fut_ch = self.rest.data[position]
+        if "+" in fut_ch:
+            value = float(fut_ch.split("+")[1])
+        else:
+            value = -1 * float(fut_ch.split("-")[1])
+        return value
+
 
     def futures_change_pct(self, position):
-        return float(self.rest.data[position].split("\n")[2].split("%")[0].strip())
+        fut_ch = self.rest.data[position].strip().split("%")[0]
+        if "+" in fut_ch:
+            value = float(fut_ch.split("+")[1])
+        else:
+            value = -1 * float(fut_ch.split("-")[1])
+        return value
 
     def update(self):
         """Update current date."""
         self.rest.update()
         if self.type == 'sp':
-            self._state = self.futures(1)
+            self._state = float(self.rest.data[2])
         elif self.type == 'sp_change_pct':
-            self._state = self.futures_change_pct(0)
+            self._state = self.futures_change_pct(1)
         elif self.type == 'sp_change':
             self._state = self.futures_change(0)
         elif self.type == 'dow':
-            self._state = self.futures(9)
+            self._state = float(self.rest.data[8])
         elif self.type == 'dow_change_pct':
-            self._state = self.futures_change_pct(8)
+            self._state = self.futures_change_pct(7)
         elif self.type == 'dow_change':
-            self._state = self.futures_change(8)
+            self._state = self.futures_change(6)
         elif self.type == 'nasdaq':
-            self._state = self.futures(5)
+            self._state = float(self.rest.data[5])
         elif self.type == 'nasdaq_change_pct':
             self._state = self.futures_change_pct(4)
         elif self.type == 'nasdaq_change':
-            self._state = self.futures_change(4)
+            self._state = self.futures_change(3)
 
 class CNNFuturesData(object):
     """Get data from cnn.com."""
@@ -143,16 +154,29 @@ class CNNFuturesData(object):
         """Initialize the data object."""
         self._resource = resource
         self.data = None
+        self.available = True
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         """Get the latest data from CNN."""
-        from raschietto import Raschietto, Matcher
-        if (self.data is None or datetime.today().isoweekday() != 6 or
-            (datetime.today().isoweekday() == 7 and datetime.today().hour > 17)):
-            page = Raschietto.from_url(self._resource)
-            _LOGGER.debug("CNN page loaded")
-            futures_matcher = Matcher(".wsod_bold.wsod_aRight")
-            futures = futures_matcher(page, multiple=True)
-            sp = futures[0].split("\n")
-            self.data = futures
+        from bs4 import BeautifulSoup
+        if (self.data is None or datetime.today().isoweekday() != 6 or (datetime.today().isoweekday() == 7 and datetime.today().hour > 17)):
+            try:
+                r = requests.get(self._resource, timeout=10)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                req_soup = soup.find('div',class_='wsod_fLeft wsod_marketsLeftCol')
+                soup_info = req_soup.find_all('tr')
+                cnn_market_data = []
+                for i in range(0,len(soup_info),5):
+                    # Change
+                    cnn_market_data.append(soup_info[i].find('span', {'class': ['posData', 'negData', 'unchData']}).text.strip())
+                    # ChangePct
+                    cnn_market_data.append(soup_info[i].find('span', {'class': ['posChangePct', 'negChangePct', 'unchChangePct']}).text.strip())
+                    # Level
+                    cnn_market_data.append(soup_info[i+1].find('span').text.strip().replace(',',''))
+                    self.data = cnn_market_data
+                    self.available = True
+            except requests.exceptions.ConnectionError:
+                _LOGGER.error("Connection error")
+                self.data = None
+                self.available = False
