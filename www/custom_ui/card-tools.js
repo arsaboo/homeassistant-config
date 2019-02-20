@@ -12,7 +12,7 @@ class {
   }
 
   static litElement() {
-    return Object.getPrototypeOf(customElements.get('hui-error-entity-row'));
+    return Object.getPrototypeOf(customElements.get('home-assistant-main'));
   }
 
   static litHtml() {

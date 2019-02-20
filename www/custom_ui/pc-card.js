@@ -1,6 +1,6 @@
 var LitElement =
   LitElement ||
-  Object.getPrototypeOf(customElements.get("hui-error-entity-row"));
+  Object.getPrototypeOf(customElements.get("home-assistant-main"));
 var html = LitElement.prototype.html;
 
 let CURRENCY_SYMBOLS = {
