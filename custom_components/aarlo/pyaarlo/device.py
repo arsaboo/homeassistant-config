@@ -164,7 +164,8 @@ class ArloChildDevice(ArloDevice):
         for base in self._arlo.base_stations:
             if base.device_id == self.parent_id:
                 return base
-        return None
+        # some cameras don't have base stations... it's its own basestation...
+        return self
 
     @property
     def battery_level(self):
