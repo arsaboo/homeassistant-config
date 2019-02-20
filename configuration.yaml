@@ -518,10 +518,6 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  # - platform: firetv
-  #   name: FTV Master
-  #   host: 192.168.2.225
-  #   adb_server_ip: 192.168.2.233
   # - platform: panasonic_viera
   #   host: 192.168.2.242
   #   port: 55000
