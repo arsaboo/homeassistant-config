@@ -716,6 +716,7 @@ views:
             - domain: "media_player"
           exclude:
             - state: "unavailable"
+            - entity: "*plex*"
       - type: vertical-stack
         cards:
           - type: horizontal-stack

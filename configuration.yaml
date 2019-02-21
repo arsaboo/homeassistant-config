@@ -543,16 +543,16 @@ media_player:
   #   host: 192.168.2.225
   #   name: "FTV Master"
   #   adb_server_ip: 192.168.2.233
-  # - platform: androidtv
-  #   host: 192.168.2.28
-  #   name: "ShieldTV"
-  #   adb_server_ip: 192.168.2.233
-  #   adb_server_port: 5037
-  #   apps:
-  #     "amazon": "Amazon Premium Video"
-  #     "youtube": "Youtube"
-  #     "kodi": "Kodi"
-  #     "netflix": "Netflix"
+  - platform: androidtv
+    host: 192.168.2.28
+    name: "ShieldTV"
+    adb_server_ip: 192.168.2.233
+    adb_server_port: 5037
+    apps:
+      "amazon": "Amazon Premium Video"
+      "youtube": "Youtube"
+      "kodi": "Kodi"
+      "netflix": "Netflix"
 geofency:
 speedtestdotnet:
   monitored_conditions:
