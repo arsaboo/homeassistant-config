@@ -22,7 +22,7 @@ class ArloDoorBell(ArloChildDevice):
             self._dt_job = None
 
     def _event_handler( self,resource,event ):
-        self._arlo.info( self.name + ' DOORBELL got one ' + resource )
+        self._arlo.debug( self.name + ' DOORBELL got one ' + resource )
 
         # create fake motion/button press event...
         if resource.startswith('doorbells/'):

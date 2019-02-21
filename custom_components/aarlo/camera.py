@@ -9,6 +9,7 @@ import voluptuous as vol
 
 from homeassistant.core import callback
 import homeassistant.helpers.config_validation as cv
+from homeassistant.components import websocket_api
 from homeassistant.components.camera import (
         Camera, ATTR_ENTITY_ID, CAMERA_SERVICE_SCHEMA, DOMAIN, PLATFORM_SCHEMA,
         STATE_IDLE, STATE_RECORDING, STATE_STREAMING )
@@ -51,6 +52,17 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 SERVICE_REQUEST_SNAPSHOT = 'aarlo_request_snapshot'
 
+WS_TYPE_VIDEO_URL = 'aarlo_video_url'
+SCHEMA_WS_VIDEO_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_VIDEO_URL,
+    vol.Required('entity_id'): cv.entity_id,
+    vol.Required('index'): cv.positive_int
+})
+WS_TYPE_STREAM_URL = 'aarlo_stream_url'
+SCHEMA_WS_STREAM_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_STREAM_URL,
+    vol.Required('entity_id'): cv.entity_id
+})
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up an Arlo IP Camera."""
@@ -71,12 +83,17 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         for target_device in target_devices:
             target_device.take_snapshot()
 
-    #  hass.data[DOMAIN].async_register_entity_service(
-        #  SERVICE_REQUEST_SNAPSHOT, CAMERA_SERVICE_SCHEMA, service_handler )
     hass.services.async_register(
         DOMAIN, SERVICE_REQUEST_SNAPSHOT, service_handler,
         schema=CAMERA_SERVICE_SCHEMA)
-
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_VIDEO_URL, websocket_video_url,
+        SCHEMA_WS_VIDEO_URL
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_STREAM_URL, websocket_stream_url,
+        SCHEMA_WS_STREAM_URL
+    )
 
 class ArloCam(Camera):
     """An implementation of a Netgear Arlo IP camera."""
@@ -92,6 +109,7 @@ class ArloCam(Camera):
         self._motion_status = False
         self._ffmpeg           = hass.data[DATA_FFMPEG]
         self._ffmpeg_arguments = device_info.get(CONF_FFMPEG_ARGUMENTS)
+        _LOGGER.info( 'ArloCam: %s created',self._name )
 
     def camera_image(self):
         """Return a still image response from the camera."""
@@ -101,7 +119,7 @@ class ArloCam(Camera):
         """Register callbacks."""
         @callback
         def update_state( device,attr,value ):
-            _LOGGER.info( 'callback:' + self._name + ':' + attr + ':' + str(value)[:80])
+            _LOGGER.debug( 'callback:' + self._name + ':' + attr + ':' + str(value)[:80])
 
             # set state 
             if attr == 'activityState' or attr == 'connectionState':
@@ -193,10 +211,6 @@ class ArloCam(Camera):
         attrs['brand']          = DEFAULT_BRAND
         attrs['friendly_name']  = self._name
 
-        video = self._camera.last_video
-        if video:
-            attrs['video_url'] = video.video_url
-
         return attrs
 
     @property
@@ -239,3 +253,40 @@ class ArloCam(Camera):
 
     def take_snapshot(self):
         self._camera.take_snapshot()
+
+def _get_camera_from_entity_id(hass, entity_id):
+    component = hass.data.get(DOMAIN)
+    if component is None:
+        raise HomeAssistantError('Camera component not set up')
+
+    camera = component.get_entity(entity_id)
+    if camera is None:
+        raise HomeAssistantError('Camera not found')
+
+    return camera
+
+@websocket_api.async_response
+async def websocket_video_url(hass, connection, msg):
+    camera    = _get_camera_from_entity_id( hass,msg['entity_id'] )
+    video     = camera._camera.last_video
+    url       = video.video_url if video is not None else None
+    url_type  = video.content_type if video is not None else None
+    thumbnail = video.thumbnail_url if video is not None else None
+    connection.send_message(websocket_api.result_message(
+            msg['id'], {
+                'url':url,
+                'url_type':url_type,
+                'thumbnail':thumbnail,
+                'thumbnail_type':'image/jpeg',
+            }
+        ))
+
+@websocket_api.async_response
+async def websocket_stream_url(hass, connection, msg):
+    _LOGGER.debug( 'stream_url')
+    connection.send_message(websocket_api.result_message(
+            msg['id'], {
+                'test':'stream_url'
+            }
+        ))
+

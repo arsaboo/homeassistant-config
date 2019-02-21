@@ -76,9 +76,13 @@ class ArloBackEnd(object):
         device_id = None
         resource  = response.get('resource','' )
 
+        err  = response.get('error',None )
+        if err is not None:
+            self._arlo.info( 'error: code=' + str(err.get('code','xxx')) + ',message=' + str(err.get('message','XXX')) )
+
         # these are camera or doorbell status updates
         if resource.startswith('cameras/') or resource.startswith('doorbells/'):
-            device_id = resource.split('/')[-1]
+            device_id = resource.split('/')[1]
             responses.append( (device_id,resource,response) )
         # this is thumbnail or media library updates
         elif resource == 'mediaUploadNotification':
@@ -108,7 +112,7 @@ class ArloBackEnd(object):
             return
 
         else:
-            self._arlo.info( 'unhandled response ' + resource )
+            self._arlo.debug( 'unhandled response ' + resource )
             return
 
         # now find something waiting for this/these
@@ -168,14 +172,14 @@ class ArloBackEnd(object):
         #try:
 
         while True:
-            self._arlo.info( 'starting event loop' )
+            self._arlo.debug( 'starting event loop' )
             stream = SSEClient( SUBSCRIBE_URL + self.token,session=self.session )
             self._ev_loop( stream )
 
             # try relogging in
             with self.lock_:
                 self.lock_.wait( 5 )
-            self._arlo.info( 'logging back in' )
+            self._arlo.debug( 'logging back in' )
             self._connected = self.login( self.username,self.password )
         #except:
             #print( 'connection issues' )

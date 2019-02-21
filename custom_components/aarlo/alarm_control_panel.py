@@ -68,6 +68,7 @@ class ArloBaseStation(AlarmControlPanel):
         self._away_mode_name  = away_mode_name
         self._night_mode_name = night_mode_name
         self._state           = None
+        _LOGGER.info( 'ArloBaseStation: %s created',self._name )
 
     @property
     def icon(self):
@@ -77,7 +78,7 @@ class ArloBaseStation(AlarmControlPanel):
     async def async_added_to_hass(self):
         """Register callbacks."""
         def update_state( device,attr,value ):
-            _LOGGER.info( 'callback:' + attr + ':' + str(value))
+            _LOGGER.debug( 'callback:' + attr + ':' + str(value))
             self._state = self._get_state_from_mode( self._base.attribute( 'activeMode' ) )
             self.async_schedule_update_ha_state()
 

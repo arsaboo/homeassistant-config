@@ -81,13 +81,13 @@ class ArloSensor(Entity):
         self._icon        = 'mdi:{}'.format(SENSOR_TYPES.get(self._sensor_type)[2])
         self._state       = None
         self._attr        = SENSOR_TYPES.get(self._sensor_type)[3]
-        _LOGGER.debug('ArloSensor created for %s', self._name)
+        _LOGGER.info('ArloSensor: %s created', self._name)
 
     async def async_added_to_hass(self):
         """Register callbacks."""
         @callback
         def update_state( device,attr,value ):
-            _LOGGER.info( 'callback:' + attr + ':' + str(value)[:80] )
+            _LOGGER.debug( 'callback:' + attr + ':' + str(value)[:80] )
             self._state = value
             self.async_schedule_update_ha_state()
 

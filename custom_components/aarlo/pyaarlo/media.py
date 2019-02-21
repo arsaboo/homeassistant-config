@@ -25,7 +25,7 @@ class ArloMediaLibrary(object):
 
     def load( self,days=PRELOAD_DAYS,only_cameras=None,date_from=None,date_to=None,limit=None ):
 
-        self._arlo.info( '(re)loading image library' )
+        self._arlo.debug( '(re)loading image library' )
 
         if not (date_from and date_to):
             now = datetime.today()
@@ -78,7 +78,7 @@ class ArloMediaLibrary(object):
     def queue_load( self,cb ):
         with self._lock:
             if not self._load_cbs_:
-                self._arlo.info( 'queueing (re)loading image library' )
+                self._arlo.debug( 'queueing (re)loading image library' )
                 self._arlo._bg.run_low_in( self.load,2 )
             self._load_cbs_.append( cb )
 

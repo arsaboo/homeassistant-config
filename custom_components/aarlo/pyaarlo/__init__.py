@@ -55,7 +55,7 @@ class PyArlo(object):
 
         # slow piece.
         # get devices and fill local db, and create device instance
-        self.info('getting devices')
+        self.info('pyaarlo starting')
         self._devices = self._be.get( DEVICES_URL )
         self._parse_devices()
         for device in self._devices:
@@ -78,14 +78,14 @@ class PyArlo(object):
         self._st.set( ['ARLO',TOTAL_BELLS_KEY],len(self._doorbells) )
 
         # queue up initial config retrieval
-        self.info('getting initial settings' )
-        self._ml.load()
-        self._bg.run_in( self._refresh_cameras,1 )
-        self._bg.run_in( self._run_every_1,2 )
-        self._bg.run_in( self._run_every_15,3 )
+        self.debug('getting initial settings' )
+        self._bg.run_in( self._ml.load,1 )
+        self._bg.run_in( self._refresh_cameras,2 )
+        self._bg.run_in( self._run_every_1,3 )
+        self._bg.run_in( self._run_every_15,4 )
 
         # register house keeping cron jobs
-        self.info('registering cron jobs')
+        self.debug('registering cron jobs')
         self._bg.run_every( self._run_every_1,1*60 )
         self._bg.run_every( self._run_every_15,15*60 )
 
@@ -107,6 +107,10 @@ class PyArlo(object):
             camera.update_last_image()
             camera.update_media()
 
+    def _refresh_ambient_sensors( self ):
+        for camera in self._cameras:
+            camera.update_ambient_sensors()
+
     def _refresh_bases( self ):
         for base in self._bases:
             self._bg.run( self._be.notify,base=base,body={"action":"get","resource":"modes","publishResponse":False} )
@@ -121,10 +125,13 @@ class PyArlo(object):
         for base in self._bases:
             self._bg.run( self._be.async_ping,base=base )
 
+        # get ambient updates
+        self._refresh_ambient_sensors()
+
         # if day changes then reload camera counts
         today = datetime.date.today()
         if self._today != today:
-            self.info( 'day changed!' )
+            self.debug( 'day changed!' )
             self._refresh_cameras()
             self._today = today
 

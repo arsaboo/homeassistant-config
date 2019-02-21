@@ -66,14 +66,14 @@ class ArloBinarySensor(BinarySensorDevice):
         self._state       = None
         self._class       = SENSOR_TYPES.get(self._sensor_type)[1]
         self._attr        = SENSOR_TYPES.get(self._sensor_type)[2]
-        _LOGGER.debug('ArloBinarySensor created for %s', self._name)
+        _LOGGER.info('ArloBinarySensor: %s created', self._name)
 
     async def async_added_to_hass(self):
         """Register callbacks."""
 
         @callback
         def update_state( device,attr,value ):
-            _LOGGER.info( 'callback:' + attr + ':' + str(value)[:80])
+            _LOGGER.debug( 'callback:' + attr + ':' + str(value)[:80])
             self._state = value
             self.async_schedule_update_ha_state()
 

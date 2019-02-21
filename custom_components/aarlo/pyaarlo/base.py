@@ -21,7 +21,7 @@ class ArloBase(ArloDevice):
         return self._arlo._st.get( [self.device_id,MODE_NAME_TO_ID_KEY,mode_name],None )
 
     def _event_handler( self,resource,event ):
-        self._arlo.info( self.name + ' BASE got ' + resource )
+        self._arlo.debug( self.name + ' BASE got ' + resource )
 
         # modes on base station
         if resource == 'modes':
@@ -37,7 +37,7 @@ class ArloBase(ArloDevice):
                         if mode_name == '':
                             mode_name = mode_id
                     if mode_id and mode_name != '':
-                        self._arlo.info( mode_id + '<==>' + mode_name )
+                        self._arlo.debug( mode_id + '<==>' + mode_name )
                         self._arlo._st.set( [self.device_id,MODE_ID_TO_NAME_KEY,mode_id],mode_name )
                         self._arlo._st.set( [self.device_id,MODE_NAME_TO_ID_KEY,mode_name],mode_id )
 
@@ -73,7 +73,7 @@ class ArloBase(ArloDevice):
     def mode( self,mode_name ):
         mode_id = self._name_to_id( mode_name )
         if mode_id:
-            self._arlo.info( self.name + ':new-mode=' + mode_name + ',id=' + mode_id )
+            self._arlo.debug( self.name + ':new-mode=' + mode_name + ',id=' + mode_id )
             self._arlo._bg.run( self._arlo._be.notify,base=self,
                                     body={"action":"set","resource":"modes","publishResponse":True,"properties":{"active":mode_id}} )
 
