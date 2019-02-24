@@ -58,6 +58,12 @@ SCHEMA_WS_VIDEO_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('entity_id'): cv.entity_id,
     vol.Required('index'): cv.positive_int
 })
+WS_TYPE_LIBRARY = 'aarlo_library'
+SCHEMA_WS_LIBRARY = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_LIBRARY,
+    vol.Required('entity_id'): cv.entity_id,
+    vol.Required('at_most'): cv.positive_int
+})
 WS_TYPE_STREAM_URL = 'aarlo_stream_url'
 SCHEMA_WS_STREAM_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_STREAM_URL,
@@ -89,6 +95,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     hass.components.websocket_api.async_register_command(
         WS_TYPE_VIDEO_URL, websocket_video_url,
         SCHEMA_WS_VIDEO_URL
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_LIBRARY, websocket_library,
+        SCHEMA_WS_LIBRARY
     )
     hass.components.websocket_api.async_register_command(
         WS_TYPE_STREAM_URL, websocket_stream_url,
@@ -278,6 +288,26 @@ async def websocket_video_url(hass, connection, msg):
                 'url_type':url_type,
                 'thumbnail':thumbnail,
                 'thumbnail_type':'image/jpeg',
+            }
+        ))
+
+@websocket_api.async_response
+async def websocket_library(hass, connection, msg):
+    camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
+    videos = []
+    _LOGGER.debug( 'library+' + str(msg['at_most']) )
+    for v in camera._camera.last_N_videos( msg['at_most'] ):
+        videos.append({
+                'created_at':v.created_at,
+                'created_at_pretty':v.created_at_pretty( camera._camera.last_capture_date_format ),
+                'url':v.video_url,
+                'url_type':v.content_type,
+                'thumbnail':v.thumbnail_url,
+                'thumbnail_type':'image/jpeg',
+            })
+    connection.send_message(websocket_api.result_message(
+            msg['id'], {
+                'videos':videos,
             }
         ))
 

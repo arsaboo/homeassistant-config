@@ -64,9 +64,9 @@ class ArloBaseStation(AlarmControlPanel):
         self._name            = device.name
         self._unique_id       = self._name.lower().replace(' ','_')
         self._base            = device
-        self._home_mode_name  = home_mode_name
-        self._away_mode_name  = away_mode_name
-        self._night_mode_name = night_mode_name
+        self._home_mode_name  = home_mode_name.lower()
+        self._away_mode_name  = away_mode_name.lower()
+        self._night_mode_name = night_mode_name.lower()
         self._state           = None
         _LOGGER.info( 'ArloBaseStation: %s created',self._name )
 

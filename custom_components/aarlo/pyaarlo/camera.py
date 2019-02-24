@@ -89,6 +89,7 @@ class ArloCamera(ArloChildDevice):
     def _update_last_image_from_snapshot( self ):
         self._arlo.debug('getting image for ' + self.name )
         url = self._arlo._st.get( [self.device_id,SNAPSHOT_KEY],None )
+        self._arlo.debug('getting image for ' + url )
         if url is not None:
             img = http_get( url )
             if img is not None:
@@ -200,9 +201,19 @@ class ArloCamera(ArloChildDevice):
                 return self._cached_videos[0]
         return None
 
+    def last_N_videos(self,count):
+        with self._lock:
+            if self._cached_videos:
+                return self._cached_videos[:count]
+        return []
+
     @property
     def last_capture(self):
         return self._arlo._st.get( [self._device_id,LAST_CAPTURE_KEY],None )
+
+    @property
+    def last_capture_date_format(self):
+        return self._arlo._last_format
 
     @property
     def brightness(self):
@@ -275,12 +286,12 @@ class ArloCamera(ArloChildDevice):
             'action': 'set',
             'from': self.web_id,
             'properties': {'activityState': 'fullFrameSnapshot'},
-            'publishResponse': 'true',
+            'publishResponse': True,
             'resource': self.resource_id,
-            'to': self.device_id,
+            'to': self.parent_id,
             'transId': self._arlo._be._gen_trans_id()
         }
-        self._arlo._bg.run( self._arlo._be.post,url=SNAPSHOT_URL,params=body,headers={ "xcloudId":self.base_station.xcloud_id } )
+        self._arlo._bg.run( self._arlo._be.post,url=SNAPSHOT_URL,params=body,headers={ "xcloudId":self.xcloud_id } )
 
     @property
     def is_taking_snapshot( self ):
