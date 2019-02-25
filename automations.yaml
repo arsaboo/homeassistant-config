@@ -340,6 +340,13 @@
   alias: 'Enable thermostat away'
   initial_state: 'on'
   condition:
+    - condition: template
+      value_template: >
+        {%- if state_attr("automation.enable_thermostat_away", "last_triggered") -%}
+          {{ (as_timestamp(now()) - as_timestamp(state_attr("automation.enable_thermostat_away", "last_triggered"))) > 900 }}
+        {%- else -%}
+          true
+        {%- endif -%}
     - condition: or
       conditions:
         - condition: template
@@ -354,6 +361,8 @@
   trigger:
     - platform: time_pattern
       minutes: '/5'
+    - platform: event
+      event_type: resume_thermostat_schedule
   action:
     - service: homeassistant.turn_on
       data_template:
