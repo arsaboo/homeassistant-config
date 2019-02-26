@@ -8,6 +8,7 @@
   themes:
     oxfordblue: #Thanks Zac
       # Main colors
+      ha-card-border-radius: '8px'
       primary-color: 'rgba(50, 77, 103, 1)'         # Header
       accent-color: 'rgba(20, 142, 153, 1)'         # Accent color
       dark-primary-color: 'rgba(36, 58, 82, 1)'     # Hyperlinks
