@@ -1,26 +1,39 @@
 customElements.define('card-tools',
 class {
-  static CUSTOM_TYPE_PREFIX() { return "custom:"}
-  static version() { return "0.3"}
-
-  static v() {return version};
+  static get CUSTOM_TYPE_PREFIX() { return "custom:"}
+  static get version() { return "0.4"}
 
   static checkVersion(v) {
-    if (this.version() < v) {
+    if (this.version < v) {
       throw new Error(`Old version of card-tools found. Get the latest version of card-tools.js from https://github.com/thomasloven/lovelace-card-tools`);
     }
   }
 
-  static litElement() {
+  static get LitElement() {
     return Object.getPrototypeOf(customElements.get('home-assistant-main'));
   }
-
-  static litHtml() {
-    return this.litElement().prototype.html;
+  static litElement() { // Backwards compatibility - deprecated
+    return this.LitElement;
   }
 
-  static hass() {
-    return document.querySelector('home-assistant').hass;
+  static get LitHtml() {
+    return this.litElement().prototype.html;
+  }
+  static litHtml() { // Backwards compatibility - deprecated
+    return this.LitHtml;
+  }
+
+  static get LitCSS() {
+    return this.litElement().prototype.css;
+  }
+
+  static get hass() {
+    var hass = function() { // Backwards compatibility - deprecated
+      return hass;
+    }
+    for (var k in document.querySelector('home-assistant').hass)
+      hass[k] = document.querySelector('home-assistant').hass[k];
+    return hass;
   }
 
   static fireEvent(ev, detail, entity=null) {
@@ -45,6 +58,27 @@ class {
           .firstElementChild
           .dispatchEvent(ev);
     }
+  }
+
+  static get lovelace() {
+    var root = document
+      .querySelector("home-assistant")
+      .shadowRoot.querySelector("home-assistant-main")
+      .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
+      .shadowRoot.querySelector("ha-panel-lovelace")
+      .shadowRoot.querySelector("hui-root")
+    if (root) {
+      var ll =  root
+        .shadowRoot.querySelector("ha-app-layout #view")
+        .firstElementChild
+        .lovelace;
+      ll.current_view = root
+        .shadowRoot.querySelector("ha-app-layout #view")
+        .firstElementChild
+        .index;
+      return ll;
+    }
+    return null;
   }
 
   static createThing(thing, config) {
@@ -75,8 +109,8 @@ class {
       delete config.error;
       return _createError(err, config);
     }
-    if(tag.startsWith(this.CUSTOM_TYPE_PREFIX()))
-      tag = tag.substr(this.CUSTOM_TYPE_PREFIX().length);
+    if(tag.startsWith(this.CUSTOM_TYPE_PREFIX))
+      tag = tag.substr(this.CUSTOM_TYPE_PREFIX.length);
     else
       tag = `hui-${tag}-${thing}`;
 
@@ -145,7 +179,7 @@ class {
     }
 
     const type = config.type || "default";
-    if(SPECIAL_TYPES.has(type) || type.startsWith(this.CUSTOM_TYPE_PREFIX()))
+    if(SPECIAL_TYPES.has(type) || type.startsWith(this.CUSTOM_TYPE_PREFIX))
       return this.createThing("row", config);
 
     const domain = config.entity.split(".", 1)[0];
@@ -153,7 +187,7 @@ class {
     return this.createThing("entity-row", config);
   }
 
-  static deviceID() {
+  static get deviceID() {
     const ID_STORAGE_KEY = 'lovelace-player-device-id';
     if(window['fully'] && typeof fully.getDeviceId === "function")
       return fully.getDeviceId();
@@ -246,13 +280,14 @@ class {
     return text;
   }
 
-  static args() {
-    var url = document.currentScript.src
+  static args(script=null) {
+    script = script || document.currentScript;
+    var url = script.src;
     url = url.substr(url.indexOf("?")+1)
     let args = {};
     url.split("&").forEach((a) => {
       if(a.indexOf("=")) {
-        var parts = a.split("=");
+        let parts = a.split("=");
         args[parts[0]] = parts[1]
       } else {
         args[a] = true;
@@ -268,12 +303,63 @@ class {
     return def;
   }
 
+  static popUp(title, message, large=false) {
+    let popup = document.createElement('div');
+    popup.innerHTML = `
+    <style>
+      app-toolbar {
+        color: var(--more-info-header-color);
+        background-color: var(--more-info-header-background);
+      }
+    </style>
+    <app-toolbar>
+      <paper-icon-button
+        icon="hass:close"
+        dialog-dismiss=""
+      ></paper-icon-button>
+      <div class="main-title" main-title="">
+        ${title}
+      </div>
+    </app-toolbar>
+  `;
+    popup.appendChild(message);
+    cardTools.moreInfo(Object.keys(cardTools.hass().states)[0]);
+    let moreInfo = document.querySelector("home-assistant")._moreInfoEl;
+    moreInfo._page = "none";
+    moreInfo.shadowRoot.appendChild(popup);
+    moreInfo.large = large;
+
+    setTimeout(() => {
+      let interval = setInterval(() => {
+        if (moreInfo.getAttribute('aria-hidden')) {
+          popup.parentNode.removeChild(popup);
+          clearInterval(interval);
+        } else {
+          message.hass = cardTools.hass();
+        }
+      }, 100)
+    }, 1000);
+  }
+  static closePopUp() {
+    let moreInfo = document.querySelector("home-assistant")._moreInfoEl;
+    if (moreInfo) moreInfo.close()
+  }
+
+  static logger(message, script=null) {
+    if(!('debug' in this.args(script))) return;
+
+    if(typeof message !== "string")
+      message = JSON.stringify(message);
+    console.log(`%cDEBUG:%c ${message}`,
+      "color: blue; font-weight: bold", "");
+  }
+
 });
 
 // Global definition of cardTools
 var cardTools = customElements.get('card-tools');
 
 console.info(`%cCARD-TOOLS IS INSTALLED
-%cDeviceID: ${customElements.get('card-tools').deviceID()}`,
+%cDeviceID: ${customElements.get('card-tools').deviceID}`,
 "color: green; font-weight: bold",
 "");
