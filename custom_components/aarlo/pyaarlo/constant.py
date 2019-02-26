@@ -1,6 +1,7 @@
 
 DEVICES_URL     = 'https://arlo.netgear.com/hmsweb/users/devices'
 LIBRARY_URL     = 'https://arlo.netgear.com/hmsweb/users/library'
+LOGIN_URL       = 'https://arlo.netgear.com/hmsweb/login/v2'
 LOGOUT_URL      = 'https://arlo.netgear.com/hmsweb/logout'
 NOTIFY_URL      = 'https://arlo.netgear.com/hmsweb/users/devices/notify/'
 SUBSCRIBE_URL   = 'https://arlo.netgear.com/hmsweb/client/subscribe?token='

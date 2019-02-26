@@ -304,6 +304,8 @@ async def websocket_library(hass, connection, msg):
                 'url_type':v.content_type,
                 'thumbnail':v.thumbnail_url,
                 'thumbnail_type':'image/jpeg',
+                'object':v.object_type,
+                'object_region':v.object_region,
             })
     connection.send_message(websocket_api.result_message(
             msg['id'], {

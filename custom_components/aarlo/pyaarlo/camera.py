@@ -89,7 +89,6 @@ class ArloCamera(ArloChildDevice):
     def _update_last_image_from_snapshot( self ):
         self._arlo.debug('getting image for ' + self.name )
         url = self._arlo._st.get( [self.device_id,SNAPSHOT_KEY],None )
-        self._arlo.debug('getting image for ' + url )
         if url is not None:
             img = http_get( url )
             if img is not None:

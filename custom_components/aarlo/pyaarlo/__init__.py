@@ -125,9 +125,6 @@ class PyArlo(object):
         for base in self._bases:
             self._bg.run( self._be.async_ping,base=base )
 
-        # get ambient updates
-        self._refresh_ambient_sensors()
-
         # if day changes then reload camera counts
         today = datetime.date.today()
         if self._today != today:
@@ -138,6 +135,7 @@ class PyArlo(object):
     def _run_every_15( self ):
         self.debug( 'slow refresh' )
         self._refresh_bases()
+        self._refresh_ambient_sensors()
         #self._bg.run( self._ml.load )
 
     def stop( self ):

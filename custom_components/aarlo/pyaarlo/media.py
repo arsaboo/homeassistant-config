@@ -137,6 +137,14 @@ class ArloVideo(object):
         return self._attrs.get('reason',None)
 
     @property
+    def object_type(self):
+        return self._attrs.get('objCategory',None)
+
+    @property
+    def object_region(self):
+        return self._attrs.get('objRegion',None)
+
+    @property
     def thumbnail_url(self):
         return self._attrs.get('presignedThumbnailUrl',None)
 
