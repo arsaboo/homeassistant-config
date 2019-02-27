@@ -733,7 +733,6 @@ views:
                 color_type: icon
                 style:
                   - font-size: 12px
-                  - font-weight: bold
               - type: custom:button-card
                 entity: switch.sonos_night_sound
                 name: Night
@@ -744,7 +743,6 @@ views:
                 color_type: icon
                 style:
                   - font-size: 12px
-                  - font-weight: bold
               - type: custom:button-card
                 color_type: blank-card
           - type: horizontal-stack
@@ -755,8 +753,6 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
-                style:
-                  - height: 50px
                 action: service
                 service:
                   domain: media_player
@@ -775,8 +771,6 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
-                style:
-                  - height: 50px
                 action: service
                 service:
                   domain: media_player
@@ -974,8 +968,10 @@ views:
           - input_boolean.devmode
           - person.alok
           - sensor.alok_rssi
+          - binary_sensor.alok_main_level
           - person.rashmi
           - sensor.rashmi_rssi
+          - binary_sensor.rashmi_main_level
 
       - type: entities
         title: Network Details
@@ -1027,7 +1023,7 @@ views:
               - text-transform: capitalize
           - type: custom:button-card
             entity: switch.samsung_tv
-            name: Samsung TV
+            name: Sammy
             icon: mdi:television-classic
             color: rgb(250, 218, 79)
             color_type: icon
@@ -1302,7 +1298,7 @@ views:
                   - text-transform: capitalize
               - type: custom:button-card
                 entity: binary_sensor.patio_face_detection
-                name: Patio Face
+                name: Face
                 icon: mdi:face-outline
                 action: more_info
                 color: rgb(250, 218, 79)
@@ -1803,7 +1799,6 @@ views:
       - type: custom:mini-graph-card
         entities:
           - sensor.speedtest_download
-          - sensor.speedtest_upload
         name: Speedtest
         points: true
         animate: true

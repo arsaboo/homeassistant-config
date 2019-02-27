@@ -1106,6 +1106,9 @@
           - condition: state
             entity_id: light.master_lights
             state: 'off'
+          - condition: numeric_state
+            entity_id: sensor.illumination_158d00016c53bf
+            below: 20
       - condition: and
         conditions:
           - condition: time
@@ -1150,7 +1153,7 @@
     - platform: state
       entity_id: binary_sensor.motion_sensor_158d00016c53bf
       to: 'off'
-      for: '00:05:00'
+      for: '00:03:00'
   condition:
     - condition: time
       after: '17:00:00'
@@ -1159,7 +1162,7 @@
       entity_id: light.master_lights
       state: 'on'
     - condition: state
-      entity_id: media_player.ftv_master
+      entity_id: input_boolean.sleeping
       state: 'off'
   action:
     - service: light.turn_off

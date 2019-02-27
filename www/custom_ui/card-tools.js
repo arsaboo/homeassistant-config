@@ -68,14 +68,8 @@ class {
       .shadowRoot.querySelector("ha-panel-lovelace")
       .shadowRoot.querySelector("hui-root")
     if (root) {
-      var ll =  root
-        .shadowRoot.querySelector("ha-app-layout #view")
-        .firstElementChild
-        .lovelace;
-      ll.current_view = root
-        .shadowRoot.querySelector("ha-app-layout #view")
-        .firstElementChild
-        .index;
+      var ll =  root.lovelace
+      ll.current_view = root.___curView;
       return ll;
     }
     return null;
@@ -217,23 +211,60 @@ class {
     return /\[\[\s+.*\s+\]\]/.test(text);
   }
 
-  static parseTemplateString(str) {
+  static parseTemplateString(str, specialData = {}) {
     if(typeof(str) !== "string") return text;
-    var RE_entity = /^[a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+$/;
-    var RE_if = /^if\(([^,]*),([^,]*),(.*)\)$/;
-    var RE_expr = /([^=<>!]+)\s*(==|<|>|<=|>=|!=)\s*([^=<>!]+)/
+    const FUNCTION = /^[a-zA-Z0-9_]+\(.*\)$/;
+    const EXPR = /([^=<>!]+)\s*(==|!=|<|>|<=|>=)\s*([^=<>!]+)/;
+    const SPECIAL = /^\{.+\}$/;
+    const STRING = /^"[^"]*"|'[^']*'$/;
+
+    if(typeof(specialData) === "string") specialData = {};
+    specialData = Object.assign({
+      user: this.hass.user.name,
+      browser: this.deviceID,
+      hash: location.hash.substr(1) || ' ',
+    }, specialData);
+
+    const _parse_function = (str) => {
+      let args = [str.substr(0, str.indexOf('(')).trim()]
+      str = str.substr(str.indexOf('(')+1);
+      while(str) {
+        let index = 0;
+        let stack = [];
+        while(str[index]) {
+          if(",)".includes(str[index]) && !stack.length) break;
+          if(str[index] == '(') stack.push(')');
+          if(stack[stack.length - 1] === str[index]) stack.pop();
+          else if(`"'`.includes(str[index])) stack.push(str[index]);
+          index = index + 1;
+        }
+        args.push(str.substr(0, index).trim());
+        str = str.substr(index+1);
+      }
+      return args;
+    };
+
+    const _parse_special = (str) => {
+      str = str.substr(1, str.length - 2);
+      return specialData[str] || `{${str}}`;
+    };
 
     const _parse_entity = (str) => {
-      str = str.trim();
-      const parts = str.split(".");
-      let v = this.hass().states[`${parts.shift()}.${parts.shift()}`];
-      if(!parts.length) return v['state'];
-      parts.forEach(item => v=v[item]);
+      str = str.split(".");
+      let v;
+      if(str[0].match(SPECIAL)) {
+        v = _parse_special(str.shift());
+        v = this.hass().states[v] || v;
+      } else {
+        v = this.hass().states[`${str.shift()}.${str.shift()}`];
+        if(!str.length) return v['state'];
+      }
+      str.forEach(item => v=v[item]);
       return v;
     }
 
-    const _parse_expr = (str) => {
-      str = RE_expr.exec(str);
+    const _eval_expr = (str) => {
+      str = EXPR.exec(str);
       if(str === null) return false;
       const lhs = this.parseTemplateString(str[1]);
       const rhs = this.parseTemplateString(str[3]);
@@ -245,38 +276,35 @@ class {
       return eval(expr);
     }
 
-    const _parse_if = (str) => {
-      str = RE_if.exec(str);
-      if(_parse_expr(str[1]))
-        return this.parseTemplateString(str[2]);
-      return this.parseTemplateString(str[3]);
+    const _eval_function = (args) => {
+      if(args[0] === "if") {
+        if(_eval_expr(args[1]))
+          return this.parseTemplateString(args[2]);
+        return this.parseTemplateString(args[3]);
+      }
     }
 
     try {
       str = str.trim();
-      if(str.match(RE_if))
-        return _parse_if(str);
-      if(str.match(RE_entity))
+      if(str.match(STRING))
+        return str.substr(1, str.length - 2);
+      if(str.match(SPECIAL))
+        return _parse_special(str);
+      if(str.match(FUNCTION))
+        return _eval_function(_parse_function(str));
+      if(str.includes("."))
         return _parse_entity(str);
-      if(str.match(/^".*"$/) || str.match(/^'.*'$/))
-        return str.substr(1, str.length-2);
-      if(str.match(/{user}/))
-        return this.hass().user.name;
-      if(str.match(/{browser}/))
-        return this.deviceID();
-      if(str.match(/{hash}/))
-        return location.hash.substr(1);
       return str;
     } catch (err) {
-      return `[[ Template matching failed ${str} ]]`;
+      return `[[ Template matching failed: ${str} ]]`;
     }
   }
 
-  static parseTemplate(text, error) {
+  static parseTemplate(text, data = {}) {
     if(typeof(text) !== "string") return text;
     // Note: .*? is javascript regex syntax for NON-greedy matching
     var RE_template = /\[\[\s(.*?)\s\]\]/g;
-    text = text.replace(RE_template, (str, p1, offset, s) => this.parseTemplateString(p1));
+    text = text.replace(RE_template, (str, p1, offset, s) => this.parseTemplateString(p1, data));
     return text;
   }
 
