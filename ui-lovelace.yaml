@@ -21,6 +21,10 @@ resources:
     type: module
   - url: /local/custom_ui/card-tools.js?v=0.1
     type: js
+  - url: /local/custom_ui/gap-card.js?v=0.1
+    type: js
+  - url: /local/custom_ui/layout-card.js?v=0.1
+    type: js
   - url: /local/custom_ui/auto-entities.js?v=0.1
     type: js
 
