@@ -1199,6 +1199,17 @@ views:
                   red: -6
                   yellow: -2
                   green: 0
+      - type: custom:mini-graph-card
+        entities:
+          - sensor.speedtest_download
+        name: Speedtest
+        points: true
+        animate: true
+      - type: map
+        entities:
+          - zone.home
+          - device_tracker.meta_alok
+          - device_tracker.meta_rashmi
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -1800,9 +1811,3 @@ views:
           filter:
             include:
               - domain: automation
-      - type: custom:mini-graph-card
-        entities:
-          - sensor.speedtest_download
-        name: Speedtest
-        points: true
-        animate: true
