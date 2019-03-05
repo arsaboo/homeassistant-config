@@ -66,10 +66,20 @@
     sensors:
       alok_main_level:
         friendly_name: "Alok Main Level"
-        value_template: "{{state_attr('device_tracker.myiphone', 'rssi') < 30}}"
+        value_template: >-
+           {% if state_attr('device_tracker.myiphone', 'rssi') %}
+             {{state_attr('device_tracker.myiphone', 'rssi') < 30}}
+           {% else %}
+             None
+           {% endif %}
       rashmi_main_level:
         friendly_name: "Rashmi Main Level"
-        value_template: "{{state_attr('device_tracker.rashmisiphone', 'rssi') < 30}}"
+        value_template: >-
+           {% if state_attr('device_tracker.rashmisiphone', 'rssi') %}
+             {{state_attr('device_tracker.rashmisiphone', 'rssi') < 30}}
+           {% else %}
+             None
+           {% endif %}
       garagedoor:
         friendly_name: Garage Door Open
         device_class: opening
@@ -82,7 +92,7 @@
       television:
         friendly_name: TV
         value_template: >-
-           {{states('media_player.family_room_2')=='playing' and state_attr('media_player.family_room_2','source')=='TV'}}
+           {{states('media_player.family_room_2') == 'playing' and state_attr('media_player.family_room_2','source')=='TV'}}
       in_bed:
         friendly_name: "In Bed"
         device_class: presence
