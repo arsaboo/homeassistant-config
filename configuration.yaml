@@ -510,7 +510,6 @@ sonos:
       - 192.168.2.150
       - 192.168.2.253
 sun:
-api:  
 person:
 media_player:
   - platform: kodi
@@ -534,10 +533,6 @@ media_player:
   # - platform: apple_tv
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
-  # - platform: androidtv
-  #   host: 192.168.2.225
-  #   name: "FTV Master"
-  #   adb_server_ip: 192.168.2.233
   - platform: androidtv
     host: 192.168.2.28
     name: "ShieldTV"
@@ -548,6 +543,10 @@ media_player:
       "youtube": "Youtube"
       "kodi": "Kodi"
       "netflix": "Netflix"
+  - platform: firetv
+    name: FTVStick
+    host: 192.168.2.225
+    adb_server_ip: 192.168.2.233
 alexa_media:
   accounts:
     - email: !secret amazon_user
