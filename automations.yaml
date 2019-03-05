@@ -768,7 +768,7 @@
       entity_id: device_tracker.meta_alok
       state: 'home'
   action:
-    - service: sensor.google_travel_sensor_update
+    - service: homeassistant.update_entity
       data:
         entity_id: sensor.morning_commute
 
@@ -797,7 +797,7 @@
           false
         {%- endif -%}
   action:
-    - service: sensor.google_travel_sensor_update
+    - service: homeassistant.update_entity
       data:
         entity_id: sensor.alok_to_home
 
@@ -1217,7 +1217,7 @@
   initial_state: 'on'
   trigger:
    - platform: state
-     entity_id: light.kitchen_lights
+     entity_id: light.kitchen
      from: 'off'
      to: 'on'
   condition:
@@ -1226,7 +1226,7 @@
   action:
      service: light.turn_on
      data:
-       entity_id: light.kitchen_lights
+       entity_id: light.kitchen
        brightness: 200
 
 - id: turn_off_xiaomi

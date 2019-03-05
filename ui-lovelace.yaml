@@ -86,7 +86,7 @@ views:
               width: 7%
             # Kitchen
           - type: image
-            entity: light.kitchen_lights
+            entity: light.kitchen
             tap_action:
               action: toggle
             image: /local/icons/light_bulb_off.png

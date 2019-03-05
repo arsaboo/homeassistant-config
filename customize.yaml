@@ -187,7 +187,7 @@ input_boolean.tvtime:
     icon: if (state === 'on') return 'mdi:television-classic'; return 'mdi:television-classic-off';
 cover.garagedoor:
   homebridge_cover_type: garage_door
-light.kitchen_lights:
+light.kitchen:
   emulated_hue_hidden: false
   emulated_hue_name: Kitchen lights
   homebridge_hidden: false
