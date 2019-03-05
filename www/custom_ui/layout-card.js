@@ -10,6 +10,7 @@ class LayoutCard extends cardTools.LitElement {
     this.colWidth = config.column_width || 300;
     this.maxWidth = config.max_width || 500;
     this.minHeight = config.min_height || 5;
+    this.rtl = config.rtl || false;
     this.cardSize = 1;
 
     window.addEventListener('resize', () => this.build());
@@ -24,11 +25,26 @@ class LayoutCard extends cardTools.LitElement {
   }
 
   firstUpdated() {
+    if(this.parentElement && this.parentElement.id !== "view")
+    {
+      this.style.padding = "0";
+    }
+    if(this.rtl)
+      this.shadowRoot.querySelector("#columns").style.flexDirection = 'row-reverse';
     this.build();
+    this._cardModder = {
+      target: this,
+      styles: this.shadowRoot.querySelector("style")
+    };
   }
 
   static get styles() {
     return cardTools.LitCSS`
+      :host {
+        padding: 8px 4px 0;
+        display: block;
+      }
+
       #columns {
         display: flex;
         flex-direction: row;
