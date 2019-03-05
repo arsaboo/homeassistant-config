@@ -835,6 +835,12 @@ views:
         entity: media_player.kodi_nstv
       - type: media-control
         entity: media_player.living_room_home
+      - type: custom:mini-media-player
+        entity: media_player.ftv_master
+        artwork: cover
+      - type: custom:mini-media-player
+        entity: media_player.shieldtv
+        artwork: cover
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
       # - type: media-control
