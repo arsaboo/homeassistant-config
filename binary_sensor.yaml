@@ -84,7 +84,7 @@
         friendly_name: Garage Door Open
         device_class: opening
         value_template: >-
-           {% if states.sensor.garage_door_tilt_sensor_alarm_level != None %}
+           {% if states("sensor.garage_door_tilt_sensor_alarm_level") %}
              {{ is_state('sensor.garage_door_tilt_sensor_alarm_level', '255') }}
            {% else %}
              unknown
@@ -122,15 +122,3 @@
     name: Driveway
     username: !secret hikvision_username
     password: !secret hikvision_password
-  # - platform: mqtt
-  #   name: aloklife360
-  #   friendly_name: Alok Life360
-  #   state_topic: "smartthings/Alok Life360/presence"
-  #   payload_on: 'present'
-  #   payload_off: 'not present'
-  # - platform: mqtt
-  #   name: rashmilife360
-  #   friendly_name: Rashmi Life360
-  #   state_topic: "smartthings/Rashmi_Life360/presence"
-  #   payload_on: 'present'
-  #   payload_off: 'not present'
