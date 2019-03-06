@@ -537,16 +537,23 @@ media_player:
     host: 192.168.2.28
     name: "ShieldTV"
     adb_server_ip: 192.168.2.233
-    adb_server_port: 5037
     apps:
-      "amazon": "Amazon Premium Video"
-      "youtube": "Youtube"
-      "kodi": "Kodi"
-      "netflix": "Netflix"
+      com.google.android.tvlauncher: "Home"
+      com.google.android.youtube.tv: "Youtube"
+      com.amazon.amazonvideo.livingroom: "Amazon Prime Video"
+      com.plexapp.android: "Plex"
+      com.netflix.ninja: "Netflix"
+      com.google.android.tv: "Live Channels"
+      org.xbmc.kodi: "Kodi"
   - platform: firetv
     name: FTV Master
     host: 192.168.2.225
     adb_server_ip: 192.168.2.233
+    # apps:
+    #   "amazon": "Amazon Prime Video"
+    #   "youtube": "Youtube"
+    #   "kodi": "Kodi"
+    #   "netflix": "Netflix"
 alexa_media:
   accounts:
     - email: !secret amazon_user

@@ -261,8 +261,9 @@
   #     - sunset
   - platform: template
     sensors:
-      # iframe_windy:
-      #   value_template: iframe
+      shield_activity:
+        friendly_name: "Shield Activity"
+        value_template: "{{ state_attr('media_player.shieldtv', 'app_id') }}"
       cube_last_action:
         friendly_name: "Cube last action"
         value_template: >

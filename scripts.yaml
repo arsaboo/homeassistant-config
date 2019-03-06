@@ -448,7 +448,6 @@
         entity_id: media_player.shield
         media_content_id: !secret animal_planet_url
         media_content_type: tvshow
-
   kodi_update_library:
     alias: Kodi Update Library
     sequence:
@@ -470,3 +469,52 @@
         service: homeassistant.toggle
         data:
           entity_id: switch.sonos_speech_enhance
+  shieldtv_youtube:
+    alias: 'Launch Youtube on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity"
+  shieldtv_netflix:
+    alias: 'Launch Netflix on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.netflix.ninja/.MainActivity"
+  shieldtv_kodi:
+    alias: 'Launch Kodi on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n org.xbmc.kodi/.Splash"
+  shieldtv_thoptv:
+    alias: 'Launch ThopTV on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.thoptv.livetvstream/.Splash"
+  shieldtv_windscribe:
+    alias: 'Launch Windscribe on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
+  shieldtv_amazon_prime:
+    alias: 'Launch Prime on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity"
+  shieldtv_plex:
+    alias: 'Launch Plex on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity"

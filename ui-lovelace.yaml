@@ -841,6 +841,23 @@ views:
       - type: custom:mini-media-player
         entity: media_player.shieldtv
         artwork: cover
+        hide:
+          volume: true
+        shortcuts:
+          columns: 4
+          buttons:
+            - icon: mdi:kodi
+              type: script
+              id: shieldtv_kodi
+            - icon: mdi:plex
+              type: script
+              id: shieldtv_plex
+            - icon: mdi:youtube
+              type: script
+              id: shieldtv_youtube
+            - icon: mdi:netflix
+              type: script
+              id: shieldtv_netflix
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
       # - type: media-control
