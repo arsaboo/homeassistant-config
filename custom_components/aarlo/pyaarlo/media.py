@@ -23,16 +23,19 @@ class ArloMediaLibrary(object):
     def __repr__(self):
         return "<{0}:{1}>".format( self.__class__.__name__,self._arlo.name )
 
-    def load( self,days=PRELOAD_DAYS,only_cameras=None,date_from=None,date_to=None,limit=None ):
+    # grab recordings from last day, add to existing library if not there
+    def update( self ):
+        self._arlo.debug( 'updating image library' )
 
-        self._arlo.debug( '(re)loading image library' )
+        # grab today's images
+        date_to = datetime.today().strftime('%Y%m%d')
+        data = self._arlo._be.post( LIBRARY_URL,{ 'dateFrom':date_to,'dateTo':date_to } )
 
-        if not (date_from and date_to):
-            now = datetime.today()
-            date_from = (now - timedelta(days=days)).strftime('%Y%m%d')
-            date_to = now.strftime('%Y%m%d')
+        # get current first image
+        with self._lock:
+            first_video = self._videos[0]
 
-        data = self._arlo._be.post( LIBRARY_URL,{ 'dateFrom':date_from,'dateTo':date_to } )
+        # add in new images
         videos = []
         for video in data:
 
@@ -40,22 +43,52 @@ class ArloMediaLibrary(object):
             if not camera:
                 continue
 
-            videos.append(ArloVideo(video, camera, self._arlo))
+            if first_video.created_at == video.get('localCreatedDate',None) and \
+                    first_video.camera.device_id == camera.device_id:
+                self._arlo.debug( 'stopping at {0}:{1}({2})'.format( video.get('deviceId'),
+                                            arlotime_strftime( video.get('localCreatedDate' ) ),
+                                            str(first_video) ) )
+                break
 
+            self._arlo.debug( 'adding {0}:{1}'.format( video.get('deviceId'),
+                                        arlotime_strftime( video.get('localCreatedDate' ) ) ) )
+            videos.append( ArloVideo(video,camera,self._arlo) )
+
+        # note changes and run callbacks
         cbs = []
         with self._lock:
             self._count += 1
-            if limit:
-                self._videos = videos[:limit]
-            else:
-                self._videos = videos
-            self._arlo.debug( 'ml:count=' + str(self._count) )
+            self._videos = videos + self._videos
+            self._arlo.debug( 'ml:update-count=' + str(self._count) )
             cbs = self._load_cbs_
             self._load_cbs_ = []
 
-        # callback waiting!
+        # run callbacks with no locks held
         for cb in cbs:
             cb()
+
+    def load( self,days=PRELOAD_DAYS ):
+
+        self._arlo.debug( 'loading image library' )
+
+        # set begining and end
+        now       = datetime.today()
+        date_from = (now - timedelta(days=days)).strftime('%Y%m%d')
+        date_to   = now.strftime('%Y%m%d')
+
+        # save videos for cameras we know about
+        data = self._arlo._be.post( LIBRARY_URL,{ 'dateFrom':date_from,'dateTo':date_to } )
+        videos = []
+        for video in data:
+            camera = self._arlo.lookup_camera_by_id( video.get('deviceId') )
+            if camera is not None:
+                videos.append(ArloVideo(video, camera, self._arlo))
+
+        # set update count, load() never runs callbacks
+        with self._lock:
+            self._count += 1
+            self._videos = videos
+            self._arlo.debug( 'ml:load-count=' + str(self._count) )
 
     @property
     def videos( self ):
@@ -75,12 +108,13 @@ class ArloMediaLibrary(object):
                     camera_videos.append( video )
             return ( self._count,camera_videos )
 
-    def queue_load( self,cb ):
+    def queue_update( self,cb ):
         with self._lock:
             if not self._load_cbs_:
-                self._arlo.debug( 'queueing (re)loading image library' )
-                self._arlo._bg.run_low_in( self.load,2 )
+                self._arlo.debug( 'queueing image library update' )
+                self._arlo._bg.run_low_in( self.update,2 )
             self._load_cbs_.append( cb )
+
 
 class ArloVideo(object):
     """Object for Arlo Video file."""

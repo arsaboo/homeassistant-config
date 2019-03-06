@@ -8,7 +8,8 @@ import pprint
 
 #from sseclient import ( SSEClient )
 from custom_components.aarlo.pyaarlo.sseclient import ( SSEClient )
-from custom_components.aarlo.pyaarlo.constant import ( LOGIN_URL,
+from custom_components.aarlo.pyaarlo.constant import ( EVENT_STREAM_TIMEOUT,
+                                LOGIN_URL,
                                 LOGOUT_URL,
                                 NOTIFY_URL,
                                 SUBSCRIBE_URL,
@@ -210,7 +211,7 @@ class ArloBackEnd(object):
             # get stream, restart after 2 minutes of inactivity or forced close
             try:
                 #  self._ev_stream = SSEClient( self.get( SUBSCRIBE_URL + self._token,stream=True,raw=True,timeout=121 ) )
-                self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=121 )
+                self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=EVENT_STREAM_TIMEOUT )
                 self._ev_loop( self._ev_stream )
             except requests.exceptions.ConnectionError as e:
                 self._arlo.warning( 'event loop timeout' )

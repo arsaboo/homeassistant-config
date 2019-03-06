@@ -107,7 +107,6 @@ class ArloBackground(threading.Thread):
         job = { 'callback':cb, 'args':kwargs }
         return self._worker.queue_job( time.monotonic() + seconds,prio,job )
 
-
     def run_high_in( self,cb,seconds,**kwargs):
         return self._run_in( cb,10,seconds,**kwargs)
     def run_in( self,cb,seconds,**kwargs):

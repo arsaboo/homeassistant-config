@@ -18,6 +18,8 @@ from custom_components.aarlo.pyaarlo.doorbell import ArloDoorBell
 from custom_components.aarlo.pyaarlo.constant import ( BLANK_IMAGE,
                                 DEVICE_KEYS,
                                 DEVICES_URL,
+                                FAST_REFRESH_INTERVAL,
+                                SLOW_REFRESH_INTERVAL,
                                 TOTAL_BELLS_KEY,
                                 TOTAL_CAMERAS_KEY )
 
@@ -65,7 +67,7 @@ class PyArlo(object):
                 self.info('skipping ' + dname + ': state unknown')
                 continue
 
-            if dtype == 'basestation' or device.get('modelId') == 'ABC1000':
+            if dtype == 'basestation' or device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs':
                 self._bases.append( ArloBase( dname,self,device ) )
             if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs':
                 self._cameras.append( ArloCamera( dname,self,device ) )
@@ -81,13 +83,13 @@ class PyArlo(object):
         self.debug('getting initial settings' )
         self._bg.run_in( self._ml.load,1 )
         self._bg.run_in( self._refresh_cameras,2 )
-        self._bg.run_in( self._run_every_1,3 )
-        self._bg.run_in( self._run_every_15,4 )
+        self._bg.run_in( self._fast_refresh,5 )
+        self._bg.run_in( self._slow_refresh,10 )
 
         # register house keeping cron jobs
         self.debug('registering cron jobs')
-        self._bg.run_every( self._run_every_1,1*60 )
-        self._bg.run_every( self._run_every_15,15*60 )
+        self._bg.run_every( self._fast_refresh,FAST_REFRESH_INTERVAL )
+        self._bg.run_every( self._slow_refresh,SLOW_REFRESH_INTERVAL )
 
     def __repr__(self):
         # Representation string of object.
@@ -113,30 +115,31 @@ class PyArlo(object):
 
     def _refresh_bases( self ):
         for base in self._bases:
-            self._bg.run( self._be.notify,base=base,body={"action":"get","resource":"modes","publishResponse":False} )
-            self._bg.run( self._be.notify,base=base,body={"action":"get","resource":"cameras","publishResponse":False} )
-            self._bg.run( self._be.notify,base=base,body={"action":"get","resource":"doorbells","publishResponse":False} )
+            self._be.notify( base=base,body={"action":"get","resource":"modes","publishResponse":False} )
+            self._be.notify( base=base,body={"action":"get","resource":"cameras","publishResponse":False} )
+            self._be.notify( base=base,body={"action":"get","resource":"doorbells","publishResponse":False} )
 
-    def _run_every_1( self ):
+    def _fast_refresh( self ):
         self.debug( 'fast refresh' )
-        self._st.save()
+        self._bg.run( self._st.save )
 
         # alway ping bases
         for base in self._bases:
             self._bg.run( self._be.async_ping,base=base )
 
-        # if day changes then reload camera counts
+        # if day changes then reload recording library and camera counts
         today = datetime.date.today()
         if self._today != today:
             self.debug( 'day changed!' )
-            self._refresh_cameras()
             self._today = today
+            self._bg.run( self._ml.load )
+            self._bg.run( self._refresh_cameras )
 
-    def _run_every_15( self ):
+    def _slow_refresh( self ):
         self.debug( 'slow refresh' )
-        self._refresh_bases()
-        self._refresh_ambient_sensors()
-        #self._bg.run( self._ml.load )
+        self._bg.run( self._refresh_bases )
+        self._bg.run( self._refresh_ambient_sensors )
+        self._bg.run( self._ml.update )
 
     def stop( self ):
         self._st.save()

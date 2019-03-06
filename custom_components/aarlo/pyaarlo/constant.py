@@ -12,6 +12,9 @@ SNAPSHOT_URL    = 'https://arlo.netgear.com/hmsweb/users/devices/fullFrameSnapsh
 TRANSID_PREFIX  = 'web'
 
 PRELOAD_DAYS = 30
+FAST_REFRESH_INTERVAL = (60)
+SLOW_REFRESH_INTERVAL = (30*60)
+EVENT_STREAM_TIMEOUT  = ((FAST_REFRESH_INTERVAL*2) + 5)
 
 # update keys
 ACTIVITY_STATE_KEY  = 'activityState'

@@ -154,7 +154,7 @@ class ArloCamera(ArloChildDevice):
             # recording stopped then reload library
             if event.get('recordingStopped',False) == True:
                 self._arlo.debug( 'recording stopped, updating library' )
-                self._arlo._ml.queue_load( self._update_media )
+                self._arlo._ml.queue_update( self._update_media )
 
             # something just happened!
             self._set_recent( self._arlo._recent_time )
