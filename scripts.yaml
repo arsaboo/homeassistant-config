@@ -500,10 +500,19 @@
   shieldtv_windscribe:
     alias: 'Launch Windscribe on Shield'
     sequence:
-      service: androidtv.adb_command
-      data:
-        entity_id: media_player.shieldtv
-        command: "am start -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
+      - service: androidtv.adb_command
+        data:
+          entity_id: media_player.shieldtv
+          command: "am start -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
+      - service: androidtv.adb_command
+        data:
+          entity_id: media_player.shieldtv
+          command: "input keyevent 22" #KEYCODE_DPAD_RIGHT
+      - service: androidtv.adb_command
+        data:
+          entity_id: media_player.shieldtv
+          command: "input keyevent 23" #KEYCODE_DPAD_CENTER
+
   shieldtv_amazon_prime:
     alias: 'Launch Prime on Shield'
     sequence:
@@ -518,3 +527,10 @@
       data:
         entity_id: media_player.shieldtv
         command: "am start -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity"
+  shieldtv_dpad_down:
+    alias: 'Shield DPad Down'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "input keyevent 20" # see https://stackoverflow.com/questions/7789826/adb-shell-input-events

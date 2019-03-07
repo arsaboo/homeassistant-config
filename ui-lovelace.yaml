@@ -15,7 +15,7 @@ resources:
     type: js
   - url: /local/custom_ui/button-card.js?v=0.12
     type: module
-  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.2
+  - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.3
     type: module
   - url: /local/custom_ui/mini-graph-card-bundle.js?v=0.0.1
     type: module
@@ -844,20 +844,23 @@ views:
         hide:
           volume: true
         shortcuts:
-          columns: 4
+          columns: 3
           buttons:
             - icon: mdi:kodi
               type: script
-              id: shieldtv_kodi
+              id: script.shieldtv_kodi
             - icon: mdi:plex
               type: script
-              id: shieldtv_plex
+              id: script.shieldtv_plex
             - icon: mdi:youtube
               type: script
-              id: shieldtv_youtube
+              id: script.shieldtv_youtube
             - icon: mdi:netflix
               type: script
-              id: shieldtv_netflix
+              id: script.shieldtv_netflix
+            - icon: mdi:vpn
+              type: script
+              id: script.shieldtv_windscribe
       # - type: media-control
       #   entity: media_player.panasonic_viera_tv
       # - type: media-control
