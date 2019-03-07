@@ -211,7 +211,8 @@ class ArloBackEnd(object):
             # get stream, restart after 2 minutes of inactivity or forced close
             try:
                 #  self._ev_stream = SSEClient( self.get( SUBSCRIBE_URL + self._token,stream=True,raw=True,timeout=121 ) )
-                self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=EVENT_STREAM_TIMEOUT )
+                # self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=EVENT_STREAM_TIMEOUT )
+                self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session )
                 self._ev_loop( self._ev_stream )
             except requests.exceptions.ConnectionError as e:
                 self._arlo.warning( 'event loop timeout' )

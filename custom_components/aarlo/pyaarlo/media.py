@@ -19,6 +19,7 @@ class ArloMediaLibrary(object):
         self._load_cbs_ = []
         self._count     = 0
         self._videos    = []
+        self._video_keys = []
 
     def __repr__(self):
         return "<{0}:{1}>".format( self.__class__.__name__,self._arlo.name )
@@ -31,9 +32,9 @@ class ArloMediaLibrary(object):
         date_to = datetime.today().strftime('%Y%m%d')
         data = self._arlo._be.post( LIBRARY_URL,{ 'dateFrom':date_to,'dateTo':date_to } )
 
-        # get current first image
+        # get current videos
         with self._lock:
-            first_video = self._videos[0]
+            keys = self._video_keys
 
         # add in new images
         videos = []
@@ -43,22 +44,21 @@ class ArloMediaLibrary(object):
             if not camera:
                 continue
 
-            if first_video.created_at == video.get('localCreatedDate',None) and \
-                    first_video.camera.device_id == camera.device_id:
-                self._arlo.debug( 'stopping at {0}:{1}({2})'.format( video.get('deviceId'),
-                                            arlotime_strftime( video.get('localCreatedDate' ) ),
-                                            str(first_video) ) )
-                break
+            key = '{0}:{1}'.format( video.get('deviceId'), arlotime_strftime( video.get('localCreatedDate' ) ) )
+            if key in keys:
+                #self._arlo.debug( 'skipping {0}, already present'.format( key ) )
+                continue
 
-            self._arlo.debug( 'adding {0}:{1}'.format( video.get('deviceId'),
-                                        arlotime_strftime( video.get('localCreatedDate' ) ) ) )
+            self._arlo.debug( 'adding {0}'.format( key ) )
             videos.append( ArloVideo(video,camera,self._arlo) )
+            keys.append( key )
 
         # note changes and run callbacks
         cbs = []
         with self._lock:
             self._count += 1
             self._videos = videos + self._videos
+            self._video_keys = keys
             self._arlo.debug( 'ml:update-count=' + str(self._count) )
             cbs = self._load_cbs_
             self._load_cbs_ = []
@@ -79,15 +79,20 @@ class ArloMediaLibrary(object):
         # save videos for cameras we know about
         data = self._arlo._be.post( LIBRARY_URL,{ 'dateFrom':date_from,'dateTo':date_to } )
         videos = []
+        keys = []
         for video in data:
             camera = self._arlo.lookup_camera_by_id( video.get('deviceId') )
             if camera is not None:
+                key = '{0}:{1}'.format( video.get('deviceId'), arlotime_strftime( video.get('localCreatedDate' ) ) )
+                self._arlo.debug( 'adding {0}'.format( key ) )
                 videos.append(ArloVideo(video, camera, self._arlo))
+                keys.append( key )
 
         # set update count, load() never runs callbacks
         with self._lock:
             self._count += 1
             self._videos = videos
+            self._video_keys = keys
             self._arlo.debug( 'ml:load-count=' + str(self._count) )
 
     @property
