@@ -153,7 +153,12 @@
         command_on: !secret pihole_enable
         command_off: !secret pihole_disable
         command_state: !secret pihole_status
-        value_template: "{{ value_json.status == 'enabled' }}"
+        value_template: >-
+           {%- if value_json.status -%}
+             {{value_json.status == 'enabled'}}
+           {%- else -%}
+             True
+           {%- endif -%}
         friendly_name: PiHole
 
   # - platform: command_line

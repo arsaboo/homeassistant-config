@@ -154,15 +154,15 @@
     name: Morning Commute
     scan_interval: 60000
     api_key: !secret google_key
-    origin: !secret add_home
-    destination: !secret add_buckhead
+    origin: zone.home
+    destination: zone.buckhead
 #Evening Commute Google Travel Time Sensor
   - platform: google_travel_time
     name: Alok to Home
     scan_interval: 60000
     api_key: !secret google_key
-    origin: device_tracker.alok_alok
-    destination: !secret add_home
+    origin: person.alok
+    destination: zone.home
   # - platform: wunderground
   #   api_key: !secret wunderground_key
   #   pws_id: !secret wunderground_pws
@@ -367,8 +367,8 @@
         friendly_name: "Wemo Current Power"
         unit_of_measurement: "w"
         value_template: >-
-           {%- if states.switch.wemoinsight.attributes.current_power_w != None -%}
-             {{(states.switch.wemoinsight.attributes|default({})).current_power_w|default(0)|round(2)}}
+           {%- if state_attr('switch.wemoinsight','current_power_w') -%}
+             {{state_attr('switch.wemoinsight','current_power_w')|round(2)}}
            {%- else -%}
              0
            {%- endif -%}
@@ -376,8 +376,8 @@
         friendly_name: "Portfolio Value"
         unit_of_measurement: "$"
         value_template: >-
-           {%- if states.input_number.portfoliovalue.state != None -%}
-             {{states.input_number.portfoliovalue.state|default(0)|round(2)}}
+           {%- if states('input_number.portfoliovalue') -%}
+             {{states('input_number.portfoliovalue')|round(2)}}
            {%- else -%}
              0
            {%- endif -%}
@@ -385,8 +385,8 @@
         friendly_name: "Portfolio Change"
         unit_of_measurement: "$"
         value_template: >-
-           {%- if states.input_number.portfoliochange.state != None -%}
-             {{states.input_number.portfoliochange.state|default(0)|round(2)}}
+           {%- if states('input_number.portfoliochange') -%}
+             {{states('input_number.portfoliochange')|default(0)|round(2)}}
            {%- else -%}
              0
            {%- endif -%}
@@ -403,23 +403,19 @@
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
         value_template: >-
-           {%- if states.zwave.garage_door_tilt_sensor != None -%}
-             {{ states.zwave.garage_door_tilt_sensor.attributes.battery_level }}
+           {%- if states('zwave.garage_door_tilt_sensor') -%}
+             {{ state_attr('zwave.garage_door_tilt_sensor','battery_level') }}
            {%- else -%}
              unknown
            {%- endif -%}
       downstairsthermoper:
         friendly_name: "Downstairs Thermostat"
         value_template: >-
-           {%- if states.climate.downstairs != None -%}
-             {{ states.climate.downstairs.attributes.operation }}
-           {%- else -%}
-             unknown
-           {%- endif -%}
+           {{ state_attr('climate.downstairs', 'operation') }}
         icon_template: >-
-          {%- if states.climate.downstairs.attributes.operation == "heat" -%}
+          {%- if state_attr('climate.downstairs', 'operation') == "heat" -%}
             mdi:fire
-          {%- elif states.climate.downstairs.attributes.operation == "cool" -%}
+          {%- elif state_attr('climate.downstairs', 'operation') == "cool" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -427,15 +423,11 @@
       upstairsthermoper:
         friendly_name: "Upstairs Thermostat"
         value_template: >-
-           {%- if states.climate.upstairs != None -%}
-             {{ states.climate.upstairs.attributes.operation }}
-           {%- else -%}
-             unknown
-           {%- endif -%}
+           {{ state_attr('climate.upstairs', 'operation') }}
         icon_template: >-
-          {%- if states.climate.upstairs.attributes.operation == "heat" -%}
+          {%- if state_attr('climate.upstairs', 'operation') == "heat" -%}
             mdi:fire
-          {%- elif states.climate.upstairs.attributes.operation ==  "cool" -%}
+          {%- elif state_attr('climate.upstairs', 'operation') ==  "cool" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -443,30 +435,22 @@
       masterthermoper:
         friendly_name: "Master Thermostat"
         value_template: >-
-           {%- if states.climate.bedroom != None -%}
-             {{ states.climate.bedroom.attributes.operation }}
-           {%- else -%}
-             unknown
-           {%- endif -%}
+           {{ state_attr('climate.bedroom', 'operation') }}
         icon_template: >-
-          {%- if states.climate.bedroom.attributes.operation == "heat" -%}
+          {%- if state_attr('climate.bedroom', 'operation') == "heat" -%}
             mdi:fire
-          {%- elif states.climate.bedroom.attributes.operation ==  "cool" -%}
+          {%- elif state_attr('climate.bedroom', 'operation') ==  "cool" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
           {%- endif -%}
       living_room:
         value_template: >-
-          {%- if states.states.remote.livingroom != None -%}
-            {{ states.remote.livingroom.attributes.current_activity }}
-          {%- else -%}
-            NA
-          {%- endif -%}
+          {{ state_attr('remote.livingroom', 'current_activity') }}
       sonos_volume:
         value_template: >-
-          {%- if states.media_player.family_room_2.attributes.volume_level != None -%}
-            {{ (states.media_player.family_room_2.attributes.volume_level|default(0) * 100) |int }}
+          {%- if state_attr('media_player.family_room_2', 'volume_level') -%}
+            {{ (state_attr('media_player.family_room_2', 'volume_level')|default(0) * 100) |int }}
           {%- else -%}
             NA
           {%- endif -%}

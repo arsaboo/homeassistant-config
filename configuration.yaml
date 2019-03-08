@@ -545,6 +545,7 @@ media_player:
       com.netflix.ninja: "Netflix"
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
+      com.thoptv.livetvstream: "ThopTV"
   - platform: firetv
     name: FTV Master
     host: 192.168.2.225
@@ -671,7 +672,6 @@ logger:
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
     custom_components.media_player.samsungtv: debug
-    samsungctl: info
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug
