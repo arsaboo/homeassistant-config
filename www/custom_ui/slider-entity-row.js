@@ -6,6 +6,7 @@ class SliderEntityRow extends Polymer.Element {
         .flex {
           display: flex;
           align-items: center;
+          height: 40px;
           }
         .state {
           min-width: 45px;
@@ -25,7 +26,7 @@ class SliderEntityRow extends Polymer.Element {
     `;
 
     const input = Polymer.html`
-      <div>
+      <div on-click="stopPropagation">
           <div class="flex">
         <template is="dom-if" if="{{displaySlider}}">
             <ha-slider
@@ -35,17 +36,16 @@ class SliderEntityRow extends Polymer.Element {
               step="{{step}}"
               pin
               on-change="selectedValue"
-              on-click="stopPropagation"
               ignore-bar-touch
             ></ha-slider>
             <template is="dom-if" if="{{displayValue}}">
-              <span class="state" on-click="stopPropagation">
+              <span class="state">
                 [[statusString(stateObj)]]
               </span>
             </template>
         </template>
             <template is="dom-if" if="{{displayToggle}}">
-              <span class="toggle" on-click="stopPropagation">
+              <span class="toggle">
                 <ha-entity-toggle
                   state-obj="[[stateObj]]"
                   hass="[[_hass]]"

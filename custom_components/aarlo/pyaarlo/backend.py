@@ -19,7 +19,8 @@ from custom_components.aarlo.pyaarlo.constant import ( EVENT_STREAM_TIMEOUT,
 # include token and session details
 class ArloBackEnd(object):
 
-    def __init__( self,arlo,username,password,dump,storage_dir ):
+    def __init__( self,arlo,username,password,dump,storage_dir,
+                        request_timeout,stream_timeout):
 
         self._arlo     = arlo
         self._lock     = threading.Condition()
@@ -27,6 +28,9 @@ class ArloBackEnd(object):
 
         self._dump      = dump
         self._dump_file = storage_dir + '/' + 'packets.dump'
+
+        self._request_timeout = request_timeout
+        self._stream_timeout  = stream_timeout
 
         self._requests  = {}
         self._callbacks = {}
@@ -41,7 +45,10 @@ class ArloBackEnd(object):
         # event loop thread - started as needed
         self._ev_start()
 
-    def _request( self,url,method='GET',params={},headers={},stream=False,raw=False,timeout=30 ):
+    def _request( self,url,method='GET',params={},headers={},stream=False,raw=False,timeout=None ):
+        if timeout is None:
+            self._arlo.debug( 'using default timeout' )
+            timeout = self._request_timeout
         with self._req_lock:
             self._arlo.debug( 'starting request=' + str(url) )
             try:
@@ -208,11 +215,15 @@ class ArloBackEnd(object):
             self._create_session()
             self._update_session_headers( self._token )
 
-            # get stream, restart after 2 minutes of inactivity or forced close
+            # get stream, restart after requested seconds of inactivity or forced close
             try:
                 #  self._ev_stream = SSEClient( self.get( SUBSCRIBE_URL + self._token,stream=True,raw=True,timeout=121 ) )
-                # self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=EVENT_STREAM_TIMEOUT )
-                self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session )
+                if self._stream_timeout == 0:
+                    self._arlo.debug( 'starting stream with no timeout' )
+                    self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session )
+                else:
+                    self._arlo.debug( 'starting stream with {} timeout'.format( self._stream_timeout ) )
+                    self._ev_stream = SSEClient( SUBSCRIBE_URL + self._token,session=self._session,timeout=self._stream_timeout )
                 self._ev_loop( self._ev_stream )
             except requests.exceptions.ConnectionError as e:
                 self._arlo.warning( 'event loop timeout' )
@@ -245,7 +256,10 @@ class ArloBackEnd(object):
         self.post( NOTIFY_URL + base.device_id,body,headers={ "xcloudId":base.xcloud_id } )
         return body.get('transId')
 
-    def _notify_and_get_response( self,base,body,timeout=120 ):
+    def _notify_and_get_response( self,base,body,timeout=None ):
+        if timeout is None:
+            self._arlo.debug( 'using default2 timeout' )
+            timeout = self._request_timeout
         tid = self._notify( base,body )
         self._requests[ tid ] = None
         mnow = time.monotonic()
@@ -304,20 +318,20 @@ class ArloBackEnd(object):
             self._requests = {}
             self.put( LOGOUT_URL )
 
-    def get( self,url,params={},headers={},stream=False,raw=False,timeout=30 ):
+    def get( self,url,params={},headers={},stream=False,raw=False,timeout=None ):
         return self._request( url,'GET',params,headers,stream,raw,timeout )
 
-    def put( self,url,params={},headers={},raw=False,timeout=30 ):
+    def put( self,url,params={},headers={},raw=False,timeout=None ):
         return self._request( url,'PUT',params,headers,False,raw,timeout )
 
-    def post( self,url,params={},headers={},raw=False,timeout=30 ):
+    def post( self,url,params={},headers={},raw=False,timeout=None ):
         return self._request( url,'POST',params,headers,False,raw,timeout )
 
     def notify( self,base,body ):
         with self._lock:
             return self._notify( base,body )
 
-    def notify_and_get_response( self,base,body,timeout=60 ):
+    def notify_and_get_response( self,base,body,timeout=None ):
         with self._lock:
             return self._notify_and_get_response( base,body,timeout )
 

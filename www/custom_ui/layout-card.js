@@ -80,10 +80,7 @@ class LayoutCard extends cardTools.LitElement {
 
   update_columns() {
     const width = (this.shadowRoot && this.shadowRoot.querySelector("#columns").clientWidth) || (this.parentElement && this.parentElement.clientWidth);
-    if(typeof(this.colWidth) === 'object')
-      this.colNum = this.colWidth.length;
-    else
-      this.colNum = Math.floor(width / this.colWidth);
+    this.colNum = Math.floor(width / this.colWidth);
     this.colNum = Math.max(this.colNum, this.minCols);
     this.colNum = Math.min(this.colNum, this.maxCols);
   }
@@ -154,8 +151,8 @@ class LayoutCard extends cardTools.LitElement {
       div.classList.add('column');
       c.forEach((e) => div.appendChild(e));
       root.appendChild(div);
-      if(typeof(this.colWidth) === 'object') {
-        div.style.setProperty('max-width', this.colWidth[i]);
+      if(cols.length > 1 && typeof(this.maxWidth) === 'object') {
+        div.style.setProperty('max-width', this.maxWidth[i]);
       } else {
         div.style.setProperty('max-width', this.maxWidth+'px');
       }

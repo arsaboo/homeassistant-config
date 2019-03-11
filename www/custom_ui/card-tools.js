@@ -369,17 +369,17 @@ class {
     moreInfo._page = "none";
     moreInfo.shadowRoot.appendChild(popup);
     moreInfo.large = large;
+    document.querySelector("home-assistant").provideHass(message);
 
     setTimeout(() => {
       let interval = setInterval(() => {
         if (moreInfo.getAttribute('aria-hidden')) {
           popup.parentNode.removeChild(popup);
           clearInterval(interval);
-        } else {
-          message.hass = this.hass;
         }
       }, 100)
     }, 1000);
+  return moreInfo;
   }
   static closePopUp() {
     let moreInfo = document.querySelector("home-assistant")._moreInfoEl;
