@@ -6,6 +6,7 @@ homeassistant:
         - 192.168.2.40
         - 192.168.2.212
     - type: legacy_api_password
+      api_password: !secret http_password
   # Omitted values in this section will be auto detected using freegeoip.io
 
   # Location required to calculate the time the sun rises and sets
@@ -274,7 +275,6 @@ map:
 downloader:
   download_dir: downloads
 http:
-  api_password: !secret http_password
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
   base_url: !secret base_url
