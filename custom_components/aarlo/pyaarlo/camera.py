@@ -1,17 +1,17 @@
 
-import time
 import threading
 import pprint
 import base64
 import zlib
 
 from custom_components.aarlo.pyaarlo.device import ArloChildDevice
-from custom_components.aarlo.pyaarlo.util import ( arlotime_to_time,http_get )
+from custom_components.aarlo.pyaarlo.util import ( now_strftime,http_get )
 from custom_components.aarlo.pyaarlo.constant import( ACTIVITY_STATE_KEY,
                                 BRIGHTNESS_KEY,
                                 CAPTURED_TODAY_KEY,
                                 FLIP_KEY,
                                 LAST_CAPTURE_KEY,
+                                LAST_IMAGE_SRC_KEY,
                                 LAST_IMAGE_DATA_KEY,
                                 LAST_IMAGE_KEY,
                                 MEDIA_COUNT_KEY,
@@ -57,11 +57,9 @@ class ArloCamera(ArloChildDevice):
         if videos:
             captured_today = len([video for video in videos if video.created_today])
             last_captured = videos[0].created_at_pretty( self._arlo._last_format )
-            last_time = arlotime_to_time( videos[0].created_at )
         else:
             captured_today = 0
             last_captured = None
-            last_time = 0
 
         # update local copies
         with self._lock:
@@ -84,6 +82,7 @@ class ArloCamera(ArloChildDevice):
             img = self._arlo.blank_image
 
         # signal up if nedeed
+        self._arlo._st.set( [self.device_id,LAST_IMAGE_SRC_KEY],'capture/' + now_strftime(self._arlo._last_format) )
         self._save_and_do_callbacks( LAST_IMAGE_DATA_KEY,img )
 
     def _update_last_image_from_snapshot( self ):
@@ -93,6 +92,7 @@ class ArloCamera(ArloChildDevice):
             img = http_get( url )
             if img is not None:
                 # signal up if nedeed
+                self._arlo._st.set( [self.device_id,LAST_IMAGE_SRC_KEY],'snapshot/' + now_strftime(self._arlo._last_format) )
                 self._save_and_do_callbacks( LAST_IMAGE_DATA_KEY,img )
 
     def _parse_statistic( self,data,scale ):
@@ -192,6 +192,10 @@ class ArloCamera(ArloChildDevice):
     @property
     def last_image_from_cache(self):
         return self._arlo._st.get( [self._device_id,LAST_IMAGE_DATA_KEY],self._arlo.blank_image )
+
+    @property
+    def last_image_source(self):
+        return self._arlo._st.get( [self._device_id,LAST_IMAGE_SRC_KEY],'' )
 
     @property
     def last_video(self):

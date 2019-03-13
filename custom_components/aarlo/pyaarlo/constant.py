@@ -63,15 +63,16 @@ DEVICE_KEYS = [ DEVICE_ID_KEY, DEVICE_NAME_KEY, DEVICE_TYPE_KEY,
 MEDIA_UPLOAD_KEYS = [ MEDIA_COUNT_KEY, LAST_IMAGE_KEY ]
 
 # custom keys
-CAPTURED_TODAY_KEY  = 'capturedToday'
-LAST_CAPTURE_KEY    = 'lastCapture'
-MODE_KEY            = 'activeMode'
-MODES_KEY           = 'configuredMode'
-LAST_IMAGE_DATA_KEY = 'presignedLastImageData'
-MODE_NAME_TO_ID_KEY = 'modeNameToId'
-MODE_ID_TO_NAME_KEY = 'modeIdToName'
-TOTAL_BELLS_KEY     = 'totalDoorBells'
-TOTAL_CAMERAS_KEY   = 'totalCameras'
+CAPTURED_TODAY_KEY   = 'capturedToday'
+LAST_CAPTURE_KEY     = 'lastCapture'
+MODE_KEY             = 'activeMode'
+MODES_KEY            = 'configuredMode'
+LAST_IMAGE_DATA_KEY  = 'presignedLastImageData'
+LAST_IMAGE_SRC_KEY   = 'lastImageSource'
+MODE_NAME_TO_ID_KEY  = 'modeNameToId'
+MODE_ID_TO_NAME_KEY  = 'modeIdToName'
+TOTAL_BELLS_KEY      = 'totalDoorBells'
+TOTAL_CAMERAS_KEY    = 'totalCameras'
 
 BLANK_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAKAAAABaCAQAAACVz5XZAAAAh0lEQVR42u3QMQ0AAAgDMOZf9BDB" \
                     "RdJKaNrhIAIFChQoEIECBQpEoECBAhEoUKBABAoUKBCBAgUKRKBAgQIRKFCgQAQKFCgQgQIFCkSg" \
