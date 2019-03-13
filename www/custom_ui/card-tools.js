@@ -46,27 +46,32 @@ class {
     if(entity) {
       entity.dispatchEvent(ev);
     } else {
-      var root = document
-        .querySelector("home-assistant")
-        .shadowRoot.querySelector("home-assistant-main")
-        .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
-        .shadowRoot.querySelector("ha-panel-lovelace")
-        .shadowRoot.querySelector("hui-root")
-      if (root)
-        root
-          .shadowRoot.querySelector("ha-app-layout #view")
-          .firstElementChild
-          .dispatchEvent(ev);
+      var root = document.querySelector("home-assistant");
+      root = root && root.shadowRoot;
+      root = root && root.querySelector("home-assistant-main");
+      root = root && root.shadowRoot;
+      root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
+      root = root && root.shadowRoot;
+      root = root && root.querySelector("ha-panel-lovelace");
+      root = root && root.shadowRoot;
+      root = root && root.querySelector("hui-root");
+      root = root && root.shadowRoot;
+      root = root && root.querySelector("ha-app-layout #view");
+      root = root && root.firstElementChild;
+      if (root) root.dispatchEvent(ev);
     }
   }
 
   static get lovelace() {
-    var root = document
-      .querySelector("home-assistant")
-      .shadowRoot.querySelector("home-assistant-main")
-      .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
-      .shadowRoot.querySelector("ha-panel-lovelace")
-      .shadowRoot.querySelector("hui-root")
+    var root = document.querySelector("home-assistant");
+    root = root && root.shadowRoot;
+    root = root && root.querySelector("home-assistant-main");
+    root = root && root.shadowRoot;
+    root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
+    root = root && root.shadowRoot;
+    root = root && root.querySelector("ha-panel-lovelace")
+    root = root && root.shadowRoot;
+    root = root && root.querySelector("hui-root")
     if (root) {
       var ll =  root.lovelace
       ll.current_view = root.___curView;
@@ -117,7 +122,7 @@ class {
       config
     );
     element.style.display = "None";
-    const time = setTimeout(() => {
+    const timer = setTimeout(() => {
       element.style.display = "";
     }, 2000);
     // Remove error if element is defined later

@@ -80,7 +80,7 @@ class LayoutCard extends cardTools.LitElement {
 
   update_columns() {
     const width = (this.shadowRoot && this.shadowRoot.querySelector("#columns").clientWidth) || (this.parentElement && this.parentElement.clientWidth);
-    this.colNum = Math.floor(width / this.colWidth);
+    this.colNum = Math.floor(width / this.colWidth) || 1;
     this.colNum = Math.max(this.colNum, this.minCols);
     this.colNum = Math.min(this.colNum, this.maxCols);
   }
