@@ -2299,6 +2299,8 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         // this.hass.user.name
         let cardConfig = deepcopy(this._config.config);
         cardConfig = this._evaluateConfig(cardConfig);
+        // console.log(this._config.config);
+        // console.log(cardConfig);
         const element = this.createThing(cardConfig);
         element.hass = this.hass;
         return html `
@@ -2309,16 +2311,38 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         Object.entries(config).forEach(entry => {
             const key = entry[0];
             const value = entry[1];
-            if (value !== null && typeof value === "object") {
-                config[key] = this._evaluateConfig(entry);
-            }
-            if (value !== null && typeof value === "string" && value.includes("${")) {
-                config[key] = this._evaluateTemplate(value);
+            if (value !== null) {
+                if (value instanceof Array) {
+                    config[key] = this._evaluateArray(value);
+                }
+                else if (typeof value === "object") {
+                    config[key] = this._evaluateConfig(value);
+                }
+                else if (typeof value === "string" && value.includes("${")) {
+                    config[key] = this._evaluateTemplate(value);
+                }
             }
         });
         return config;
     }
+    _evaluateArray(array) {
+        for (let i = 0; i < array.length; ++i) {
+            let value = array[i];
+            if (value instanceof Array) {
+                array[i] = this._evaluateArray(value);
+            }
+            else if (typeof value === "object") {
+                array[i] = this._evaluateConfig(value);
+            }
+            else if (typeof value === "string" && value.includes("${")) {
+                array[i] = this._evaluateTemplate(value);
+            }
+        }
+        return array;
+    }
     _evaluateTemplate(template) {
+        const user = this.hass.user;
+        const states = this.hass.states;
         return eval(template.substring(2, template.length - 1));
     }
     createThing(cardConfig) {
