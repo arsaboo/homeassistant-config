@@ -2299,8 +2299,8 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         // this.hass.user.name
         let cardConfig = deepcopy(this._config.config);
         cardConfig = this._evaluateConfig(cardConfig);
-        // console.log(this._config.config);
-        // console.log(cardConfig);
+        console.log(this._config.config);
+        console.log(cardConfig);
         const element = this.createThing(cardConfig);
         element.hass = this.hass;
         return html `
