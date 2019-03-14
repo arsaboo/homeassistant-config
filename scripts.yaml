@@ -234,7 +234,20 @@
             - light.lifx3
             - light.lifxnrguest
             - light.lifxnrkitchen
-          brightness: 255
+          brightness: 200
+          period: 1
+          spread: 359
+          change: 35
+  disco_party_low:
+    alias: 'Start Party Mode Low'
+    sequence:
+      - service: light.lifx_effect_colorloop
+        data:
+          entity_id:
+            - light.lifx3
+            - light.lifxnrguest
+            - light.lifxnrkitchen
+          brightness: 125
           period: 1
           spread: 359
           change: 35
@@ -504,6 +517,7 @@
         data:
           entity_id: media_player.shieldtv
           command: "am start -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
+      - delay: 00:00:03
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
@@ -527,6 +541,14 @@
       data:
         entity_id: media_player.shieldtv
         command: "am start -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity"
+  shieldtv_thop:
+    alias: 'Launch ThopTV on Shield'
+    sequence:
+      service: androidtv.adb_command
+      data:
+        entity_id: media_player.shieldtv
+        command: "am start -n com.thoptv.livetvstream/.Splash"
+
   shieldtv_dpad_down:
     alias: 'Shield DPad Down'
     sequence:

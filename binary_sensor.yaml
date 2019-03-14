@@ -57,6 +57,9 @@
         prob_given_false: 0.1
         platform: 'state'
         to_state: 'home'
+  - platform: workday
+    country: US
+    province: GA   
   - platform: aarlo
     monitored_conditions:
     - motion

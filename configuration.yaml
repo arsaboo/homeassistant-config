@@ -32,6 +32,7 @@ lovelace:
 updater:
   include_used_components: true
 system_health:
+stream:
 influxdb:
   host: 192.168.2.113
   include:
@@ -271,7 +272,7 @@ google_assistant:
       expose: True
       name: Youtube
       room: living room
-map:
+# map:
 downloader:
   download_dir: downloads
 http:
@@ -304,12 +305,12 @@ conversation:
 ffmpeg:
 camera:
   - platform: bloomsky
-  # - platform: synology
-  #   url: http://192.168.2.113:5000/
-  #   username: !secret synology_username
-  #   password: !secret synology_password
-  #   timeout: 15
-  #   verify_ssl: false
+  - platform: synology
+    url: http://192.168.2.113:5000/
+    username: !secret synology_username
+    password: !secret synology_password
+    timeout: 15
+    verify_ssl: false
   - platform: aarlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
   - platform: ring
@@ -364,18 +365,21 @@ camera:
   - platform: local_file
     name: Grafana mode master
     file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_mode.png
-  - platform: generic
-    still_image_url: !secret porch_camera_image_url
-    name: porch
-  - platform: generic
-    still_image_url: !secret backyard_camera_image_url
-    name: backyard
-  - platform: generic
-    still_image_url: !secret patio_camera_image_url
-    name: patio
-  - platform: generic
-    still_image_url: !secret driveway_camera_image_url
-    name: driveway
+  - platform: ffmpeg
+    name: Porch 2
+    input: !secret porch_rtsp_camera_image_url
+  # - platform: generic
+  #   still_image_url: !secret porch_camera_image_url
+  #   name: porch
+  # - platform: generic
+  #   still_image_url: !secret backyard_camera_image_url
+  #   name: backyard
+  # - platform: generic
+  #   still_image_url: !secret patio_camera_image_url
+  #   name: patio
+  # - platform: generic
+  #   still_image_url: !secret driveway_camera_image_url
+  #   name: driveway
 
   # - platform: ring
   # - platform: opencv
@@ -533,7 +537,7 @@ media_player:
   # - platform: apple_tv
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
-  - platform: firetv
+  - platform: androidtv
     host: 192.168.2.28
     name: "ShieldTV"
     device_class: androidtv
@@ -547,7 +551,7 @@ media_player:
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
       com.thoptv.livetvstream: "ThopTV"
-  - platform: firetv
+  - platform: androidtv
     name: FTV Master
     host: 192.168.2.225
     device_class: firetv
@@ -595,6 +599,8 @@ telegram_bot:
 hangouts:
 notify:
   - platform: ios
+  - platform: alexa_media
+    name: alexa_media
   - platform: hangouts
     name: alok_hangouts
     default_conversations:

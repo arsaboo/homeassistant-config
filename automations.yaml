@@ -980,7 +980,7 @@
     event_type: xiaomi_aqara.cube_action
     event_data:
       entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: flip180
+      action_type: tap_twice
   action:
     service: script.set_hue_scene
     data_template:
@@ -1017,7 +1017,7 @@
     event_type: xiaomi_aqara.cube_action
     event_data:
       entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: tap_twice
+      action_type: flip180
   action:
     - service: light.toggle
       data:
