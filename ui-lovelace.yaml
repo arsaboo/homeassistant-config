@@ -716,7 +716,7 @@ views:
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.ffmpeg
+        entity: camera.porch_2
         show_name: false
         show_state: false
 
@@ -1111,66 +1111,66 @@ views:
     id: test
     title: Testing
     cards:
-      - type: 'custom:config-template-card'
-        config:
-          type: 'custom:hui-entities-card'
-          title: Stocks Futures
-          show_header_toggle: false
-          entities:
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
-                  parseFloat(states['sensor.dow_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
-                  'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.dow_futures
-                icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
-                  parseFloat(states['sensor.s_p_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
-                  'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.s_p_futures
-                icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
-                  parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
-                  'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.nasdaq_futures
-                icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      # - type: 'custom:config-template-card'
+      #   config:
+      #     type: 'custom:hui-entities-card'
+      #     title: Stocks Futures
+      #     show_header_toggle: false
+      #     entities:
+      #       - type: custom:card-modder
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
+      #             parseFloat(states['sensor.dow_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
+      #             'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: custom:hui-sensor-entity-row
+      #           entity: sensor.dow_futures
+      #           icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - type: custom:card-modder
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
+      #             parseFloat(states['sensor.s_p_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
+      #             'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: custom:hui-sensor-entity-row
+      #           entity: sensor.s_p_futures
+      #           icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - type: custom:card-modder
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -5 ? 'rgb(151, 26, 30)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -4 ? 'rgb(194, 39, 45)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -3 ? 'rgb(236, 27, 33)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -2 ? 'rgb(244, 101, 35)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < -1 ? 'rgb(248, 147, 29)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 0 ? 'rgb(255, 194, 15)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 1 ? 'rgb(202, 219, 43)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 2 ? 'rgb(142, 198, 65)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 3 ? 'rgb(106, 158, 47)' :
+      #             parseFloat(states['sensor.nasdaq_futures_change_pct'].state) < 4 ? 'rgb(37, 145, 60)' :
+      #             'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: custom:hui-sensor-entity-row
+      #           entity: sensor.nasdaq_futures
+      #           icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
 
       - type: custom:auto-entities
         card:

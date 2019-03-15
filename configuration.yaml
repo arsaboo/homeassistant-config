@@ -287,6 +287,7 @@ discovery:
   ignore:
     - apple_tv
     - panasonic_viera
+    - igd
 
 proximity:
   alok:
@@ -556,11 +557,13 @@ media_player:
     host: 192.168.2.225
     device_class: firetv
     adb_server_ip: 192.168.2.233
-    # apps:
-    #   "amazon": "Amazon Prime Video"
-    #   "youtube": "Youtube"
-    #   "kodi": "Kodi"
-    #   "netflix": "Netflix"
+    apps:
+      com.amazon.amazonvideo.livingroom: "Amazon Prime Video"
+      com.plexapp.android: "Plex"
+      com.netflix.ninja: "Netflix"
+      com.google.android.tv: "Live Channels"
+      org.xbmc.kodi: "Kodi"
+      com.thoptv.livetvstream: "ThopTV"
 alexa_media:
   accounts:
     - email: !secret amazon_user
