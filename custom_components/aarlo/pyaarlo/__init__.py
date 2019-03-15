@@ -141,7 +141,6 @@ class PyArlo(object):
         self.debug( 'slow refresh' )
         self._bg.run( self._refresh_bases )
         self._bg.run( self._refresh_ambient_sensors )
-        self._bg.run( self._ml.update )
 
     def stop( self ):
         self._st.save()

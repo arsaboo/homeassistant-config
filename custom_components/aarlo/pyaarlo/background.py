@@ -92,38 +92,38 @@ class ArloBackground(threading.Thread):
         self._worker.start()
         arlo.debug( 'starting' )
 
-    def _run( self,cb,prio,**kwargs):
-        job = { 'callback':cb, 'args':kwargs }
+    def _run( self,bg_cb,prio,**kwargs):
+        job = { 'callback':bg_cb, 'args':kwargs }
         return self._worker.queue_job( time.monotonic(),prio,job )
 
-    def run_high( self,cb,**kwargs):
-        return self._run( cb,10,**kwargs)
-    def run( self,cb,**kwargs):
-        return self._run( cb,40,**kwargs)
-    def run_low( self,cb,**kwargs):
-        return self._run( cb,99,**kwargs)
+    def run_high( self,bg_cb,**kwargs):
+        return self._run( bg_cb,10,**kwargs)
+    def run( self,bg_cb,**kwargs):
+        return self._run( bg_cb,40,**kwargs)
+    def run_low( self,bg_cb,**kwargs):
+        return self._run( bg_cb,99,**kwargs)
 
-    def _run_in( self,cb,prio,seconds,**kwargs):
-        job = { 'callback':cb, 'args':kwargs }
+    def _run_in( self,bg_cb,prio,seconds,**kwargs):
+        job = { 'callback':bg_cb, 'args':kwargs }
         return self._worker.queue_job( time.monotonic() + seconds,prio,job )
 
-    def run_high_in( self,cb,seconds,**kwargs):
-        return self._run_in( cb,10,seconds,**kwargs)
-    def run_in( self,cb,seconds,**kwargs):
-        return self._run_in( cb,40,seconds,**kwargs)
-    def run_low_in( self,cb,seconds,**kwargs):
-        return self._run_in( cb,99,seconds,**kwargs)
+    def run_high_in( self,bg_cb,seconds,**kwargs):
+        return self._run_in( bg_cb,10,seconds,**kwargs)
+    def run_in( self,bg_cb,seconds,**kwargs):
+        return self._run_in( bg_cb,40,seconds,**kwargs)
+    def run_low_in( self,bg_cb,seconds,**kwargs):
+        return self._run_in( bg_cb,99,seconds,**kwargs)
 
-    def _run_every( self,cb,prio,seconds,**kwargs):
-        job = { 'run_every':seconds, 'callback':cb, 'args':kwargs }
+    def _run_every( self,bg_cb,prio,seconds,**kwargs):
+        job = { 'run_every':seconds, 'callback':bg_cb, 'args':kwargs }
         return self._worker.queue_job( time.monotonic() + seconds,prio,job )
 
-    def run_high_every( self,cb,seconds,**kwargs):
-        return self._run_every( cb,10,seconds,**kwargs)
-    def run_every( self,cb,seconds,**kwargs):
-        return self._run_every( cb,40,seconds,**kwargs)
-    def run_low_every( self,cb,seconds,**kwargs):
-        return self._run_every( cb,99,seconds,**kwargs)
+    def run_high_every( self,bg_cb,seconds,**kwargs):
+        return self._run_every( bg_cb,10,seconds,**kwargs)
+    def run_every( self,bg_cb,seconds,**kwargs):
+        return self._run_every( bg_cb,40,seconds,**kwargs)
+    def run_low_every( self,bg_cb,seconds,**kwargs):
+        return self._run_every( bg_cb,99,seconds,**kwargs)
 
     def cancel( self,to_delete ):
         if to_delete is not None:

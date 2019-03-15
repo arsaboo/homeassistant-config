@@ -14,7 +14,8 @@ end_of_field = re.compile(r'\r\n\r\n|\r\r|\n\n')
 
 
 class SSEClient(object):
-    def __init__(self, url, last_id=None, retry=3000, session=None, chunk_size=1024, **kwargs):
+    def __init__(self, log, url, last_id=None, retry=3000, session=None, chunk_size=1024, **kwargs):
+        self.log = log
         self.url = url
         self.last_id = last_id
         self.retry = retry
@@ -69,7 +70,7 @@ class SSEClient(object):
                 self.buf += decoder.decode(next_chunk)
 
             except (StopIteration, requests.RequestException, EOFError, six.moves.http_client.IncompleteRead) as e:
-                print(e)
+                self.log.debug(e)
                 time.sleep(self.retry / 1000.0)
                 self._connect()
 
