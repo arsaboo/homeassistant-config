@@ -13,6 +13,7 @@ class {
     return Object.getPrototypeOf(customElements.get('home-assistant-main'));
   }
   static litElement() { // Backwards compatibility - deprecated
+    console.warn("cardTools.litElement() is deprecated and will be removed in the future");
     return this.LitElement;
   }
 
@@ -20,6 +21,7 @@ class {
     return this.litElement().prototype.html;
   }
   static litHtml() { // Backwards compatibility - deprecated
+    console.warn("cardTools.litHtml() is deprecated and will be removed in the future");
     return this.LitHtml;
   }
 
@@ -29,10 +31,12 @@ class {
 
   static get hass() {
     var hass = function() { // Backwards compatibility - deprecated
+    console.warn("cardTools.hass() is deprecated and will be removed in the future");
       return hass;
     }
     for (var k in document.querySelector('home-assistant').hass)
       hass[k] = document.querySelector('home-assistant').hass[k];
+    hass.original = document.querySelector('home-assistant').hass;
     return hass;
   }
 
@@ -51,7 +55,7 @@ class {
       root = root && root.querySelector("home-assistant-main");
       root = root && root.shadowRoot;
       root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
-      root = root && root.shadowRoot;
+      root = root && root.shadowRoot || root;
       root = root && root.querySelector("ha-panel-lovelace");
       root = root && root.shadowRoot;
       root = root && root.querySelector("hui-root");
@@ -68,7 +72,7 @@ class {
     root = root && root.querySelector("home-assistant-main");
     root = root && root.shadowRoot;
     root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
-    root = root && root.shadowRoot;
+    root = root && root.shadowRoot || root;
     root = root && root.querySelector("ha-panel-lovelace")
     root = root && root.shadowRoot;
     root = root && root.querySelector("hui-root")

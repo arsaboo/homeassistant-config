@@ -1114,9 +1114,22 @@ views:
       - type: 'custom:config-template-card'
         config:
           type: 'custom:hui-entities-card'
-          title: Stocks Futures
+          title: Investments
           show_header_toggle: false
           entities:
+            - sensor.pc_networth
+            - type: custom:card-modder
+              style:
+                --paper-item-icon-color: "${var state = parseFloat(states['sensor.portfoliochange2'].state);
+                  state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+              card:
+                type: custom:hui-sensor-entity-row
+                entity: sensor.pc_investment
+                secondary_info: "${states['sensor.portfoliochange2'].state}"
+                icon: "${parseFloat(states['sensor.portfoliochange2'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+            - sensor.portfoliochange2
+            - type: divider
+            - sensor.10_year_treasury
             - type: custom:card-modder
               style:
                 --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures_change_pct'].state);
@@ -1125,7 +1138,7 @@ views:
                   state < -3 ? 'rgb(236, 27, 33)' :
                   state < -2 ? 'rgb(244, 101, 35)' :
                   state < -1 ? 'rgb(248, 147, 29)' :
-                  state < 0 ? 'rgb(255, 194, 15)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
                   state < 1 ? 'rgb(202, 219, 43)' :
                   state < 2 ? 'rgb(142, 198, 65)' :
                   state < 3 ? 'rgb(106, 158, 47)' :
@@ -1142,7 +1155,7 @@ views:
                   state < -3 ? 'rgb(236, 27, 33)' :
                   state < -2 ? 'rgb(244, 101, 35)' :
                   state < -1 ? 'rgb(248, 147, 29)' :
-                  state < 0 ? 'rgb(255, 194, 15)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
                   state < 1 ? 'rgb(202, 219, 43)' :
                   state < 2 ? 'rgb(142, 198, 65)' :
                   state < 3 ? 'rgb(106, 158, 47)' :
@@ -1159,7 +1172,7 @@ views:
                   state < -3 ? 'rgb(236, 27, 33)' :
                   state < -2 ? 'rgb(244, 101, 35)' :
                   state < -1 ? 'rgb(248, 147, 29)' :
-                  state < 0 ? 'rgb(255, 194, 15)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
                   state < 1 ? 'rgb(202, 219, 43)' :
                   state < 2 ? 'rgb(142, 198, 65)' :
                   state < 3 ? 'rgb(106, 158, 47)' :
