@@ -76,6 +76,8 @@ class ArloBase(ArloDevice):
             self._arlo.debug( self.name + ':new-mode=' + mode_name + ',id=' + mode_id )
             self._arlo._bg.run( self._arlo._be.notify,base=self,
                                     body={"action":"set","resource":"modes","publishResponse":True,"properties":{"active":mode_id}} )
+        else:
+            self._arlo.warning( '{0}: mode {1} is unrecognised'.format( self.name,mode_name) )
 
     @property
     def refresh_rate(self):

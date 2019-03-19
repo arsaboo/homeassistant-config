@@ -426,6 +426,7 @@ views:
           - sensor.nasdaq_futures_change
           - sensor.dow_futures_change
           - sensor.s_p_futures_change
+          - sensor.portfoliochange2
         config:
           type: 'custom:hui-entities-card'
           title: Investments
