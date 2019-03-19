@@ -2291,6 +2291,20 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         }
         this._config = config;
     }
+    shouldUpdate(changedProps) {
+        if (changedProps.has("_config") || !this._config.entities) {
+            return true;
+        }
+        const oldHass = changedProps.get("hass");
+        if (oldHass) {
+            let changed = false;
+            this._config.entities.forEach(entity => {
+                changed = changed || oldHass.states[entity] !== this.hass.states[entity];
+            });
+            return changed;
+        }
+        return true;
+    }
     render() {
         if (!this._config || !this.hass) {
             return html ``;
@@ -2299,8 +2313,8 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         // this.hass.user.name
         let cardConfig = deepcopy(this._config.config);
         cardConfig = this._evaluateConfig(cardConfig);
-        console.log(this._config.config);
-        console.log(cardConfig);
+        // console.log(this._config.config);
+        // console.log(cardConfig);
         const element = this.createThing(cardConfig);
         element.hass = this.hass;
         return html `

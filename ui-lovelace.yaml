@@ -421,18 +421,81 @@ views:
               left: 15%
               width: 50px
               height: 50px
-      - type: entities
-        title: Investments
-        show_header_toggle: false
+      - type: 'custom:config-template-card'
         entities:
-          - sensor.pc_networth
-          - sensor.pc_investment
-          - sensor.portfoliochange2
-          - type: divider
-          - sensor.dow_futures
-          - sensor.nasdaq_futures
-          - sensor.s_p_futures
-          - sensor.10_year_treasury
+          - sensor.nasdaq_futures_change
+          - sensor.dow_futures_change
+          - sensor.s_p_futures_change
+        config:
+          type: 'custom:hui-entities-card'
+          title: Investments
+          show_header_toggle: false
+          entities:
+            - sensor.pc_networth
+            - type: custom:card-modder
+              style:
+                --paper-item-icon-color: "${var state = parseFloat(states['sensor.portfoliochange2'].state);
+                  state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+              card:
+                type: custom:hui-sensor-entity-row
+                entity: sensor.pc_investment
+                secondary_info: "${states['sensor.portfoliochange2'].state}"
+                icon: "${parseFloat(states['sensor.portfoliochange2'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+            - sensor.portfoliochange2
+            - type: divider
+            - sensor.10_year_treasury
+            - type: custom:card-modder
+              style:
+                --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures_change_pct'].state);
+                  state < -5 ? 'rgb(151, 26, 30)' :
+                  state < -4 ? 'rgb(194, 39, 45)' :
+                  state < -3 ? 'rgb(236, 27, 33)' :
+                  state < -2 ? 'rgb(244, 101, 35)' :
+                  state < -1 ? 'rgb(248, 147, 29)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
+                  state < 1 ? 'rgb(202, 219, 43)' :
+                  state < 2 ? 'rgb(142, 198, 65)' :
+                  state < 3 ? 'rgb(106, 158, 47)' :
+                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+              card:
+                type: custom:hui-sensor-entity-row
+                entity: sensor.dow_futures
+                icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+            - type: custom:card-modder
+              style:
+                --paper-item-icon-color: "${var state = parseFloat(states['sensor.s_p_futures_change_pct'].state);
+                  state < -5 ? 'rgb(151, 26, 30)' :
+                  state < -4 ? 'rgb(194, 39, 45)' :
+                  state < -3 ? 'rgb(236, 27, 33)' :
+                  state < -2 ? 'rgb(244, 101, 35)' :
+                  state < -1 ? 'rgb(248, 147, 29)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
+                  state < 1 ? 'rgb(202, 219, 43)' :
+                  state < 2 ? 'rgb(142, 198, 65)' :
+                  state < 3 ? 'rgb(106, 158, 47)' :
+                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+              card:
+                type: custom:hui-sensor-entity-row
+                entity: sensor.s_p_futures
+                icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+            - type: custom:card-modder
+              style:
+                --paper-item-icon-color: "${var state = parseFloat(states['sensor.nasdaq_futures_change_pct'].state);
+                  state < -5 ? 'rgb(151, 26, 30)' :
+                  state < -4 ? 'rgb(194, 39, 45)' :
+                  state < -3 ? 'rgb(236, 27, 33)' :
+                  state < -2 ? 'rgb(244, 101, 35)' :
+                  state < -1 ? 'rgb(248, 147, 29)' :
+                  state <= 0 ? 'rgb(255, 194, 15)' :
+                  state < 1 ? 'rgb(202, 219, 43)' :
+                  state < 2 ? 'rgb(142, 198, 65)' :
+                  state < 3 ? 'rgb(106, 158, 47)' :
+                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+              card:
+                type: custom:hui-sensor-entity-row
+                entity: sensor.nasdaq_futures
+                icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+
       - type: entities
         title: Information
         show_header_toggle: false
@@ -1111,77 +1174,6 @@ views:
     id: test
     title: Testing
     cards:
-      - type: 'custom:config-template-card'
-        config:
-          type: 'custom:hui-entities-card'
-          title: Investments
-          show_header_toggle: false
-          entities:
-            - sensor.pc_networth
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.portfoliochange2'].state);
-                  state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.pc_investment
-                secondary_info: "${states['sensor.portfoliochange2'].state}"
-                icon: "${parseFloat(states['sensor.portfoliochange2'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - sensor.portfoliochange2
-            - type: divider
-            - sensor.10_year_treasury
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.dow_futures
-                icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.s_p_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.s_p_futures
-                icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.nasdaq_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: custom:hui-sensor-entity-row
-                entity: sensor.nasdaq_futures
-                icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-
       - type: custom:auto-entities
         card:
           type: entities

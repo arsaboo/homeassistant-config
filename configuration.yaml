@@ -366,9 +366,11 @@ camera:
   - platform: local_file
     name: Grafana mode master
     file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_mode.png
-  - platform: ffmpeg
+  - platform: generic_camera
+    stream_source: !secret porch_rtsp_camera_image_url
+    still_image_url: !secret porch_camera_image_url
+    preload_stream: True
     name: Porch 2
-    input: !secret porch_rtsp_camera_image_url
   # - platform: generic
   #   still_image_url: !secret porch_camera_image_url
   #   name: porch
