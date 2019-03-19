@@ -7,4 +7,5 @@ wget -O /home/homeassistant/.homeassistant/www/custom_ui/layout-card.js https://
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/gap-card.js https://raw.githubusercontent.com/thomasloven/lovelace-gap-card/master/gap-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/config-template-card.js https://raw.githubusercontent.com/custom-cards/config-template-card/master/dist/config-template-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/card-modder.js https://raw.githubusercontent.com/thomasloven/lovelace-card-modder/master/card-modder.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/secondaryinfo-entity-row.js https://raw.githubusercontent.com/MizterB/lovelace-secondaryinfo-entity-row/master/secondaryinfo-entity-row.js
 sudo chown -R homeassistant:homeassistant /home/homeassistant/.homeassistant/

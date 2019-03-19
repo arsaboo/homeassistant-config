@@ -31,7 +31,8 @@ resources:
     type: js
   - url: /local/custom_ui/config-template-card.js?v=0.1
     type: module
-
+  - url: /local/custom_ui/secondaryinfo-entity-row.js
+    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -438,13 +439,10 @@ views:
                 --paper-item-icon-color: "${var state = parseFloat(states['sensor.portfoliochange2'].state);
                   state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
               card:
-                type: custom:hui-sensor-entity-row
+                type: "custom:secondaryinfo-entity-row"
                 entity: sensor.pc_investment
-                secondary_info: "${states['sensor.portfoliochange2'].state}"
+                secondary_info: "${'Change: ' + states['sensor.portfoliochange2'].state}"
                 icon: "${parseFloat(states['sensor.portfoliochange2'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - sensor.portfoliochange2
-            - type: divider
-            - sensor.10_year_treasury
             - type: custom:card-modder
               style:
                 --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures_change_pct'].state);
@@ -459,8 +457,9 @@ views:
                   state < 3 ? 'rgb(106, 158, 47)' :
                   state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
-                type: custom:hui-sensor-entity-row
+                type: "custom:secondaryinfo-entity-row"
                 entity: sensor.dow_futures
+                secondary_info: "${'Change: ' + states['sensor.dow_futures_change'].state}"
                 icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - type: custom:card-modder
               style:
@@ -476,8 +475,9 @@ views:
                   state < 3 ? 'rgb(106, 158, 47)' :
                   state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
-                type: custom:hui-sensor-entity-row
+                type: "custom:secondaryinfo-entity-row"
                 entity: sensor.s_p_futures
+                secondary_info: "${'Change: ' + states['sensor.s_p_futures_change'].state}"
                 icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - type: custom:card-modder
               style:
@@ -493,10 +493,11 @@ views:
                   state < 3 ? 'rgb(106, 158, 47)' :
                   state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
-                type: custom:hui-sensor-entity-row
+                type: "custom:secondaryinfo-entity-row"
                 entity: sensor.nasdaq_futures
+                secondary_info: "${'Change: ' + states['sensor.nasdaq_futures_change'].state}"
                 icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-
+            - sensor.10_year_treasury
       - type: entities
         title: Information
         show_header_toggle: false
