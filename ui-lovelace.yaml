@@ -433,7 +433,7 @@ views:
           - parseFloat(states['sensor.dow_futures_change_pct'].state)
           - parseFloat(states['sensor.s_p_futures_change_pct'].state)
           - parseFloat(states['sensor.nasdaq_futures_change_pct'].state)
-        config:
+        card:
           type: 'custom:hui-entities-card'
           title: Investments
           show_header_toggle: false

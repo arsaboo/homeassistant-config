@@ -2661,7 +2661,7 @@ const fireEvent = (node, type, detail, options) => {
 
 let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
     setConfig(config) {
-        if (!config || !config.config || !config.config.type) {
+        if (!config || !config.card || !config.card.type) {
             throw new Error("Invalid configuration");
         }
         this._config = config;
@@ -2686,7 +2686,7 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         }
         // this.hass.states
         // this.hass.user.name
-        let cardConfig = deepcopy(this._config.config);
+        let cardConfig = deepcopy(this._config.card);
         cardConfig = this._evaluateConfig(cardConfig);
         // console.log(this._config.config);
         // console.log(cardConfig);
