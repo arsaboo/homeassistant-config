@@ -7,7 +7,7 @@ class LayoutCard extends cardTools.LitElement {
     this.layout = config.layout || 'auto';
     this.minCols = config.column_num || 1;
     this.maxCols = config.max_columns || 100;
-    this.colWidth = config.column_width || 300;
+    this.colWidth = config.column_width || 400;
     this.maxWidth = config.max_width || 500;
     this.minHeight = config.min_height || 5;
     this.rtl = config.rtl || false;
@@ -16,6 +16,8 @@ class LayoutCard extends cardTools.LitElement {
     window.addEventListener('resize', () => this.build());
     window.addEventListener('hass-open-menu', () => setTimeout(() => this.build(), 100));
     window.addEventListener('hass-close-menu', () => setTimeout(() => this.build(), 100));
+    if(config.rebuild)
+      window.setTimeout(() => this.build(), config.rebuild);
   }
 
   render() {

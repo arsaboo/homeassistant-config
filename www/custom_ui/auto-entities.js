@@ -16,8 +16,11 @@ class AutoEntities extends cardTools.litElement() {
   match(pattern, str){
     if (typeof(str) === "string" && typeof(pattern) === "string") {
       if((pattern.startsWith('/') && pattern.endsWith('/')) || pattern.indexOf('*') !== -1) {
-        if(pattern[0] !== '/')
-          pattern = `/${pattern.replace(/\*/g, '.*')}/`;
+        if(pattern[0] !== '/') {
+          pattern = pattern.replace(/\./g, '\.');
+          pattern = pattern.replace(/\*/g, '.*');
+          pattern = `/^${pattern}$/`;
+        }
         var regex = new RegExp(pattern.substr(1).slice(0,-1));
         return regex.test(str);
       }
