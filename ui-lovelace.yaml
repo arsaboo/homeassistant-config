@@ -428,6 +428,11 @@ views:
           - sensor.dow_futures_change
           - sensor.s_p_futures_change
           - sensor.portfoliochange2
+        variables:
+          - parseFloat(states['sensor.portfoliochange2'].state)
+          - parseFloat(states['sensor.dow_futures_change_pct'].state)
+          - parseFloat(states['sensor.s_p_futures_change_pct'].state)
+          - parseFloat(states['sensor.nasdaq_futures_change_pct'].state)
         config:
           type: 'custom:hui-entities-card'
           title: Investments
@@ -435,68 +440,71 @@ views:
           entities:
             - sensor.pc_networth
             - type: custom:card-modder
+              entity: sensor.pc_investment
               style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.portfoliochange2'].state);
-                  state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+                --paper-item-icon-color: "${vars[0] <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
               card:
                 type: "custom:secondaryinfo-entity-row"
                 entity: sensor.pc_investment
-                secondary_info: "${'Change: ' + states['sensor.portfoliochange2'].state}"
-                icon: "${parseFloat(states['sensor.portfoliochange2'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+                secondary_info: "${'Change: ' + vars[0]}"
+                icon: "${vars[0] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - type: custom:card-modder
+              entity: sensor.dow_futures
               style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+                --paper-item-icon-color: "${
+                  vars[1] < -5 ? 'rgb(151, 26, 30)' :
+                  vars[1] < -4 ? 'rgb(194, 39, 45)' :
+                  vars[1] < -3 ? 'rgb(236, 27, 33)' :
+                  vars[1] < -2 ? 'rgb(244, 101, 35)' :
+                  vars[1] < -1 ? 'rgb(248, 147, 29)' :
+                  vars[1] <= 0 ? 'rgb(255, 194, 15)' :
+                  vars[1] < 1 ? 'rgb(202, 219, 43)' :
+                  vars[1] < 2 ? 'rgb(142, 198, 65)' :
+                  vars[1] < 3 ? 'rgb(106, 158, 47)' :
+                  vars[1] < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
                 type: "custom:secondaryinfo-entity-row"
                 entity: sensor.dow_futures
-                secondary_info: "${'Change: ' + states['sensor.dow_futures_change'].state}"
-                icon: "${parseFloat(states['sensor.dow_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+                secondary_info: "${'Change: ' + states['sensor.dow_futures_change'].state + ' (' +  vars[1] + '%)'}"
+                icon: "${vars[1] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - type: custom:card-modder
+              entity: sensor.s_p_futures
               style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.s_p_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+                --paper-item-icon-color: "${
+                  vars[2] < -5 ? 'rgb(151, 26, 30)' :
+                  vars[2] < -4 ? 'rgb(194, 39, 45)' :
+                  vars[2] < -3 ? 'rgb(236, 27, 33)' :
+                  vars[2] < -2 ? 'rgb(244, 101, 35)' :
+                  vars[2] < -1 ? 'rgb(248, 147, 29)' :
+                  vars[2] <= 0 ? 'rgb(255, 194, 15)' :
+                  vars[2] < 1 ? 'rgb(202, 219, 43)' :
+                  vars[2] < 2 ? 'rgb(142, 198, 65)' :
+                  vars[2] < 3 ? 'rgb(106, 158, 47)' :
+                  vars[2] < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
                 type: "custom:secondaryinfo-entity-row"
                 entity: sensor.s_p_futures
-                secondary_info: "${'Change: ' + states['sensor.s_p_futures_change'].state}"
-                icon: "${parseFloat(states['sensor.s_p_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+                secondary_info: "${'Change: ' + states['sensor.s_p_futures_change'].state + ' (' +  vars[2] + '%)'}"
+                icon: "${vars[2] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - type: custom:card-modder
+              entity: sensor.nasdaq_futures
               style:
-                --paper-item-icon-color: "${var state = parseFloat(states['sensor.nasdaq_futures_change_pct'].state);
-                  state < -5 ? 'rgb(151, 26, 30)' :
-                  state < -4 ? 'rgb(194, 39, 45)' :
-                  state < -3 ? 'rgb(236, 27, 33)' :
-                  state < -2 ? 'rgb(244, 101, 35)' :
-                  state < -1 ? 'rgb(248, 147, 29)' :
-                  state <= 0 ? 'rgb(255, 194, 15)' :
-                  state < 1 ? 'rgb(202, 219, 43)' :
-                  state < 2 ? 'rgb(142, 198, 65)' :
-                  state < 3 ? 'rgb(106, 158, 47)' :
-                  state < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+                --paper-item-icon-color: "${
+                  vars[3] < -5 ? 'rgb(151, 26, 30)' :
+                  vars[3] < -4 ? 'rgb(194, 39, 45)' :
+                  vars[3] < -3 ? 'rgb(236, 27, 33)' :
+                  vars[3] < -2 ? 'rgb(244, 101, 35)' :
+                  vars[3] < -1 ? 'rgb(248, 147, 29)' :
+                  vars[3] <= 0 ? 'rgb(255, 194, 15)' :
+                  vars[3] < 1 ? 'rgb(202, 219, 43)' :
+                  vars[3] < 2 ? 'rgb(142, 198, 65)' :
+                  vars[3] < 3 ? 'rgb(106, 158, 47)' :
+                  vars[3] < 4 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
               card:
                 type: "custom:secondaryinfo-entity-row"
                 entity: sensor.nasdaq_futures
-                secondary_info: "${'Change: ' + states['sensor.nasdaq_futures_change'].state}"
-                icon: "${parseFloat(states['sensor.nasdaq_futures_change_pct'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+                secondary_info: "${'Change: ' + states['sensor.nasdaq_futures_change'].state + ' (' +  vars[3] + '%)'}"
+                icon: "${vars[3] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
             - sensor.10_year_treasury
       - type: entities
         title: Information
@@ -1929,3 +1937,30 @@ views:
           filter:
             include:
               - domain: automation
+      # - type: 'custom:config-template-card'
+      #   entities:
+      #     - sensor.dow_futures_change
+      #   config:
+      #     type: 'custom:hui-entities-card'
+      #     title: Test
+      #     show_header_toggle: false
+      #     entities:
+      #       - type: custom:card-modder
+      #         style:
+      #           --paper-item-icon-color: "${var state = parseFloat(states['sensor.dow_futures'].state);
+      #             state <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+      #         card:
+      #           type: "custom:hui-sensor-entity-row"
+      #           entity: sensor.dow_futures
+      #           icon: "${parseFloat(states['sensor.dow_futures_change'].state) > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      - type: 'custom:hui-entities-card'
+        title: Test Modder
+        show_header_toggle: false
+        entities:
+          - type: 'custom:card-modder'
+            style:
+              '--paper-item-icon-color': 'rgb(194, 39, 45)'
+            card:
+              type: 'custom:hui-sensor-entity-row'
+              entity: sensor.alok_rssi
+              icon: 'mdi:arrow-up-bold-circle'
