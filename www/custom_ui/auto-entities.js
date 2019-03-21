@@ -1,5 +1,5 @@
 customElements.whenDefined('card-tools').then(() => {
-class AutoEntities extends cardTools.litElement() {
+class AutoEntities extends cardTools.LitElement {
 
   setConfig(config) {
     if(!config || !config.card)
@@ -166,8 +166,8 @@ class AutoEntities extends cardTools.litElement() {
   }
   render() {
     if(this.entities.length === 0 && this._config.show_empty === false)
-      return cardTools.litHtml()``;
-    return cardTools.litHtml()`
+      return cardTools.LitHtml``;
+    return cardTools.LitHtml`
       <div id="root">${this.card}</div>
     `;
   }

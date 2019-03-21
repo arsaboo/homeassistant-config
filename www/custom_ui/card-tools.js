@@ -9,29 +9,38 @@ class {
     }
   }
 
+  static deprecationWarning() {
+    if(window.cardTools_deprecationWarning) return;
+    console.warn("One or more of your lovelace plugins are using the functions cardTools.litElement(), cardTools.litHtml() or cardTools.hass(). Those are replaced with better alternatives and will be removed a some point in the future.")
+    console.warn("If you are a plugin developer, make sure you are using the new functions (see documentation).");
+    console.warn("If you are a plugin user, feel free to ignore this warning (or poke the developer of your plugins - not me though, I already know about this).")
+    console.warn("Best regards / thomasloven - " + (document.currentScript && document.currentScript.src));
+  window.cardTools_deprecationWarning = true;
+  }
+
   static get LitElement() {
     return Object.getPrototypeOf(customElements.get('home-assistant-main'));
   }
   static litElement() { // Backwards compatibility - deprecated
-    console.warn("cardTools.litElement() is deprecated and will be removed in the future");
+    this.deprecationWarning();
     return this.LitElement;
   }
 
   static get LitHtml() {
-    return this.litElement().prototype.html;
+    return this.LitElement.prototype.html;
   }
   static litHtml() { // Backwards compatibility - deprecated
-    console.warn("cardTools.litHtml() is deprecated and will be removed in the future");
+    this.deprecationWarning();
     return this.LitHtml;
   }
 
   static get LitCSS() {
-    return this.litElement().prototype.css;
+    return this.LitElement.prototype.css;
   }
 
   static get hass() {
     var hass = function() { // Backwards compatibility - deprecated
-    console.warn("cardTools.hass() is deprecated and will be removed in the future");
+      this.deprecationWarning();
       return hass;
     }
     for (var k in document.querySelector('home-assistant').hass)

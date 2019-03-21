@@ -1,5 +1,5 @@
 customElements.whenDefined('card-tools').then(() => {
-class CardModder extends cardTools.litElement() {
+class CardModder extends cardTools.LitElement {
 
   constructor() {
     super();
@@ -44,7 +44,7 @@ class CardModder extends cardTools.litElement() {
     return this;
   }
   render() {
-    return cardTools.litHtml()`
+    return cardTools.LitHtml`
     <div id="root">${this.card}</div>
     `;
   }
