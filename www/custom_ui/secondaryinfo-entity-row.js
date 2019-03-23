@@ -1,10 +1,10 @@
 customElements.whenDefined('card-tools').then(() => {
 
-    class SecondaryInfoEntityRow extends cardTools.litElement() {
-        version() { return "0.3"; }
+    class SecondaryInfoEntityRow extends cardTools.LitElement {
+        version() { return "0.3.1"; }
 
         render() {
-            return cardTools.litHtml()`
+            return cardTools.LitHtml`
                 ${this._wrappedElement}
             `;
         }
