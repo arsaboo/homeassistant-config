@@ -1177,11 +1177,8 @@ views:
         show_header_toggle: false
         entities:
           - sensor.alok_485
-          - sensor.alok_131
           - sensor.rashmi_485
-          - sensor.rashmi_131
           - sensor.arnav_485
-          - sensor.arnav_131
 
   - icon: mdi:test-tube
     id: test

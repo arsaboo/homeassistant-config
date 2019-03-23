@@ -53,15 +53,6 @@
       - nasdaq_change_pct
       - nasdaq_change
   - platform: uscis
-    case_id: !secret alok_131
-    friendly_name: Alok 131
-  - platform: uscis
-    case_id: !secret arnav_131
-    friendly_name: Arnav 131
-  - platform: uscis
-    case_id: !secret rashmi_131
-    friendly_name: Rashmi 131
-  - platform: uscis
     case_id: !secret alok_485
     friendly_name: Alok 485
   - platform: uscis
