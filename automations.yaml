@@ -473,7 +473,7 @@
       data_template:
         name: "TF: "
         message: >-
-          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches }}.
+          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }}.
 - id: deepstack_image_processing_notification
   alias: 'Deepstack image processing'
   initial_state: 'on'
@@ -633,7 +633,7 @@
     - service: notify.ios_alokiosiphone
       data_template:
         message: >
-          {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
+          {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join(', ')|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
         data:
           push:
             category: camera
