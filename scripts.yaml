@@ -506,10 +506,14 @@
   shieldtv_thoptv:
     alias: 'Launch ThopTV on Shield'
     sequence:
-      service: androidtv.adb_command
-      data:
-        entity_id: media_player.shieldtv
-        command: "am start -n com.thoptv.livetvstream/.Splash"
+      - service: switch.turn_off
+        entity_id:
+          - switch.pihole
+      - delay: 00:00:03
+      - service: androidtv.adb_command
+        data:
+          entity_id: media_player.shieldtv
+          command: "am start -n livetvstream.thoptv.com.thoptv/.Splash"
   shieldtv_windscribe:
     alias: 'Launch Windscribe on Shield'
     sequence:
