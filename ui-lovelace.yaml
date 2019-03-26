@@ -632,7 +632,7 @@ views:
       #   entity: camera.wundergroundradar
       - type: iframe
         aspect_ratio: 90%
-        url: https://embed.windy.com/embed2.html?rain,32.487,-84.023,5
+        url: https://embed.windy.com/embed2.html?lat=34.072&lon=-84.051&zoom=5&level=surface&overlay=rain&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=34.072&detailLon=-84.051&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
   - icon: mdi:chart-line
     id: grafana
     title: Grafana
