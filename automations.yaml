@@ -1734,6 +1734,22 @@
         command: "{{ 'PowerOff' if trigger.to_state.state == 'off' else 'PowerOn' }}"
         device: 31747959
         entity_id: remote.livingroom
+
+- id: keep_pihole_off_when_thop_running
+  alias: Keep PiHole turned off when running Thop
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: switch.pihole
+      to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livestream.thoptv.com.thoptv' }}"
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.pihole
+
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
