@@ -1,6 +1,10 @@
 """
-Support for getting sector performance information from Wundergroun.
-
+Support for getting sector performance information from Wunderground.
+Use the following configuration:
+sensor:
+  - platform: wunderground
+    api_key: !secret wunderground_key
+    pws_id: !secret wunderground_pws
 """
 import logging
 import json
