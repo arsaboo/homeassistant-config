@@ -31,6 +31,7 @@ MONITORED_CONDITIONS = {
     'uv': ['UV', '', 'mdi:sunglasses'],
     'humidity': ['Relative Humidity', '%', 'mdi:water-percent'],
     'temp': ['Temperature', TEMP_FAHRENHEIT, 'mdi:thermometer'],
+    'pressure': ['Pressure', 'in', 'mdi:gauge'],
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
