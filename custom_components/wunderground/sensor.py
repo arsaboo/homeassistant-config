@@ -113,7 +113,6 @@ class WundergroundAPI(object):
         from homeassistant.components.sensor.rest import RestData
 
         resource = "{}{}&apiKey={}".format(_ENDPOINT, pws_id, api_key)
-        _LOGGER.error("resource = %s", resource)
         self._rest = RestData('GET', resource, None, None, None, False)
         self.data = None
         self.available = True
@@ -125,7 +124,6 @@ class WundergroundAPI(object):
         try:
             self._rest.update()
             self.data = json.loads(self._rest.data)
-            _LOGGER.error("Data is %s", self.data)
             self.available = True
         except TypeError:
             _LOGGER.error("Unable to fetch data from Wunderground")
