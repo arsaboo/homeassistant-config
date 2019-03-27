@@ -653,20 +653,6 @@ views:
                 name: Runtime
           - type: thermostat
             entity: climate.downstairs
-          - type: glance
-            entities:
-              - entity: sensor.downstairsthermoper
-                name: Operation
-              - entity: sensor.downstairs_humidity
-                name: Humidity
-              - entity: sensor.living_room_temperature
-                name: Temperature
-              - entity: sensor.downstairs_hvac_runtime
-                name: Runtime
-              - entity: switch.downstairs_away
-                tap_action:
-                  action: toggle
-                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_down
             show_name: false
@@ -691,20 +677,6 @@ views:
                 name: Runtime
           - type: thermostat
             entity: climate.upstairs
-          - type: glance
-            entities:
-              - entity: sensor.upstairsthermoper
-                name: Operation
-              - entity: sensor.upstairs_humidity
-                name: Humidity
-              - entity: sensor.upstairs_temperature
-                name: Temperature
-              - entity: sensor.upstairs_hvac_runtime
-                name: Runtime
-              - entity: switch.upstairs_away
-                tap_action:
-                  action: toggle
-                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_up
             show_name: false
@@ -729,20 +701,6 @@ views:
                 name: Runtime
           - type: thermostat
             entity: climate.bedroom
-          - type: glance
-            entities:
-              - entity: sensor.masterthermoper
-                name: Operation
-              - entity: sensor.bedroom_humidity
-                name: Humidity
-              - entity: sensor.master_temperature
-                name: Temperature
-              - entity: sensor.master_hvac_runtime
-                name: Runtime
-              - entity: switch.bedroom_away
-                tap_action:
-                  action: toggle
-                name: Away
           - type: picture-entity
             entity: camera.grafana_temp_master
             show_name: false
@@ -888,12 +846,6 @@ views:
           exclude:
             - state: "unavailable"
             - entity: "*plex*"
-      - type: entities
-        entities:
-          - sensor.sammytv_media_input_source
-          - sensor.sammytv_tv_channel
-          - sensor.sammytv_volume
-          - switch.sammytv
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -1223,16 +1175,6 @@ views:
     id: test
     title: Testing
     cards:
-      - type: custom:auto-entities
-        card:
-          type: entities
-          title: Vibration sensor
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: input_boolean.sleeping
-            - entity_id: '*_bed*'
-            - entity_id: sensor.bed_weight_average_mean
       - type: custom:pc-card
       - type: vertical-stack
         cards:
