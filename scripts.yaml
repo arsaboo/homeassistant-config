@@ -488,48 +488,47 @@
       service: androidtv.adb_command
       data:
         entity_id: media_player.shieldtv
-        command: "am start -n com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity"
+        command: "am start -a android.intent.action.VIEW -d -n com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity"
   shieldtv_netflix:
     alias: 'Launch Netflix on Shield'
     sequence:
       service: androidtv.adb_command
       data:
         entity_id: media_player.shieldtv
-        command: "am start -n com.netflix.ninja/.MainActivity"
+        command: "am start -a android.intent.action.VIEW -d -n com.netflix.ninja/.MainActivity"
   shieldtv_kodi:
     alias: 'Launch Kodi on Shield'
     sequence:
       service: androidtv.adb_command
       data:
         entity_id: media_player.shieldtv
-        command: "am start -n org.xbmc.kodi/.Splash"
+        command: "am start -a android.intent.action.VIEW -d -n org.xbmc.kodi/.Splash"
   shieldtv_thoptv:
     alias: 'Launch ThopTV on Shield'
     sequence:
-      - service: switch.turn_off
-        entity_id:
-          - switch.pihole
-      - delay: 00:00:03
+      - service: homeassistant.turn_off
+        entity_id: switch.pihole
+      - delay: '00:00:03'
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
-          command: "am start -n livetvstream.thoptv.com.thoptv/.Splash"
+          command: "am start -a android.intent.action.VIEW -d -n livetvstream.thoptv.com.thoptv/.Splash"
   shieldtv_windscribe:
     alias: 'Launch Windscribe on Shield'
     sequence:
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
-          command: "am start -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
-      - delay: 00:00:03
+          command: "am start -a android.intent.action.VIEW -d -n com.windscribe.vpn/.ui.activities.EntryPointActivity"
+      - delay: '00:00:03'
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
-          command: "input keyevent 22" #KEYCODE_DPAD_RIGHT
+          command: "RIGHT" #KEYCODE_DPAD_RIGHT
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
-          command: "input keyevent 23" #KEYCODE_DPAD_CENTER
+          command: "ENTER" #KEYCODE_DPAD_CENTER
 
   shieldtv_amazon_prime:
     alias: 'Launch Prime on Shield'
@@ -537,21 +536,14 @@
       service: androidtv.adb_command
       data:
         entity_id: media_player.shieldtv
-        command: "am start -n com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity"
+        command: "am start -a android.intent.action.VIEW -d -n com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity"
   shieldtv_plex:
     alias: 'Launch Plex on Shield'
     sequence:
       service: androidtv.adb_command
       data:
         entity_id: media_player.shieldtv
-        command: "am start -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity"
-  shieldtv_thop:
-    alias: 'Launch ThopTV on Shield'
-    sequence:
-      service: androidtv.adb_command
-      data:
-        entity_id: media_player.shieldtv
-        command: "am start -n com.thoptv.livetvstream/.Splash"
+        command: "am start -a android.intent.action.VIEW -d -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity"
 
   shieldtv_dpad_down:
     alias: 'Shield DPad Down'

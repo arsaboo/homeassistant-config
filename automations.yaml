@@ -1744,7 +1744,7 @@
       to: 'on'
   condition:
     - condition: template
-      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livestream.thoptv.com.thoptv' }}"
+      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
   action:
     - service: switch.turn_off
       entity_id:
