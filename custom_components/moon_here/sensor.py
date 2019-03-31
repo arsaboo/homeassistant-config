@@ -138,7 +138,7 @@ class MoonPhaseHereAPI(object):
 
     def __init__(self, app_id, app_code, zipcode):
         """Initialize the data object."""
-        from homeassistant.components.sensor.rest import RestData
+        from homeassistant.components.rest.sensor import RestData
 
         resource = "{}app_id={}&app_code={}&zipcode={}".format(
             _ENDPOINT, app_id, app_code, zipcode)
