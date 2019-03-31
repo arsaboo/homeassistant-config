@@ -106,7 +106,7 @@ class SectorPerfAPI(object):
 
     def __init__(self, api_key):
         """Initialize the data object."""
-        from homeassistant.components.sensor.rest import RestData
+        from homeassistant.components.rest.sensor import RestData
 
         resource = "{}{}".format(_ENDPOINT, api_key)
         self._rest = RestData('GET', resource, None, None, None, False)
