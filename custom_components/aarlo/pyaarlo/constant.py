@@ -8,6 +8,7 @@ SUBSCRIBE_URL       = 'https://arlo.netgear.com/hmsweb/client/subscribe?token='
 UNSUBSCRIBE_URL     = 'https://arlo.netgear.com/hmsweb/client/unsubscribe'
 MODES_URL           = 'https://arlo.netgear.com/hmsweb/users/devices/automation/active'
 STREAM_SNAPSHOT_URL = 'https://arlo.netgear.com/hmsweb/users/devices/takeSnapshot'
+STREAM_START_URL    = 'https://arlo.netgear.com/hmsweb/users/devices/startStream'
 IDLE_SNAPSHOT_URL   = 'https://arlo.netgear.com/hmsweb/users/devices/fullFrameSnapshot'
 TRANSID_PREFIX  = 'web'
 

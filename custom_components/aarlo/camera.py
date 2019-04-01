@@ -122,6 +122,11 @@ class ArloCam(Camera):
         self._ffmpeg_arguments = device_info.get(CONF_FFMPEG_ARGUMENTS)
         _LOGGER.info( 'ArloCam: %s created',self._name )
 
+    @property
+    def stream_source(self):
+        """Return the source of the stream."""
+        return self._camera.get_stream()
+
     def camera_image(self):
         """Return a still image response from the camera."""
         return self._camera.last_image_from_cache

@@ -296,9 +296,13 @@ class ArloBackEnd(object):
                 'Host': 'arlo.netgear.com',
                 'Content-Type': 'application/json; charset=utf-8;',
                 'Referer': 'https://arlo.netgear.com/',
-                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202 NETGEAR/v1 (iOS Vuezone)',
                 'Authorization': self._token
             }
+            if self._arlo._user_agent == 'apple':
+                headers['User-Agent'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202 NETGEAR/v1 (iOS Vuezone)'
+            else:
+                headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+
             self._session.headers.update(headers)
             return True
 

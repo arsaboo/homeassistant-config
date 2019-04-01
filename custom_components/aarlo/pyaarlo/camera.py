@@ -23,7 +23,8 @@ from custom_components.aarlo.pyaarlo.constant import( ACTIVITY_STATE_KEY,
                                 PRELOAD_DAYS,
                                 SNAPSHOT_KEY,
                                 STREAM_SNAPSHOT_KEY,
-                                STREAM_SNAPSHOT_URL )
+                                STREAM_SNAPSHOT_URL,
+                                STREAM_START_URL )
 
 class ArloCamera(ArloChildDevice):
 
@@ -359,4 +360,20 @@ class ArloCamera(ArloChildDevice):
         if self.was_recently_active:
             return 'recently active'
         return super().state
+
+    def get_stream( self ):
+        body = {
+            'action': 'set',
+            'from': self.web_id,
+            'properties': {'activityState':'startUserStream','cameraId':self.device_id },
+            'publishResponse': True,
+            'responseUrl':'',
+            'resource': self.resource_id,
+            'to': self.parent_id,
+            'transId': self._arlo._be._gen_trans_id()
+        }
+        reply = self._arlo._be.post( STREAM_START_URL,body,headers={ "xcloudId":self.xcloud_id } )
+        url = reply['url'].replace("rtsp://", "rtsps://")
+        self._arlo.debug( 'url={}'.format(url) )
+        return url
 
