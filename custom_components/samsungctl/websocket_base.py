@@ -10,6 +10,7 @@ import base64
 import websocket
 import socket
 from .upnp.discover import auto_discover
+from .upnp.UPNP_Device.adapter_addresses import get_adapter_ips
 from . import wake_on_lan
 from .upnp import UPNPTV
 from .utils import LogIt, LogItWithReturn
@@ -413,7 +414,7 @@ class AuxWebsocketBase(object):
         self.config = config
         self._thread = None
         self._id = str(uuid.uuid4())[1:-1]
-        self._client_ip = socket.gethostbyname(socket.gethostname())
+        self._client_ip = list(get_adapter_ips())[0]
         self._device_name = self._serialize_string(config.name)
         self._loop_event = threading.Event()
         self._send_lock = threading.Lock()
