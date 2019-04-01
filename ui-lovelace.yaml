@@ -444,7 +444,7 @@ views:
             - type: custom:card-modder
               entity: sensor.pc_investment
               style:
-                --paper-item-icon-color: "${vars[0] <= 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+                --paper-item-icon-color: "${vars[0] < 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
               card:
                 type: "custom:secondaryinfo-entity-row"
                 entity: sensor.pc_investment
@@ -651,6 +651,8 @@ views:
                 name: Humidity
               - entity: sensor.downstairs_hvac_runtime
                 name: Runtime
+              - entity: sensor.downstairsthermoper
+                name: Operation
           - type: thermostat
             entity: climate.downstairs
           - type: picture-entity
@@ -675,6 +677,8 @@ views:
                 name: Humidity
               - entity: sensor.upstairs_hvac_runtime
                 name: Runtime
+              - entity: sensor.upstairsthermoper
+                name: Operation
           - type: thermostat
             entity: climate.upstairs
           - type: picture-entity
@@ -699,6 +703,8 @@ views:
                 name: Humidity
               - entity: sensor.master_hvac_runtime
                 name: Runtime
+              - entity: sensor.masterthermoper
+                name: Operation
           - type: thermostat
             entity: climate.bedroom
           - type: picture-entity
