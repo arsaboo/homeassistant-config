@@ -12,7 +12,6 @@ import json
 from . import art_mode
 from . import application
 from . import websocket_base
-from . import wake_on_lan
 from .utils import LogIt, LogItWithReturn
 
 logger = logging.getLogger(__name__)

@@ -8,7 +8,6 @@ import ssl
 import uuid
 import base64
 import websocket
-import socket
 from .upnp.discover import auto_discover
 from .upnp.UPNP_Device.adapter_addresses import get_adapter_ips
 from . import wake_on_lan
@@ -235,76 +234,19 @@ class WebSocketBase(UPNPTV):
                             CEC_POWER_STATUS_IN_TRANSITION_ON_TO_STANDBY
                         ):
                             self._cec.tv.power = False
-
-                    elif self.config.power_off_key is None:
-                        logger.info(
-                            self.config.host +
-                            ' --- power off calibration needs to be run. ' +
-                            'if successful this will only run a single\n' +
-                            'time and subsequent calls to power off the\n' +
-                            'TV will be much faster.\n\n' +
-                            '   ****This may over 3 minutes to complete.****\n'
-                            'During this time you may see no activity taking place'
-                        )
-
-                        self._send_key('KEY_POWEROFF')
-
-                        count = 0
-                        while not self._power_event.isSet():
-                            self._power_event.wait(18.0)
-                            count += 1
-                            logger.info(
-                                self.config.host +
-                                ' --- power calibration is ' +
-                                '{0}% complete'.format(count * 10)
-                            )
-                            if count == 5:
-                                break
-
-                        if not self._power_event.isSet():
-                            self._send_key('KEY_POWER')
-                            while not self._power_event.isSet():
-                                self._power_event.wait(18.0)
-                                count += 1
-                                if count == 10:
-                                    break
-                                logger.info(
-                                    self.config.host +
-                                    ' --- power calibration is ' +
-                                    '{0}% complete'.format(count * 10)
-                                )
-
-                            if self._power_event.isSet():
-                                self.config.power_off_key = 'KEY_POWER'
-                        else:
-                            self.config.power_off_key = 'KEY_POWEROFF'
-
-                        logger.info(
-                            self.config.host +
-                            ' --- power calibration is 100% complete'
-                        )
-                        if self.config.power_off_key is None:
-                            logger.info(
-                                self.config.host +
-                                ' --- power off calibration failed'
-                            )
-                        else:
-                            logger.info(
-                                self.config.host +
-                                ' --- power off calibration success, {0}'.format(
-                                    self.config.power_off_key
-                                )
-                            )
-
-                            if self.config.path:
-                                self.config.save()
                     else:
-                        self._send_key(self.config.power_off_key)
-                        self._power_event.wait(60.0)
+                        if self.year < 2016:
+                            power_key = 'KEY_POWEROFF'
+                        else:
+                            power_key = 'KEY_POWER'
+
+                        self._send_key(power_key)
+                        self._power_event.wait(120.0)
 
                     if not self._power_event.isSet():
                         logger.debug(
-                            self.config.host + ' --- Failed to power off the TV'
+                            self.config.host +
+                            ' --- Failed to power off the TV'
                         )
 
                         self.is_powering_off = False

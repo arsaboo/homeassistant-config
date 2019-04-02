@@ -528,11 +528,10 @@ media_player:
   #   host: 192.168.2.242
   #   port: 55000
   #   name: Panasonic Viera TV
-  # - platform: samsungtv
-  #   host: 192.168.2.252
-  #   mac: !secret samsung_tv_mac
-  #   port: 8001
-  #   name: Living Room TV
+  - platform: samsungtv
+    host: 192.168.2.252
+    mac: !secret samsung_tv_mac
+    name: Living Room TV
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret

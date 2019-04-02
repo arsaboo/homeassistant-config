@@ -9,23 +9,113 @@ import threading
 import traceback
 import sys
 import time
+from logging import NullHandler
 from functools import update_wrapper
 
+
 PY3 = sys.version_info[0] > 2
-logger = logging.getLogger('samsungctl')
+
+
+DEBUG_LOGGING_TEMPLATE = '''\
+DEBUG*;*\
+%x  %X*;*\
+{thread_name}*;*\
+{thread_id}*;*\
+src: {calling_obj} [{calling_filename}:{calling_line_no}]*;*\
+{msg}\
+*[END]*\
+'''
+
+DEPRECATED_LOGGING_TEMPLATE = '''\
+DEPRECATED*;*\
+{thread_name}*;*\
+{thread_id}*;*\
+{object_type}*;*\
+src: {calling_obj} [{calling_filename}:{calling_line_no}]*;*\
+dst: {called_obj} [{called_filename}:{called_line_no}]*;*\
+*[END]*\
+'''
 
 LOGGING_TEMPLATE = '''\
-[DEBUG][{thread_name}[{thread_id}]]
-src: {calling_obj} [{calling_filename}:{calling_line_no}]
-dst: {called_obj} [{called_filename}:{called_line_no}]
+DEBUG*;*\
+%x  %X*;*\
+{thread_name}*;*\
+{thread_id}*;*\
+src: {calling_obj} [{calling_filename}:{calling_line_no}]*;*\
+dst: {called_obj} [{called_filename}:{called_line_no}]*;*\
 {msg}\
+*[END]*\
 '''
 
-DEPRECATED_TEMPLATE = '''{object_type}
+DEPRECATED_TEMPLATE = '''\
+{object_type}
 src: {calling_obj} [{calling_filename}:{calling_line_no}]
 dst: {called_obj}
-{msg}\
+{msg}
 '''
+
+logging.basicConfig(format='', level=None)
+_getLogger = logging.getLogger
+
+
+def get_logger(name):
+    lgr = _getLogger(name)
+
+    if name.startswith('samsungctl') and not isinstance(lgr.debug, DebugLogger):
+        lgr.debug = DebugLogger(lgr)
+
+    return lgr
+
+
+logging.getLogger = get_logger
+
+
+class DebugLogger(object):
+
+    def __init__(self, original_logger):
+        if hasattr(original_logger, 'name') and original_logger.name.startswith('samsungctl'):
+            print('get_logger_name:', original_logger.name)
+
+        self._original_debug = original_logger.debug
+
+    def __call__(self, msg, *args):
+
+        if PY3:
+            if not isinstance(msg, (str, bytes)):
+                msg = repr(msg)
+        else:
+            if not isinstance(msg, (str, unicode)):
+                msg = repr(msg)
+
+        if args:
+            msg %= args
+
+        if not msg.startswith('DEBUG*;*'):
+            msg = repr(msg)
+
+            calling_obj = _caller_name(1)
+            calling_filename, calling_line_no = _get_line_and_file(2)
+            thread = threading.current_thread()
+            msg = DEBUG_LOGGING_TEMPLATE.format(
+                thread_name=thread.getName(),
+                thread_id=thread.ident,
+                calling_obj=calling_obj,
+                calling_filename=calling_filename,
+                calling_line_no=calling_line_no,
+                msg=msg
+            )
+
+        if msg.startswith('DEBUG*;*'):
+            msg = time.strftime(msg, time.localtime(time.time()))
+
+        self._original_debug(msg)
+
+
+logger = logging.getLogger(__name__.split('.')[0])
+logger.addHandler(NullHandler())
+#
+# if '__main__' in sys.modules and hasattr(sys.modules['__main__'], '_logging'):
+#    sys.modules['__main__']._logging.getLogger =
 
 
 def _get_line_and_file(stacklevel=2):
@@ -150,14 +240,6 @@ def LogIt(func):
                 called_line_no=called_line_no,
                 msg=func_name + arg_string
             )
-
-            # calling_obj
-            # calling_filename
-            # calling_line_no
-            # called_obg
-            # called_filename
-            # called_line_no
-            # object_type
             lgr.debug(msg)
 
         return func(*args, **kwargs)
@@ -198,13 +280,22 @@ def LogItWithReturn(func):
                 called_obj=func_name,
                 called_filename=called_filename,
                 called_line_no=called_line_no,
-                msg=''
+                msg=func_name + arg_string
             )
-            lgr.debug(msg + func_name + arg_string)
-
+            lgr.debug(msg)
             result = func(*args, **kwargs)
-            if lgr.getEffectiveLevel() == logging.DEBUG:
-                lgr.debug(msg + '{0} => {1}'.format(func_name, repr(result)))
+            msg = LOGGING_TEMPLATE.format(
+                thread_name=thread.getName(),
+                thread_id=thread.ident,
+                calling_obj=calling_obj,
+                calling_filename=calling_filename,
+                calling_line_no=calling_line_no,
+                called_obj=func_name,
+                called_filename=called_filename,
+                called_line_no=called_line_no,
+                msg='{0} => {1}'.format(func_name, repr(result))
+            )
+            lgr.debug(msg)
         else:
             result = func(*args, **kwargs)
 
@@ -319,6 +410,9 @@ def Deprecated(obj, msg=''):
 
     func_name = _caller_name(1)
 
+    called_filename, called_line_no = _get_line_and_file(2)
+    called_line_no += 1
+
     if isinstance(obj, property):
         class FSetWrapper(object):
 
@@ -339,6 +433,25 @@ def Deprecated(obj, msg=''):
                     self._f_name,
                     msg
                 )
+
+                if logger.getEffectiveLevel() == logging.DEBUG:
+                    calling_filename, calling_line_no = _get_line_and_file(2)
+                    thread = threading.current_thread()
+                    calling_obj = _caller_name()
+
+                    debug_msg = DEPRECATED_LOGGING_TEMPLATE.format(
+                        thread_name=thread.getName(),
+                        thread_id=thread.ident,
+                        object_type='property (set)',
+                        calling_obj=calling_obj,
+                        calling_filename=calling_filename,
+                        calling_line_no=calling_line_no,
+                        called_obj=func_name,
+                        called_filename=called_filename,
+                        called_line_no=called_line_no
+                    )
+
+                    logger.debug(debug_msg)
 
                 warnings.warn(
                     message,
@@ -365,6 +478,24 @@ def Deprecated(obj, msg=''):
             def __call__(self, *args, **kwargs):
                 # turn off filter
                 warnings.simplefilter('always', DeprecationWarning)
+                if logger.getEffectiveLevel() == logging.DEBUG:
+                    calling_filename, calling_line_no = _get_line_and_file(2)
+                    thread = threading.current_thread()
+                    calling_obj = _caller_name()
+
+                    debug_msg = DEPRECATED_LOGGING_TEMPLATE.format(
+                        thread_name=thread.getName(),
+                        thread_id=thread.ident,
+                        object_type='property (get)',
+                        calling_obj=calling_obj,
+                        calling_filename=calling_filename,
+                        calling_line_no=calling_line_no,
+                        called_obj=func_name,
+                        called_filename=called_filename,
+                        called_line_no=called_line_no
+                    )
+
+                    logger.debug(debug_msg)
 
                 message = "deprecated get property [{0}].\n{1}".format(
                     self._f_name,
@@ -397,13 +528,14 @@ def Deprecated(obj, msg=''):
             return obj
 
     elif inspect.isfunction(obj):
+        if func_name:
+            f_name = func_name + '.' + obj.__name__
+        else:
+            f_name = obj.__module__ + '.' + obj.__name__
+
         def wrapper(*args, **kwargs):
             # turn off filter
             warnings.simplefilter('always', DeprecationWarning)
-            if func_name:
-                f_name = func_name + '.' + obj.__name__
-            else:
-                f_name = obj.__module__ + '.' + obj.__name__
 
             if PY3:
                 # noinspection PyUnresolvedReferences
@@ -415,6 +547,25 @@ def Deprecated(obj, msg=''):
                 call_type = 'method'
             else:
                 call_type = 'function'
+
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                calling_filename, calling_line_no = _get_line_and_file(2)
+                thread = threading.current_thread()
+                calling_obj = _caller_name()
+
+                debug_msg = DEPRECATED_LOGGING_TEMPLATE.format(
+                    thread_name=thread.getName(),
+                    thread_id=thread.ident,
+                    object_type=call_type,
+                    calling_obj=calling_obj,
+                    calling_filename=calling_filename,
+                    calling_line_no=calling_line_no,
+                    called_obj=func_name,
+                    called_filename=called_filename,
+                    called_line_no=called_line_no
+                )
+
+                logger.debug(debug_msg)
 
             message = "deprecated {0} [{1}].\n{2}".format(
                 call_type,
@@ -435,14 +586,33 @@ def Deprecated(obj, msg=''):
         return update_wrapper(wrapper, obj)
 
     elif inspect.isclass(obj):
+        if func_name:
+            class_name = func_name + '.' + obj.__name__
+        else:
+            class_name = obj.__module__ + '.' + obj.__name__
+
         def wrapper(*args, **kwargs):
             # turn off filter
             warnings.simplefilter('always', DeprecationWarning)
 
-            if func_name:
-                class_name = func_name + '.' + obj.__name__
-            else:
-                class_name = obj.__module__ + '.' + obj.__name__
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                calling_filename, calling_line_no = _get_line_and_file(2)
+                thread = threading.current_thread()
+                calling_obj = _caller_name()
+
+                debug_msg = DEPRECATED_LOGGING_TEMPLATE.format(
+                    thread_name=thread.getName(),
+                    thread_id=thread.ident,
+                    object_type='class',
+                    calling_obj=calling_obj,
+                    calling_filename=calling_filename,
+                    calling_line_no=calling_line_no,
+                    called_obj=func_name,
+                    called_filename=called_filename,
+                    called_line_no=called_line_no
+                )
+
+                logger.debug(debug_msg)
 
             message = "deprecated class [{0}].\n{1}".format(
                 class_name,
@@ -463,19 +633,18 @@ def Deprecated(obj, msg=''):
     else:
         frame = sys._getframe().f_back
         source = inspect.findsource(frame)[0]
-
-        line_no = frame.f_lineno - 1
+        called_line_no -= 1
 
         if msg:
             while (
-                '=deprecated' not in source[line_no] and
-                '= deprecated' not in source[line_no] and
-                '=utils.deprecated' not in source[line_no] and
-                '= utils.deprecated' not in source[line_no]
+                '=deprecated' not in source[called_line_no] and
+                '= deprecated' not in source[called_line_no] and
+                '=utils.deprecated' not in source[called_line_no] and
+                '= utils.deprecated' not in source[called_line_no]
             ):
-                line_no -= 1
+                called_line_no -= 1
 
-        symbol = source[line_no].split('=')[0].strip()
+        symbol = source[called_line_no].split('=')[0].strip()
 
         if func_name:
             symbol_name = func_name + '.' + symbol
@@ -485,6 +654,29 @@ def Deprecated(obj, msg=''):
         def wrapper(*_, **__):
             # turn off filter
             warnings.simplefilter('always', DeprecationWarning)
+
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                object_type = str(type(obj)).split(' ', 1)[-1]
+                object_type = object_type[1:-2]
+                calling_filename, calling_line_no = _get_line_and_file(2)
+                thread = threading.current_thread()
+                calling_obj = _caller_name()
+
+                debug_msg = DEPRECATED_LOGGING_TEMPLATE.format(
+                    thread_name=thread.getName(),
+                    thread_id=thread.ident,
+                    object_type=object_type,
+                    calling_obj=calling_obj,
+                    calling_filename=calling_filename,
+                    calling_line_no=calling_line_no,
+                    called_obj=func_name,
+                    called_filename=called_filename,
+                    called_line_no=called_line_no
+                )
+
+                logger.debug(debug_msg)
+
+
             message = "deprecated symbol [{0}].\n{1}".format(
                 symbol_name,
                 msg

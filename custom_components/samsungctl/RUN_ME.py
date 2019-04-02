@@ -129,7 +129,8 @@ SSDP_FILENAME = os.path.join(
 # noinspection PyPep8Naming
 class LogHandler(object):
 
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.file = None
         self.lock = threading.Lock()
         self.level = _logging.NOTSET
@@ -203,8 +204,8 @@ class Logging(object):
         pass
 
     def __init__(self):
-        self.default_handler = LogHandler()
-        self.upnp_handler = LogHandler()
+        self.default_handler = LogHandler('samsungctl')
+        self.upnp_handler = LogHandler('samsungctl.UPNP')
         self.upnp_handler.open(SSDP_FILENAME)
         self.lock = threading.Lock()
         self.file = None
@@ -463,6 +464,7 @@ def run_test(config):
         return config.model, True
 
     def run_method(method, ret_val_names, *args):
+        time.sleep(0.1)
         # noinspection PyBroadException,PyPep8
         try:
             ret_vals = getattr(remote, method)(*args)
@@ -494,6 +496,7 @@ def run_test(config):
             print_test('\n')
 
     def get_property(property_name, ret_val_names):
+        time.sleep(0.1)
         # noinspection PyBroadException,PyPep8
         try:
             ret_vals = getattr(remote, property_name)
@@ -525,6 +528,7 @@ def run_test(config):
             return None
 
     def set_property(property_name, value):
+        time.sleep(0.1)
         # noinspection PyBroadException,PyPep8
         try:
             setattr(remote, property_name, value)
@@ -794,6 +798,7 @@ def run_test(config):
     print_test('\nBROWSER TESTS\n')
 
     run_method('run_browser', [], 'github.com/kdschlosser/samsungctl')
+    time.sleep(10)
     get_property('browser_mode', [])
     get_property('browser_url', [])
     run_method('stop_browser', [])
@@ -1207,7 +1212,7 @@ def run_test(config):
         print_test(
             'This process may take a while to complete.\n'
             'If there is an issue the program will automatically\n'
-            'exit after 3 minutes.'
+            'exit after 4 minutes.'
         )
 
         print_test('running power off tests please wait....')
@@ -1216,10 +1221,10 @@ def run_test(config):
         remote.power = False
         count = 0
         while remote.is_powering_off:
-            power_event.wait(10.0)
+            power_event.wait(12.0)
             count += 1
-            print_test(count * 10, 'seconds have passed')
-            if count == 18:
+            print_test(count * 12, 'seconds have passed')
+            if count == 10:
                 break
 
         if remote.power:
@@ -1231,7 +1236,6 @@ def run_test(config):
             duration = (stop_time - start_time) * 1000
             print_test('power off test: [pass]')
             print_test('power off test duration: ' + str(duration) + 'ms')
-            power_event.wait(10)
             print_test('running power on tests please wait....')
 
             start_time = time.time()
@@ -1239,10 +1243,10 @@ def run_test(config):
             remote.power = True
 
             while remote.is_powering_on:
-                power_event.wait(10.0)
+                power_event.wait(12.0)
                 count += 1
-                print_test(count * 10, 'seconds have passed')
-                if count == 9:
+                print_test(count * 12, 'seconds have passed')
+                if count == 10:
                     break
 
             if remote.power:

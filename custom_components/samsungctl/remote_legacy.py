@@ -205,9 +205,7 @@ class RemoteLegacy(upnp.UPNPTV):
 
     @LogIt
     def open(self):
-        logger.debug('setting lock')
         with self._auth_lock:
-            logger.debug('lock set')
             if self.sock is not None:
                 return True
 
