@@ -16,6 +16,7 @@ class LayoutCard extends cardTools.LitElement {
     window.addEventListener('resize', () => this.build());
     window.addEventListener('hass-open-menu', () => setTimeout(() => this.build(), 100));
     window.addEventListener('hass-close-menu', () => setTimeout(() => this.build(), 100));
+    window.addEventListener('location-changed', () => setTimeout(() => this.build(), 100));
     if(config.rebuild)
       window.setTimeout(() => this.build(), config.rebuild);
   }
@@ -88,6 +89,7 @@ class LayoutCard extends cardTools.LitElement {
   }
 
   build() {
+    if (this.offsetParent === null) return;
     const root = this.shadowRoot.querySelector("#columns");
     while(root.lastChild) {
       root.removeChild(root.lastChild);

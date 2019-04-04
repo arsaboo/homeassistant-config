@@ -7,12 +7,26 @@ import json
 import ssl
 import uuid
 import base64
+import socket
 import websocket
 from .upnp.discover import auto_discover
 from .upnp.UPNP_Device.adapter_addresses import get_adapter_ips
 from . import wake_on_lan
 from .upnp import UPNPTV
 from .utils import LogIt, LogItWithReturn
+
+# the following code needs to be done because some of the Samsung TV's use a
+# shutdown status that is not supposed to be used. the websocket-client
+# library has this status code stored but does not use it when checking to
+# see if it is a valid code or not. by doing the following it then will
+# accept that code and not throw a traceback. I could have simply caught the
+# traceback. the problem is the code is not stored in the exception and the
+# exception is used in all kinds of places. so without the ability to check
+# what caused the exception I had to make it so that the exception never got
+# generated
+from websocket import _abnf
+
+_abnf.VALID_CLOSE_STATUS = _abnf.VALID_CLOSE_STATUS + (_abnf.STATUS_STATUS_NOT_AVAILABLE,)
 
 logger = logging.getLogger(__name__)
 CEC_POWER_STATUS_ON = 0
@@ -129,27 +143,28 @@ class WebSocketBase(UPNPTV):
         while self.sock is None and not self._loop_event.isSet():
             self._loop_event.wait(0.1)
 
+        if self.sock is not None:
+            self.sock.timeout = 2.0
+
         while not self._loop_event.isSet():
             # noinspection PyPep8,PyBroadException
             try:
                 data = self.sock.recv()
-            except:
+                if not data:
+                    break
+
+                logger.debug(
+                    self.config.host +
+                    ' --> ' +
+                    data
+                )
+                self.on_message(data)
+            except websocket.WebSocketTimeoutException:
+                pass
+            except websocket.WebSocketConnectionClosedException:
                 break
-
-            else:
-                if data:
-                    logger.debug(
-                        self.config.host +
-                        ' --> ' +
-                        data
-                    )
-                    self.on_message(data)
-                else:
-                    if self.config.method == 'legacy':
-                        break
-                    else:
-                        self._loop_event.wait(0.1)
-
+            except socket.error:
+                break
         logger.debug(self.config.host + ' --- websocket loop closing')
         # noinspection PyPep8,PyBroadException
         try:
@@ -388,19 +403,33 @@ class AuxWebsocketBase(object):
         while self.sock is None and not self._loop_event.isSet():
             self._loop_event.wait(0.1)
 
+        if self.sock is not None:
+            self.sock.timeout = 2.0
+
         while not self._loop_event.isSet():
             # noinspection PyPep8,PyBroadException
             try:
                 data = self.sock.recv()
-            except:
+                if not data:
+                    break
+
+                logger.debug(
+                    self.config.host +
+                    ' --> ' +
+                    data
+                )
+                self.on_message(data)
+            except websocket.WebSocketTimeoutException:
+                pass
+            except websocket.WebSocketConnectionClosedException:
+                break
+            except socket.error:
                 break
 
-            else:
-                if data:
-                    self.on_message(data)
-                else:
-                    self._loop_event.wait(0.1)
-
+        logger.debug(
+            self.config.host +
+            ' --- {0} loop closing'.format(self.__class__.__name__)
+        )
         # noinspection PyPep8,PyBroadException
         try:
             self.sock.close()
@@ -409,7 +438,6 @@ class AuxWebsocketBase(object):
 
         self.sock = None
         self._thread = None
-        self._loop_event.clear()
 
     def on_message(self, _):
         raise NotImplementedError

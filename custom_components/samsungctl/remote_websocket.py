@@ -15,7 +15,13 @@ from . import websocket_base
 from .utils import LogIt, LogItWithReturn
 
 logger = logging.getLogger(__name__)
-
+#
+#
+# URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.tv.display?name={}"
+# SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.tv.display?name={}"
+#
+# URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.tv.channel?name={}"
+# SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.tv.channel?name={}"
 
 URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.remote.control?name={}"
 SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.remote.control?name={}"
@@ -63,10 +69,7 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
 
     @LogIt
     def open(self):
-        with self._auth_lock:
-            if self.sock is not None:
-                return True
-
+        def do():
             if self.config.port == 8002:
                 if self.config.token:
                     token = "&token=" + str(self.config.token)
@@ -115,9 +118,6 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
                     ' -- access granted'
                 )
                 auth_event.set()
-                self.connect()
-                if self._art_mode is not None:
-                    self._art_mode.open()
 
             del self._registered_callbacks[:]
 
@@ -171,7 +171,13 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
             )
 
             if auth_event.isSet() and not unauth_event.is_set():
-                # self._app_websocket = application.AppWebsocket(self.config)
+                self._app_websocket = application.AppWebsocket(self.config)
+
+                if self._art_mode is not None:
+                    self._art_mode.open()
+
+                self.connect()
+
                 self.is_powering_off = False
                 self.is_powering_on = False
                 self._power_event.set()
@@ -185,13 +191,19 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
                     ' -- trying SSL connection.'
                 )
                 self.config.port = 8002
-                return self.open()
+
+                res = do()
+
+                if not res:
+                    self.config.port = 8001
+
+                return res
 
             if self.config.token is not None:
                 saved_token = self.config.token
                 self.config.token = None
 
-                res = self.open()
+                res = do()
 
                 if not res:
                     self.config.token = saved_token
@@ -212,6 +224,12 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
 
             self._power_event.set()
             raise RuntimeError('Unknown Auth Failure: \n' + str(self.config))
+
+        with self._auth_lock:
+            if self.sock is not None:
+                return True
+
+            do()
 
     @LogIt
     def send(self, method, **params):
@@ -326,7 +344,17 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
             'event',
             'ed.edenApp.get'
         )
+        self._app_websocket.register_receive_callback(
+            eden_app_get,
+            'event',
+            'ed.edenApp.get'
+        )
         self.register_receive_callback(
+            installed_app_get,
+            'event',
+            'ed.installedApp.get'
+        )
+        self._app_websocket.register_receive_callback(
             installed_app_get,
             'event',
             'ed.installedApp.get'
@@ -350,10 +378,20 @@ class RemoteWebsocket(websocket_base.WebSocketBase):
             'ed.edenApp.get'
         )
 
+        self._app_websocket.unregister_receive_callback(
+            eden_app_get,
+            'event',
+            'ed.edenApp.get'
+        )
         self.unregister_receive_callback(
             installed_app_get,
-            'data',
-            None
+            'event',
+            'ed.installedApp.get'
+        )
+        self._app_websocket.unregister_receive_callback(
+            installed_app_get,
+            'event',
+            'ed.installedApp.get'
         )
 
         if not eden_event.isSet():
