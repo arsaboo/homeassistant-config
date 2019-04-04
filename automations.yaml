@@ -1649,21 +1649,6 @@
 #         payload_template: '{"_type" : "cmd", "action": "reportSteps"}'
 #         qos: 2
 
-- id: uscis_update_notification
-  alias: "USCIS - Notify on update"
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - sensor.alok_485
-        - sensor.rashmi_485
-        - sensor.arnav_485
-  action:
-    - service: notify.pushbullet
-      data_template:
-        title: "{{ trigger.to_state.name }} status updated"
-        message: >
-          {{ states.sensor[trigger.entity_id.split('.')[1]].attributes.current_status }}
 
 - id: update_sensors
   alias: Update Sensors

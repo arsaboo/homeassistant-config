@@ -1169,14 +1169,6 @@ views:
             style:
               - font-size: 12px
               - text-transform: capitalize
-      - type: entities
-        title: USCIS
-        show_header_toggle: false
-        entities:
-          - sensor.alok_485
-          - sensor.rashmi_485
-          - sensor.arnav_485
-
   - icon: mdi:test-tube
     id: test
     title: Testing
