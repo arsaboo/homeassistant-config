@@ -40,6 +40,10 @@ class ArloMediaLibrary(object):
         videos = []
         for video in data:
 
+            # skip not video
+            if not video.get('contentType','').startswith('video/'):
+                continue
+
             camera = self._arlo.lookup_camera_by_id( video.get('deviceId') )
             if not camera:
                 continue
@@ -81,6 +85,11 @@ class ArloMediaLibrary(object):
         videos = []
         keys = []
         for video in data:
+
+            # skip not video
+            if not video.get('contentType','').startswith('video/'):
+                continue
+
             camera = self._arlo.lookup_camera_by_id( video.get('deviceId') )
             if camera is not None:
                 key = '{0}:{1}'.format( video.get('deviceId'), arlotime_strftime( video.get('localCreatedDate' ) ) )

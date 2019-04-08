@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 # URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.tv.channel?name={}"
 # SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.tv.channel?name={}"
 
-URL_FORMAT = "ws://{}:{}/api/v2/channels/samsung.remote.control?name={}"
-SSL_URL_FORMAT = "wss://{}:{}/api/v2/channels/samsung.remote.control?name={}"
+URL_FORMAT = "ws://{0}:{1}/api/v2/channels/samsung.remote.control?name={2}"
+SSL_URL_FORMAT = "wss://{0}:{1}/api/v2/channels/samsung.remote.control?name={2}"
 
 
 # noinspection PyAbstractClass
