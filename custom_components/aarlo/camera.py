@@ -161,7 +161,7 @@ class ArloCam(Camera):
 
     async def handle_async_mjpeg_stream(self, request):
         """Generate an HTTP MJPEG stream from the camera."""
-        from haffmpeg import CameraMjpeg
+        from haffmpeg.camera import CameraMjpeg
         video = self._camera.last_video
         if not video:
             error_msg = \

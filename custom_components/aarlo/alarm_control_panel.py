@@ -128,7 +128,8 @@ class ArloBaseStation(AlarmControlPanel):
         if self._trigger_till is None:
             _LOGGER.info( '%s: triggered',self._name )
             self._trigger_till = time.monotonic() + self._trigger_time.total_seconds()
-            self._base.siren_on( duration=self._trigger_time.total_seconds(),volume=self._alarm_volume )
+            if int( self._alarm_volume ) != 0:
+                self._base.siren_on( duration=self._trigger_time.total_seconds(),volume=self._alarm_volume )
             self.async_schedule_update_ha_state()
             track_point_in_time( self._hass,self.async_update_ha_state, dt_util.utcnow() + self._trigger_time )
 

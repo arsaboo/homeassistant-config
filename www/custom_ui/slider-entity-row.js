@@ -30,6 +30,7 @@ class SliderEntityRow extends Polymer.Element {
           <div class="flex">
         <template is="dom-if" if="{{displaySlider}}">
             <ha-slider
+              dir="{{rtl}}"
               min="{{min}}"
               max="{{max}}"
               value="{{value}}"
@@ -132,11 +133,32 @@ class SliderEntityRow extends Polymer.Element {
         },
         string: (stateObj, l18n) => {
           if (stateObj.attributes.is_volume_muted) return '-';
-          return `${this.controller.get(stateObj)} %`;
+          return !!stateObj.attributes.volume_level ? `${this.controller.get(stateObj)} %` : l18n['state.media_player.off'];
         },
         min: () => 0,
         max: () => 100,
         step: () => 5,
+      },
+
+      climate: {
+        set: (stateObj, value) => {
+          this._hass.callService('climate', 'set_temperature', {
+            entity_id: stateObj.entity_id,
+            temperature: value
+          });
+        },
+        get: (stateObj) => stateObj.attributes.temperature,
+        supported: {
+          slider: () => true,
+          toggle: () => true,
+        },
+        string: (stateObj, l18n) => {
+          if (stateObj.attributes.operation_mode === 'off') return l18n['state.climate.off'];
+          return `${this.controller.get(stateObj)} ${this._hass.config.unit_system.temperature}`;
+        },
+        min: (stateObj) => stateObj.attributes.min_temp,
+        max: (stateObj) => stateObj.attributes.max_temp,
+        step: () => 1,
       },
 
       cover: {
@@ -274,6 +296,8 @@ class SliderEntityRow extends Polymer.Element {
     this.max = config.max || 100;
     this.step = config.step || 5;
 
+    this.rtl = this._isRTL()? "rtl" : "ltr";
+
     if(this._hass && this._config) {
       this.stateObj = this._config.entity in this._hass.states ? this._hass.states[this._config.entity] : null;
       if(this.stateObj) {
@@ -294,6 +318,7 @@ class SliderEntityRow extends Polymer.Element {
 
   set hass(hass) {
     this._hass = hass;
+    this.rtl = this._isRTL()? "rtl" : "ltr";
 
     if(hass && this._config) {
       this.stateObj = this._config.entity in hass.states ? hass.states[this._config.entity] : null;
@@ -305,6 +330,14 @@ class SliderEntityRow extends Polymer.Element {
         this.displaySlider = this.controller.supported.slider(this.stateObj);
       }
     }
+  }
+
+  _isRTL() {
+    if(!this._hass) return false;
+    const lang = this._hass.language || "en";
+    if(!this._hass.translationMetadata.translations[lang]) return false;
+    const retval =  this._hass.translationMetadata.translations[lang].isRTL || false;
+    return retval;
   }
 
   selectedValue(ev) {
