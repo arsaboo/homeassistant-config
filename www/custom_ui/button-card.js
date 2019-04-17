@@ -38,11 +38,9 @@
           text-align: center;
         }
         button-card-button div {
-          padding: 2.6%;
+          padding: 4%;
           text-transform: none;
-          font-size: 1.1rem;
-          font-weight: 500;
-          white-space: nowrap;
+          font-size: 1.2rem;
         }
       `;
     }
@@ -64,7 +62,7 @@
 
 
     getFontColorBasedOnBackgroundColor(backgroundColor) {
-      const parsedRgbColor= backgroundColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+      const parsedRgbColor = backgroundColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
       const parsedBackgroundColor = parsedRgbColor ? parsedRgbColor : this.hexToRgb(backgroundColor.substring(1));
       let fontColor = ''; // don't override by default
       if (parsedBackgroundColor) {
@@ -85,20 +83,54 @@
       var g = (bigint >> 8) & 255;
       var b = bigint & 255;
 
-      return [,r,g,b];
+      return [, r, g, b];
     }
 
+    testConfigState(state, config) {
+      var retval = false;
+      var def = false;
+      if (config.state) {
+        retval = config.state.find(function (elt) {
+          if (elt.operator) {
+            switch (elt.operator) {
+              case '==':
+                return (state.state == elt.value)
+              case '<=':
+                return (state.state <= elt.value)
+              case '<':
+                return (state.state < elt.value)
+              case '>=':
+                return (state.state >= elt.value)
+              case '>':
+                return (state.state > elt.value)
+              case '!=':
+                return (state.state != elt.value)
+              case 'regex':
+                return (state.state.match(elt.value))
+              case 'default':
+                def = elt;
+            }
+          } else {
+            return (elt.value === state.state)
+          }
+        })
+        if (!retval)
+          if (def)
+            return def;
+      }
+      return retval;
+    }
 
     buildCssColorAttribute(state, config) {
       let color = config.color;
       if (state) {
-        let configState = config.state ? config.state.find(configState => { return configState.value === state.state; }) : false;
-        if(configState){
+        let configState = this.testConfigState(state, config);
+        if (configState) {
           color = configState.color ? configState.color : config.color_off;
           if (configState.color === 'auto') {
             color = state.attributes.rgb_color ? `rgb(${state.attributes.rgb_color.join(',')})` : configState.default_color;
           }
-        }else{
+        } else {
           if (config.color === 'auto') {
             color = state.attributes.rgb_color ? `rgb(${state.attributes.rgb_color.join(',')})` : config.default_color;
           }
@@ -117,7 +149,7 @@
         }
         return iconOff;
       }
-      let configState = config.state ? config.state.find(configState => { return configState.value === state.state; }) : false;
+      let configState = this.testConfigState(state, config);
       if (configState && configState.icon) {
         const icon = configState.icon;
         return icon;
@@ -152,11 +184,12 @@
     cardColoredHtml(state, config) {
       const color = this.buildCssColorAttribute(state, config);
       const fontColor = this.getFontColorBasedOnBackgroundColor(color);
+      const icon = this.buildIcon(state, config);
       return html`
       <ha-card style="color: ${fontColor};" @tap="${ev => this._toggle(state, config)}">
         <button-card-button style="background-color: ${color}; ${config.card_style}">
         <div style="${config.card_style}">
-          ${config.icon ? html`<ha-icon style="width: ${config.size}; height: ${config.size};" icon="${config.icon}"></ha-icon>` : ''}
+          ${config.icon || icon ? html`<ha-icon style="width: ${config.size}; height: ${config.size};" icon="${icon}"></ha-icon>` : ''}
           ${config.name ? html`<span>${config.name}</span>` : ''}
           ${config.show_state ? html`<span>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</span>` : ''}
          </div>
@@ -172,7 +205,7 @@
       <ha-card @tap="${ev => this._toggle(state, config)}">
         <button-card-button style="${config.card_style}">
         <div style="${config.card_style}">
-          ${config.icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: ${config.size};" icon="${icon}"></ha-icon>` : ''}
+          ${config.icon || icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: ${config.size};" icon="${icon}"></ha-icon>` : ''}
           ${config.name ? html`<div>${config.name}</div>` : ''}
           ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
         </div>
@@ -185,7 +218,7 @@
       // if (!config.entity) {
       //   throw new Error('You need to define entity');
       // }
-      this.config = {...config};
+      this.config = { ...config };
       this.config.color = config.color ? config.color : 'var(--primary-text-color)';
       this.config.size = config.size ? config.size : '40%';
       let cardStyle = '';
