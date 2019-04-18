@@ -7,15 +7,13 @@ https://home-assistant.io/components/sensor.arlo/
 import logging
 import voluptuous as vol
 
-from homeassistant.core import callback
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.binary_sensor import ( BinarySensorDevice, PLATFORM_SCHEMA)
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.icon import icon_for_battery_level
+from homeassistant.core import callback
+from homeassistant.components.binary_sensor import (
+        BinarySensorDevice, PLATFORM_SCHEMA )
 from homeassistant.const import (
         ATTR_ATTRIBUTION, CONF_MONITORED_CONDITIONS, TEMP_CELSIUS,
-        DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY)
-
+        DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY ) 
 from custom_components.aarlo import (
         CONF_ATTRIBUTION, DEFAULT_BRAND, DATA_ARLO )
 

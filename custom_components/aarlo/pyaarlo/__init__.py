@@ -25,6 +25,8 @@ from custom_components.aarlo.pyaarlo.constant import ( BLANK_IMAGE,
 
 _LOGGER = logging.getLogger('pyaarlo')
 
+__version__ = '0.0.2'
+
 class PyArlo(object):
 
     def __init__( self,username,password,name='aarlo',
@@ -122,7 +124,7 @@ class PyArlo(object):
 
     def _refresh_bases( self ):
         for base in self._bases:
-            self._be.notify( base=base,body={"action":"get","resource":"modes","publishResponse":False} )
+            base.update_modes()
             self._be.notify( base=base,body={"action":"get","resource":"cameras","publishResponse":False} )
             self._be.notify( base=base,body={"action":"get","resource":"doorbells","publishResponse":False} )
 

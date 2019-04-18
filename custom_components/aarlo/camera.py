@@ -5,20 +5,22 @@ For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/camera.arlo/
 """
 import logging
+import base64
 import voluptuous as vol
 
 from homeassistant.core import callback
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components import websocket_api
 from homeassistant.components.camera import (
-        Camera, ATTR_ENTITY_ID, CAMERA_SERVICE_SCHEMA, DOMAIN, PLATFORM_SCHEMA,
+        Camera, DOMAIN, PLATFORM_SCHEMA,
+        ATTR_ENTITY_ID, ATTR_FILENAME,
+        CAMERA_SERVICE_SCHEMA, CAMERA_SERVICE_SNAPSHOT,
         STATE_IDLE, STATE_RECORDING, STATE_STREAMING )
 from homeassistant.components.ffmpeg import DATA_FFMPEG
 from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_stream
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.const import (
         ATTR_ATTRIBUTION, ATTR_BATTERY_LEVEL )
-
 from custom_components.aarlo import (
         CONF_ATTRIBUTION, DEFAULT_BRAND, DATA_ARLO )
 
@@ -36,6 +38,8 @@ ATTR_SIGNAL_STRENGTH = 'signal_strength'
 ATTR_UNSEEN_VIDEOS = 'unseen_videos'
 ATTR_RECENT_ACTIVITY = 'recent_activity'
 ATTR_IMAGE_SRC = 'image_source'
+ATTR_CHARGING = 'charging'
+ATTR_WIRED = 'wired'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
 
@@ -52,6 +56,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 SERVICE_REQUEST_SNAPSHOT = 'aarlo_request_snapshot'
+SERVICE_REQUEST_SNAPSHOT_TO_FILE = 'aarlo_request_snapshot_to_file'
+SERVICE_STOP_ACTIVITY = 'aarlo_stop_activity'
 
 WS_TYPE_VIDEO_URL = 'aarlo_video_url'
 SCHEMA_WS_VIDEO_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
@@ -70,10 +76,21 @@ SCHEMA_WS_STREAM_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_STREAM_URL,
     vol.Required('entity_id'): cv.entity_id
 })
+WS_TYPE_SNAPSHOT_IMAGE = 'aarlo_snapshot_image'
+SCHEMA_WS_SNAPSHOT_IMAGE = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_SNAPSHOT_IMAGE,
+    vol.Required('entity_id'): cv.entity_id
+})
+WS_TYPE_STOP_ACTIVITY = 'aarlo_stop_activity'
+SCHEMA_WS_STOP_ACTIVITY = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_STOP_ACTIVITY,
+    vol.Required('entity_id'): cv.entity_id
+})
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up an Arlo IP Camera."""
     arlo = hass.data[DATA_ARLO]
+    component = hass.data[DOMAIN]
 
     cameras = []
     for camera in arlo.cameras:
@@ -81,18 +98,18 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     async_add_entities(cameras)
 
-    async def service_handler(service):
-        entity_ids = service.data.get(ATTR_ENTITY_ID)
-        if entity_ids:
-            target_devices = [dev for dev in cameras if dev.entity_id in entity_ids]
-        else:
-            target_devices = cameras
-        for target_device in target_devices:
-            target_device.take_snapshot()
-
-    hass.services.async_register(
-        DOMAIN, SERVICE_REQUEST_SNAPSHOT, service_handler,
-        schema=CAMERA_SERVICE_SCHEMA)
+    component.async_register_entity_service(
+        SERVICE_REQUEST_SNAPSHOT,CAMERA_SERVICE_SCHEMA,
+        aarlo_snapshot_service_handler
+    )
+    component.async_register_entity_service(
+        SERVICE_REQUEST_SNAPSHOT_TO_FILE,CAMERA_SERVICE_SNAPSHOT,
+        aarlo_snapshot_to_file_service_handler
+    )
+    component.async_register_entity_service(
+        SERVICE_STOP_ACTIVITY,CAMERA_SERVICE_SCHEMA,
+        aarlo_stop_activity_handler
+    )
     hass.components.websocket_api.async_register_command(
         WS_TYPE_VIDEO_URL, websocket_video_url,
         SCHEMA_WS_VIDEO_URL
@@ -105,11 +122,19 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         WS_TYPE_STREAM_URL, websocket_stream_url,
         SCHEMA_WS_STREAM_URL
     )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_SNAPSHOT_IMAGE, websocket_snapshot_image,
+        SCHEMA_WS_SNAPSHOT_IMAGE
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_STOP_ACTIVITY, websocket_stop_activity,
+        SCHEMA_WS_STOP_ACTIVITY
+    )
 
 class ArloCam(Camera):
     """An implementation of a Netgear Arlo IP camera."""
 
-    def __init__(self, hass, camera, device_info):
+    def __init__( self,hass,camera,config ):
         """Initialize an Arlo camera."""
         super().__init__()
         self._name          = camera.name
@@ -119,13 +144,16 @@ class ArloCam(Camera):
         self._recent        = False
         self._motion_status = False
         self._ffmpeg           = hass.data[DATA_FFMPEG]
-        self._ffmpeg_arguments = device_info.get(CONF_FFMPEG_ARGUMENTS)
+        self._ffmpeg_arguments = config.get(CONF_FFMPEG_ARGUMENTS)
         _LOGGER.info( 'ArloCam: %s created',self._name )
 
     @property
     def stream_source(self):
         """Return the source of the stream."""
         return self._camera.get_stream()
+
+    def async_stream_source( self ):
+        return self.hass.async_add_job( self._camera.stream_source )
 
     def camera_image(self):
         """Return a still image response from the camera."""
@@ -158,6 +186,7 @@ class ArloCam(Camera):
         self._camera.add_attr_callback( 'connectionState',update_state )
         self._camera.add_attr_callback( 'presignedLastImageData',update_state )
         self._camera.add_attr_callback( 'mediaUploadNotification',update_state )
+        self._camera.add_attr_callback( 'chargingState',update_state )
 
     async def handle_async_mjpeg_stream(self, request):
         """Generate an HTTP MJPEG stream from the camera."""
@@ -221,6 +250,8 @@ class ArloCam(Camera):
                 (ATTR_UNSEEN_VIDEOS, self._camera.unseen_videos),
                 (ATTR_RECENT_ACTIVITY, self._camera.recent),
                 (ATTR_IMAGE_SRC, self._camera.last_image_source),
+                (ATTR_CHARGING, self._camera.charging),
+                (ATTR_WIRED, self._camera.wired_only),
             ) if value is not None
         }
 
@@ -268,8 +299,23 @@ class ArloCam(Camera):
         self._motion_status = False
         self.set_base_station_mode(ARLO_MODE_DISARMED)
 
-    def take_snapshot(self):
-        self._camera.take_snapshot()
+    def request_snapshot(self):
+        self._camera.request_snapshot()
+
+    def async_request_snapshot(self):
+        return self.hass.async_add_job(self.request_snapshot)
+
+    def get_snapshot(self):
+        return self._camera.get_snapshot()
+
+    def async_get_snapshot(self):
+        return self.hass.async_add_job(self.get_snapshot)
+
+    def stop_activity( self ):
+        return self._camera.stop_activity()
+
+    def async_stop_activity( self ):
+        return self.hass.async_add_job( self._camera.stop_activity )
 
 def _get_camera_from_entity_id(hass, entity_id):
     component = hass.data.get(DOMAIN)
@@ -322,10 +368,80 @@ async def websocket_library(hass, connection, msg):
 
 @websocket_api.async_response
 async def websocket_stream_url(hass, connection, msg):
-    _LOGGER.debug( 'stream_url')
-    connection.send_message(websocket_api.result_message(
+    camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
+    _LOGGER.debug( 'stream_url for ' + str(camera.name) )
+    try:
+        stream = await camera.async_stream_source()
+        connection.send_message(websocket_api.result_message(
+                msg['id'], {
+                    'url':stream
+                }
+            ))
+
+    except HomeAssistantError:
+        connection.send_message(websocket_api.error_message(
+            msg['id'], 'image_fetch_failed', 'Unable to fetch stream'))
+
+@websocket_api.async_response
+async def websocket_snapshot_image(hass, connection, msg):
+    camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
+    _LOGGER.debug( 'snapshot_image for ' + str(camera.name) )
+
+    try:
+        image = await camera.async_get_snapshot()
+        connection.send_message(websocket_api.result_message(
             msg['id'], {
-                'test':'stream_url'
+                'content_type': camera.content_type,
+                'content': base64.b64encode(image).decode('utf-8')
             }
         ))
+
+    except HomeAssistantError:
+        connection.send_message(websocket_api.error_message(
+            msg['id'], 'image_fetch_failed', 'Unable to fetch image'))
+
+@websocket_api.async_response
+async def websocket_stop_activity(hass, connection, msg):
+    camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
+    _LOGGER.debug( 'stop_activity for ' + str(camera.name) )
+
+    stopped = await camera.async_stop_activity()
+    connection.send_message(websocket_api.result_message(
+        msg['id'], {
+            'stopped': stopped
+        }
+    ))
+
+async def aarlo_snapshot_service_handler( camera,service ):
+    _LOGGER.debug( "{0} snapshot".format( camera.unique_id ) )
+    camera.request_snapshot()
+
+async def aarlo_snapshot_to_file_service_handler( camera,service ):
+    _LOGGER.info( "{0} snapshot to file".format( camera.unique_id ) )
+
+    hass = camera.hass
+    filename = service.data[ATTR_FILENAME]
+    filename.hass = hass
+
+    snapshot_file = filename.async_render( variables={ATTR_ENTITY_ID: camera} )
+
+    # check if we allow to access to that file
+    if not hass.config.is_allowed_path(snapshot_file):
+        _LOGGER.error( "Can't write %s, no access to path!", snapshot_file)
+        return
+
+    image = await camera.async_get_snapshot()
+
+    def _write_image(to_file, image_data):
+        with open(to_file, 'wb') as img_file:
+            img_file.write(image_data)
+
+    try:
+        await hass.async_add_executor_job( _write_image, snapshot_file, image )
+    except OSError as err:
+        _LOGGER.error("Can't write image to file: %s", err)
+
+async def aarlo_stop_activity_handler( camera,service ):
+    _LOGGER.info( "{0} stop activity".format( camera.unique_id ) )
+    camera.stop_activity()
 

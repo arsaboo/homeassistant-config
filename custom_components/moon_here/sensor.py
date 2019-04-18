@@ -142,7 +142,7 @@ class MoonPhaseHereAPI(object):
 
         resource = "{}app_id={}&app_code={}&zipcode={}".format(
             _ENDPOINT, app_id, app_code, zipcode)
-        self._rest = RestData('GET', resource, None, None, None, False)
+        self._rest = RestData('GET', resource, None, None, None, True)
         self.data = None
         self.available = True
         self.update()

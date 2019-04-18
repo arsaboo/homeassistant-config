@@ -1,8 +1,10 @@
 
-import pprint
 from custom_components.aarlo.pyaarlo.device import ArloDevice
 
-from custom_components.aarlo.pyaarlo.constant import ( DEFAULT_MODES,
+from custom_components.aarlo.pyaarlo.util import ( time_to_arlotime )
+from custom_components.aarlo.pyaarlo.constant import ( AUTOMATION_URL,
+                                DEFAULT_MODES,
+                                DEFINITIONS_URL,
                                 MODES_KEY,
                                 MODE_ID_TO_NAME_KEY,
                                 MODE_KEY,
@@ -20,6 +22,19 @@ class ArloBase(ArloDevice):
     def _name_to_id( self,mode_name ):
         return self._arlo._st.get( [self.device_id,MODE_NAME_TO_ID_KEY,mode_name.lower()],None )
 
+    def _parse_modes( self,modes ):
+        for mode in modes:
+            mode_id = mode.get( 'id',None )
+            mode_name = mode.get( 'name','' )
+            if mode_name == '':
+                mode_name = mode.get( 'type','' )
+                if mode_name == '':
+                    mode_name = mode_id
+            if mode_id and mode_name != '':
+                self._arlo.debug( mode_id + '<==>' + mode_name )
+                self._arlo._st.set( [self.device_id,MODE_ID_TO_NAME_KEY,mode_id],mode_name )
+                self._arlo._st.set( [self.device_id,MODE_NAME_TO_ID_KEY,mode_name.lower()],mode_id )
+
     def _event_handler( self,resource,event ):
         self._arlo.debug( self.name + ' BASE got ' + resource )
 
@@ -27,19 +42,8 @@ class ArloBase(ArloDevice):
         if resource == 'modes':
             props = event.get('properties',{})
 
-            # list of modes?
-            if 'modes' in props:
-                for mode in props.get('modes',[]):
-                    mode_id = mode.get( 'id',None )
-                    mode_name = mode.get( 'name','' )
-                    if mode_name == '':
-                        mode_name = mode.get( 'type','' )
-                        if mode_name == '':
-                            mode_name = mode_id
-                    if mode_id and mode_name != '':
-                        self._arlo.debug( mode_id + '<==>' + mode_name )
-                        self._arlo._st.set( [self.device_id,MODE_ID_TO_NAME_KEY,mode_id],mode_name.lower() )
-                        self._arlo._st.set( [self.device_id,MODE_NAME_TO_ID_KEY,mode_name.lower()],mode_id )
+            # list of modes - recheck?
+            self._parse_modes( props.get('modes',[]) )
 
             # mode change?
             if 'activeMode' in props:
@@ -74,10 +78,18 @@ class ArloBase(ArloDevice):
         mode_id = self._name_to_id( mode_name )
         if mode_id:
             self._arlo.debug( self.name + ':new-mode=' + mode_name + ',id=' + mode_id )
-            self._arlo._bg.run( self._arlo._be.notify,base=self,
-                                    body={"action":"set","resource":"modes","publishResponse":True,"properties":{"active":mode_id}} )
+            self._arlo._bg.run( self._arlo._be.post,url=AUTOMATION_URL,
+                            params={'activeAutomations':
+                                [ {'deviceId':self.device_id,
+                                    'timestamp':time_to_arlotime(),
+                                    'activeModes':[mode_id],
+                                    'activeSchedules':[] } ] } )
         else:
             self._arlo.warning( '{0}: mode {1} is unrecognised'.format( self.name,mode_name) )
+
+    def update_modes( self ):
+        self._modes = self._arlo._be.get( DEFINITIONS_URL + "?uniqueIds={}".format( self.unique_id ) )
+        self._parse_modes( self._modes.get(self.unique_id,{}).get('modes',[]) )
 
     @property
     def refresh_rate(self):

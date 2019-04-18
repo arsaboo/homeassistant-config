@@ -5,21 +5,19 @@ For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/sensor.arlo/
 """
 import logging
-
 import voluptuous as vol
 
-from homeassistant.core import callback
 import homeassistant.helpers.config_validation as cv
-from custom_components.aarlo import (
-    CONF_ATTRIBUTION, DEFAULT_BRAND, DATA_ARLO )
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    ATTR_ATTRIBUTION, CONF_MONITORED_CONDITIONS, TEMP_CELSIUS,
-    DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY)
-
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.icon import icon_for_battery_level
+from homeassistant.components.sensor import (
+        PLATFORM_SCHEMA )
+from homeassistant.const import (
+        ATTR_ATTRIBUTION, CONF_MONITORED_CONDITIONS, TEMP_CELSIUS,
+        DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY)
+from custom_components.aarlo import (
+        CONF_ATTRIBUTION, DEFAULT_BRAND, DATA_ARLO )
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +41,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
 })
 
-
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up an Arlo IP sensor."""
     arlo = hass.data.get(DATA_ARLO)
@@ -53,18 +50,12 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     sensors = []
     for sensor_type in config.get(CONF_MONITORED_CONDITIONS):
         if sensor_type == 'total_cameras':
-            sensors.append( ArloSensor( SENSOR_TYPES[sensor_type][0], arlo, sensor_type) )
+            sensors.append( ArloSensor(SENSOR_TYPES[sensor_type][0],arlo,sensor_type) )
         else:
             for camera in arlo.cameras:
                 if camera.has_capability( sensor_type ):
                     name = '{0} {1}'.format( SENSOR_TYPES[sensor_type][0], camera.name)
-                    sensors.append(ArloSensor(name,camera, sensor_type))
-
-            # move into cameras...
-            #  for base_station in arlo.base_stations:
-                #  if base_station.has_capability( sensor_type ):
-                    #  name = '{0} {1}'.format( SENSOR_TYPES[sensor_type][0], base_station.name)
-                    #  sensors.append(ArloSensor(name,base_station, sensor_type))
+                    sensors.append( ArloSensor(name,camera, sensor_type) )
 
     async_add_entities(sensors, True)
 

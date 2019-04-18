@@ -26,6 +26,7 @@ class ArloDevice(object):
         # stuff we use a lot
         self._device_id   = attrs.get('deviceId',None)
         self._device_type = attrs.get('deviceType',None)
+        self._unique_id   = attrs.get('uniqueId',None)
 
         # add a listener
         self._arlo._be.add_listener( self,self._event_handler )
@@ -106,7 +107,7 @@ class ArloDevice(object):
 
     @property
     def unique_id(self):
-        return self._arlo._st.get( [self._device_id,UNIQUE_ID_KEY],'UNKNOWN' )
+        return self._unique_id
 
     def attribute( self,attr ):
         value = self._arlo._st.get( [self._device_id,attr],None )

@@ -9,4 +9,5 @@ wget -O /home/homeassistant/.homeassistant/www/custom_ui/config-template-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/card-modder.js https://raw.githubusercontent.com/thomasloven/lovelace-card-modder/master/card-modder.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/secondaryinfo-entity-row.js https://raw.githubusercontent.com/MizterB/lovelace-secondaryinfo-entity-row/master/secondaryinfo-entity-row.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/button-card.js https://raw.githubusercontent.com/custom-cards/button-card/master/button-card.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/mini-media-player-bundle.js https://github.com/kalkih/mini-media-player/releases/download/v1.0.4/mini-media-player-bundle.js
 sudo chown -R homeassistant:homeassistant /home/homeassistant/.homeassistant/

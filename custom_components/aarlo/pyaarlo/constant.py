@@ -1,5 +1,7 @@
 
 DEVICES_URL         = 'https://arlo.netgear.com/hmsweb/users/devices'
+DEFINITIONS_URL     = 'https://arlo.netgear.com/hmsweb/users/automation/definitions'
+AUTOMATION_URL      = 'https://arlo.netgear.com/hmsweb/users/devices/automation/active'
 LIBRARY_URL         = 'https://arlo.netgear.com/hmsweb/users/library'
 LOGIN_URL           = 'https://arlo.netgear.com/hmsweb/login/v2'
 LOGOUT_URL          = 'https://arlo.netgear.com/hmsweb/logout'
@@ -23,6 +25,8 @@ AIR_QUALITY_KEY     = 'airQuality'
 AUDIO_DETECTED_KEY  = 'audioDetected'
 BATTERY_KEY         = 'batteryLevel'
 BRIGHTNESS_KEY      = 'brightness'
+CHARGER_KEY         = 'chargerTech'
+CHARGING_KEY        = 'chargingState'
 CONNECTION_KEY      = 'connectionState'
 FLIP_KEY            = 'flip'
 HUMIDITY_KEY        = 'humidity'
@@ -37,12 +41,12 @@ TEMPERATURE_KEY     = 'temperature'
 
 # we can get these from the resource; doorbell is subset
 RESOURCE_KEYS = [ ACTIVITY_STATE_KEY, AIR_QUALITY_KEY, AUDIO_DETECTED_KEY, BATTERY_KEY,
-                            BRIGHTNESS_KEY, CONNECTION_KEY, FLIP_KEY, HUMIDITY_KEY,
+                            BRIGHTNESS_KEY, CONNECTION_KEY, CHARGER_KEY, CHARGING_KEY, FLIP_KEY, HUMIDITY_KEY,
                             MIRROR_KEY, MOTION_DETECTED_KEY, MOTION_ENABLED_KEY,
                             MOTION_SENS_KEY, POWER_SAVE_KEY, PRIVACY_KEY,
                             SIGNAL_STR_KEY, TEMPERATURE_KEY ]
 
-RESOURCE_UPDATE_KEYS = [ ACTIVITY_STATE_KEY, AIR_QUALITY_KEY, AUDIO_DETECTED_KEY, BATTERY_KEY,
+RESOURCE_UPDATE_KEYS = [ ACTIVITY_STATE_KEY, AIR_QUALITY_KEY, AUDIO_DETECTED_KEY, BATTERY_KEY, CHARGER_KEY, CHARGING_KEY,
                             HUMIDITY_KEY, MOTION_DETECTED_KEY, PRIVACY_KEY, SIGNAL_STR_KEY, TEMPERATURE_KEY ]
 
 # device keys
