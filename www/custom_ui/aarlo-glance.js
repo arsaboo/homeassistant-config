@@ -205,17 +205,26 @@ class AarloGlance extends LitElement {
         var snapshotHidden = show.includes('snapshot') ? '' : 'hidden';
         var dateHidden     = show.includes('image_date') ? '' : 'hidden';
 
-        var doorHidden     = this._doorId == undefined ? 'hidden':''
-        var doorLockHidden = this._doorLockId == undefined ? 'hidden':''
-        var doorBellHidden = this._doorBellId == undefined ? 'hidden':''
+        var doorHidden      = this._doorId == undefined ? 'hidden':''
+        var doorLockHidden  = this._doorLockId == undefined ? 'hidden':''
+        var doorBellHidden  = this._doorBellId == undefined ? 'hidden':''
+        var door2Hidden     = this._door2Id == undefined ? 'hidden':''
+        var door2LockHidden = this._door2LockId == undefined ? 'hidden':''
+        var door2BellHidden = this._door2BellId == undefined ? 'hidden':''
 
         if( batteryHidden == '' ) {
-            var battery      = this.safe_state(_hass,this._batteryId,0);
-            var batteryText  = 'Battery Strength: ' + battery.state +'%';
-            var batteryIcon  = battery.state < 10 ? 'battery-outline' :
-                ( battery.state > 90 ? 'battery' : 'battery-' + Math.round(battery.state/10) +'0' );
-            var batteryState = battery.state < 25 ? 'state-warn' :
-                ( battery.state < 15 ? 'state-error' : 'state-update' );
+            if ( camera.attributes.wired ) {
+                var batteryText  = 'Plugged In';
+                var batteryIcon  = 'power-plug';
+                var batteryState = 'state-update';
+            } else {
+                var battery       = this.safe_state(_hass,this._batteryId,0);
+                var batteryText   = 'Battery Strength: ' + battery.state +'%';
+                var batteryPrefix = camera.attributes.charging ? 'battery-charging' : 'battery'
+                var batteryIcon   = batteryPrefix + ( battery.state < 10 ? '-outline' :
+                                        ( battery.state > 90 ? '' : '-' + Math.round(battery.state/10) + '0' ) );
+                var batteryState  = battery.state < 25 ? 'state-warn' : ( battery.state < 15 ? 'state-error' : 'state-update' );
+            }
         } else {
             var batteryText  = 'not-used';
             var batteryIcon  = 'not-used';
@@ -264,6 +273,10 @@ class AarloGlance extends LitElement {
             var playOn    = 'state-on';
             var playText  = 'click to live-stream'
             var playIcon  = 'mdi:play'
+            if ( camera.state == 'streaming' ) {
+                playText = 'click to stop stream'
+                playIcon  = 'mdi:stop'
+            }
         } else {
             var playOn    = 'not-used'
             var playText  = 'not-used'
@@ -282,35 +295,71 @@ class AarloGlance extends LitElement {
 
         if( doorHidden == '' ) {
             var doorStatusHidden = '';
-            var doorOn       = this.safe_state(_hass,this._doorId,'off').state == 'on' ? 'state-on' : '';
-            var doorText     = 'Door: ' + (doorOn == '' ? 'closed' : 'open');
+            var doorState    = this.safe_state(_hass,this._doorId,'off');
+            var doorOn       = doorState.state == 'on' ? 'state-on' : '';
+            var doorText     = doorState.attributes.friendly_name + ': ' + (doorOn == '' ? 'closed' : 'open');
             var doorIcon     = doorOn == '' ? 'mdi:door' : 'mdi:door-open';
         } else {
             var doorOn    = 'not-used'
             var doorText  = 'not-used'
             var doorIcon  = 'not-used'
         }
+        if( door2Hidden == '' ) {
+            var doorStatusHidden = '';
+            var door2State    = this.safe_state(_hass,this._door2Id,'off');
+            var door2On       = door2State.state == 'on' ? 'state-on' : '';
+            var door2Text     = door2State.attributes.friendly_name + ': ' + (door2On == '' ? 'closed' : 'open');
+            var door2Icon     = door2On == '' ? 'mdi:door' : 'mdi:door-open';
+        } else {
+            var door2On    = 'not-used'
+            var door2Text  = 'not-used'
+            var door2Icon  = 'not-used'
+        }
 
         if( doorLockHidden == '' ) {
             var doorStatusHidden = '';
-            var doorLockOn       = this.safe_state(_hass,this._doorLockId,'locked').state == 'locked' ? 'state-on' : 'state-warn';
-            var doorLockText     = 'Lock: ' + (doorLockOn == 'state-on' ? 'locked (click to unlock)' : 'unlocked (click to lock)');
+            var doorLockState    = this.safe_state(_hass,this._doorLockId,'locked');
+            var doorLockOn       = doorLockState.state == 'locked' ? 'state-on' : 'state-warn';
+            var doorLockText     = doorLockState.attributes.friendly_name + ': ' + (doorLockOn == 'state-on' ? 'locked (click to unlock)' : 'unlocked (click to lock)');
             var doorLockIcon     = doorLockOn == 'state-on' ? 'mdi:lock' : 'mdi:lock-open';
         } else {
             var doorLockOn    = 'not-used'
             var doorLockText  = 'not-used'
             var doorLockIcon  = 'not-used'
         }
+        if( door2LockHidden == '' ) {
+            var doorStatusHidden = '';
+            var door2LockState    = this.safe_state(_hass,this._door2LockId,'locked');
+            var door2LockOn       = door2LockState.state == 'locked' ? 'state-on' : 'state-warn';
+            var door2LockText     = door2LockState.attributes.friendly_name + ': ' + (door2LockOn == 'state-on' ? 'locked (click to unlock)' : 'unlocked (click to lock)');
+            var door2LockIcon     = door2LockOn == 'state-on' ? 'mdi:lock' : 'mdi:lock-open';
+        } else {
+            var door2LockOn    = 'not-used'
+            var door2LockText  = 'not-used'
+            var door2LockIcon  = 'not-used'
+        }
 
         if( doorBellHidden == '' ) {
             var doorStatusHidden = '';
-            var doorBellOn       = this.safe_state(_hass,this._doorBellId,'off').state == 'on' ? 'state-on' : '';
-            var doorBellText     = 'Bell: ' + (doorBellOn == 'state-on' ? 'ding ding!' : 'idle');
+            var doorBellState    = this.safe_state(_hass,this._doorBellId,'off');
+            var doorBellOn       = doorBellState.state == 'on' ? 'state-on' : '';
+            var doorBellText     = doorBellState.attributes.friendly_name + ': ' + (doorBellOn == 'state-on' ? 'ding ding!' : 'idle');
             var doorBellIcon     = 'mdi:doorbell-video';
         } else {
             var doorBellOn    = 'not-used'
             var doorBellText  = 'not-used'
             var doorBellIcon  = 'not-used'
+        }
+        if( door2BellHidden == '' ) {
+            var doorStatusHidden = '';
+            var door2BellState    = this.safe_state(_hass,this._door2BellId,'off');
+            var door2BellOn       = door2BellState.state == 'on' ? 'state-on' : '';
+            var door2BellText     = door2BellState.attributes.friendly_name + ': ' + (door2BellOn == 'state-on' ? 'ding ding!' : 'idle');
+            var door2BellIcon     = 'mdi:doorbell-video';
+        } else {
+            var door2BellOn    = 'not-used'
+            var door2BellText  = 'not-used'
+            var door2BellIcon  = 'not-used'
         }
 
 		//type="application/x-mpegURL"
@@ -378,7 +427,7 @@ class AarloGlance extends LitElement {
 					<ha-icon on-click="${(e) => { this.moreInfo(this._motionId); }}" class$="${motionOn} ${motionHidden}" icon="mdi:run-fast" title="${motionText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.moreInfo(this._soundId); }}" class$="${soundOn} ${soundHidden}" icon="mdi:ear-hearing" title="${soundText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.showLibrary(this._cameraId,0); }}" class$="${capturedOn} ${capturedHidden}" icon="${capturedIcon}" title="${capturedText}"></ha-icon>
-					<ha-icon on-click="${(e) => { this.showLiveStream(this._cameraId); }}" class$="${playOn} ${playHidden}" icon="${playIcon}" title="${playText}"></ha-icon>
+					<ha-icon on-click="${(e) => { this.showOrStopStream(this._cameraId); }}" class$="${playOn} ${playHidden}" icon="${playIcon}" title="${playText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.updateSnapshot(this._cameraId); }}" class$="${snapshotOn} ${snapshotHidden}" icon="${snapshotIcon}" title="${snapshotText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.moreInfo(this._batteryId); }}" class$="${batteryState} ${batteryHidden}" icon="mdi:${batteryIcon}" title="${batteryText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.moreInfo(this._signalId); }}" class$="state-update ${signalHidden}" icon="${signalIcon}" title="${signal_text}"></ha-icon>
@@ -390,6 +439,9 @@ class AarloGlance extends LitElement {
 					<ha-icon on-click="${(e) => { this.moreInfo(this._doorId); }}" class$="${doorOn} ${doorHidden}" icon="${doorIcon}" title="${doorText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.moreInfo(this._doorBellId); }}" class$="${doorBellOn} ${doorBellHidden}" icon="${doorBellIcon}" title="${doorBellText}"></ha-icon>
 					<ha-icon on-click="${(e) => { this.toggleLock(this._doorLockId); }}" class$="${doorLockOn} ${doorLockHidden}" icon="${doorLockIcon}" title="${doorLockText}"></ha-icon>
+					<ha-icon on-click="${(e) => { this.moreInfo(this._door2Id); }}" class$="${door2On} ${door2Hidden}" icon="${door2Icon}" title="${door2Text}"></ha-icon>
+					<ha-icon on-click="${(e) => { this.moreInfo(this._door2BellId); }}" class$="${door2BellOn} ${door2BellHidden}" icon="${door2BellIcon}" title="${door2BellText}"></ha-icon>
+					<ha-icon on-click="${(e) => { this.toggleLock(this._door2LockId); }}" class$="${door2LockOn} ${door2LockHidden}" icon="${door2LockIcon}" title="${door2LockText}"></ha-icon>
 				</div>
 				<div class$="box-status ${this._topStatus?'hidden':''}">
 					${camera.state}
@@ -497,6 +549,20 @@ class AarloGlance extends LitElement {
 			throw new Error( 'unknown door lock' )
 		}
 
+		// door2 definition
+		this._door2Id     = config.door2 ? config.door2: undefined
+		this._door2BellId = config.door2_bell ? config.door2_bell : undefined
+		this._door2LockId = config.door2_lock ? config.door2_lock : undefined
+		if ( this._hass && this._door2 && this._hass.states[this._door2] == undefined ) {
+			throw new Error( 'unknown door (#2)' )
+		}
+		if ( this._hass && this._door2BellId && this._hass.states[this._door2BellId] == undefined ) {
+			throw new Error( 'unknown door bell (#2)' )
+		}
+		if ( this._hass && this._door2LockId && this._hass.states[this._door2LockId] == undefined ) {
+			throw new Error( 'unknown door lock (#2)' )
+		}
+
 		// ui configuration
 		this._topTitle  = config.top_title ? config.top_title : false
 		this._topDate   = config.top_date ? config.top_date : false
@@ -558,7 +624,14 @@ class AarloGlance extends LitElement {
         }
     }
 
-    stopStream( id ) {
+    async stopStream( id ) {
+        try {
+            const stopped = await this._hass.callWS({
+                type: "aarlo_stop_activity",
+                entity_id: this._cameraId,
+            });
+        } catch (err) { }
+
         this._stream = null
         if ( this._hls ) {
             this._hls.stopLoad()
@@ -567,7 +640,7 @@ class AarloGlance extends LitElement {
         }
     }
 
-    async showLiveStream( id ) {
+    async showStream( id ) {
         var stream = await this.readStream( id,1 );
         if ( stream ) {
             this._stream = stream.url;
@@ -580,15 +653,23 @@ class AarloGlance extends LitElement {
         }
     }
 
+    async showOrStopStream( id ) {
+        const camera = this.safe_state(this._hass,this._cameraId,'unknown')
+		if ( camera.state == 'streaming' ) {
+			this.stopStream( iD )
+		} else {
+			this.showStream( iD )
+		}
+	}
+
     async showVideoOrStream( id ) {
         // on click
         if ( this._imageClick && this._imageClick == 'play' ) {
-            this.showLiveStream(id)
+            this.showStream(id)
         } else {
             this.showVideo(id)
         }
     }
-
 
     async showLibrary( id,base ) {
         this._video = null
@@ -616,8 +697,17 @@ class AarloGlance extends LitElement {
         this._library = null
     }
 
-    updateSnapshot( id ) {
-        this._hass.callService( 'camera','aarlo_request_snapshot', { entity_id:id } )
+    async updateSnapshot( id ) {
+        //this._hass.callService( 'camera','aarlo_request_snapshot', { entity_id:id } )
+		try {
+			const { content_type: contentType, content } = await this._hass.callWS({
+				type: "aarlo_snapshot_image",
+				entity_id: this._cameraId,
+			});
+			this._img = `data:${contentType};base64, ${content}`;
+		} catch (err) {
+			this._img = null
+		}
     }
 
     async _updateCameraImageSrc() {
