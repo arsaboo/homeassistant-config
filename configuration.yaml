@@ -691,7 +691,8 @@ logger:
     # homeassistant.components.device_tracker: info
 # Text to speech
 tts:
-  - platform: google
+  - platform: google_translate
+    service_name: google_say
     cache: true
     cache_dir: /home/homeassistant/.homeassistant/tts
     time_memory: 300
