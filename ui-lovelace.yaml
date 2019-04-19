@@ -13,8 +13,6 @@ resources:
     type: js
   - url: /local/custom_ui/slider-entity-row.js?v=0.3
     type: js
-  - url: /local/custom_ui/button-card.js?v=0.12
-    type: module
   - url: /local/custom_ui/mini-media-player-bundle.js?v=0.0.3
     type: module
   - url: /local/custom_ui/mini-graph-card-bundle.js?v=0.0.1
@@ -34,6 +32,10 @@ resources:
   - url: /local/custom_ui/secondaryinfo-entity-row.js
     type: module
   - url: /local/custom_ui/simple-thermostat.js
+    type: module
+  - url: /local/custom_ui/aarlo-glance.js
+    type: module
+  - url: /local/custom_ui/button-card.js
     type: module
 title: ARS Home
 views:
@@ -896,12 +898,11 @@ views:
                     entity_id: media_player.family_room_2
               - type: custom:button-card
                 entity: sensor.sonos_volume
-                color_type: icon
                 show_state: true
-                color: rgb(223, 255, 97)
+                show_icon: false
                 style:
-                  - height: 50px
-                action: more_info
+                  - height: 40px
+                  - line-height: 40px
               - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
@@ -1142,10 +1143,10 @@ views:
             style:
               - font-size: 12px
               - text-transform: capitalize
-          - type: custom:button-card
+          - type: "custom:button-card"
             entity: switch.rpi_aiy
             name: RPi AIY
-            icon: mdi:raspberrypi
+            icon: mdi:raspberry-pi
             color: rgb(250, 218, 79)
             color_type: icon
             style:
@@ -1549,6 +1550,8 @@ views:
           exclude:
             - state: "unknown"
       - type: custom:calendar-card
+        startFromToday: true
+        progressBar: true
         entities:
           - calendar.personal
           - calendar.work
