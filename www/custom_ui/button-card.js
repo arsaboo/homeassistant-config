@@ -140,6 +140,10 @@ export default function domainIcon(domain, state) {
           display: flex;
           margin: auto;
           text-align: center;
+          border-bottom-left-radius: 2px;
+          border-bottom-right-radius: 2px;
+          border-top-left-radius: 2px;
+          border-top-right-radius: 2px;
         }
         button-card-button.disabled {
             pointer-events: none;
@@ -159,6 +163,41 @@ export default function domainIcon(domain, state) {
           0%{opacity:0;}
           50%{opacity:1;}
           100%{opacity:0;}
+        }
+        @-webkit-keyframes rotating /* Safari and Chrome */ {
+          from {
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+          }
+          to {
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+          }
+        }
+        @keyframes rotating {
+          from {
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+          }
+          to {
+            -ms-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+          }
+        }
+        .rotating {
+          -webkit-animation: rotating 2s linear infinite;
+          -moz-animation: rotating 2s linear infinite;
+          -ms-animation: rotating 2s linear infinite;
+          -o-animation: rotating 2s linear infinite;
+          animation: rotating 2s linear infinite;
         }
       `;
     }
@@ -294,23 +333,17 @@ export default function domainIcon(domain, state) {
     }
 
     buildIcon(state, config, configState) {
-      let iconValue = null;
       let icon = null;
       if (configState && configState.icon) {
-        iconValue = configState.icon;
+        icon = configState.icon;
+      } else if (config.icon) {
+        icon = config.icon;
       } else {
-        iconValue = config.icon;
-      }
-      if (iconValue == 'attribute') {
         if (state) {
           icon = state.attributes.icon ?
             state.attributes.icon :
             domainIcon(state.entity_id.split('.', 2)[0], state.state);
-        } else {
-          icon = undefined;
         }
-      } else {
-        icon = iconValue;
       }
       return icon;
     }
@@ -360,6 +393,9 @@ export default function domainIcon(domain, state) {
       return clickable;
     }
 
+    rotate(configState) {
+      return configState && configState.spin ? 'rotating' : '';
+    }
 
     blankCardColoredHtml(state, config, configState) {
       const color = this.buildCssColorAttribute(state, config);
@@ -379,7 +415,7 @@ export default function domainIcon(domain, state) {
       <ha-card style="color: ${fontColor}; position: relative;" @tap="${ev => this._handleTap(state, config)}">
         <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}" style="background-color: ${color}">
           <div class="main" style="${style}">
-            ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}"></ha-icon>` : ''}
+            ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
             ${config.name ? html`<div>${config.name}</div>` : ''}
           </div>
         </button-card-button>
@@ -396,7 +432,7 @@ export default function domainIcon(domain, state) {
       <ha-card style="color: ${fontColor}; position: relative;" @tap="${ev => this._handleTap(state, config)}">
         <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}" style="background-color: ${color};">
           <div class="main" style="${style}">
-            ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}"></ha-icon>` : ''}
+            ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
             ${config.name ? html`<div>${config.name}</div>` : ''}
             ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
           </div>
@@ -413,7 +449,7 @@ export default function domainIcon(domain, state) {
       <ha-card style="position: relative;" @tap="${ev => this._handleTap(state, config)}">
         <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}">
           <div class="main" style="${style}">
-            ${config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: auto;" icon="${icon}"></ha-icon>` : ''}
+            ${config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
             ${config.name ? html`<div>${config.name}</div>` : ''}
             ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
           </div>
@@ -429,7 +465,6 @@ export default function domainIcon(domain, state) {
         color_type: 'icon',
         default_color: 'var(--primary-text-color)',
         name: '',
-        icon: 'attribute',
         show_icon: true,
         ...config
       };
@@ -481,6 +516,9 @@ export default function domainIcon(domain, state) {
             }
             const [domain, service] = config.tap_action.service.split('.', 2);
             this.hass.callService(domain, service, config.tap_action.service_data);
+            break;
+          case 'url':
+            config.tap_action.url && window.open(config.tap_action.url);
             break;
           case 'toggle':
           default:
