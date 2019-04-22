@@ -13,10 +13,15 @@ class LayoutCard extends cardTools.LitElement {
     this.rtl = config.rtl || false;
     this.cardSize = 1;
 
+    this.make_cards();
+
     window.addEventListener('resize', () => this.build());
     window.addEventListener('hass-open-menu', () => setTimeout(() => this.build(), 100));
     window.addEventListener('hass-close-menu', () => setTimeout(() => this.build(), 100));
-    window.addEventListener('location-changed', () => setTimeout(() => this.build(), 100));
+    window.addEventListener('location-changed', () => {
+      if(location.hash === "") setTimeout(() =>
+        this.build(), 100)
+    });
     if(config.rebuild)
       window.setTimeout(() => this.build(), config.rebuild);
   }
@@ -72,7 +77,7 @@ class LayoutCard extends cardTools.LitElement {
   }
 
   make_cards() {
-    this.cards = this.config.cards.map((c) => {
+    this._cards = this.config.cards.map((c) => {
       if (typeof c === 'string') return c;
       const card = cardTools.createCard(c);
       if(this._hass) card.hass = this._hass;
@@ -97,7 +102,7 @@ class LayoutCard extends cardTools.LitElement {
 
     this.update_columns();
 
-    if(!this.cards) this.make_cards();
+    if(!this._cards) this.make_cards();
 
     let cols = [];
     let colSize = [];
@@ -118,7 +123,7 @@ class LayoutCard extends cardTools.LitElement {
     }
 
     let i = 0;
-    this.cards.forEach((c) => {
+    this._cards.forEach((c) => {
       const isBreak = (typeof(c) === 'string');
       const sz = c.getCardSize ? c.getCardSize() : 1;
 
@@ -167,8 +172,8 @@ class LayoutCard extends cardTools.LitElement {
 
   set hass(hass) {
     this._hass = hass;
-    if(this.cards)
-      this.cards
+    if(this._cards)
+      this._cards
         .filter((c) => typeof(c) !== 'string')
         .forEach((c) => c.hass = hass);
   }

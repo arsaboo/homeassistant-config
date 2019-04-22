@@ -102,25 +102,9 @@ export default function domainIcon(domain, state) {
   }
 }
 
-((LitElement, ButtonBase) => {
+((LitElement) => {
   var html = LitElement.prototype.html;
   var css = LitElement.prototype.css;
-
-  customElements.define(
-    'button-card-button',
-    class extends ButtonBase {
-      static get styles() {
-        return css`
-          ${ButtonBase.styles}
-          .mdc-button {
-            height: auto;
-            padding: 0;
-            color: inherit !important;
-          }
-        `
-      }
-    },
-  );
 
   class ButtonCard extends LitElement {
     static get properties() {
@@ -132,24 +116,18 @@ export default function domainIcon(domain, state) {
 
     static get styles() {
       return css`
+        ha-card {
+          cursor: pointer;
+        }
+        ha-card.disabled {
+          pointer-events: none;
+          cursor: default;
+        }
         ha-icon {
-          display: flex;
+          display: inline-block;
           margin: auto;
         }
-        button-card-button {
-          display: flex;
-          margin: auto;
-          text-align: center;
-          border-bottom-left-radius: 2px;
-          border-bottom-right-radius: 2px;
-          border-top-left-radius: 2px;
-          border-top-right-radius: 2px;
-        }
-        button-card-button.disabled {
-            pointer-events: none;
-            cursor: default;
-        }
-        button-card-button div.main {
+        div.button-card-main {
           padding: 4% 0px;
           text-transform: none;
           font-weight: 400;
@@ -158,6 +136,12 @@ export default function domainIcon(domain, state) {
           text-align: center;
           letter-spacing: normal;
           width: 100%;
+        }
+        div.button-card-background-color {
+          border-bottom-left-radius: 2px;
+          border-bottom-right-radius: 2px;
+          border-top-left-radius: 2px;
+          border-top-right-radius: 2px;
         }
         @keyframes blink{
           0%{opacity:0;}
@@ -200,6 +184,18 @@ export default function domainIcon(domain, state) {
           animation: rotating 2s linear infinite;
         }
       `;
+    }
+
+    longpress(element) {
+      customElements.whenDefined("long-press").then(() => {
+        const longpress = document.body.querySelector("long-press");
+        longpress.bind(element);
+      });
+      return element;
+    }
+
+    firstUpdated() {
+      this.longpress(this.shadowRoot.querySelector('ha-card'));
     }
 
     render() {
@@ -371,6 +367,21 @@ export default function domainIcon(domain, state) {
       return cardStyle;
     }
 
+    buildName(state, configState) {
+      let name = null;
+      if (configState && configState.name) {
+        name = configState.name;
+      } else if (this.config.name) {
+        name = this.config.name;
+      } else {
+        if (state) {
+          name = state.attributes && state.attributes.friendly_name ?
+            state.attributes.friendly_name : state.entity_id.split('.', 2)[1];
+        }
+      }
+      return name;
+    }
+
     isClickable(state, config) {
       let clickable = true;
       if (config.tap_action.action == 'toggle') {
@@ -388,7 +399,7 @@ export default function domainIcon(domain, state) {
           clickable = false
         }
       } else {
-        clickable = !(config.tap_action.action == 'none')
+        clickable = (config.tap_action.action != 'none' || config.hold_action && config.hold_action.action != 'none')
       }
       return clickable;
     }
@@ -411,14 +422,16 @@ export default function domainIcon(domain, state) {
       const fontColor = this.getFontColorBasedOnBackgroundColor(color);
       const icon = this.buildIcon(state, config, configState);
       const style = this.buildStyle(state, config, configState);
+      const name = this.buildName(state, configState);
       return html`
-      <ha-card style="color: ${fontColor}; position: relative;" @tap="${ev => this._handleTap(state, config)}">
-        <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}" style="background-color: ${color}">
-          <div class="main" style="${style}">
+      <ha-card class="${this.isClickable(state, config) ? '' : "disabled"}" style="color: ${fontColor}; position: relative;" @ha-click="${ev => this._handleTap(state, config, false)}" @ha-hold="${ev => this._handleTap(state, config, true)}">
+        <div class="button-card-background-color" style="background-color: ${color};">
+          <div class="button-card-main" style="${style}">
             ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-            ${config.name ? html`<div>${config.name}</div>` : ''}
+            ${config.show_name && name ? html`<div>${name}</div>` : ''}
           </div>
-        </button-card-button>
+        </div>
+        <mwc-ripple></mwc-ripple>
       </ha-card>
       `;
     }
@@ -428,15 +441,17 @@ export default function domainIcon(domain, state) {
       const fontColor = this.getFontColorBasedOnBackgroundColor(color);
       const icon = this.buildIcon(state, config, configState);
       const style = this.buildStyle(state, config, configState);
+      const name = this.buildName(state, configState);
       return html`
-      <ha-card style="color: ${fontColor}; position: relative;" @tap="${ev => this._handleTap(state, config)}">
-        <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}" style="background-color: ${color};">
-          <div class="main" style="${style}">
+      <ha-card class="${this.isClickable(state, config) ? '' : "disabled"}" style="color: ${fontColor}; position: relative;" @ha-click="${ev => this._handleTap(state, config, false)}" @ha-hold="${ev => this._handleTap(state, config, true)}">
+        <div class="button-card-background-color" style="background-color: ${color};">
+          <div class="button-card-main" style="${style}">
             ${config.show_icon && icon ? html`<ha-icon style="width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-            ${config.name ? html`<div>${config.name}</div>` : ''}
+            ${config.show_name && name ? html`<div>${name}</div>` : ''}
             ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
           </div>
-        </button-card-button>
+        </div>
+        <mwc-ripple></mwc-ripple>
       </ha-card>
       `;
     }
@@ -445,15 +460,15 @@ export default function domainIcon(domain, state) {
       const color = this.buildCssColorAttribute(state, config, configState);
       const icon = this.buildIcon(state, config, configState);
       const style = this.buildStyle(state, config, configState);
+      const name = this.buildName(state, configState);
       return html`
-      <ha-card style="position: relative;" @tap="${ev => this._handleTap(state, config)}">
-        <button-card-button class="${this.isClickable(state, config) ? '' : "disabled"}">
-          <div class="main" style="${style}">
-            ${config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-            ${config.name ? html`<div>${config.name}</div>` : ''}
-            ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
-          </div>
-        </button-card-button>
+      <ha-card class="${this.isClickable(state, config) ? '' : "disabled"}" style="position: relative;" @ha-click="${ev => this._handleTap(state, config, false)}" @ha-hold="${ev => this._handleTap(state, config, true)}">
+        <div class="button-card-main" style="${style}">
+          ${config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
+          ${config.show_name && name ? html`<div>${name}</div>` : ''}
+          ${config.show_state ? html`<div>${state.state} ${state.attributes.unit_of_measurement ? state.attributes.unit_of_measurement : ''}</div>` : ''}
+        </div>
+        <mwc-ripple></mwc-ripple>
       </ha-card>
       `;
     }
@@ -464,7 +479,8 @@ export default function domainIcon(domain, state) {
         size: '40%',
         color_type: 'icon',
         default_color: 'var(--primary-text-color)',
-        name: '',
+        show_name: true,
+        show_state: false,
         show_icon: true,
         ...config
       };
@@ -478,15 +494,16 @@ export default function domainIcon(domain, state) {
       return 3;
     }
 
-    _handleTap(state, config) {
+    _handleTap(state, config, hold) {
       if (config.confirmation &&
-        !confirm("Confirm tap")) {
+        !confirm(config.confirmation)) {
         return;
       }
 
-      if (config.tap_action) {
+      let action = hold ? config.hold_action : config.tap_action;
+      if (action) {
         let event;
-        switch (config.tap_action.action) {
+        switch (action.action) {
           case 'none':
             break;
           case 'more-info':
@@ -499,8 +516,8 @@ export default function domainIcon(domain, state) {
             this.shadowRoot.dispatchEvent(event);
             break;
           case 'navigate':
-            if (!config.tap_action.navigation_path) break;
-            history.pushState(null, "", config.tap_action.navigation_path);
+            if (!action.navigation_path) break;
+            history.pushState(null, "", action.navigation_path);
             event = new Event('location-changed', {
               bubbles: true,
               cancelable: false,
@@ -511,14 +528,14 @@ export default function domainIcon(domain, state) {
             break;
           case 'service':
           case 'call-service':
-            if (!config.tap_action.service) {
+            if (!action.service) {
               return;
             }
-            const [domain, service] = config.tap_action.service.split('.', 2);
-            this.hass.callService(domain, service, config.tap_action.service_data);
+            const [domain, service] = action.service.split('.', 2);
+            this.hass.callService(domain, service, action.service_data);
             break;
           case 'url':
-            config.tap_action.url && window.open(config.tap_action.url);
+            action.url && window.open(action.url);
             break;
           case 'toggle':
           default:
@@ -532,4 +549,4 @@ export default function domainIcon(domain, state) {
   }
 
   customElements.define('button-card', ButtonCard);
-})(window.LitElement || Object.getPrototypeOf(customElements.get("home-assistant-main")), customElements.get('mwc-button') || customElements.get('paper-button'));
+})(window.LitElement || Object.getPrototypeOf(customElements.get("home-assistant-main")));
