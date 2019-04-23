@@ -54,7 +54,7 @@ class CardModder extends cardTools.LitElement {
   }
 
   async _cardMod() {
-    if(!this._config.style) return;
+    if(!this._config.style && !this._config.extra_styles) return;
 
     let root = this.card;
     let target = null;
