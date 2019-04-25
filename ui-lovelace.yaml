@@ -588,6 +588,54 @@ views:
           - binary_sensor.ring_front_door_motion
           - sensor.ring_front_door_last_ding
           - sensor.ring_front_door_last_motion
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            name: Patio
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.cast_patio
+            entity: script.cast_patio
+            icon: mdi:cast-connected
+          - type: entity-button
+            name: Porch
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.cast_porch
+            entity: script.cast_porch
+            icon: mdi:cast-connected
+          - type: entity-button
+            name: Driveway
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.cast_driveway
+            entity: script.cast_driveway
+            icon: mdi:cast-connected
+          - type: entity-button
+            name: Backyard
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.cast_backyard
+            entity: script.cast_backyard
+            icon: mdi:cast-connected
+          - type: entity-button
+            name: All
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.cast_cycle_cameras
+            entity: script.cast_cycle_cameras
+            icon: mdi:cast-connected
+
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
@@ -725,50 +773,65 @@ views:
         entity: camera.grafana_networth
         show_name: false
         show_state: false
-  - icon: mdi:cctv
+  - icon: mdi:camera
     id: cameras
     title: Cameras
     cards:
       - type: picture-entity
-        entity: camera.driveway
+        entity: camera.driveway_tf
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.patio
+        entity: camera.patio_tf
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.porch
+        entity: camera.porch_tf
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.backyard
+        entity: camera.backyard_tf
         show_name: false
         show_state: false
-      - type: picture-glance
-        title: Kids Room
-        camera_image: camera.aarlo_arlo3
-        entities:
-          - sensor.aarlo_battery_level_arlo3
-          - sensor.aarlo_signal_strength_arlo3
-          - binary_sensor.aarlo_sound_arlo3
-          - binary_sensor.aarlo_motion_arlo3
-      - type: picture-glance
-        title: Living Room
-        camera_image: camera.aarlo_arlolivingroom
-        entities:
-          - sensor.aarlo_battery_level_arlolivingroom
-          - sensor.aarlo_signal_strength_arlolivingroom
-          - binary_sensor.aarlo_sound_arlolivingroom
-          - binary_sensor.aarlo_motion_arlolivingroom
-      - type: picture-glance
-        title: FirePlace
-        camera_image: camera.aarlo_livingroom2
-        entities:
-          - sensor.aarlo_battery_level_livingroom2
-          - sensor.aarlo_signal_strength_livingroom2
-          - binary_sensor.aarlo_sound_livingroom2
-          - binary_sensor.aarlo_motion_livingroom2
+      - type: 'custom:aarlo-glance'
+        entity: camera.aarlo_arlo3
+        name: Kids Room
+        show:
+          - motion
+          - sound
+          - snapshot
+          - battery_level
+          - signal_strength
+          - captured_today
+        top_title: false
+        top_status: false
+        image_click: play
+      - type: 'custom:aarlo-glance'
+        entity: camera.aarlo_arlolivingroom
+        name: Living Room
+        show:
+          - motion
+          - sound
+          - snapshot
+          - battery_level
+          - signal_strength
+          - captured_today
+        top_title: false
+        top_status: false
+        image_click: play
+      - type: 'custom:aarlo-glance'
+        name: FirePlace
+        entity: camera.aarlo_livingroom2
+        show:
+          - motion
+          - sound
+          - snapshot
+          - battery_level
+          - signal_strength
+          - captured_today
+        top_title: false
+        top_status: false
+        image_click: play
       - type: picture-entity
         entity: camera.front_door
       - type: picture-entity
@@ -777,26 +840,6 @@ views:
         show_state: false
       - type: picture-entity
         entity: camera.ars_bloom
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.driveway_tf
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.porch_tf
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.patio_tf
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.backyard_tf
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.porch_2
         show_name: false
         show_state: false
 
@@ -890,7 +933,7 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
-                action: service
+                action: call-service
                 service:
                   domain: media_player
                   action: volume_down
@@ -900,6 +943,8 @@ views:
                 entity: sensor.sonos_volume
                 show_state: true
                 show_icon: false
+                show_name: false
+                layout: vertical
                 style:
                   - height: 40px
                   - line-height: 40px
@@ -907,7 +952,7 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
-                action: service
+                action: call-service
                 service:
                   domain: media_player
                   action: volume_up
@@ -923,7 +968,7 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:plex
-                action: service
+                action: call-service
                 service:
                   domain: rest_command
                   action: plex
@@ -931,7 +976,7 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:youtube
-                action: service
+                action: call-service
                 service:
                   domain: rest_command
                   action: youtube
@@ -939,7 +984,7 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:netflix
-                action: service
+                action: call-service
                 service:
                   domain: rest_command
                   action: netflix
@@ -950,12 +995,13 @@ views:
         title: Light Operations
         show_header_toggle: false
         entities:
-          - input_boolean.partymode
+          - input_boolean.lifxeffects
+          - input_number.lifxspread
+          - input_number.lifxchange
+          - input_number.lifxtransition
+          - input_number.lifxbrightness
+          - type: divider
           - script.sonoslinein
-          - script.colorloop_start
-          - script.disco_party
-          - script.disco_party_low
-          - script.lifx_stop_effects
           - script.master_colorloop
           - script.master_random
       - type: custom:mini-media-player
@@ -1333,7 +1379,8 @@ views:
                 entity: binary_sensor.backyard_motion
                 name: Motion
                 icon: mdi:run
-                action: more_info
+                tap_action:
+                  action: more-info
                 default_color: rgb(255, 255, 255)
                 color: rgb(250, 218, 79)
                 color_type: icon
@@ -1344,7 +1391,8 @@ views:
                 entity: binary_sensor.backyard_line_crossing
                 name: Crossing
                 icon: mdi:format-vertical-align-center
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1355,7 +1403,8 @@ views:
                 entity: binary_sensor.backyard_field_detection
                 name: Intrusion
                 icon: mdi:aspect-ratio
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1366,7 +1415,8 @@ views:
                 entity: binary_sensor.backyard_face_detection
                 name: Face
                 icon: mdi:face-outline
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1388,7 +1438,8 @@ views:
                 entity: binary_sensor.patio_motion
                 name: Motion
                 icon: mdi:run
-                action: more_info
+                tap_action:
+                  action: more-info
                 default_color: rgb(255, 255, 255)
                 color: rgb(250, 218, 79)
                 color_type: icon
@@ -1399,7 +1450,8 @@ views:
                 entity: binary_sensor.patio_line_crossing
                 name: Crossing
                 icon: mdi:format-vertical-align-center
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1410,7 +1462,8 @@ views:
                 entity: binary_sensor.patio_field_detection
                 name: Intrusion
                 icon: mdi:aspect-ratio
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1421,7 +1474,8 @@ views:
                 entity: binary_sensor.patio_face_detection
                 name: Face
                 icon: mdi:face-outline
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1443,7 +1497,8 @@ views:
                 entity: binary_sensor.driveway_motion
                 name: Motion
                 icon: mdi:run
-                action: more_info
+                tap_action:
+                  action: more-info
                 default_color: rgb(255, 255, 255)
                 color: rgb(250, 218, 79)
                 color_type: icon
@@ -1454,7 +1509,8 @@ views:
                 entity: binary_sensor.driveway_line_crossing
                 name: Crossing
                 icon: mdi:format-vertical-align-center
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1465,7 +1521,8 @@ views:
                 entity: binary_sensor.driveway_field_detection
                 name: Intrusion
                 icon: mdi:aspect-ratio
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1476,7 +1533,8 @@ views:
                 entity: binary_sensor.driveway_face_detection
                 name: Face
                 icon: mdi:face-outline
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1498,7 +1556,8 @@ views:
                 entity: binary_sensor.porch_motion
                 name: Motion
                 icon: mdi:run
-                action: more_info
+                tap_action:
+                  action: more-info
                 default_color: rgb(255, 255, 255)
                 color: rgb(250, 218, 79)
                 color_type: icon
@@ -1509,7 +1568,8 @@ views:
                 entity: binary_sensor.porch_line_crossing
                 name: Crossing
                 icon: mdi:format-vertical-align-center
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1520,7 +1580,8 @@ views:
                 entity: binary_sensor.porch_field_detection
                 name: Intrusion
                 icon: mdi:aspect-ratio
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1531,7 +1592,8 @@ views:
                 entity: binary_sensor.porch_face_detection
                 name: Face
                 icon: mdi:face-outline
-                action: more_info
+                tap_action:
+                  action: more-info
                 color: rgb(250, 218, 79)
                 default_color: rgb(255, 255, 255)
                 color_type: icon
@@ -1919,3 +1981,34 @@ views:
           filter:
             include:
               - domain: automation
+  - icon: mdi:cctv
+    id: cameras_panel
+    title: Cameras
+    panel: true
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: picture-entity
+                entity: camera.driveway
+                camera_view: live
+                show_name: false
+                show_state: false
+              - type: picture-entity
+                entity: camera.patio
+                show_name: false
+                show_state: false
+                camera_view: live
+          - type: vertical-stack
+            cards:
+              - type: picture-entity
+                entity: camera.porch
+                show_name: false
+                show_state: false
+                camera_view: live
+              - type: picture-entity
+                entity: camera.backyard
+                show_name: false
+                show_state: false
+                camera_view: live

@@ -668,6 +668,29 @@
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
         filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
 
+- alias: 'Trigger alarm while armed away'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00016612af
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00016daecc
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001a1f2ab
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.hass_alarm
+      state: 'armed_away'
+  action:
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.hass_alarm
+
+
 #################################################################
 ## HASS Related
 #################################################################
@@ -1325,48 +1348,39 @@
         - switch.driveway
         - switch.wemoporch
 
-- id: lifx_party_mode
-  alias: "Turn Lifx Party Mode On"
-  initial_state: 'off'
-  trigger:
-    - platform: time_pattern
-      seconds: '/3'
-  condition:
-    - condition: state
-      entity_id: input_boolean.partymode
-      state: 'on'
-  action:
-    - service: light.turn_on
-      entity_id: light.lifxnrkitchen
-      data_template:
-        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 200
-        transition: '{{ (range(1, 2)|random) }}'
-    - service: light.turn_on
-      entity_id: light.lifxnrguest
-      data_template:
-        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 200
-        transition: '{{ (range(1, 2)|random) }}'
-    - service: light.turn_on
-      entity_id: light.lifx3
-      data_template:
-        rgb_color: ['{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}', '{{ (range(0, 255)|random) }}']
-        brightness: 200
-        transition: '{{ (range(1, 2)|random) }}'
-- id: lifx_party_mode_off
-  alias: "Turn Lifx Party Mode Off"
+- id: lifx_effects
+  alias: "Lifx Effects"
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: input_boolean.partymode
-      to: 'off'
+      entity_id: input_boolean.lifxeffects
   action:
-    - service: light.turn_on
-      entity_id: light.living_room_lights
-      data:
-        rgb_color: [255, 255, 255]
-        brightness: 250
+    - service: homeassistant.turn_on
+      data_template:
+        entity_id: >
+          {%- if trigger.to_state.state == 'on' -%}
+            script.colorloop_start
+          {%- else -%}
+            script.lifx_stop_effects
+          {%- endif -%}
+
+- id: lifx_effects_update
+  alias: "Lifx Effects Update"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - input_number.lifxspread
+        - input_number.lifxchange
+        - input_number.lifxtransition
+        - input_number.lifxbrightness
+  action:
+    - service: script.lifxeffects
+      data_template:
+        lifxbrightness: '{{states("input_number.lifxbrightness")|int}}'
+        lifxtransition: '{{states("input_number.lifxtransition")|int}}'
+        lifxspread: '{{states("input_number.lifxspread")|int}}'
+        lifxchange: '{{states("input_number.lifxchange")|int}}'
 
 - id: outdoor_light_at_night
   alias: Outdoor lights at night

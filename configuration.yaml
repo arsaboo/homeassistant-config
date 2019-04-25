@@ -57,7 +57,6 @@ weather:
     api_key: !secret darksky_key
     mode: daily
 # enable_debug:
-
 zone:
   name: Home
   latitude: !secret latitude_home
@@ -138,6 +137,13 @@ alarm_control_panel:
     optimistic: true
   - platform: aarlo
     away_mode_name: armed
+  - platform: manual
+    name: HASS Alarm
+    disarmed:
+      trigger_time: 0
+    armed_home:
+      pending_time: 0
+      delay_time: 0    
   # - platform: arlo
 xiaomi_aqara:
   gateways:
@@ -237,13 +243,11 @@ cloud:
       script.tv_youtube_on:
         name: Youtube
         room: living room
-
+mobile_app:
 google_assistant:
   project_id: !secret google_project_id
   api_key: !secret google_project_api_key
   expose_by_default: false
-  exposed_domains:
-    - cover
   entity_config:
     light.living_room_lights:
       expose: true
@@ -272,6 +276,21 @@ google_assistant:
       expose: True
       name: Youtube
       room: living room
+    camera.porch:
+      expose: true
+      room: porch
+    camera.patio:
+      expose: true
+      room: patio
+    camera.driveway:
+      expose: true
+      room: driveway
+    camera.backyard:
+      expose: true
+      room: backyard
+    cover.garagedoor:
+      expose: true
+      room: garage
 # map:
 downloader:
   download_dir: downloads
@@ -306,12 +325,12 @@ conversation:
 ffmpeg:
 camera:
   - platform: bloomsky
-  - platform: synology
-    url: http://192.168.2.113:5000/
-    username: !secret synology_username
-    password: !secret synology_password
-    timeout: 15
-    verify_ssl: false
+  # - platform: synology
+  #   url: http://192.168.2.113:5000/
+  #   username: !secret synology_username
+  #   password: !secret synology_password
+  #   timeout: 15
+  #   verify_ssl: false
   - platform: aarlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
   - platform: ring
@@ -369,7 +388,19 @@ camera:
   - platform: generic
     stream_source: !secret porch_rtsp_camera_image_url
     still_image_url: !secret porch_camera_image_url
-    name: Porch 2
+    name: Porch
+  - platform: generic
+    stream_source: !secret patio_rtsp_camera_image_url
+    still_image_url: !secret patio_camera_image_url
+    name: Patio
+  - platform: generic
+    stream_source: !secret driveway_rtsp_camera_image_url
+    still_image_url: !secret driveway_camera_image_url
+    name: Driveway
+  - platform: generic
+    stream_source: !secret backyard_rtsp_camera_image_url
+    still_image_url: !secret backyard_camera_image_url
+    name: Backyard
   # - platform: generic
   #   still_image_url: !secret porch_camera_image_url
   #   name: porch
@@ -528,10 +559,11 @@ media_player:
   #   host: 192.168.2.242
   #   port: 55000
   #   name: Panasonic Viera TV
-  - platform: samsungtv
-    host: 192.168.2.252
-    mac: !secret samsung_tv_mac
-    name: Living Room TV
+  # - platform: samsungtv_custom
+  #   host: 192.168.2.252
+  #   mac: !secret samsung_tv_mac
+  #   name: Living Room TV
+  #   port: 8002
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
@@ -566,6 +598,8 @@ media_player:
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
       livetvstream.thoptv.com.thoptv: "ThopTV"
+      com.amazon.tv.launcher: Home
+      com.synology.dsvideo: "DS Video"
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -604,8 +638,6 @@ telegram_bot:
 hangouts:
 notify:
   - platform: ios
-  - platform: alexa_media
-    name: alexa_media
   - platform: hangouts
     name: alok_hangouts
     default_conversations:

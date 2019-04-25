@@ -212,6 +212,20 @@
           media_content_id: 'x-rincon-stream:RINCON_5CAAFD01D8BC01400'
           media_content_type: "MUSIC"
 
+  lifxeffects:
+    alias: 'LIFX effects'
+    sequence:
+      - service: light.lifx_effect_colorloop
+        data_template:
+          entity_id:
+            - light.lifx3
+            - light.lifxnrguest
+            - light.lifxnrkitchen
+          brightness: "{{lifxbrightness}}"
+          period: "{{lifxtransition}}"
+          spread: "{{lifxspread}}"
+          change: "{{lifxchange}}"
+
   colorloop_start:
     alias: 'Start LIFX colorloop'
     sequence:
@@ -223,32 +237,6 @@
             - light.lifxnrkitchen
           brightness: 255
           period: 15
-          spread: 359
-          change: 35
-  disco_party:
-    alias: 'Start Party Mode'
-    sequence:
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id:
-            - light.lifx3
-            - light.lifxnrguest
-            - light.lifxnrkitchen
-          brightness: 200
-          period: 1
-          spread: 359
-          change: 35
-  disco_party_low:
-    alias: 'Start Party Mode Low'
-    sequence:
-      - service: light.lifx_effect_colorloop
-        data:
-          entity_id:
-            - light.lifx3
-            - light.lifxnrguest
-            - light.lifxnrkitchen
-          brightness: 125
-          period: 1
           spread: 359
           change: 35
   master_colorloop:
@@ -552,3 +540,54 @@
       data:
         entity_id: media_player.shieldtv
         command: "input keyevent 20" # see https://stackoverflow.com/questions/7789826/adb-shell-input-events
+  cast_patio:
+    alias: 'Cast Patio Camera'
+    sequence:
+      - service: camera.play_stream
+        data:
+          entity_id: camera.patio
+          media_player: media_player.shield
+  cast_porch:
+    alias: 'Cast Porch Camera'
+    sequence:
+      - service: camera.play_stream
+        data:
+          entity_id: camera.porch
+          media_player: media_player.shield
+  cast_driveway:
+    alias: 'Cast Driveway Camera'
+    sequence:
+      - service: camera.play_stream
+        data:
+          entity_id: camera.driveway
+          media_player: media_player.shield
+  cast_backyard:
+    alias: 'Cast Backyard Camera'
+    sequence:
+      - service: camera.play_stream
+        data:
+          entity_id: camera.backyard
+          media_player: media_player.shield
+  cast_cycle_cameras:
+    alias: 'Cast Cycle through all cameras'
+    sequence:
+      - service: homeassistant.turn_on
+        entity_id: script.cast_driveway
+      - delay: '00:00:15'
+      - service: homeassistant.turn_on
+        entity_id: script.cast_porch
+      - delay: '00:00:15'
+      - service: homeassistant.turn_on
+        entity_id: script.cast_patio
+      - delay: '00:00:15'
+      - service: homeassistant.turn_on
+        entity_id: script.cast_backyard
+  refresh_arlo_cameras:
+    alias: 'Arlo refresh snapshots'
+    sequence:
+      - service: camera.aarlo_request_snapshot
+        entity_id: camera.aarlo_arlolivingroom
+      - service: camera.aarlo_request_snapshot
+        entity_id: camera.aarlo_arlo3
+      - service: camera.aarlo_request_snapshot
+        entity_id: camera.aarlo_livingroom2

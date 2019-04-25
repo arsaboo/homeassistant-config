@@ -28,10 +28,6 @@
     name: Leeo Alarm
     initial: off
     icon: mdi:fire
-  partymode:
-    name: Party Mode
-    initial: off
-    icon: mdi:theme-light-dark
   devmode:
     name: Developer Mode
     initial: off
@@ -40,3 +36,7 @@
     name: Sleeping
     initial: off
     icon: mdi:sleep
+  lifxeffects:
+    name: Lifx Colorloop
+    initial: off
+    icon: mdi:theme-light-dark

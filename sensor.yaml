@@ -1,3 +1,6 @@
+  - platform: email
+    email: !secret hassbot
+    password: !secret hassbot_pass
   - platform: moon_here
     app_id: !secret here_app_id
     app_code: !secret here_app_code

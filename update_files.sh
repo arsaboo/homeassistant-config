@@ -8,6 +8,6 @@ wget -O /home/homeassistant/.homeassistant/www/custom_ui/gap-card.js https://raw
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/config-template-card.js https://raw.githubusercontent.com/custom-cards/config-template-card/master/dist/config-template-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/card-modder.js https://raw.githubusercontent.com/thomasloven/lovelace-card-modder/master/card-modder.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/secondaryinfo-entity-row.js https://raw.githubusercontent.com/MizterB/lovelace-secondaryinfo-entity-row/master/secondaryinfo-entity-row.js
-wget -O /home/homeassistant/.homeassistant/www/custom_ui/button-card.js https://raw.githubusercontent.com/custom-cards/button-card/master/button-card.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/button-card.js https://raw.githubusercontent.com/custom-cards/button-card/master/dist/button-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/calendar-card.js https://github.com/ljmerza/calendar-card/releases/download/3.10.0/calendar-card.js
 sudo chown -R homeassistant:homeassistant /home/homeassistant/.homeassistant/

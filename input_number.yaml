@@ -28,3 +28,31 @@
     min: 1
     max: 100
     step: 1
+  lifxbrightness:
+    icon: mdi:brightness-6
+    name: Brightness
+    initial: 255
+    min: 0
+    max: 255
+    step: 1
+  lifxtransition:
+    icon: mdi:timer
+    name: Transition
+    initial: 15
+    min: 0
+    max: 60
+    step: 1
+  lifxchange:
+    icon: mdi:delta
+    name: Change
+    initial: 35
+    min: 0
+    max: 359
+    step: 1
+  lifxspread:
+    icon: mdi:arrow-split-vertical
+    name: Spread
+    initial: 359
+    min: 0
+    max: 359
+    step: 1
