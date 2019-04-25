@@ -1,0 +1,14 @@
+{
+    "domain": "email",
+    "name": "Email",
+    "documentation": "https://github.com/ljmerza/ha-email-sensor",
+    "dependencies": [],
+    "codeowners": [
+        "@ljmerza"
+    ],
+    "requirements": [
+        "beautifulsoup4==4.7.1",
+        "imapclient==2.1.0",
+        "mail-parser==3.9.3"
+    ]
+}
