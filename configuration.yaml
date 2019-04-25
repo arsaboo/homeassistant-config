@@ -143,7 +143,7 @@ alarm_control_panel:
       trigger_time: 0
     armed_home:
       pending_time: 0
-      delay_time: 0    
+      delay_time: 0
   # - platform: arlo
 xiaomi_aqara:
   gateways:
@@ -744,9 +744,6 @@ google:
   client_id: !secret gcal_client_id
   client_secret: !secret gcal_client_secret
 
-scene:
-  platform: lifx_cloud
-  token: !secret lifx_key
 mqtt:
   broker: 127.0.0.1
   port: 1883
@@ -763,6 +760,7 @@ automation: !include automations.yaml
 cover: !include cover.yaml
 group: !include groups.yaml
 script: !include scripts.yaml
+scene: !include scenes.yaml
 sensor: !include sensor.yaml
 switch: !include switches.yaml
 binary_sensor: !include binary_sensor.yaml

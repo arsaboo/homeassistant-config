@@ -6,3 +6,5 @@
     entities:
       light.living_room_lights: on
         lifx_effect_colorloop
+  - platform: lifx_cloud
+    token: !secret lifx_key
