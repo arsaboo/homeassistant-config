@@ -2773,7 +2773,7 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
             element.style.display = "";
         }, 2000);
         // Remove error if element is defined later
-        customElements.whenDefined(cardConfig.type).then(() => {
+        customElements.whenDefined(tag).then(() => {
             clearTimeout(timer);
             fireEvent(this, "ll-rebuild", {}, element);
         });

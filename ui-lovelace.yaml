@@ -933,11 +933,10 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
-                action: call-service
-                service:
-                  domain: media_player
-                  action: volume_down
-                  data:
+                tap_action:
+                  action: call-service
+                  service: media_player.volume_down
+                  service_data:
                     entity_id: media_player.family_room_2
               - type: custom:button-card
                 entity: sensor.sonos_volume
@@ -952,11 +951,10 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
-                action: call-service
-                service:
-                  domain: media_player
-                  action: volume_up
-                  data:
+                tap_action:
+                  action: call-service
+                  service: media_player.volume_up
+                  service_data:
                     entity_id: media_player.family_room_2
               - type: custom:button-card
                 color_type: blank-card
@@ -968,26 +966,23 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:plex
-                action: call-service
-                service:
-                  domain: rest_command
-                  action: plex
+                tap_action:
+                  action: call-service
+                  service: rest_command.plex
               - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:youtube
-                action: call-service
-                service:
-                  domain: rest_command
-                  action: youtube
+                tap_action:
+                  action: call-service
+                  service: rest_command.youtube
               - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:netflix
-                action: call-service
-                service:
-                  domain: rest_command
-                  action: netflix
+                tap_action:
+                  action: call-service
+                  service: rest_command.netflix
               - type: custom:button-card
                 color_type: blank-card
 
