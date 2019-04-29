@@ -2277,6 +2277,82 @@ LitElement.finalized = true;
  */
 LitElement.render = render$1;
 
+/**
+ * @license
+ * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at
+ * http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at
+ * http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at
+ * http://polymer.github.io/PATENTS.txt
+ */
+/**
+ * Stores the StyleInfo object applied to a given AttributePart.
+ * Used to unset existing values when a new StyleInfo object is applied.
+ */
+const styleMapCache = new WeakMap();
+/**
+ * Stores AttributeParts that have had static styles applied (e.g. `height: 0;`
+ * in style="height: 0; ${styleMap()}"). Static styles are applied only the
+ * first time the directive is run on a part.
+ */
+// Note, could be a WeakSet, but prefer not requiring this polyfill.
+const styleMapStatics = new WeakMap();
+/**
+ * A directive that applies CSS properties to an element.
+ *
+ * `styleMap` can only be used in the `style` attribute and must be the only
+ * expression in the attribute. It takes the property names in the `styleInfo`
+ * object and adds the property values as CSS propertes. Property names with
+ * dashes (`-`) are assumed to be valid CSS property names and set on the
+ * element's style object using `setProperty()`. Names without dashes are
+ * assumed to be camelCased JavaScript property names and set on the element's
+ * style object using property assignment, allowing the style object to
+ * translate JavaScript-style names to CSS property names.
+ *
+ * For example `styleMap({backgroundColor: 'red', 'border-top': '5px', '--size':
+ * '0'})` sets the `background-color`, `border-top` and `--size` properties.
+ *
+ * @param styleInfo {StyleInfo}
+ */
+const styleMap = directive(styleInfo => part => {
+    if (!(part instanceof AttributePart) || part instanceof PropertyPart || part.committer.name !== 'style' || part.committer.parts.length > 1) {
+        throw new Error('The `styleMap` directive must be used in the style attribute ' + 'and must be the only part in the attribute.');
+    }
+    // Handle static styles the first time we see a Part
+    if (!styleMapStatics.has(part)) {
+        part.committer.element.style.cssText = part.committer.strings.join(' ');
+        styleMapStatics.set(part, true);
+    }
+    const style = part.committer.element.style;
+    // Remove old properties that no longer exist in styleInfo
+    const oldInfo = styleMapCache.get(part);
+    for (const name in oldInfo) {
+        if (!(name in styleInfo)) {
+            if (name.indexOf('-') === -1) {
+                // tslint:disable-next-line:no-any
+                style[name] = null;
+            } else {
+                style.removeProperty(name);
+            }
+        }
+    }
+    // Add or update properties
+    for (const name in styleInfo) {
+        if (name.indexOf('-') === -1) {
+            // tslint:disable-next-line:no-any
+            style[name] = styleInfo[name];
+        } else {
+            style.setProperty(name, styleInfo[name]);
+        }
+    }
+    styleMapCache.set(part, styleInfo);
+});
+
 /** Constants to be used in the frontend. */
 // Constants should be alphabetically sorted by name.
 // Arrays with values should be alphabetically sorted if order doesn't matter.
@@ -2373,294 +2449,6 @@ function domainIcon(domain, state) {
             return DEFAULT_DOMAIN_ICON;
     }
 }
-
-function computeDomain(entityId) {
-    return entityId.substr(0, entityId.indexOf("."));
-}
-function computeEntity(entityId) {
-    return entityId.substr(entityId.indexOf(".") + 1);
-}
-
-// Polymer legacy event helpers used courtesy of the Polymer project.
-//
-// Copyright (c) 2017 The Polymer Authors. All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//    * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//    * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//    * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/**
- * Dispatches a custom event with an optional detail value.
- *
- * @param {string} type Name of event type.
- * @param {*=} detail Detail value containing event-specific
- *   payload.
- * @param {{ bubbles: (boolean|undefined),
- *           cancelable: (boolean|undefined),
- *           composed: (boolean|undefined) }=}
- *  options Object specifying options.  These may include:
- *  `bubbles` (boolean, defaults to `true`),
- *  `cancelable` (boolean, defaults to false), and
- *  `node` on which to fire the event (HTMLElement, defaults to `this`).
- * @return {Event} The new event that was fired.
- */
-const fireEvent = (node, type, detail, options) => {
-    options = options || {};
-    // @ts-ignore
-    detail = detail === null || detail === undefined ? {} : detail;
-    const event = new Event(type, {
-        bubbles: options.bubbles === undefined ? true : options.bubbles,
-        cancelable: Boolean(options.cancelable),
-        composed: options.composed === undefined ? true : options.composed
-    });
-    event.detail = detail;
-    node.dispatchEvent(event);
-    return event;
-};
-
-const navigate = (_node, path, replace = false) => {
-    if (replace) {
-        history.replaceState(null, "", path);
-    } else {
-        history.pushState(null, "", path);
-    }
-    fireEvent(window, "location-changed", {
-        replace
-    });
-};
-
-const turnOnOffEntity = (hass, entityId, turnOn = true) => {
-    const stateDomain = computeDomain(entityId);
-    const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
-    let service;
-    switch (stateDomain) {
-        case "lock":
-            service = turnOn ? "unlock" : "lock";
-            break;
-        case "cover":
-            service = turnOn ? "open_cover" : "close_cover";
-            break;
-        default:
-            service = turnOn ? "turn_on" : "turn_off";
-    }
-    return hass.callService(serviceDomain, service, { entity_id: entityId });
-};
-
-const toggleEntity = (hass, entityId) => {
-    const turnOn = STATES_OFF.includes(hass.states[entityId].state);
-    return turnOnOffEntity(hass, entityId, turnOn);
-};
-
-/**
- * Utility function that enables haptic feedback
- */
-const forwardHaptic = (el, hapticType) => {
-    fireEvent(el, "haptic", hapticType);
-};
-
-const handleClick = (node, hass, config, hold) => {
-    let actionConfig;
-    if (hold && config.hold_action) {
-        actionConfig = config.hold_action;
-    } else if (!hold && config.tap_action) {
-        actionConfig = config.tap_action;
-    }
-    if (!actionConfig) {
-        actionConfig = {
-            action: "toggle"
-        };
-    }
-    switch (actionConfig.action) {
-        case "more-info":
-            if (config.entity || config.camera_image) {
-                fireEvent(node, "hass-more-info", {
-                    entityId: config.entity ? config.entity : config.camera_image
-                });
-                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
-            }
-            break;
-        case "navigate":
-            if (actionConfig.navigation_path) {
-                navigate(node, actionConfig.navigation_path);
-                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
-            }
-            break;
-        case 'url':
-            actionConfig.url && window.open(actionConfig.url);
-            if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
-            break;
-        case "toggle":
-            if (config.entity) {
-                toggleEntity(hass, config.entity);
-                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
-            }
-            break;
-        case "call-service":
-            {
-                if (!actionConfig.service) {
-                    return;
-                }
-                const [domain, service] = actionConfig.service.split(".", 2);
-                hass.callService(domain, service, actionConfig.service_data);
-                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
-            }
-    }
-};
-
-// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
-// on how to undo mwc -> paper migration
-// import "@material/mwc-ripple";
-const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-class LongPress extends HTMLElement {
-    constructor() {
-        super();
-        this.holdTime = 500;
-        this.ripple = document.createElement("paper-ripple");
-        this.timer = undefined;
-        this.held = false;
-        this.cooldownStart = false;
-        this.cooldownEnd = false;
-    }
-    connectedCallback() {
-        Object.assign(this.style, {
-            borderRadius: "50%",
-            position: "absolute",
-            width: isTouch ? "100px" : "50px",
-            height: isTouch ? "100px" : "50px",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none"
-        });
-        this.appendChild(this.ripple);
-        this.ripple.style.color = "#03a9f4"; // paper-ripple
-        this.ripple.style.color = "var(--primary-color)"; // paper-ripple
-        // this.ripple.primary = true;
-        ["touchcancel", "mouseout", "mouseup", "touchmove", "mousewheel", "wheel", "scroll"].forEach(ev => {
-            document.addEventListener(ev, () => {
-                clearTimeout(this.timer);
-                this.stopAnimation();
-                this.timer = undefined;
-            }, { passive: true });
-        });
-    }
-    bind(element) {
-        if (element.longPress) {
-            return;
-        }
-        element.longPress = true;
-        element.addEventListener("contextmenu", ev => {
-            const e = ev || window.event;
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-            e.cancelBubble = true;
-            e.returnValue = false;
-            return false;
-        });
-        const clickStart = ev => {
-            if (this.cooldownStart) {
-                return;
-            }
-            this.held = false;
-            let x;
-            let y;
-            if (ev.touches) {
-                x = ev.touches[0].pageX;
-                y = ev.touches[0].pageY;
-            } else {
-                x = ev.pageX;
-                y = ev.pageY;
-            }
-            this.timer = window.setTimeout(() => {
-                this.startAnimation(x, y);
-                this.held = true;
-            }, this.holdTime);
-            this.cooldownStart = true;
-            window.setTimeout(() => this.cooldownStart = false, 100);
-        };
-        const clickEnd = ev => {
-            if (this.cooldownEnd || ["touchend", "touchcancel"].includes(ev.type) && this.timer === undefined) {
-                return;
-            }
-            clearTimeout(this.timer);
-            this.stopAnimation();
-            this.timer = undefined;
-            if (this.held) {
-                element.dispatchEvent(new Event("ha-hold"));
-            } else {
-                element.dispatchEvent(new Event("ha-click"));
-            }
-            this.cooldownEnd = true;
-            window.setTimeout(() => this.cooldownEnd = false, 100);
-        };
-        element.addEventListener("touchstart", clickStart, { passive: true });
-        element.addEventListener("touchend", clickEnd);
-        element.addEventListener("touchcancel", clickEnd);
-        element.addEventListener("mousedown", clickStart, { passive: true });
-        element.addEventListener("click", clickEnd);
-    }
-    startAnimation(x, y) {
-        Object.assign(this.style, {
-            left: `${x}px`,
-            top: `${y}px`,
-            display: null
-        });
-        this.ripple.holdDown = true; // paper-ripple
-        this.ripple.simulatedRipple(); // paper-ripple
-        // this.ripple.disabled = false;
-        // this.ripple.active = true;
-        // this.ripple.unbounded = true;
-    }
-    stopAnimation() {
-        this.ripple.holdDown = false; // paper-ripple
-        // this.ripple.active = false;
-        // this.ripple.disabled = true;
-        this.style.display = "none";
-    }
-}
-customElements.define("long-press-button-card", LongPress);
-const getLongPress = () => {
-    const body = document.body;
-    if (body.querySelector("long-press")) {
-        return body.querySelector("long-press");
-    }
-    const longpress = document.createElement("long-press");
-    body.appendChild(longpress);
-    return longpress;
-};
-const longPressBind = element => {
-    const longpress = getLongPress();
-    if (!longpress) {
-        return;
-    }
-    longpress.bind(element);
-};
-const longPress = directive(() => part => {
-    longPressBind(part.committer.element);
-});
 
 function bound01(n, max) {
     if (isOnePointZero(n)) {
@@ -3503,13 +3291,57 @@ var TinyColor = function () {
     return TinyColor;
 }();
 
+function computeDomain(entityId) {
+    return entityId.substr(0, entityId.indexOf('.'));
+}
+function computeEntity(entityId) {
+    return entityId.substr(entityId.indexOf('.') + 1);
+}
+function getColorFromVariable(color) {
+    if (color.substring(0, 3) === 'var') {
+        return window.getComputedStyle(document.documentElement).getPropertyValue(color.substring(4).slice(0, -1)).trim();
+    }
+    return color;
+}
+function getFontColorBasedOnBackgroundColor(backgroundColor) {
+    const colorObj = new TinyColor(getColorFromVariable(backgroundColor));
+    if (colorObj.isValid && colorObj.getLuminance() > 0.5) {
+        return 'rgb(62, 62, 62)'; // bright colors - black font
+    } else {
+        return 'rgb(234, 234, 234)'; // dark colors - white font
+    }
+}
+function buildNameStateConcat(name, stateString) {
+    if (!name && !stateString) {
+        return undefined;
+    }
+    let nameStateString;
+    if (stateString) {
+        if (name) {
+            nameStateString = `${name}: ${stateString}`;
+        } else {
+            nameStateString = stateString;
+        }
+    } else {
+        nameStateString = name;
+    }
+    return nameStateString;
+}
+function applyBrightnessToColor(color, brightness) {
+    const colorObj = new TinyColor(getColorFromVariable(color));
+    if (colorObj.isValid) {
+        const validColor = colorObj.darken(100 - brightness).toString();
+        if (validColor) return validColor;
+    }
+    return color;
+}
 // Check if config or Entity changed
 function hasConfigOrEntityChanged(element, changedProps) {
-    if (changedProps.has("config")) {
+    if (changedProps.has('config')) {
         return true;
     }
     if (element.config.entity) {
-        const oldHass = changedProps.get("hass");
+        const oldHass = changedProps.get('hass');
         if (oldHass) {
             return oldHass.states[element.config.entity] !== element.hass.states[element.config.entity];
         }
@@ -3519,145 +3351,496 @@ function hasConfigOrEntityChanged(element, changedProps) {
     }
 }
 
+// Polymer legacy event helpers used courtesy of the Polymer project.
+//
+// Copyright (c) 2017 The Polymer Authors. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * Dispatches a custom event with an optional detail value.
+ *
+ * @param {string} type Name of event type.
+ * @param {*=} detail Detail value containing event-specific
+ *   payload.
+ * @param {{ bubbles: (boolean|undefined),
+ *           cancelable: (boolean|undefined),
+ *           composed: (boolean|undefined) }=}
+ *  options Object specifying options.  These may include:
+ *  `bubbles` (boolean, defaults to `true`),
+ *  `cancelable` (boolean, defaults to false), and
+ *  `node` on which to fire the event (HTMLElement, defaults to `this`).
+ * @return {Event} The new event that was fired.
+ */
+const fireEvent = (node, type, detail, options) => {
+    options = options || {};
+    // @ts-ignore
+    detail = detail === null || detail === undefined ? {} : detail;
+    const event = new Event(type, {
+        bubbles: options.bubbles === undefined ? true : options.bubbles,
+        cancelable: Boolean(options.cancelable),
+        composed: options.composed === undefined ? true : options.composed
+    });
+    event.detail = detail;
+    node.dispatchEvent(event);
+    return event;
+};
+
+const navigate = (_node, path, replace = false) => {
+    if (replace) {
+        history.replaceState(null, "", path);
+    } else {
+        history.pushState(null, "", path);
+    }
+    fireEvent(window, "location-changed", {
+        replace
+    });
+};
+
+const turnOnOffEntity = (hass, entityId, turnOn = true) => {
+    const stateDomain = computeDomain(entityId);
+    const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
+    let service;
+    switch (stateDomain) {
+        case "lock":
+            service = turnOn ? "unlock" : "lock";
+            break;
+        case "cover":
+            service = turnOn ? "open_cover" : "close_cover";
+            break;
+        default:
+            service = turnOn ? "turn_on" : "turn_off";
+    }
+    return hass.callService(serviceDomain, service, { entity_id: entityId });
+};
+
+const toggleEntity = (hass, entityId) => {
+    const turnOn = STATES_OFF.includes(hass.states[entityId].state);
+    return turnOnOffEntity(hass, entityId, turnOn);
+};
+
+/**
+ * Utility function that enables haptic feedback
+ */
+const forwardHaptic = (el, hapticType) => {
+    fireEvent(el, "haptic", hapticType);
+};
+
+const handleClick = (node, hass, config, hold) => {
+    let actionConfig;
+    if (hold && config.hold_action) {
+        actionConfig = config.hold_action;
+    } else if (!hold && config.tap_action) {
+        actionConfig = config.tap_action;
+    }
+    if (!actionConfig) {
+        actionConfig = {
+            action: "toggle"
+        };
+    }
+    switch (actionConfig.action) {
+        case "more-info":
+            if (config.entity || config.camera_image) {
+                fireEvent(node, "hass-more-info", {
+                    entityId: config.entity ? config.entity : config.camera_image
+                });
+                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
+            }
+            break;
+        case "navigate":
+            if (actionConfig.navigation_path) {
+                navigate(node, actionConfig.navigation_path);
+                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
+            }
+            break;
+        case 'url':
+            actionConfig.url && window.open(actionConfig.url);
+            if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
+            break;
+        case "toggle":
+            if (config.entity) {
+                toggleEntity(hass, config.entity);
+                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
+            }
+            break;
+        case "call-service":
+            {
+                if (!actionConfig.service) {
+                    return;
+                }
+                const [domain, service] = actionConfig.service.split(".", 2);
+                hass.callService(domain, service, actionConfig.service_data);
+                if (actionConfig.haptic) forwardHaptic(node, actionConfig.haptic);
+            }
+    }
+};
+
+// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
+// on how to undo mwc -> paper migration
+// import "@material/mwc-ripple";
+const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+class LongPress extends HTMLElement {
+    constructor() {
+        super();
+        this.holdTime = 500;
+        this.ripple = document.createElement("paper-ripple");
+        this.timer = undefined;
+        this.held = false;
+        this.cooldownStart = false;
+        this.cooldownEnd = false;
+    }
+    connectedCallback() {
+        Object.assign(this.style, {
+            borderRadius: "50%",
+            position: "absolute",
+            width: isTouch ? "100px" : "50px",
+            height: isTouch ? "100px" : "50px",
+            transform: "translate(-50%, -50%)",
+            pointerEvents: "none"
+        });
+        this.appendChild(this.ripple);
+        this.ripple.style.color = "#03a9f4"; // paper-ripple
+        this.ripple.style.color = "var(--primary-color)"; // paper-ripple
+        // this.ripple.primary = true;
+        ["touchcancel", "mouseout", "mouseup", "touchmove", "mousewheel", "wheel", "scroll"].forEach(ev => {
+            document.addEventListener(ev, () => {
+                clearTimeout(this.timer);
+                this.stopAnimation();
+                this.timer = undefined;
+            }, { passive: true });
+        });
+    }
+    bind(element) {
+        if (element.longPress) {
+            return;
+        }
+        element.longPress = true;
+        element.addEventListener("contextmenu", ev => {
+            const e = ev || window.event;
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.cancelBubble = true;
+            e.returnValue = false;
+            return false;
+        });
+        const clickStart = ev => {
+            if (this.cooldownStart) {
+                return;
+            }
+            this.held = false;
+            let x;
+            let y;
+            if (ev.touches) {
+                x = ev.touches[0].pageX;
+                y = ev.touches[0].pageY;
+            } else {
+                x = ev.pageX;
+                y = ev.pageY;
+            }
+            this.timer = window.setTimeout(() => {
+                this.startAnimation(x, y);
+                this.held = true;
+            }, this.holdTime);
+            this.cooldownStart = true;
+            window.setTimeout(() => this.cooldownStart = false, 100);
+        };
+        const clickEnd = ev => {
+            if (this.cooldownEnd || ["touchend", "touchcancel"].includes(ev.type) && this.timer === undefined) {
+                return;
+            }
+            clearTimeout(this.timer);
+            this.stopAnimation();
+            this.timer = undefined;
+            if (this.held) {
+                element.dispatchEvent(new Event("ha-hold"));
+            } else {
+                element.dispatchEvent(new Event("ha-click"));
+            }
+            this.cooldownEnd = true;
+            window.setTimeout(() => this.cooldownEnd = false, 100);
+        };
+        element.addEventListener("touchstart", clickStart, { passive: true });
+        element.addEventListener("touchend", clickEnd);
+        element.addEventListener("touchcancel", clickEnd);
+        element.addEventListener("mousedown", clickStart, { passive: true });
+        element.addEventListener("click", clickEnd);
+    }
+    startAnimation(x, y) {
+        Object.assign(this.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+            display: null
+        });
+        this.ripple.holdDown = true; // paper-ripple
+        this.ripple.simulatedRipple(); // paper-ripple
+        // this.ripple.disabled = false;
+        // this.ripple.active = true;
+        // this.ripple.unbounded = true;
+    }
+    stopAnimation() {
+        this.ripple.holdDown = false; // paper-ripple
+        // this.ripple.active = false;
+        // this.ripple.disabled = true;
+        this.style.display = "none";
+    }
+}
+customElements.define("long-press-button-card", LongPress);
+const getLongPress = () => {
+    const body = document.body;
+    if (body.querySelector("long-press")) {
+        return body.querySelector("long-press");
+    }
+    const longpress = document.createElement("long-press");
+    body.appendChild(longpress);
+    return longpress;
+};
+const longPressBind = element => {
+    const longpress = getLongPress();
+    if (!longpress) {
+        return;
+    }
+    longpress.bind(element);
+};
+const longPress = directive(() => part => {
+    longPressBind(part.committer.element);
+});
+
+const styles = css`
+  ha-card {
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  ha-card.disabled {
+    pointer-events: none;
+    cursor: default;
+  }
+  ha-icon {
+    display: inline-block;
+    margin: auto;
+  }
+  ha-card.button-card-main {
+    padding: 4% 0px;
+    text-transform: none;
+    font-weight: 400;
+    font-size: 1.2rem;
+    align-items: center;
+    text-align: center;
+    letter-spacing: normal;
+    width: 100%;
+  }
+  div {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  @keyframes blink{
+    0%{opacity:0;}
+    50%{opacity:1;}
+    100%{opacity:0;}
+  }
+  @-webkit-keyframes rotating /* Safari and Chrome */ {
+    from {
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotating {
+    from {
+      -ms-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -ms-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  [rotating] {
+    -webkit-animation: rotating 2s linear infinite;
+    -moz-animation: rotating 2s linear infinite;
+    -ms-animation: rotating 2s linear infinite;
+    -o-animation: rotating 2s linear infinite;
+    animation: rotating 2s linear infinite;
+  }
+
+  .container {
+    display: grid;
+    max-height: 100%;
+    text-align: center;
+    height: 100%;
+    align-items: center;
+  }
+  .img-cell {
+    grid-area: i;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .icon {
+    height: 100%;
+    max-width: 100%;
+    object-fit: scale;
+    overflow: hidden;
+  }
+  .name {
+    grid-area: n;
+    max-width: 100%;
+    align-self: center;
+    justify-self: center;
+    /* margin: auto; */
+  }
+  .state {
+    grid-area: s;
+    max-width: 100%;
+    align-self: center;
+    justify-self: center;
+    /* margin: auto; */
+  }
+
+  .container.vertical {
+    grid-template-areas: "i" "n" "s";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr min-content min-content;
+  }
+  .container.vertical.no-icon {
+    grid-template-areas: "n" "s";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .container.vertical.no-icon .state {
+    align-self: start;
+  }
+  .container.vertical.no-icon .name {
+    align-self: end;
+  }
+  .container.vertical.no-icon.no-name {
+    grid-template-areas: "s";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  .container.vertical.no-icon.no-name .state {
+    align-self: center;
+  }
+  .container.vertical.no-icon.no-state {
+    grid-template-areas: "n";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  .container.vertical.no-icon.no-state .name {
+    align-self: center;
+  }
+
+  .container.icon_name_state {
+    grid-template-areas: "i n";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .container.icon_name {
+    grid-template-areas: "i n" "s s";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 1fr min-content;
+  }
+
+  .container.icon_state {
+    grid-template-areas: "i s" "n n";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 1fr min-content;
+  }
+
+  .container.name_state {
+    grid-template-areas: "i" "n";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr min-content;
+  }
+
+  .container.icon_name_state2nd {
+    grid-template-areas: "i n" "i s";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .container.icon_name_state2nd .name {
+    align-self: end;
+  }
+  .container.icon_name_state2nd .state {
+    align-self: start;
+  }
+
+  .container.icon_state_name2nd {
+    grid-template-areas: "i s" "i n";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .container.icon_state_name2nd .state {
+    align-self: end;
+  }
+  .container.icon_state_name2nd .name {
+    align-self: start;
+  }
+`;
+
 let ButtonCard = class ButtonCard extends LitElement {
     static get styles() {
-        return css`
-        ha-card {
-          cursor: pointer;
-          overflow: hidden;
-        }
-        ha-card.disabled {
-          pointer-events: none;
-          cursor: default;
-        }
-        ha-icon {
-          display: inline-block;
-          margin: auto;
-        }
-        div.button-card-main {
-          padding: 4% 0px;
-          text-transform: none;
-          font-weight: 400;
-          font-size: 1.2rem;
-          align-items: center;
-          text-align: center;
-          letter-spacing: normal;
-          width: 100%;
-        }
-        div.divTable{
-          display: table;
-          overflow: auto;
-          table-layout: fixed;
-          width: 100%;
-        }
-        div.divTableBody {
-          display: table-row-group;
-        }
-        div.divTableRow {
-          display: table-row;
-        }
-        .divTableCell {
-          display: table-cell;
-          vertical-align: middle;
-        }
-        div {
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          min-width: 100%;
-        }
-        div.button-card-background-color {
-          border-bottom-left-radius: 2px;
-          border-bottom-right-radius: 2px;
-          border-top-left-radius: 2px;
-          border-top-right-radius: 2px;
-        }
-        @keyframes blink{
-          0%{opacity:0;}
-          50%{opacity:1;}
-          100%{opacity:0;}
-        }
-        @-webkit-keyframes rotating /* Safari and Chrome */ {
-          from {
-            -webkit-transform: rotate(0deg);
-            -o-transform: rotate(0deg);
-            transform: rotate(0deg);
-          }
-          to {
-            -webkit-transform: rotate(360deg);
-            -o-transform: rotate(360deg);
-            transform: rotate(360deg);
-          }
-        }
-        @keyframes rotating {
-          from {
-            -ms-transform: rotate(0deg);
-            -moz-transform: rotate(0deg);
-            -webkit-transform: rotate(0deg);
-            -o-transform: rotate(0deg);
-            transform: rotate(0deg);
-          }
-          to {
-            -ms-transform: rotate(360deg);
-            -moz-transform: rotate(360deg);
-            -webkit-transform: rotate(360deg);
-            -o-transform: rotate(360deg);
-            transform: rotate(360deg);
-          }
-        }
-        .rotating {
-          -webkit-animation: rotating 2s linear infinite;
-          -moz-animation: rotating 2s linear infinite;
-          -ms-animation: rotating 2s linear infinite;
-          -o-animation: rotating 2s linear infinite;
-          animation: rotating 2s linear infinite;
-        }
-      `;
+        return styles;
     }
     render() {
         if (!this.config || !this.hass) {
             return html``;
         }
-        const state = this.config.entity ? this.hass.states[this.config.entity] : undefined;
-        const configState = this.testConfigState(state);
-        switch (this.config.color_type) {
-            case 'blank-card':
-                return this.blankCardColoredHtml(state);
-            case 'label-card':
-            case 'card':
-                return this.cardColoredHtml(state, configState);
-            case 'icon':
-            default:
-                return this.iconColoredHtml(state, configState);
-        }
+        return this._cardHtml();
     }
     shouldUpdate(changedProps) {
         return hasConfigOrEntityChanged(this, changedProps);
     }
-    getFontColorBasedOnBackgroundColor(backgroundColor) {
-        let localColor = backgroundColor;
-        if (backgroundColor.substring(0, 3) === "var") {
-            localColor = window.getComputedStyle(document.documentElement).getPropertyValue(backgroundColor.substring(4).slice(0, -1)).trim();
-        }
-        const colorObj = new TinyColor(localColor);
-        let fontColor = ''; // don't override by default
-        if (colorObj.isValid && colorObj.getLuminance() > 0.5) {
-            fontColor = 'rgb(62, 62, 62)'; // bright colors - black font
-        } else {
-            fontColor = 'rgb(234, 234, 234)'; // dark colors - white font
-        }
-        return fontColor;
-    }
-    testConfigState(state) {
+    _getMatchingConfigState(state) {
         if (!state || !this.config.state) {
             return undefined;
         }
-        let retval = undefined;
-        let def = undefined;
-        retval = this.config.state.find(function (elt) {
+        let def;
+        const retval = this.config.state.find(elt => {
             if (elt.operator) {
                 switch (elt.operator) {
                     case '==':
+                        /* eslint eqeqeq: 0 */
                         return state.state == elt.value;
                     case '<=':
                         return state.state <= elt.value;
@@ -3670,8 +3853,11 @@ let ButtonCard = class ButtonCard extends LitElement {
                     case '!=':
                         return state.state != elt.value;
                     case 'regex':
-                        let matches = state.state.match(elt.value) ? true : false;
-                        return matches;
+                        {
+                            /* eslint no-unneeded-ternary: 0 */
+                            const matches = state.state.match(elt.value) ? true : false;
+                            return matches;
+                        }
                     case 'default':
                         def = elt;
                         return false;
@@ -3687,7 +3873,7 @@ let ButtonCard = class ButtonCard extends LitElement {
         }
         return retval;
     }
-    getDefaultColorForState(state) {
+    _getDefaultColorForState(state) {
         switch (state.state) {
             case 'on':
                 return this.config.color_on;
@@ -3697,45 +3883,45 @@ let ButtonCard = class ButtonCard extends LitElement {
                 return this.config.default_color;
         }
     }
-    buildCssColorAttribute(state, configState) {
+    _buildCssColorAttribute(state, configState) {
         let colorValue = '';
-        let color = undefined;
+        let color;
         if (configState && configState.color) {
             colorValue = configState.color;
-        } else {
-            if (this.config.color != 'auto' && state && state.state == 'off') {
-                colorValue = this.config.color_off;
-            } else {
-                if (this.config.color) {
-                    colorValue = this.config.color;
-                }
-            }
+        } else if (this.config.color !== 'auto' && state && state.state === 'off') {
+            colorValue = this.config.color_off;
+        } else if (this.config.color) {
+            colorValue = this.config.color;
         }
         if (colorValue == 'auto') {
             if (state) {
                 if (state.attributes.rgb_color) {
                     color = `rgb(${state.attributes.rgb_color.join(',')})`;
+                    if (state.attributes.brightness) {
+                        color = applyBrightnessToColor(color, (state.attributes.brightness + 245) / 5);
+                    }
+                } else if (state.attributes.brightness) {
+                    color = applyBrightnessToColor(this._getDefaultColorForState(state), (state.attributes.brightness + 245) / 5);
                 } else {
-                    color = this.getDefaultColorForState(state);
+                    color = this._getDefaultColorForState(state);
                 }
             } else {
                 color = this.config.default_color;
             }
+        } else if (colorValue) {
+            color = colorValue;
+        } else if (state) {
+            color = this._getDefaultColorForState(state);
         } else {
-            if (!colorValue) {
-                if (state) {
-                    color = this.getDefaultColorForState(state);
-                } else {
-                    color = this.config.default_color;
-                }
-            } else {
-                color = colorValue;
-            }
+            color = this.config.default_color;
         }
         return color;
     }
-    buildIcon(state, configState) {
-        let icon = undefined;
+    _buildIcon(state, configState) {
+        if (!this.config.show_icon) {
+            return undefined;
+        }
+        let icon;
         if (configState && configState.icon) {
             icon = configState.icon;
         } else if (this.config.icon) {
@@ -3745,57 +3931,82 @@ let ButtonCard = class ButtonCard extends LitElement {
         }
         return icon;
     }
-    buildStyle(state, configState) {
-        let cardStyle = '';
-        let styleArray = undefined;
+    _buildEntityPicture(state, configState) {
+        if (!this.config.show_entity_picture || !state && !configState && !this.config.entity_picture) {
+            return undefined;
+        }
+        let entityPicture;
+        if (configState && configState.entity_picture) {
+            entityPicture = configState.entity_picture;
+        } else if (this.config.entity_picture) {
+            entityPicture = this.config.entity_picture;
+        } else {
+            entityPicture = state && state.attributes && state.attributes.entity_picture ? state.attributes.entity_picture : undefined;
+        }
+        return entityPicture;
+    }
+    _buildStyle(state, configState) {
+        let cardStyle = {};
+        let styleArray;
         if (state) {
             if (configState && configState.style) {
                 styleArray = configState.style;
             } else if (this.config.style) {
                 styleArray = this.config.style;
             }
-        } else {
-            if (this.config.style) styleArray = this.config.style;
+        } else if (this.config.style) {
+            styleArray = this.config.style;
         }
         if (styleArray) {
-            styleArray.forEach(cssObject => {
-                const attribute = Object.keys(cssObject)[0];
-                const value = cssObject[attribute];
-                cardStyle += `${attribute}: ${value}; `;
-            });
+            cardStyle = Object.assign(cardStyle, ...styleArray);
         }
         return cardStyle;
     }
-    buildName(state, configState) {
+    _buildEntityPictureStyle(state, configState) {
+        let entityPictureStyle = {};
+        let styleArray;
+        if (state) {
+            if (configState && configState.entity_picture_style) {
+                styleArray = configState.entity_picture_style;
+            } else if (this.config.entity_picture_style) {
+                styleArray = this.config.entity_picture_style;
+            }
+        } else if (this.config.entity_picture_style) {
+            styleArray = this.config.entity_picture_style;
+        }
+        if (styleArray) {
+            entityPictureStyle = Object.assign(entityPictureStyle, ...styleArray);
+        }
+        return entityPictureStyle;
+    }
+    _buildName(state, configState) {
         if (this.config.show_name === false) {
             return undefined;
         }
-        let name = undefined;
+        let name;
         if (configState && configState.name) {
             name = configState.name;
         } else if (this.config.name) {
             name = this.config.name;
-        } else {
-            if (state) {
-                name = state.attributes && state.attributes.friendly_name ? state.attributes.friendly_name : computeEntity(state.entity_id);
-            }
+        } else if (state) {
+            name = state.attributes && state.attributes.friendly_name ? state.attributes.friendly_name : computeEntity(state.entity_id);
         }
         return name;
     }
-    buildStateString(state) {
-        let stateString = undefined;
+    _buildStateString(state) {
+        let stateString;
         if (this.config.show_state && state && state.state) {
-            const units = this.buildUnits(state);
+            const units = this._buildUnits(state);
             if (units) {
-                stateString = state.state + " " + units;
+                stateString = `${state.state} ${units}`;
             } else {
                 stateString = state.state;
             }
         }
         return stateString;
     }
-    buildUnits(state) {
-        let units = undefined;
+    _buildUnits(state) {
+        let units;
         if (state) {
             if (this.config.show_units) {
                 if (state.attributes && state.attributes.unit_of_measurement && !this.config.units) {
@@ -3807,23 +4018,7 @@ let ButtonCard = class ButtonCard extends LitElement {
         }
         return units;
     }
-    buildNameStateConcat(name, stateString) {
-        if (!name && !stateString) {
-            return undefined;
-        }
-        let nameStateString = undefined;
-        if (stateString) {
-            if (name) {
-                nameStateString = name + ": " + stateString;
-            } else {
-                nameStateString = stateString;
-            }
-        } else {
-            nameStateString = name;
-        }
-        return nameStateString;
-    }
-    isClickable(state) {
+    _isClickable(state) {
         let clickable = true;
         if (this.config.tap_action.action === 'toggle' && this.config.hold_action.action === 'none' || this.config.hold_action.action === 'toggle' && this.config.tap_action.action === 'none') {
             if (state) {
@@ -3840,152 +4035,120 @@ let ButtonCard = class ButtonCard extends LitElement {
             } else {
                 clickable = false;
             }
+        } else if (this.config.tap_action.action != 'none' || this.config.hold_action.action != 'none') {
+            clickable = true;
         } else {
-            if (this.config.tap_action.action != 'none' || this.config.hold_action.action != 'none') {
-                clickable = true;
-            } else {
-                clickable = false;
-            }
+            clickable = false;
         }
         return clickable;
     }
-    rotate(configState) {
-        return configState && configState.spin ? 'rotating' : '';
+    _rotate(configState) {
+        return configState && configState.spin ? true : false;
     }
-    buttonContent(state, configState, color) {
-        const icon = this.buildIcon(state, configState);
-        const name = this.buildName(state, configState);
-        const stateString = this.buildStateString(state);
-        const nameStateString = this.buildNameStateConcat(name, stateString);
-        switch (this.config.layout) {
-            case 'icon_name_state':
-                return html`
-          <div class="divTable">
-            <div class="divTableBody">
-              <div class="divTableRow">
-                <div class="divTableCell" style="width: ${this.config.size}; height: auto;">
-                  ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: auto; height: auto; max-width: ${this.config.size};" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-                </div>
-                ${nameStateString ? html`<div class="divTableCell">${nameStateString}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          `;
-            case 'icon_name':
-                return html`
-          <div class="divTable">
-            <div class="divTableBody">
-              <div class="divTableRow">
-                <div class="divTableCell" style="width: ${this.config.size}; height: auto;">
-                  ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: auto; height: auto; max-width: ${this.config.size};" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-                </div>
-                ${name ? html`<div class="divTableCell">${name}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          ${stateString !== undefined ? html`<div>${stateString}</div>` : ''}
-          `;
-            case 'icon_state':
-                return html`
-          <div class="divTable">
-            <div class="divTableBody">
-              <div class="divTableRow">
-                <div class="divTableCell" style="width: ${this.config.size}; height: auto;">
-                  ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: auto; height: auto; max-width: ${this.config.size};" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-                </div>
-                ${stateString !== undefined ? html`<div class="divTableCell">${stateString}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          ${name ? html`<div>${name}</div>` : ''}
-          `;
-            case 'icon_state_name2nd':
-                return html`
-          <div class="divTable">
-            <div class="divTableBody">
-              <div class="divTableRow">
-                <div class="divTableCell" style="width: ${this.config.size}; height: auto;">
-                  ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: auto; height: auto; max-width: ${this.config.size};" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-                </div>
-                ${stateString !== undefined && name ? html`<div class="divTableCell">${stateString}<br/>${name}</div>` : ''}
-                ${!stateString && name ? html`<div class="divTableCell">${name}</div>` : ''}
-                ${stateString && !name ? html`<div class="divTableCell">${stateString}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          `;
-            case 'icon_name_state2nd':
-                return html`
-          <div class="divTable">
-            <div class="divTableBody">
-              <div class="divTableRow">
-                <div class="divTableCell" style="width: ${this.config.size}; height: auto;">
-                  ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: auto; height: auto; max-width: ${this.config.size};" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-                </div>
-                ${stateString !== undefined && name ? html`<div class="divTableCell">${name}<br/>${stateString}</div>` : ''}
-                ${!stateString && name ? html`<div class="divTableCell">${name}</div>` : ''}
-                ${stateString && !name ? html`<div class="divTableCell">${stateString}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          `;
-            case 'name_state':
-                return html`
-          ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${this.config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-          ${nameStateString ? html`<div>${nameStateString}</div>` : ''}
-          `;
-            case 'vertical':
-            default:
-                return html`
-          ${this.config.show_icon && icon ? html`<ha-icon style="color: ${color}; width: ${this.config.size}; height: auto;" icon="${icon}" class="${this.rotate(configState)}"></ha-icon>` : ''}
-          ${name ? html`<div>${name}</div>` : ''}
-          ${stateString ? html`<div>${stateString}</div>` : ''}
-          `;
-        }
-    }
-    blankCardColoredHtml(state) {
-        const color = this.buildCssColorAttribute(state, undefined);
-        const fontColor = this.getFontColorBasedOnBackgroundColor(color);
+    _blankCardColoredHtml(state) {
+        const color = this._buildCssColorAttribute(state, undefined);
+        const fontColor = getFontColorBasedOnBackgroundColor(color);
         return html`
       <ha-card class="disabled">
-        <div class="button-card-background-color" style="color: ${fontColor}; background-color: ${color};"></div>
+        <div style="color: ${fontColor}; background-color: ${color};"></div>
       </ha-card>
       `;
     }
-    cardColoredHtml(state, configState) {
-        const color = this.buildCssColorAttribute(state, configState);
-        const fontColor = this.getFontColorBasedOnBackgroundColor(color);
-        const style = this.buildStyle(state, configState);
+    _cardHtml() {
+        const state = this.config.entity ? this.hass.states[this.config.entity] : undefined;
+        const configState = this._getMatchingConfigState(state);
+        const color = this._buildCssColorAttribute(state, configState);
+        let buttonColor = color;
+        let cardStyle = {};
+        const configCardStyle = this._buildStyle(state, configState);
+        switch (this.config.color_type) {
+            case 'blank-card':
+                return this._blankCardColoredHtml(state);
+            case 'card':
+            case 'label-card':
+                {
+                    const fontColor = getFontColorBasedOnBackgroundColor(color);
+                    cardStyle.color = fontColor;
+                    cardStyle['background-color'] = color;
+                    cardStyle = Object.assign({}, cardStyle, configCardStyle);
+                    buttonColor = 'inherit';
+                    break;
+                }
+            default:
+                cardStyle = configCardStyle;
+                break;
+        }
+        if (configCardStyle.width) {
+            this.style.setProperty('flex', '0 0 auto');
+            this.style.setProperty('max-width', 'fit-content');
+        }
         return html`
-      <ha-card class="${this.isClickable(state) ? '' : "disabled"}" @ha-click="${this._handleTap}" @ha-hold="${this._handleHold}" .longpress="${longPress()}" .config="${this.config}">
-        <div class="button-card-background-color" style="color: ${fontColor}; background-color: ${color};">
-          <div class="button-card-main" style="${style}">
-            ${this.buttonContent(state, configState, "inherit")}
-          </div>
-        </div>
-        <mwc-ripple></mwc-ripple>
+      <ha-card class="button-card-main ${this._isClickable(state) ? '' : 'disabled'}" style=${styleMap(cardStyle)} @ha-click="${this._handleTap}" @ha-hold="${this._handleHold}" .longpress="${longPress()}" .config="${this.config}">
+        ${this._buttonContent(state, configState, buttonColor)}
+      <mwc-ripple></mwc-ripple>
       </ha-card>
       `;
     }
-    iconColoredHtml(state, configState) {
-        const color = this.buildCssColorAttribute(state, configState);
-        const style = this.buildStyle(state, configState);
+    _buttonContent(state, configState, color) {
+        const name = this._buildName(state, configState);
+        const stateString = this._buildStateString(state);
+        const nameStateString = buildNameStateConcat(name, stateString);
+        switch (this.config.layout) {
+            case 'icon_name_state':
+            case 'name_state':
+                return this._gridHtml(state, configState, this.config.layout, color, nameStateString, undefined);
+            default:
+                return this._gridHtml(state, configState, this.config.layout, color, name, stateString);
+        }
+    }
+    _gridHtml(state, configState, containerClass, color, name, stateString) {
+        const iconTemplate = this._getIconHtml(state, configState, color);
+        const itemClass = ['container', containerClass];
+        if (!iconTemplate) itemClass.push('no-icon');
+        if (!name) itemClass.push('no-name');
+        if (!stateString) itemClass.push('no-state');
         return html`
-      <ha-card class="${this.isClickable(state) ? '' : "disabled"}" @ha-click="${this._handleTap}" @ha-hold="${this._handleHold}" .longpress="${longPress()}" .config="${this.config}">
-        <div class="button-card-main" style="${style}">
-          ${this.buttonContent(state, configState, color)}
+      <div class=${itemClass.join(' ')}>
+        ${iconTemplate ? iconTemplate : ''}
+        ${name ? html`<div class="name">${name}</div>` : ''}
+        ${stateString ? html`<div class="state">${stateString}</div>` : ''}
+      </div>
+    `;
+    }
+    _getIconHtml(state, configState, color) {
+        const icon = this._buildIcon(state, configState);
+        const entityPicture = this._buildEntityPicture(state, configState);
+        const entityPictureStyleFromConfig = this._buildEntityPictureStyle(state, configState);
+        const haIconStyle = {
+            color,
+            width: this.config.size,
+            'min-width': this.config.size
+        };
+        const entityPictureStyle = Object.assign({}, haIconStyle, entityPictureStyleFromConfig);
+        if (icon || entityPicture) {
+            return html`
+        <div class="img-cell">
+          ${icon && !entityPicture ? html`<ha-icon style=${styleMap(haIconStyle)}
+            .icon="${icon}" class="icon" ?rotating=${this._rotate(configState)}></ha-icon>` : ''}
+          ${entityPicture ? html`<img src="${entityPicture}" style=${styleMap(entityPictureStyle)}
+            class="icon" ?rotating=${this._rotate(configState)} />` : ''}
         </div>
-        <mwc-ripple></mwc-ripple>
-      </ha-card>
       `;
+        } else {
+            return undefined;
+        }
     }
     setConfig(config) {
         if (!config) {
-            throw new Error("Invalid configuration");
+            throw new Error('Invalid configuration');
         }
-        this.config = Object.assign({ tap_action: { action: "toggle" }, hold_action: { action: "none" }, size: '40%', color_type: 'icon', show_name: true, show_state: false, show_icon: true, show_units: true }, config);
+        this.config = Object.assign({ tap_action: { action: 'toggle' }, hold_action: { action: 'none' }, layout: 'vertical', size: '40%', color_type: 'icon', show_name: true, show_state: false, show_icon: true, show_units: true, show_entity_picture: false }, config);
         this.config.default_color = 'var(--primary-text-color)';
-        this.config.color_off = 'var(--paper-item-icon-color)';
+        if (this.config.color_type !== 'icon') {
+            this.config.color_off = 'var(--paper-card-background-color)';
+        } else {
+            this.config.color_off = 'var(--paper-item-icon-color)';
+        }
         this.config.color_on = 'var(--paper-item-icon-active-color)';
     }
     // The height of your card. Home Assistant uses this to automatically
@@ -3994,14 +4157,16 @@ let ButtonCard = class ButtonCard extends LitElement {
         return 3;
     }
     _handleTap(ev) {
-        if (this.config.confirmation && !confirm(this.config.confirmation)) {
+        /* eslint no-alert: 0 */
+        if (this.config.confirmation && !window.confirm(this.config.confirmation)) {
             return;
         }
         const config = ev.target.config;
         handleClick(this, this.hass, config, false);
     }
     _handleHold(ev) {
-        if (this.config.confirmation && !confirm(this.config.confirmation)) {
+        /* eslint no-alert: 0 */
+        if (this.config.confirmation && !window.confirm(this.config.confirmation)) {
             return;
         }
         const config = ev.target.config;
@@ -4010,4 +4175,5 @@ let ButtonCard = class ButtonCard extends LitElement {
 };
 __decorate([property()], ButtonCard.prototype, "hass", void 0);
 __decorate([property()], ButtonCard.prototype, "config", void 0);
-ButtonCard = __decorate([customElement("button-card")], ButtonCard);
+ButtonCard = __decorate([customElement('button-card')], ButtonCard);
+//# sourceMappingURL=button-card.js.map
