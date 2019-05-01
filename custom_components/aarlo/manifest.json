@@ -1,0 +1,8 @@
+{
+  "domain": "aarlo",
+  "name": "Arlo Camera Support",
+  "documentation": "https://github.com/twrecked/hass-aarlo/blob/master/README.md",
+  "dependencies": ["ffmpeg"],
+  "codeowners": ["@sherrell"],
+  "requirements": []
+}

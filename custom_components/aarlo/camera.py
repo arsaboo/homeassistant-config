@@ -369,7 +369,7 @@ async def websocket_library(hass, connection, msg):
 @websocket_api.async_response
 async def websocket_stream_url(hass, connection, msg):
     camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
-    _LOGGER.debug( 'stream_url for ' + str(camera.name) )
+    _LOGGER.debug( 'stream_url for ' + str(camera.unique_id) )
     try:
         stream = await camera.async_stream_source()
         connection.send_message(websocket_api.result_message(
@@ -385,7 +385,7 @@ async def websocket_stream_url(hass, connection, msg):
 @websocket_api.async_response
 async def websocket_snapshot_image(hass, connection, msg):
     camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
-    _LOGGER.debug( 'snapshot_image for ' + str(camera.name) )
+    _LOGGER.debug( 'snapshot_image for ' + str(camera.unique_id) )
 
     try:
         image = await camera.async_get_snapshot()
@@ -403,7 +403,7 @@ async def websocket_snapshot_image(hass, connection, msg):
 @websocket_api.async_response
 async def websocket_stop_activity(hass, connection, msg):
     camera = _get_camera_from_entity_id( hass,msg['entity_id'] )
-    _LOGGER.debug( 'stop_activity for ' + str(camera.name) )
+    _LOGGER.debug( 'stop_activity for ' + str(camera.unique_id) )
 
     stopped = await camera.async_stop_activity()
     connection.send_message(websocket_api.result_message(
@@ -414,7 +414,12 @@ async def websocket_stop_activity(hass, connection, msg):
 
 async def aarlo_snapshot_service_handler( camera,service ):
     _LOGGER.debug( "{0} snapshot".format( camera.unique_id ) )
-    camera.request_snapshot()
+    await camera.async_get_snapshot()
+    hass = camera.hass
+    _LOGGER.debug( "{0} snapshot event".format( camera.unique_id ) )
+    hass.bus.fire( 'aarlo_snapshot_ready', {
+        'entity_id' : 'aarlo.' + camera.unique_id,
+    })
 
 async def aarlo_snapshot_to_file_service_handler( camera,service ):
     _LOGGER.info( "{0} snapshot to file".format( camera.unique_id ) )
@@ -438,6 +443,10 @@ async def aarlo_snapshot_to_file_service_handler( camera,service ):
 
     try:
         await hass.async_add_executor_job( _write_image, snapshot_file, image )
+        hass.bus.fire( 'aarlo_snapshot_ready', {
+            'entity_id' : 'aarlo.' + camera.unique_id,
+            'file' : snapshot_file
+        })
     except OSError as err:
         _LOGGER.error("Can't write image to file: %s", err)
 
