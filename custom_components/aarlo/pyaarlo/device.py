@@ -109,12 +109,14 @@ class ArloDevice(object):
     def unique_id(self):
         return self._unique_id
 
-    def attribute( self,attr ):
+    def attribute( self,attr,default=None ):
         value = self._arlo._st.get( [self._device_id,attr],None )
         if value is None:
             value = self._attrs.get(attr,None)
         if value is None:
             value = self._attrs.get('properties',{}).get(attr,None)
+        if value is None:
+            value = default
         return value
 
     def add_attr_callback( self,attr,cb ):

@@ -71,7 +71,7 @@ class ArloBase(ArloDevice):
 
     @property
     def mode(self):
-        return self._arlo._st.get( [self.device_id,MODE_KEY,mode_id],'unknown' )
+        return self._arlo._st.get( [self.device_id,MODE_KEY],'unknown' )
 
     @mode.setter
     def mode( self,mode_name ):
@@ -86,6 +86,14 @@ class ArloBase(ArloDevice):
                                     'activeSchedules':[] } ] } )
         else:
             self._arlo.warning( '{0}: mode {1} is unrecognised'.format( self.name,mode_name) )
+
+    def update_mode( self ):
+        data = self._arlo._be.get( AUTOMATION_URL )
+        for mode in data:
+            if mode.get('uniqueId','') == self.unique_id:
+                active_modes = mode.get('activeModes',[])
+                if active_modes:
+                    self._save_and_do_callbacks( MODE_KEY,self._id_to_name(active_modes[0]) )
 
     def update_modes( self ):
         self._modes = self._arlo._be.get( DEFINITIONS_URL + "?uniqueIds={}".format( self.unique_id ) )

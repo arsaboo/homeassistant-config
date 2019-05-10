@@ -39,6 +39,7 @@ ATTR_UNSEEN_VIDEOS = 'unseen_videos'
 ATTR_RECENT_ACTIVITY = 'recent_activity'
 ATTR_IMAGE_SRC = 'image_source'
 ATTR_CHARGING = 'charging'
+ATTR_CHARGER_TYPE = 'charger_type'
 ATTR_WIRED = 'wired'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
@@ -251,6 +252,7 @@ class ArloCam(Camera):
                 (ATTR_RECENT_ACTIVITY, self._camera.recent),
                 (ATTR_IMAGE_SRC, self._camera.last_image_source),
                 (ATTR_CHARGING, self._camera.charging),
+                (ATTR_CHARGER_TYPE, self._camera.charger_type),
                 (ATTR_WIRED, self._camera.wired_only),
             ) if value is not None
         }

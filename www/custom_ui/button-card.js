@@ -2394,6 +2394,36 @@ const unsafeHTML = directive(value => part => {
     previousValues.set(part, { value, fragment });
 });
 
+/**
+ * @license
+ * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at
+ * http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at
+ * http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at
+ * http://polymer.github.io/PATENTS.txt
+ */
+/**
+ * For AttributeParts, sets the attribute if the value is defined and removes
+ * the attribute if the value is undefined.
+ *
+ * For other part types, this directive is a no-op.
+ */
+const ifDefined = directive(value => part => {
+    if (value === undefined && part instanceof AttributePart) {
+        if (value !== part.value) {
+            const name = part.committer.name;
+            part.committer.element.removeAttribute(name);
+        }
+    } else {
+        part.setValue(value);
+    }
+});
+
 /** Constants to be used in the frontend. */
 // Constants should be alphabetically sorted by name.
 // Arrays with values should be alphabetically sorted if order doesn't matter.
@@ -3510,9 +3540,11 @@ const forwardHaptic = (el, hapticType) => {
     fireEvent(el, "haptic", hapticType);
 };
 
-const handleClick = (node, hass, config, hold) => {
+const handleClick = (node, hass, config, hold, dblClick) => {
     let actionConfig;
-    if (hold && config.hold_action) {
+    if (dblClick && config.dbltap_action) {
+        actionConfig = config.dbltap_action;
+    } else if (hold && config.hold_action) {
         actionConfig = config.hold_action;
     } else if (!hold && config.tap_action) {
         actionConfig = config.tap_action;
@@ -3561,32 +3593,33 @@ const handleClick = (node, hass, config, hold) => {
 
 // See https://github.com/home-assistant/home-assistant-polymer/pull/2457
 // on how to undo mwc -> paper migration
-// import "@material/mwc-ripple";
-const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+// import '@material/mwc-ripple';
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 class LongPress extends HTMLElement {
     constructor() {
         super();
         this.holdTime = 500;
-        this.ripple = document.createElement("paper-ripple");
+        this.ripple = document.createElement('paper-ripple');
         this.timer = undefined;
         this.held = false;
         this.cooldownStart = false;
         this.cooldownEnd = false;
+        this.nbClicks = 0;
     }
     connectedCallback() {
         Object.assign(this.style, {
-            borderRadius: "50%",
-            position: "absolute",
-            width: isTouch ? "100px" : "50px",
-            height: isTouch ? "100px" : "50px",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none"
+            borderRadius: '50%',
+            position: 'absolute',
+            width: isTouch ? '100px' : '50px',
+            height: isTouch ? '100px' : '50px',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none'
         });
         this.appendChild(this.ripple);
-        this.ripple.style.color = "#03a9f4"; // paper-ripple
-        this.ripple.style.color = "var(--primary-color)"; // paper-ripple
+        this.ripple.style.color = '#03a9f4'; // paper-ripple
+        this.ripple.style.color = 'var(--primary-color)'; // paper-ripple
         // this.ripple.primary = true;
-        ["touchcancel", "mouseout", "mouseup", "touchmove", "mousewheel", "wheel", "scroll"].forEach(ev => {
+        ['touchcancel', 'mouseout', 'mouseup', 'touchmove', 'mousewheel', 'wheel', 'scroll'].forEach(ev => {
             document.addEventListener(ev, () => {
                 clearTimeout(this.timer);
                 this.stopAnimation();
@@ -3595,11 +3628,12 @@ class LongPress extends HTMLElement {
         });
     }
     bind(element) {
+        /* eslint no-param-reassign: 0 */
         if (element.longPress) {
             return;
         }
         element.longPress = true;
-        element.addEventListener("contextmenu", ev => {
+        element.addEventListener('contextmenu', ev => {
             const e = ev || window.event;
             if (e.preventDefault) {
                 e.preventDefault();
@@ -3628,30 +3662,60 @@ class LongPress extends HTMLElement {
             this.timer = window.setTimeout(() => {
                 this.startAnimation(x, y);
                 this.held = true;
+                if (element.repeat && !element.isRepeating) {
+                    element.isRepeating = true;
+                    this.repeatTimeout = setInterval(() => {
+                        element.dispatchEvent(new Event('ha-hold'));
+                    }, element.repeat);
+                }
             }, this.holdTime);
             this.cooldownStart = true;
             window.setTimeout(() => this.cooldownStart = false, 100);
         };
         const clickEnd = ev => {
-            if (this.cooldownEnd || ["touchend", "touchcancel"].includes(ev.type) && this.timer === undefined) {
+            if (this.cooldownEnd || ['touchend', 'touchcancel'].includes(ev.type) && this.timer === undefined) {
+                if (element.isRepeating && this.repeatTimeout) {
+                    clearInterval(this.repeatTimeout);
+                    element.isRepeating = false;
+                }
                 return;
             }
             clearTimeout(this.timer);
+            if (element.isRepeating && this.repeatTimeout) {
+                clearInterval(this.repeatTimeout);
+            }
+            element.isRepeating = false;
             this.stopAnimation();
             this.timer = undefined;
             if (this.held) {
-                element.dispatchEvent(new Event("ha-hold"));
+                if (!element.repeat) {
+                    element.dispatchEvent(new Event('ha-hold'));
+                }
+            } else if (element.hasDblClick) {
+                if (this.nbClicks === 0) {
+                    this.nbClicks += 1;
+                    this.dblClickTimeout = window.setTimeout(() => {
+                        if (this.nbClicks === 1) {
+                            this.nbClicks = 0;
+                            element.dispatchEvent(new Event('ha-click'));
+                        }
+                    }, 250);
+                } else {
+                    this.nbClicks = 0;
+                    clearTimeout(this.dblClickTimeout);
+                    element.dispatchEvent(new Event('ha-dblclick'));
+                }
             } else {
-                element.dispatchEvent(new Event("ha-click"));
+                element.dispatchEvent(new Event('ha-click'));
             }
             this.cooldownEnd = true;
             window.setTimeout(() => this.cooldownEnd = false, 100);
         };
-        element.addEventListener("touchstart", clickStart, { passive: true });
-        element.addEventListener("touchend", clickEnd);
-        element.addEventListener("touchcancel", clickEnd);
-        element.addEventListener("mousedown", clickStart, { passive: true });
-        element.addEventListener("click", clickEnd);
+        element.addEventListener('touchstart', clickStart, { passive: true });
+        element.addEventListener('touchend', clickEnd);
+        element.addEventListener('touchcancel', clickEnd);
+        element.addEventListener('mousedown', clickStart, { passive: true });
+        element.addEventListener('click', clickEnd);
     }
     startAnimation(x, y) {
         Object.assign(this.style, {
@@ -3669,16 +3733,16 @@ class LongPress extends HTMLElement {
         this.ripple.holdDown = false; // paper-ripple
         // this.ripple.active = false;
         // this.ripple.disabled = true;
-        this.style.display = "none";
+        this.style.display = 'none';
     }
 }
-customElements.define("long-press-button-card", LongPress);
+customElements.define('long-press-button-card', LongPress);
 const getLongPress = () => {
     const body = document.body;
-    if (body.querySelector("long-press-button-card")) {
-        return body.querySelector("long-press-button-card");
+    if (body.querySelector('long-press-button-card')) {
+        return body.querySelector('long-press-button-card');
     }
-    const longpress = document.createElement("long-press-button-card");
+    const longpress = document.createElement('long-press-button-card');
     body.appendChild(longpress);
     return longpress;
 };
@@ -3699,6 +3763,9 @@ const styles = css`
     overflow: hidden;
     box-sizing: border-box;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   ha-card.disabled {
     pointer-events: none;
@@ -3718,28 +3785,31 @@ const styles = css`
     letter-spacing: normal;
     width: 100%;
   }
-  div {
+  .ellipsis {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
   }
   #overlay {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 8px 7px;
+    opacity: 0.5;
+    /* DO NOT override items below */
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    text-align: right;
     z-index: 1;
+    display: flex;
   }
   #lock {
-    margin-top: 8px;
-    opacity: 0.5;
-    margin-right: 7px;
     -webkit-animation-duration: 5s;
     animation-duration: 5s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
+    margin: unset;
   }
   @keyframes fadeOut{
     0% {opacity: 0.5;}
@@ -3792,34 +3862,36 @@ const styles = css`
     animation: rotating 2s linear infinite;
   }
 
-  .container {
+  #container {
     display: grid;
     max-height: 100%;
     text-align: center;
     height: 100%;
     align-items: center;
   }
-  .img-cell {
+  #img-cell {
+    /* display: flex; */
     grid-area: i;
-    height: 100%;
     width: 100%;
     max-width: 100%;
+    align-self: center;
   }
 
-  .icon {
+  ha-icon#icon, img#icon {
     height: 100%;
     max-width: 100%;
-    object-fit: scale;
+    object-fit: contain;
     overflow: hidden;
+    vertical-align: middle;
   }
-  .name {
+  #name {
     grid-area: n;
     max-width: 100%;
     align-self: center;
     justify-self: center;
     /* margin: auto; */
   }
-  .state {
+  #state {
     grid-area: s;
     max-width: 100%;
     align-self: center;
@@ -3827,210 +3899,242 @@ const styles = css`
     /* margin: auto; */
   }
 
-  .label {
+  #label {
     grid-area: l;
     max-width: 100%;
     align-self: center;
     justify-self: center;
   }
 
-  .container.vertical {
+  #container {
+    width: 100%;
+  }
+  #container.vertical {
     grid-template-areas: "i" "n" "s" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr min-content min-content min-content;
   }
   /* Vertical No Icon */
-  .container.vertical.no-icon {
+  #container.vertical.no-icon {
     grid-template-areas: "n" "s" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr min-content 1fr;
   }
-  .container.vertical.no-icon .state {
+  #container.vertical.no-icon #state {
     align-self: center;
   }
-  .container.vertical.no-icon .name {
+  #container.vertical.no-icon #name {
     align-self: end;
   }
-  .container.vertical.no-icon .label {
+  #container.vertical.no-icon #label {
     align-self: start;
   }
 
   /* Vertical No Icon No Name */
-  .container.vertical.no-icon.no-name {
+  #container.vertical.no-icon.no-name {
     grid-template-areas: "s" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.vertical.no-icon.no-name .state {
+  #container.vertical.no-icon.no-name #state {
     align-self: end;
   }
-  .container.vertical.no-icon.no-name .label {
+  #container.vertical.no-icon.no-name #label {
     align-self: start;
   }
 
   /* Vertical No Icon No State */
-  .container.vertical.no-icon.no-state {
+  #container.vertical.no-icon.no-state {
     grid-template-areas: "n" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.vertical.no-icon.no-state .name {
+  #container.vertical.no-icon.no-state #name {
     align-self: end;
   }
-  .container.vertical.no-icon.no-state .label {
+  #container.vertical.no-icon.no-state #label {
     align-self: start;
   }
 
   /* Vertical No Icon No Label */
-  .container.vertical.no-icon.no-label {
+  #container.vertical.no-icon.no-label {
     grid-template-areas: "n" "s";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.vertical.no-icon.no-label .name {
+  #container.vertical.no-icon.no-label #name {
     align-self: end;
   }
-  .container.vertical.no-icon.no-label .state {
+  #container.vertical.no-icon.no-label #state {
     align-self: start;
   }
 
   /* Vertical No Icon No Label No Name */
-  .container.vertical.no-icon.no-label.no-name {
+  #container.vertical.no-icon.no-label.no-name {
     grid-template-areas: "s";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-  .container.vertical.no-icon.no-label.no-name .state {
+  #container.vertical.no-icon.no-label.no-name #state {
     align-self: center;
   }
   /* Vertical No Icon No Label No State */
-  .container.vertical.no-icon.no-label.no-state {
+  #container.vertical.no-icon.no-label.no-state {
     grid-template-areas: "n";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-  .container.vertical.no-icon.no-label.no-state .name {
+  #container.vertical.no-icon.no-label.no-state #name {
     align-self: center;
   }
 
   /* Vertical No Icon No Name No State */
-  .container.vertical.no-icon.no-name.no-state {
+  #container.vertical.no-icon.no-name.no-state {
     grid-template-areas: "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-  .container.vertical.no-icon.no-name.no-state .label {
+  #container.vertical.no-icon.no-name.no-state #label {
     align-self: center;
   }
 
-  .container.icon_name_state {
+  #container.icon_name_state {
     grid-template-areas: "i n" "l l";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content;
   }
 
-  .container.icon_name {
+  #container.icon_name {
     grid-template-areas: "i n" "s s" "l l";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content min-content;
   }
 
-  .container.icon_state {
+  #container.icon_state {
     grid-template-areas: "i s" "n n" "l l";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content min-content;
   }
 
-  .container.name_state {
+  #container.name_state {
     grid-template-areas: "i" "n" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr min-content min-content;
   }
-  .container.name_state.no-icon {
+  #container.name_state.no-icon {
     grid-template-areas: "n" "l";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.name_state.no-icon .name {
+  #container.name_state.no-icon #name {
     align-self: end
   }
-  .container.name_state.no-icon .label {
+  #container.name_state.no-icon #label {
     align-self: start
   }
 
-  .container.name_state.no-icon.no-label {
+  #container.name_state.no-icon.no-label {
     grid-template-areas: "n";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-  .container.name_state.no-icon.no-label .name {
+  #container.name_state.no-icon.no-label #name {
     align-self: center
   }
 
   /* icon_name_state2nd default */
-  .container.icon_name_state2nd {
+  #container.icon_name_state2nd {
     grid-template-areas: "i n" "i s" "i l";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content 1fr;
   }
-  .container.icon_name_state2nd .name {
+  #container.icon_name_state2nd #name {
     align-self: end;
   }
-  .container.icon_name_state2nd .state {
+  #container.icon_name_state2nd #state {
     align-self: center;
   }
-  .container.icon_name_state2nd .label {
+  #container.icon_name_state2nd #label {
     align-self: start;
   }
 
   /* icon_name_state2nd No Label */
-  .container.icon_name_state2nd.no-label {
+  #container.icon_name_state2nd.no-label {
     grid-template-areas: "i n" "i s";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.icon_name_state2nd .name {
+  #container.icon_name_state2nd #name {
     align-self: end;
   }
-  .container.icon_name_state2nd .state {
+  #container.icon_name_state2nd #state {
     align-self: start;
   }
 
   /* icon_state_name2nd Default */
-  .container.icon_state_name2nd {
+  #container.icon_state_name2nd {
     grid-template-areas: "i s" "i n" "i l";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content 1fr;
   }
-  .container.icon_state_name2nd .state {
+  #container.icon_state_name2nd #state {
     align-self: end;
   }
-  .container.icon_state_name2nd .name {
+  #container.icon_state_name2nd #name {
     align-self: center;
   }
-  .container.icon_state_name2nd .state {
+  #container.icon_state_name2nd #label {
     align-self: start;
   }
 
   /* icon_state_name2nd No Label */
-  .container.icon_state_name2nd.no-label {
+  #container.icon_state_name2nd.no-label {
     grid-template-areas: "i s" "i n";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr 1fr;
   }
-  .container.icon_state_name2nd .state {
+  #container.icon_state_name2nd #state {
     align-self: end;
   }
-  .container.icon_state_name2nd .name {
+  #container.icon_state_name2nd #name {
     align-self: start;
   }
 
-  .container.icon_label {
+  #container.icon_label {
     grid-template-areas: "i l" "n n" "s s";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 1fr min-content min-content;
   }
 `;
+
+var computeStateDisplay = (localize, stateObj) => {
+    let display;
+    const domain = computeDomain(stateObj.entity_id);
+    if (domain === 'binary_sensor') {
+        // Try device class translation, then default binary sensor translation
+        if (stateObj.attributes.device_class) {
+            display = localize(`state.${domain}.${stateObj.attributes.device_class}.${stateObj.state}`);
+        }
+        if (!display) {
+            display = localize(`state.${domain}.default.${stateObj.state}`);
+        }
+    } else if (stateObj.attributes.unit_of_measurement && !['unknown', 'unavailable'].includes(stateObj.state)) {
+        display = stateObj.state;
+    } else if (domain === 'zwave') {
+        if (['initializing', 'dead'].includes(stateObj.state)) {
+            display = localize(`state.zwave.query_stage.${stateObj.state}`, 'query_stage', stateObj.attributes.query_stage);
+        } else {
+            display = localize(`state.zwave.default.${stateObj.state}`);
+        }
+    } else {
+        display = localize(`state.${domain}.${stateObj.state}`);
+    }
+    // Fall back to default, component backend translation, or raw state if nothing else matches.
+    if (!display) {
+        display = localize(`state.default.${stateObj.state}`) || localize(`component.${domain}.state.${stateObj.state}`) || stateObj.state;
+    }
+    return display;
+};
 
 let ButtonCard = class ButtonCard extends LitElement {
     static get styles() {
@@ -4049,7 +4153,11 @@ let ButtonCard = class ButtonCard extends LitElement {
         return hasConfigOrEntityChanged(this, changedProps, forceUpdate);
     }
     _getMatchingConfigState(state) {
-        if (!state || !this.config.state) {
+        if (!this.config.state) {
+            return undefined;
+        }
+        const hasTemplate = this.config.state.find(elt => elt.operator === 'template');
+        if (!state && !hasTemplate) {
             return undefined;
         }
         let def;
@@ -4058,21 +4166,21 @@ let ButtonCard = class ButtonCard extends LitElement {
                 switch (elt.operator) {
                     case '==':
                         /* eslint eqeqeq: 0 */
-                        return state.state == elt.value;
+                        return state && state.state == elt.value;
                     case '<=':
-                        return state.state <= elt.value;
+                        return state && state.state <= elt.value;
                     case '<':
-                        return state.state < elt.value;
+                        return state && state.state < elt.value;
                     case '>=':
-                        return state.state >= elt.value;
+                        return state && state.state >= elt.value;
                     case '>':
-                        return state.state > elt.value;
+                        return state && state.state > elt.value;
                     case '!=':
-                        return state.state != elt.value;
+                        return state && state.state != elt.value;
                     case 'regex':
                         {
                             /* eslint no-unneeded-ternary: 0 */
-                            const matches = state.state.match(elt.value) ? true : false;
+                            const matches = state && state.state.match(elt.value) ? true : false;
                             return matches;
                         }
                     case 'template':
@@ -4086,7 +4194,7 @@ let ButtonCard = class ButtonCard extends LitElement {
                         return false;
                 }
             } else {
-                return elt.value == state.state;
+                return state && elt.value == state.state;
             }
         });
         if (!retval && def) {
@@ -4104,6 +4212,27 @@ let ButtonCard = class ButtonCard extends LitElement {
                 return this.config.default_color;
         }
     }
+    _getColorForLightEntity(state) {
+        let color = this.config.default_color;
+        if (state) {
+            if (state.attributes.rgb_color) {
+                color = `rgb(${state.attributes.rgb_color.join(',')})`;
+                if (state.attributes.brightness) {
+                    color = applyBrightnessToColor(color, (state.attributes.brightness + 245) / 5);
+                }
+            } else if (state.attributes.color_temp && state.attributes.min_mireds && state.attributes.max_mireds) {
+                color = getLightColorBasedOnTemperature(state.attributes.color_temp, state.attributes.min_mireds, state.attributes.max_mireds);
+                if (state.attributes.brightness) {
+                    color = applyBrightnessToColor(color, (state.attributes.brightness + 245) / 5);
+                }
+            } else if (state.attributes.brightness) {
+                color = applyBrightnessToColor(this._getDefaultColorForState(state), (state.attributes.brightness + 245) / 5);
+            } else {
+                color = this._getDefaultColorForState(state);
+            }
+        }
+        return color;
+    }
     _buildCssColorAttribute(state, configState) {
         let colorValue = '';
         let color;
@@ -4115,25 +4244,7 @@ let ButtonCard = class ButtonCard extends LitElement {
             colorValue = this.config.color;
         }
         if (colorValue == 'auto') {
-            if (state) {
-                if (state.attributes.rgb_color) {
-                    color = `rgb(${state.attributes.rgb_color.join(',')})`;
-                    if (state.attributes.brightness) {
-                        color = applyBrightnessToColor(color, (state.attributes.brightness + 245) / 5);
-                    }
-                } else if (state.attributes.color_temp && state.attributes.min_mireds && state.attributes.max_mireds) {
-                    color = getLightColorBasedOnTemperature(state.attributes.color_temp, state.attributes.min_mireds, state.attributes.max_mireds);
-                    if (state.attributes.brightness) {
-                        color = applyBrightnessToColor(color, (state.attributes.brightness + 245) / 5);
-                    }
-                } else if (state.attributes.brightness) {
-                    color = applyBrightnessToColor(this._getDefaultColorForState(state), (state.attributes.brightness + 245) / 5);
-                } else {
-                    color = this._getDefaultColorForState(state);
-                }
-            } else {
-                color = this.config.default_color;
-            }
+            color = this._getColorForLightEntity(state);
         } else if (colorValue) {
             color = colorValue;
         } else if (state) {
@@ -4200,11 +4311,12 @@ let ButtonCard = class ButtonCard extends LitElement {
     _buildStateString(state) {
         let stateString;
         if (this.config.show_state && state && state.state) {
+            const localizedState = computeStateDisplay(this.hass.localize, state);
             const units = this._buildUnits(state);
             if (units) {
                 stateString = `${state.state} ${units}`;
             } else {
-                stateString = state.state;
+                stateString = localizedState;
             }
         }
         return stateString;
@@ -4223,7 +4335,7 @@ let ButtonCard = class ButtonCard extends LitElement {
         return units;
     }
     _buildLastChanged(state, style) {
-        return state ? html`<ha-relative-time .hass="${this.hass}" .datetime="${state.last_changed}" class="label" style=${styleMap(style)}></ha-relative-time>` : html``;
+        return this.config.show_last_changed && state ? html`<ha-relative-time id="label" class="ellipsis" .hass="${this.hass}" .datetime="${state.last_changed}" style=${styleMap(style)}></ha-relative-time>` : undefined;
     }
     _buildLabel(state, configState) {
         if (!this.config.show_label) {
@@ -4288,7 +4400,8 @@ let ButtonCard = class ButtonCard extends LitElement {
         const color = this._buildCssColorAttribute(state, configState);
         let buttonColor = color;
         let cardStyle = {};
-        const lockStyle = {};
+        let lockStyle = {};
+        const lockStyleFromConfig = this._buildStyleGeneric(configState, 'lock');
         const configCardStyle = this._buildStyleGeneric(configState, 'card');
         if (configCardStyle.width) {
             this.style.setProperty('flex', '0 0 auto');
@@ -4312,11 +4425,13 @@ let ButtonCard = class ButtonCard extends LitElement {
                 cardStyle = configCardStyle;
                 break;
         }
+        this.style.setProperty('--button-card-light-color', this._getColorForLightEntity(state));
+        lockStyle = Object.assign({}, lockStyle, lockStyleFromConfig);
         return html`
-      <ha-card class="button-card-main ${this._isClickable(state) ? '' : 'disabled'}" style=${styleMap(cardStyle)} @ha-click="${this._handleTap}" @ha-hold="${this._handleHold}" .longpress="${longPress()}" .config="${this.config}">
+      <ha-card class="button-card-main ${this._isClickable(state) ? '' : 'disabled'}" style=${styleMap(cardStyle)} @ha-click="${this._handleTap}" @ha-hold="${this._handleHold}" @ha-dblclick=${this._handleDblTap} .hasDblClick=${this.config.dbltap_action.action !== 'none'} .repeat=${ifDefined(this.config.hold_action.repeat)} .longpress="${longPress()}" .config="${this.config}">
         ${this._getLock(lockStyle)}
         ${this._buttonContent(state, configState, buttonColor)}
-        ${this.config.lock ? '' : html`<paper-ripple id="ripple"></paper-ripple>`}
+        ${this.config.lock ? '' : html`<mwc-ripple id="ripple"></mwc-ripple>`}
       </ha-card>
       `;
     }
@@ -4344,23 +4459,24 @@ let ButtonCard = class ButtonCard extends LitElement {
     }
     _gridHtml(state, configState, containerClass, color, name, stateString) {
         const iconTemplate = this._getIconHtml(state, configState, color);
-        const itemClass = ['container', containerClass];
+        const itemClass = [containerClass];
         const label = this._buildLabel(state, configState);
         const nameStyleFromConfig = this._buildStyleGeneric(configState, 'name');
         const stateStyleFromConfig = this._buildStyleGeneric(configState, 'state');
         const labelStyleFromConfig = this._buildStyleGeneric(configState, 'label');
         const lastChangedTemplate = this._buildLastChanged(state, labelStyleFromConfig);
+        const gridStyleFromConfig = this._buildStyleGeneric(configState, 'grid');
         if (!iconTemplate) itemClass.push('no-icon');
         if (!name) itemClass.push('no-name');
         if (!stateString) itemClass.push('no-state');
-        if (!label) itemClass.push('no-label');
+        if (!label && !lastChangedTemplate) itemClass.push('no-label');
         return html`
-      <div class=${itemClass.join(' ')}>
+      <div id="container" class=${itemClass.join(' ')} style=${styleMap(gridStyleFromConfig)}>
         ${iconTemplate ? iconTemplate : ''}
-        ${name ? html`<div class="name" style=${styleMap(nameStyleFromConfig)}>${name}</div>` : ''}
-        ${stateString ? html`<div class="state" style=${styleMap(stateStyleFromConfig)}>${stateString}</div>` : ''}
-        ${label && !this.config.show_last_changed ? html`<div class="label" style=${styleMap(labelStyleFromConfig)}>${unsafeHTML(label)}</div>` : ''}
-        ${this.config.show_last_changed ? lastChangedTemplate : ''}
+        ${name ? html`<div id="name" class="ellipsis" style=${styleMap(nameStyleFromConfig)}>${name}</div>` : ''}
+        ${stateString ? html`<div id="state" class="ellipsis" style=${styleMap(stateStyleFromConfig)}>${stateString}</div>` : ''}
+        ${label && !lastChangedTemplate ? html`<div id="label" class="ellipsis" style=${styleMap(labelStyleFromConfig)}>${unsafeHTML(label)}</div>` : ''}
+        ${lastChangedTemplate ? lastChangedTemplate : ''}
       </div>
     `;
     }
@@ -4369,15 +4485,16 @@ let ButtonCard = class ButtonCard extends LitElement {
         const entityPicture = this._buildEntityPicture(state, configState);
         const entityPictureStyleFromConfig = this._buildStyleGeneric(configState, 'entity_picture');
         const haIconStyleFromConfig = this._buildStyleGeneric(configState, 'icon');
-        const haIconStyle = Object.assign({ color, width: this.config.size, 'min-width': this.config.size }, haIconStyleFromConfig);
+        const imgCellStyleFromConfig = this._buildStyleGeneric(configState, 'img_cell');
+        const haIconStyle = Object.assign({ color, width: this.config.size }, haIconStyleFromConfig);
         const entityPictureStyle = Object.assign({}, haIconStyle, entityPictureStyleFromConfig);
         if (icon || entityPicture) {
             return html`
-        <div class="img-cell">
+        <div id="img-cell" style=${styleMap(imgCellStyleFromConfig)}>
           ${icon && !entityPicture ? html`<ha-icon style=${styleMap(haIconStyle)}
-            .icon="${icon}" class="icon" ?rotating=${this._rotate(configState)}></ha-icon>` : ''}
+            .icon="${icon}" id="icon" ?rotating=${this._rotate(configState)}></ha-icon>` : ''}
           ${entityPicture ? html`<img src="${entityPicture}" style=${styleMap(entityPictureStyle)}
-            class="icon" ?rotating=${this._rotate(configState)} />` : ''}
+            id="icon" ?rotating=${this._rotate(configState)} />` : ''}
         </div>
       `;
         } else {
@@ -4388,7 +4505,7 @@ let ButtonCard = class ButtonCard extends LitElement {
         if (!config) {
             throw new Error('Invalid configuration');
         }
-        this.config = Object.assign({ tap_action: { action: 'toggle' }, hold_action: { action: 'none' }, layout: 'vertical', size: '40%', color_type: 'icon', show_name: true, show_state: false, show_icon: true, show_units: true, show_label: false, show_entity_picture: false }, config);
+        this.config = Object.assign({ tap_action: { action: 'toggle' }, hold_action: { action: 'none' }, dbltap_action: { action: 'none' }, layout: 'vertical', size: '40%', color_type: 'icon', show_name: true, show_state: false, show_icon: true, show_units: true, show_label: false, show_entity_picture: false }, config);
         this.config.default_color = 'var(--primary-text-color)';
         if (this.config.color_type !== 'icon') {
             this.config.color_off = 'var(--paper-card-background-color)';
@@ -4432,7 +4549,7 @@ let ButtonCard = class ButtonCard extends LitElement {
             return;
         }
         const config = ev.target.config;
-        handleClick(this, this.hass, config, false);
+        handleClick(this, this.hass, config, false, false);
     }
     _handleHold(ev) {
         /* eslint no-alert: 0 */
@@ -4440,7 +4557,15 @@ let ButtonCard = class ButtonCard extends LitElement {
             return;
         }
         const config = ev.target.config;
-        handleClick(this, this.hass, config, true);
+        handleClick(this, this.hass, config, true, false);
+    }
+    _handleDblTap(ev) {
+        /* eslint no-alert: 0 */
+        if (this.config.confirmation && !window.confirm(this.config.confirmation)) {
+            return;
+        }
+        const config = ev.target.config;
+        handleClick(this, this.hass, config, false, true);
     }
     _handleLock(ev) {
         ev.stopPropagation();

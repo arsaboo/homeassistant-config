@@ -104,7 +104,7 @@ class ArloBaseStation(AlarmControlPanel):
             self._state = self._get_state_from_mode( self._base.attribute( 'activeMode' ) )
             self.async_schedule_update_ha_state()
 
-        self._state = self._get_state_from_mode( self._base.attribute( 'activeMode' ) )
+        self._state = self._get_state_from_mode( self._base.attribute( 'activeMode',ARMED ) )
         self._base.add_attr_callback( 'activeMode',update_state )
 
     @property

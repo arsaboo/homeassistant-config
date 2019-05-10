@@ -308,8 +308,12 @@ class ArloCamera(ArloChildDevice):
         return self._arlo._st.get( [self._device_id,CHARGING_KEY],'off' ).lower() == 'on'
 
     @property
+    def charger_type( self ):
+        return self._arlo._st.get( [self._device_id,CHARGER_KEY],'None' )
+
+    @property
     def wired( self ):
-        return self._arlo._st.get( [self._device_id,CHARGER_KEY],'none' ).lower() != 'none'
+        return self.charger_type.lower() == 'QuickCharger'
 
     @property
     def wired_only( self ):
@@ -341,8 +345,11 @@ class ArloCamera(ArloChildDevice):
             return True
         if cap in ('temperature','humidity','air_quality','airQuality') and self.model_id == 'ABC1000':
             return True
-        if cap in ( 'audio','audioDetected','sound' ) and (self.model_id.startswith('VMC4030') or self.model_id == 'ABC1000'):
-            return True
+        if cap in ( 'audio','audioDetected','sound' ):
+            if (self.model_id.startswith('VMC4030') or self.model_id == 'ABC1000'):
+                return True
+            if self.device_type.startswith('arloq'):
+                return True
         return super().has_capability( cap )
 
     def take_streaming_snapshot( self ):

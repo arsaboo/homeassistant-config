@@ -1,0 +1,14 @@
+
+aarlo_request_snapshot:
+  description: Request a camera takes a snapshot
+  fields:
+    entity_id:
+      description: string (required) camera to get snapshot from
+
+aarlo_request_snapshot_to_file:
+  description: Request a camera takes a snapshot and write it to a file
+  fields:
+    entity_id:
+      description: string (required) camera to get snapshot from
+    filename:
+      description: string (required) where to save the snapshot
