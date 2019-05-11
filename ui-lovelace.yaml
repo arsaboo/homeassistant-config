@@ -560,7 +560,9 @@ views:
             secondary_info: last-changed
           - entity: switch.0220013568c63aa78156
             secondary_info: last-changed
-
+          - entity: switch.03783133807d3a7d0403
+            type: "custom:secondaryinfo-entity-row"
+            secondary_info: '[[ sensor.rpi_cpu_temp ]] °F'
       - type: vertical-stack
         cards:
           - type: alarm-panel

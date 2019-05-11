@@ -63,8 +63,6 @@
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
-  # - platform: cert_expiry
-  #   host: !secret ha_url
   - platform: glances
     host: 192.168.2.212
     version: 3
@@ -72,6 +70,12 @@
       - 'disk_use_percent'
       - 'memory_use_percent'
       - 'processor_load'
+  - platform: glances
+    host: 192.168.2.3
+    version: 3
+    name: RPi
+    resources:
+      - 'cpu_temp'
   - platform: statistics
     name: Bed Weight Average
     entity_id: sensor.master_bed_weight

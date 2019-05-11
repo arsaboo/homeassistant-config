@@ -1644,6 +1644,36 @@
     service: homeassistant.turn_off
     entity_id: switch.wemoswitch
 
+- id: turn_on_study_fan
+  alias: Turn on study fan
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: switch.03783133807d3a7d0403
+      state: 'off'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.rpi_cpu_temp
+      above: 139
+  action:
+    service: homeassistant.turn_on
+    entity_id: switch.03783133807d3a7d0403
+
+- id: turn_off_study_fan
+  alias: Turn off study fan
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: switch.03783133807d3a7d0403
+      state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.rpi_cpu_temp
+      below: 125
+  action:
+    service: homeassistant.turn_off
+    entity_id: switch.03783133807d3a7d0403
+
 # - id: get_iphone_steps
 #   alias: Get steps from iPhone
 #   initial_state: 'on'
