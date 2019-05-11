@@ -21,7 +21,7 @@
       - automation.update_dark_sky_friendly_names
       - automation.update_friendly_names_at_night
       - group.ring_doorbell
-      - sensor.pollen
+      - sensor.rpi_cpu_temp
       - sensor.cold_flu_risk
       - sensor.curr_future
       - sensor.pollen_level

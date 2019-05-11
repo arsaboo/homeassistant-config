@@ -55,11 +55,6 @@
       - nasdaq
       - nasdaq_change_pct
       - nasdaq_change
-  - platform: pollen
-    zip_code: !secret home_zip
-    monitored_conditions:
-      - allergy_average_forecasted
-      - disease_average_forecasted
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes

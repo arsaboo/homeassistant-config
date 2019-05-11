@@ -113,6 +113,11 @@ light:
       - light.hue_color_lamp_1
       - light.hue_color_lamp_2
       - light.hue_color_lamp_3
+iqvia:
+  zip_code: !secret home_zip
+  monitored_conditions:
+    - allergy_average_forecasted
+    - disease_average_forecasted
 wemo:
   static:
     - 192.168.2.104
