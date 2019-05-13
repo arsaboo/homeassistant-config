@@ -121,12 +121,12 @@
         friendly_name: Sonos Night Sound
         value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
         turn_on:
-          - service: media_player.sonos_set_option
+          - service: sonos.set_option
             data:
               entity_id: media_player.family_room_2
               night_sound: True
         turn_off:
-          - service: media_player.sonos_set_option
+          - service: sonos.set_option
             data:
               entity_id: media_player.family_room_2
               night_sound: False
@@ -134,12 +134,12 @@
         friendly_name: Sonos Speech Enhance
         value_template: "{{state_attr('media_player.family_room_2','speech_enhance')}}"
         turn_on:
-          - service: media_player.sonos_set_option
+          - service: sonos.set_option
             data:
               entity_id: media_player.family_room_2
               speech_enhance: True
         turn_off:
-          - service: media_player.sonos_set_option
+          - service: sonos.set_option
             data:
               entity_id: media_player.family_room_2
               speech_enhance: False

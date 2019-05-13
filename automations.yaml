@@ -1654,7 +1654,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.rpi_cpu_temp
-      above: 139
+      above: 135
   action:
     service: homeassistant.turn_on
     entity_id: switch.03783133807d3a7d0403
@@ -1774,6 +1774,20 @@
   condition:
     - condition: template
       value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.pihole
+- id: turn_off_pihole_when_thop_running
+  alias: Turn off PiHole when running Thop
+  initial_state: 'on'
+  trigger:
+    - platform: template
+      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
+  condition:
+    - condition: state
+      entity_id: switch.pihole
+      state: 'off'
   action:
     - service: switch.turn_off
       entity_id:
@@ -1964,11 +1978,11 @@
       after: '20:30:00'
       before: '23:00:00'
   action:
-    - service: media_player.sonos_set_option
+    - service: sonos.set_option
       data:
         entity_id: media_player.family_room_2
         night_sound: true
-    - service: media_player.sonos_set_option
+    - service: sonos.set_option
       data:
         entity_id: media_player.family_room_2
         speech_enhance: true
@@ -1984,11 +1998,11 @@
       after: '20:30:00'
       before: '07:00:00'
   action:
-    - service: media_player.sonos_set_option
+    - service: sonos.set_option
       data:
         entity_id: media_player.family_room_2
         night_sound: false
-    - service: media_player.sonos_set_option
+    - service: sonos.set_option
       data:
         entity_id: media_player.family_room_2
         speech_enhance: false

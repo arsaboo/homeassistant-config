@@ -909,22 +909,20 @@ views:
                 entity: switch.sonos_speech_enhance
                 name: Speech
                 icon: mdi:comment-check-outline
-                default_color: rgb(255, 255, 255)
-                color: rgb(28, 128, 199)
                 action: toggle
                 color_type: icon
-                style:
-                  - font-size: 12px
+                styles:
+                  card:
+                    - font-size: 12px
               - type: custom:button-card
                 entity: switch.sonos_night_sound
                 name: Night
                 icon: mdi:weather-night
-                color: rgb(28, 128, 199)
                 action: toggle
-                default_color: rgb(255, 255, 255)
                 color_type: icon
-                style:
-                  - font-size: 12px
+                styles:
+                  card:
+                    - font-size: 12px
               - type: custom:button-card
                 color_type: blank-card
           - type: horizontal-stack
@@ -935,6 +933,9 @@ views:
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-minus
+                styles:
+                  card:
+                    - height: 40px
                 tap_action:
                   action: call-service
                   service: media_player.volume_down
@@ -946,13 +947,16 @@ views:
                 show_icon: false
                 show_name: false
                 layout: vertical
-                style:
-                  - height: 40px
-                  - line-height: 40px
+                styles:
+                  card:
+                    - height: 40px
               - type: custom:button-card
                 color_type: card
                 color: rgb(223, 255, 97)
                 icon: mdi:volume-plus
+                styles:
+                  card:
+                    - height: 40px
                 tap_action:
                   action: call-service
                   service: media_player.volume_up
