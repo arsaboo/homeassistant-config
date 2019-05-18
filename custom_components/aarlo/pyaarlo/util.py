@@ -26,6 +26,8 @@ def http_get( url,filename=None ):
         ret = requests.get(url)
     except requests.exceptions.SSLError as error:
         return False
+    except:
+        return False
 
     if ret.status_code != 200:
         return False

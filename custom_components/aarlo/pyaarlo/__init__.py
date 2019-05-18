@@ -25,7 +25,7 @@ from custom_components.aarlo.pyaarlo.constant import ( BLANK_IMAGE,
 
 _LOGGER = logging.getLogger('pyaarlo')
 
-__version__ = '0.0.4'
+__version__ = '0.0.7'
 
 class PyArlo(object):
 
@@ -88,6 +88,9 @@ class PyArlo(object):
         self._st.set( ['ARLO',TOTAL_CAMERAS_KEY],len(self._cameras) )
         self._st.set( ['ARLO',TOTAL_BELLS_KEY],len(self._doorbells) )
 
+        # always ping bases first!
+        self._ping_bases()
+
         # queue up initial config retrieval
         self.debug('getting initial settings' )
         self._bg.run_in( self._refresh_cameras,2 )
@@ -121,6 +124,10 @@ class PyArlo(object):
         for camera in self._cameras:
             camera.update_ambient_sensors()
 
+    def _ping_bases( self ):
+        for base in self._bases:
+            self._bg.run( self._be.async_ping,base=base )
+
     def _refresh_bases( self,initial ):
         for base in self._bases:
             base.update_modes()
@@ -132,10 +139,7 @@ class PyArlo(object):
     def _fast_refresh( self ):
         self.debug( 'fast refresh' )
         self._bg.run( self._st.save )
-
-        # alway ping bases
-        for base in self._bases:
-            self._bg.run( self._be.async_ping,base=base )
+        self._ping_bases()
 
         # if day changes then reload recording library and camera counts
         today = datetime.date.today()
