@@ -1085,8 +1085,8 @@
      data:
        entity_id: switch.wemoinsight
 
-- id: ensure_switches_on
-  alias: 'Ensure smart-switches are on'
+- id: ensure_smart_devices_on
+  alias: 'Ensure smart-devices are on'
   initial_state: 'on'
   trigger:
     - platform: state
@@ -1096,17 +1096,17 @@
         - group.master_lights
       to: 'unavailable'
       for: '00:05:00'
+    - platform: state
+      entity_id:
+        - cover.garagedoor
+      to: 'open'
+      for: '00:15:00'
   action:
-    - service: notify.pushbullet
-      data_template:
-        title: "Check {{ trigger.to_state.name }} switch"
-        message: >
-          Check switch: {{ trigger.to_state.name }}
     - service: notify.ios
       data_template:
-        message: "Check {{ trigger.to_state.name }} switch"
+        message: "Check {{ trigger.to_state.name }}"
         data:
-          subtitle: "Looks like {{ trigger.to_state.name }} switch is turned off"
+          subtitle: "Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state }}"
           push:
             badge: 0
 
