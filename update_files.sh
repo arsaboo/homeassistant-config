@@ -9,7 +9,7 @@ wget -O /home/homeassistant/.homeassistant/www/custom_ui/config-template-card.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/card-modder.js https://raw.githubusercontent.com/thomasloven/lovelace-card-modder/master/card-modder.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/secondaryinfo-entity-row.js https://raw.githubusercontent.com/MizterB/lovelace-secondaryinfo-entity-row/master/secondaryinfo-entity-row.js
 wget -O /home/homeassistant/.homeassistant/www/custom_ui/button-card.js https://raw.githubusercontent.com/custom-cards/button-card/master/dist/button-card.js
-wget -O /home/homeassistant/.homeassistant/www/custom_ui/calendar-card.js https://github.com/ljmerza/calendar-card/releases/download/3.10.1/calendar-card.js
-wget -O /home/homeassistant/.homeassistant/www/custom_ui/mini-graph-card-bundle.js https://github.com/kalkih/mini-graph-card/releases/download/v0.3.3/mini-graph-card-bundle.js
-wget -O /home/homeassistant/.homeassistant/www/custom_ui/mini-media-player-bundle.js https://github.com/kalkih/mini-media-player/releases/download/v1.1.2/mini-media-player-bundle.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/calendar-card.js https://github.com/ljmerza/calendar-card/releases/download/3.10.3/calendar-card.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/mini-graph-card-bundle.js https://github.com/kalkih/mini-graph-card/releases/download/v0.4.3/mini-graph-card-bundle.js
+wget -O /home/homeassistant/.homeassistant/www/custom_ui/mini-media-player-bundle.js https://github.com/kalkih/mini-media-player/releases/download/v1.1.3/mini-media-player-bundle.js
 sudo chown -R homeassistant:homeassistant /home/homeassistant/.homeassistant/

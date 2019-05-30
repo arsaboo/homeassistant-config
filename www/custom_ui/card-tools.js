@@ -183,6 +183,7 @@ class {
       switch: "toggle",
       vacuum: "toggle",
       water_heater: "climate",
+      input_datetime: "input-datetime",
     };
 
     if(!config || typeof config !== "object" || (!config.entity && !config.type)) {
