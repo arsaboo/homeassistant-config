@@ -3,7 +3,7 @@
     name: 'Rashmi Home'
     probability_threshold: 0.95
     observations:
-      - entity_id: 'device_tracker.rashmiphone_rashmiphone'
+      - entity_id: 'device_tracker.sonu_owntracks'
         prob_given_true: 0.8
         prob_given_false: 0.2
         platform: 'state'
@@ -32,7 +32,7 @@
     name: 'Alok Home'
     probability_threshold: 0.95
     observations:
-      - entity_id: 'device_tracker.alokphone_alokphone'
+      - entity_id: 'device_tracker.alok_owntracks'
         prob_given_true: 0.8
         prob_given_false: 0.2
         platform: 'state'

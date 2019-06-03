@@ -1067,7 +1067,7 @@ views:
           - type: horizontal-stack
             cards:
               - type: picture-entity
-                entity: device_tracker.rashmiphone_rashmiphone
+                entity: device_tracker.sonu_owntracks
                 show_name: false
                 show_state: false
                 state_image:
@@ -1104,7 +1104,7 @@ views:
           - type: horizontal-stack
             cards:
               - type: picture-entity
-                entity: device_tracker.alokphone_alokphone
+                entity: device_tracker.alok_owntracks
                 show_name: false
                 show_state: false
                 state_image:

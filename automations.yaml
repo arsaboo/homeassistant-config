@@ -28,14 +28,14 @@
       entity_id:
         - device_tracker.myiphone
         - device_tracker.rashmisiphone
-        - device_tracker.alokphone_alokphone
-        - device_tracker.rashmiphone_rashmiphone
+        - device_tracker.alok_owntracks
+        - device_tracker.sonu_owntracks
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.alokphone_alokphone
-        - device_tracker.rashmiphone_rashmiphone
+        - device_tracker.alok_owntracks
+        - device_tracker.sonu_owntracks
       to: 'home'
       for: '00:00:30'
     - platform: state

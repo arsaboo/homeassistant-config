@@ -591,6 +591,7 @@ media_player:
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
       livetvstream.thoptv.com.thoptv: "ThopTV"
+      com.mxtech.videoplayer.ad: "MXPlayer"
   - platform: androidtv
     name: FTV Master
     host: 192.168.2.225
@@ -605,6 +606,7 @@ media_player:
       livetvstream.thoptv.com.thoptv: "ThopTV"
       com.amazon.tv.launcher: Home
       com.synology.dsvideo: "DS Video"
+      com.mxtech.videoplayer.ad: "MXPlayer"
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -631,7 +633,7 @@ device_tracker:
   #   name: alok composite
   #   entity_id:
   #     - device_tracker.myiphone
-  #     - device_tracker.alokphone_alokphone
+  #     - device_tracker.alok_owntracks
   #     - device_tracker.alokiosiphone
   #     - device_tracker.alok_alok
   #     - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111

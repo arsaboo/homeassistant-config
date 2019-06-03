@@ -10,13 +10,13 @@ climate.bedroom:
 device_tracker.myiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone
-device_tracker.alokphone_alokphone:
+device_tracker.alok_owntracks:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
 device_tracker.rashmisiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
-device_tracker.rashmiphone_rashmiphone:
+device_tracker.sonu_owntracks:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone MQTT
 device_tracker.alokdelllatitude:
