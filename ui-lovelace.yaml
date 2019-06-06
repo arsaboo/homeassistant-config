@@ -1145,7 +1145,7 @@ views:
                   'home': /local/icons/alok_geofency_home.png
                   'not_home': /local/icons/alok_geofency_not_home.png
                   'buckhead': /local/icons/alok_geofency_not_home.png
-                  'downtown': /local/icons/alok_geofency_not_home.png
+                  'Downtown': /local/icons/alok_geofency_not_home.png
       - type: entities
         title: HASS Details
         show_header_toggle: false
