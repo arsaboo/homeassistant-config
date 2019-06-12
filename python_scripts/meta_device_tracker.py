@@ -6,11 +6,11 @@
 
 # OPTIONS
 # List the trackers for each individual
-RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.sonu_owntracks',
-                  'device_tracker.rashmiappiphone', 'device_tracker.sonu_sonu',
+RashmiTrackers = ['device_tracker.rashmisiphone', 'device_tracker.rashmiphone_rashmiphone_2',
+                  'device_tracker.rashmiappiphone', 'device_tracker.life360_sonu',
                   'device_tracker.e1594e53_21df_414c_82da_f655d5282fca']
-AlokTrackers = ['device_tracker.myiphone', 'device_tracker.alok_owntracks',
-                'device_tracker.alokiosiphone', 'device_tracker.alok_alok',
+AlokTrackers = ['device_tracker.myiphone', 'device_tracker.alokphone_alokphone_2',
+                'device_tracker.alokiosiphone', 'device_tracker.life360_alok_saboo',
                 'device_tracker.elantrase', 'device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111']
 # Get the entity that triggered the automation
 triggeredEntity = data.get('entity_id')

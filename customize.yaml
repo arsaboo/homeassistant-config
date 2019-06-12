@@ -10,13 +10,13 @@ climate.bedroom:
 device_tracker.myiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone
-device_tracker.alok_owntracks:
+device_tracker.alokphone_alokphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
 device_tracker.rashmisiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
-device_tracker.sonu_owntracks:
+device_tracker.rashmiphone_rashmiphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone MQTT
 device_tracker.alokdelllatitude:
@@ -40,12 +40,6 @@ device_tracker.44650d8ae465:
 device_tracker.94a1a273348b:
   friendly_name: BloomSky
   icon: mdi:compass-outline
-device_tracker.alok_alok:
-  entity_picture: /local/icons/life360.png
-  friendly_name: Alok Life360
-device_tracker.sonu_sonu:
-  entity_picture: /local/icons/life360.png
-  friendly_name: Rashmi Life360
 proximity.rashmi:
   friendly_name: Rashmi Proximity
 proximity.alok:

@@ -327,14 +327,14 @@
           option: "oxfordblue"
       - service: script.updatetracker
         data_template:
-          entityid: 'device_tracker.sonu_sonu'
-          fromstate: '{{states.device_tracker.sonu_sonu.state}}'
-          tostate: '{{states.device_tracker.sonu_sonu.state}}'
+          entityid: 'device_tracker.life360_sonu'
+          fromstate: '{{states.device_tracker.life360_sonu.state}}'
+          tostate: '{{states.device_tracker.life360_sonu.state}}'
       - service: script.updatetracker
         data_template:
-          entityid: 'device_tracker.alok_alok'
-          fromstate: '{{states.device_tracker.alok_alok.state}}'
-          tostate: '{{states.device_tracker.alok_alok.state}}'
+          entityid: 'device_tracker.life360_alok_saboo'
+          fromstate: '{{states.device_tracker.life360_alok_saboo.state}}'
+          tostate: '{{states.device_tracker.life360_alok_saboo.state}}'
       - service_template: "homeassistant.turn_{{ 'on' if states.media_player.living_room_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv

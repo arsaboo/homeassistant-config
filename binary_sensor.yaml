@@ -3,7 +3,7 @@
     name: 'Rashmi Home'
     probability_threshold: 0.95
     observations:
-      - entity_id: 'device_tracker.sonu_owntracks'
+      - entity_id: 'device_tracker.rashmiphone_rashmiphone_2'
         prob_given_true: 0.8
         prob_given_false: 0.2
         platform: 'state'
@@ -18,7 +18,7 @@
         prob_given_false: 0.4
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.sonu_sonu'
+      - entity_id: 'device_tracker.life360_sonu'
         prob_given_true: 1
         platform: 'state'
         to_state: 'home'
@@ -32,7 +32,7 @@
     name: 'Alok Home'
     probability_threshold: 0.95
     observations:
-      - entity_id: 'device_tracker.alok_owntracks'
+      - entity_id: 'device_tracker.alokphone_alokphone_2'
         prob_given_true: 0.8
         prob_given_false: 0.2
         platform: 'state'
@@ -47,7 +47,7 @@
         prob_given_false: 0.4
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.alok_alok'
+      - entity_id: 'device_tracker.life360_alok_saboo'
         prob_given_true: 0.99
         prob_given_false: 0.1
         platform: 'state'
@@ -59,7 +59,7 @@
         to_state: 'home'
   - platform: workday
     country: US
-    province: GA   
+    province: GA
   - platform: aarlo
     monitored_conditions:
     - motion
