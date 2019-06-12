@@ -33,12 +33,12 @@ class ArloStorage(object):
             self._arlo.warning( 'file not read' )
 
     def save( self ):
-        with self.lock:
-            try:
+        try:
+            with self.lock:
                 with open( self.file,'wb' ) as dump:
-                    pickle.dump( self.db,dump, )
-            except:
-                self._arlo.warning( 'file not written' )
+                    pickle.dump( self.db,dump )
+        except:
+            self._arlo.warning( 'file not written' )
 
     def file_name( self ):
         return self.file

@@ -14,6 +14,7 @@ from custom_components.aarlo.pyaarlo.media import ArloMediaLibrary
 from custom_components.aarlo.pyaarlo.base import ArloBase
 from custom_components.aarlo.pyaarlo.camera import ArloCamera
 from custom_components.aarlo.pyaarlo.doorbell import ArloDoorBell
+from custom_components.aarlo.pyaarlo.util import time_to_arlotime
 
 from custom_components.aarlo.pyaarlo.constant import ( BLANK_IMAGE,
                                 DEVICE_KEYS,
@@ -25,7 +26,7 @@ from custom_components.aarlo.pyaarlo.constant import ( BLANK_IMAGE,
 
 _LOGGER = logging.getLogger('pyaarlo')
 
-__version__ = '0.0.7'
+__version__ = '0.0.12'
 
 class PyArlo(object):
 
@@ -67,7 +68,7 @@ class PyArlo(object):
         # slow piece.
         # get devices and fill local db, and create device instance
         self.info('pyaarlo starting')
-        self._devices = self._be.get( DEVICES_URL )
+        self._devices = self._be.get( DEVICES_URL + "?t={}".format(time_to_arlotime()) )
         self._parse_devices()
         for device in self._devices:
             dname = device.get('deviceName')

@@ -77,6 +77,8 @@ LAST_IMAGE_DATA_KEY  = 'presignedLastImageData'
 LAST_IMAGE_SRC_KEY   = 'lastImageSource'
 MODE_NAME_TO_ID_KEY  = 'modeNameToId'
 MODE_ID_TO_NAME_KEY  = 'modeIdToName'
+MODE_IS_SCHEDULE_KEY = 'modeIsSchedule'
+SCHEDULE_KEY         = 'activeSchedule'
 TOTAL_BELLS_KEY      = 'totalDoorBells'
 TOTAL_CAMERAS_KEY    = 'totalCameras'
 

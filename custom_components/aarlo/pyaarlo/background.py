@@ -54,7 +54,7 @@ class ArloBackgroundWorker(threading.Thread):
 
                 # loop till done
                 timeout = None
-                while not timeout:
+                while timeout is None:
                     timeout = self._run_next()
 
                 # wait or get going?

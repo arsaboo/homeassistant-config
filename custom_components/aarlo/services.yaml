@@ -1,14 +1,29 @@
 
-aarlo_request_snapshot:
+camera.aarlo_request_snapshot:
   description: Request a camera takes a snapshot
   fields:
     entity_id:
       description: string (required) camera to get snapshot from
 
-aarlo_request_snapshot_to_file:
+camera.aarlo_request_snapshot_to_file:
   description: Request a camera takes a snapshot and write it to a file
   fields:
     entity_id:
       description: string (required) camera to get snapshot from
     filename:
       description: string (required) where to save the snapshot
+
+camera.aarlo_stop_activity:
+  description: Stop all stream activity on a camera
+  fields:
+    entity_id:
+      description: string (required) camera to stop activity
+
+alarm_control_panel.aarlo_set_mode:
+  description: Set the mode of a base station.
+  fields:
+    entity_id:
+      description: string (required) base station to change
+    mode:
+      description: string (required) mode or schedule to change to
+
