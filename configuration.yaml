@@ -190,9 +190,8 @@ media_extractor:
 
 # Enables configuration UI
 config:
-
-cloud:
-  alexa:
+alexa:
+  smart_home:
     filter:
       include_entities:
         - light.living_room_lights
@@ -207,6 +206,7 @@ cloud:
         - script.tv_youtube_on
       include_domains:
         - cover
+        - light
     entity_config:
       light.gateway_light_34ce00813670:
         name: Gateway Light
@@ -215,44 +215,68 @@ cloud:
         name: Youtube
         description: Youtube on
 
-  google_actions:
-    filter:
-      include_entities:
-        - script.tv_youtube_on
-        - switch.wemoporch
-        - switch.driveway
-        - switch.wemoinsight
-      include_domains:
-        - cover
-        - light
-      exclude_entities:
-        - light.gateway_light_34ce00813670
-        - light.hue_color_lamp_1
-        - light.hue_color_lamp_2
-        - light.hue_color_lamp_3
-        - light.lifx3
-        - light.lifxnrguest
-        - light.lifxnrkitchen
-    entity_config:
-      light.living_room_lights:
-        room: living room
-      light.master_lights:
-        room: master bedroom
-      switch.driveway:
-        room: driveway
-      switch.wemoporch:
-        name: Porch Lights
-        room: porch
-      light.kitchen:
-        room: kitchen
-      light.lifx5:
-        room: garage
-      switch.wemoinsight:
-        name: Wemo Insight
-        room: office
-      script.tv_youtube_on:
-        name: Youtube
-        room: living room
+# cloud:
+#   alexa:
+#     filter:
+#       include_entities:
+#         - light.living_room_lights
+#         - light.master_lights
+#         - input_boolean.abodeupdate
+#         - light.gateway_light_34ce00813670
+#         - light.kitchen
+#         - light.lifx5
+#         - switch.driveway
+#         - switch.garage_relay_switch
+#         - switch.wemoporch
+#         - script.tv_youtube_on
+#       include_domains:
+#         - cover
+#     entity_config:
+#       light.gateway_light_34ce00813670:
+#         name: Gateway Light
+#         description: Xiaomi Gateway Light
+#       script.tv_youtube_on:
+#         name: Youtube
+#         description: Youtube on
+#
+#   google_actions:
+#     filter:
+#       include_entities:
+#         - script.tv_youtube_on
+#         - switch.wemoporch
+#         - switch.driveway
+#         - switch.wemoinsight
+#       include_domains:
+#         - cover
+#         - light
+#       exclude_entities:
+#         - light.gateway_light_34ce00813670
+#         - light.hue_color_lamp_1
+#         - light.hue_color_lamp_2
+#         - light.hue_color_lamp_3
+#         - light.lifx3
+#         - light.lifxnrguest
+#         - light.lifxnrkitchen
+#     entity_config:
+#       light.living_room_lights:
+#         room: living room
+#       light.master_lights:
+#         room: master bedroom
+#       switch.driveway:
+#         room: driveway
+#       switch.wemoporch:
+#         name: Porch Lights
+#         room: porch
+#       light.kitchen:
+#         room: kitchen
+#       light.lifx5:
+#         room: garage
+#       switch.wemoinsight:
+#         name: Wemo Insight
+#         room: office
+#       script.tv_youtube_on:
+#         name: Youtube
+#         room: living room
 mobile_app:
 google_assistant:
   project_id: !secret google_project_id
@@ -308,7 +332,7 @@ http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
   base_url: !secret base_url
-  ip_ban_enabled: True
+  ip_ban_enabled: true
   login_attempts_threshold: 2
 
 # Discover some devices automatically
@@ -716,7 +740,6 @@ logger:
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
-    custom_components.sensor.life360: critical
     custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
@@ -755,7 +778,6 @@ mqtt:
   username: !secret mqtt_username
   password: !secret mqtt_password
 
-alexa:
 dialogflow:
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml

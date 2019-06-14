@@ -744,7 +744,7 @@ views:
       - type: vertical-stack
         cards:
           - type: custom:simple-thermostat
-            entity: climate.bedroom
+            entity: climate.master
             modes:
               auto: false
               auxHeatOnly: false
