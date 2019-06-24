@@ -206,7 +206,6 @@ alexa:
         - script.tv_youtube_on
       include_domains:
         - cover
-        - light
     entity_config:
       light.gateway_light_34ce00813670:
         name: Gateway Light
