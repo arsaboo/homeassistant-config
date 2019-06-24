@@ -91,9 +91,17 @@ class ArloBase(ArloDevice):
 
     @property
     def _v1_modes(self):
+        if self._arlo._mode_api.lower() == 'v1':
+            self._arlo.debug( 'forced v1 api' )
+            return True;
+        if self._arlo._mode_api.lower() == 'v2':
+            self._arlo.debug( 'forced v2 api' )
+            return False;
         if self.model_id == 'ABC1000' or self.device_type == 'arloq' or self.device_type == 'arloqs':
+            self._arlo.debug( 'deduced v1 api' )
             return True
         else:
+            self._arlo.debug( 'deduced v2 api' )
             return False
 
     @property

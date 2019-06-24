@@ -53,6 +53,8 @@ class ArloBackEnd(object):
         try:
             with self._req_lock:
                 self._arlo.debug( 'starting request=' + str(url) )
+                self._arlo.debug( 'starting request=' + str(params) )
+                self._arlo.debug( 'starting request=' + str(headers) )
                 if method == 'GET':
                     r = self._session.get( url,params=params,headers=headers,stream=stream,timeout=timeout )
                     if stream is True:
@@ -67,6 +69,7 @@ class ArloBackEnd(object):
                 self._ev_stream.resp.close()
             return None
 
+        self._arlo.debug( 'finish request=' + str(r.status_code) )
         if r.status_code != 200:
             return None
 
@@ -76,6 +79,8 @@ class ArloBackEnd(object):
         if body['success'] == True:
             if 'data' in body:
                 return body['data']
+        else:
+            self._arlo.warning( 'error in response=' + str(body) )
         return None
 
     def _gen_trans_id( self, trans_type=TRANSID_PREFIX ):
@@ -279,7 +284,12 @@ class ArloBackEnd(object):
             self.username = username
             self.password = password
             self._session = requests.Session()
-            self._session.mount('https://',requests.adapters.HTTPAdapter(pool_connections=5, pool_maxsize=10) )
+            if self._arlo._http_connections != 0 and self._arlo._http_max_size != 0:
+                self._arlo.debug( 'custom connections {}:{}'.format( self._arlo._http_connections,self._arlo._http_max_size ) )
+                self._session.mount( 'https://',
+                        requests.adapters.HTTPAdapter(
+                                pool_connections=self._arlo._http_connections,
+                                pool_maxsize=self._arlo._http_max_size) )
             body = self.post( LOGIN_URL, { 'email':self.username,'password':self.password } )
             if body is None:
                 self._arlo.debug( 'login failed' )
@@ -294,7 +304,8 @@ class ArloBackEnd(object):
             # update sessions headers
             # XXX allow different user agent
             headers = {
-                'DNT': '1',
+                #'DNT': '1',
+                'Accept': 'application/json, text/plain, */*',
                 'schemaVersion': '1',
                 'Host': 'arlo.netgear.com',
                 'Content-Type': 'application/json; charset=utf-8;',

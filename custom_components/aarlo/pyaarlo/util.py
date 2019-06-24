@@ -7,7 +7,9 @@ import requests
 def arlotime_to_time( timestamp ):
     return timestamp/1000
 
-def time_to_arlotime( timestamp=time.time() ):
+def time_to_arlotime( timestamp=None ):
+    if timestamp is None:
+        timestamp = time.time()
     return int(timestamp*1000)
 
 def arlotime_to_datetime( timestamp ):

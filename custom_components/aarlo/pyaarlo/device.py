@@ -136,6 +136,9 @@ class ArloChildDevice(ArloDevice):
     def __init__( self,name,arlo,attrs ):
         super().__init__( name,arlo,attrs )
 
+        self._parent_id   = attrs.get('parentId',None)
+        self._arlo.debug( 'parent is {}'.format( self._parent_id ) )
+
     def _event_handler( self,resource,event ):
         self._arlo.debug( self.name + ' got ' + resource )
 
@@ -160,15 +163,24 @@ class ArloChildDevice(ArloDevice):
 
     @property
     def parent_id(self):
-        return self._arlo._st.get( [self._device_id,PARENT_ID_KEY],'UNKNOWN' )
+        if self._parent_id is not None:
+            self._arlo.debug( 'real parent is {}'.format( self._parent_id ) )
+            return self._parent_id
+        self._arlo.debug( 'fake parent is {}'.format( self.device_id ) )
+        return self.device_id
 
     @property
     def base_station(self):
+        # look for real parents
         for base in self._arlo.base_stations:
             if base.device_id == self.parent_id:
                 return base
         # some cameras don't have base stations... it's its own basestation...
-        return self
+        for base in self._arlo.base_stations:
+            if base.device_id == self.device_id:
+                return base
+        # no idea!
+        return self._arlo.base_stations[0]
 
     @property
     def battery_level(self):
