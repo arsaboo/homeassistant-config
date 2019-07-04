@@ -18,7 +18,7 @@
         entity_id:
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.aarlo_arlohome
-          - alarm_control_panel.abode
+          - alarm_control_panel.alexa_guard_227b3
       - service: switch.turn_on
         entity_id:
           - switch.downstairs_away
@@ -39,9 +39,9 @@
       - service: alarm_control_panel.alarm_arm_home
         entity_id:
           - alarm_control_panel.abode_alarm
-          - alarm_control_panel.abode
       - service: alarm_control_panel.alarm_disarm
         entity_id: alarm_control_panel.aarlo_arlohome
+
       # - service: ifttt.trigger
       #   data: {"event":"AbodeHome", "value1":"Abode Home"}
 
@@ -56,7 +56,7 @@
         entity_id:
           - alarm_control_panel.abode_alarm
           - alarm_control_panel.aarlo_arlohome
-          - alarm_control_panel.abode
+          - alarm_control_panel.alexa_guard_227b3
       - service: switch.turn_off
         entity_id:
           - switch.downstairs_away
