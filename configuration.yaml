@@ -3,8 +3,8 @@ homeassistant:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
-        - 192.168.2.40
-        - 192.168.2.212
+        - 192.168.2.0/24
+        - 131.96.253.0/24
     - type: legacy_api_password
       api_password: !secret http_password
   # Omitted values in this section will be auto detected using freegeoip.io
@@ -588,15 +588,18 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  # - platform: panasonic_viera
-  #   host: 192.168.2.242
-  #   port: 55000
-  #   name: Panasonic Viera TV
-  # - platform: samsungtv_custom
+  - platform: samsungtv_upnp
+    name: Living Room TV
+    url: http://192.168.2.252:9197/dmr
+  # - platform: samsungtv
   #   host: 192.168.2.252
   #   mac: !secret samsung_tv_mac
   #   name: Living Room TV
   #   port: 8002
+  # - platform: panasonic_viera
+  #   host: 192.168.2.242
+  #   port: 55000
+  #   name: Panasonic Viera TV
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret

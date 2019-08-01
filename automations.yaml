@@ -1608,7 +1608,7 @@
 
 - id: simulate_presence
   alias: Simulate Presence
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
     condition: state
     entity_id: input_select.abodestatus
@@ -1793,7 +1793,7 @@
       to: 'on'
   condition:
     - condition: template
-      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
+      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' or state_attr('media_player.ftv_master', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
   action:
     - service: switch.turn_off
       entity_id:
@@ -1803,7 +1803,7 @@
   initial_state: 'on'
   trigger:
     - platform: template
-      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
+      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' or state_attr('media_player.ftv_master', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
   condition:
     - condition: state
       entity_id: switch.pihole

@@ -1,4 +1,6 @@
 resources:
+  - url: /local/custom_ui/card-tools.js?track=true
+    type: js
   - url: /local/custom_ui/weather-card.js?v=0.24
     type: module
   - url: /local/custom_ui/pc-card.js?v=0.2
@@ -17,8 +19,6 @@ resources:
     type: module
   - url: /local/custom_ui/mini-graph-card-bundle.js?v=0.0.1
     type: module
-  - url: /local/custom_ui/card-tools.js?v=0.1
-    type: js
   - url: /local/custom_ui/gap-card.js?v=0.1
     type: js
   - url: /local/custom_ui/layout-card.js?v=0.1
@@ -1013,6 +1013,8 @@ views:
         artwork: cover
       - type: media-control
         entity: media_player.kodi_nstv
+      # - type: media-control
+      #   entity: media_player.living_room_tv
       - type: media-control
         entity: media_player.living_room_home
       - type: custom:mini-media-player
@@ -1145,7 +1147,7 @@ views:
                   'home': /local/icons/alok_geofency_home.png
                   'not_home': /local/icons/alok_geofency_not_home.png
                   'buckhead': /local/icons/alok_geofency_not_home.png
-                  'Downtown': /local/icons/alok_geofency_not_home.png
+                  'downtown': /local/icons/alok_geofency_not_home.png
       - type: entities
         title: HASS Details
         show_header_toggle: false
@@ -1168,8 +1170,8 @@ views:
           - switch.pihole
           - type: divider
           - sensor.glances_cpu_load
-          - sensor.glances_disk_used
-          - sensor.glances_ram_used
+          - sensor.glances_disk_used_percent
+          - sensor.glances_ram_used_percent
       - type: horizontal-stack
         cards:
           - type: custom:button-card
