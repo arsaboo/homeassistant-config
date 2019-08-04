@@ -7,13 +7,13 @@ climate.upstairs:
 climate.bedroom:
   friendly_name: Master
   entity_picture: /local/icons/Ecobee.png
-device_tracker.myiphone:
+device_tracker.aloks_iphone:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone
 device_tracker.alokphone_alokphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
-device_tracker.rashmisiphone:
+device_tracker.rashmiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
 device_tracker.rashmiphone_rashmiphone_2:

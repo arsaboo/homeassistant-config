@@ -1083,7 +1083,7 @@ views:
                   'home': /local/icons/rashmi_ios_home.png
                   'not_home': /local/icons/rashmi_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.rashmisiphone
+                entity: device_tracker.rashmiphone
                 show_name: false
                 show_state: false
                 state_image:
@@ -1124,7 +1124,7 @@ views:
                   'Buckhead': /local/icons/alok_ios_not_home.png
                   'Downtown': /local/icons/alok_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.myiphone
+                entity: device_tracker.aloks_iphone
                 show_name: false
                 show_state: false
                 state_image:
@@ -1175,7 +1175,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: custom:button-card
-            entity: switch.arnav_s_ipad
+            entity: switch.my_ipad
             name: iPad
             icon: mdi:tablet-ipad
             color: rgb(250, 218, 79)
@@ -1211,7 +1211,7 @@ views:
               - font-size: 12px
               - text-transform: capitalize
           - type: custom:button-card
-            entity: switch.samsung_tv
+            entity: switch.samsungtv
             name: Sammy
             icon: mdi:television-classic
             color: rgb(250, 218, 79)
