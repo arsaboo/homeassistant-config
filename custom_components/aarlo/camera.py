@@ -29,6 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 ARLO_MODE_ARMED = 'armed'
 ARLO_MODE_DISARMED = 'disarmed'
 
+ATTR_BATTERY_TECH = 'battery_tech'
 ATTR_BRIGHTNESS = 'brightness'
 ATTR_FLIPPED = 'flipped'
 ATTR_MIRRORED = 'mirrored'
@@ -41,6 +42,7 @@ ATTR_IMAGE_SRC = 'image_source'
 ATTR_CHARGING = 'charging'
 ATTR_CHARGER_TYPE = 'charger_type'
 ATTR_WIRED = 'wired'
+ATTR_WIRED_ONLY = 'wired_only'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
 
@@ -187,6 +189,7 @@ class ArloCam(Camera):
         self._camera.add_attr_callback( 'presignedLastImageData',update_state )
         self._camera.add_attr_callback( 'mediaUploadNotification',update_state )
         self._camera.add_attr_callback( 'chargingState',update_state )
+        self._camera.add_attr_callback( 'chargingTech', update_state )
 
     async def handle_async_mjpeg_stream(self, request):
         """Generate an HTTP MJPEG stream from the camera."""
@@ -195,7 +198,7 @@ class ArloCam(Camera):
         if not video:
             error_msg = \
                 'Video not found for {0}. Is it older than {1} days?'.format(
-                    self.name, self._camera.min_days_vdo_cache)
+                    self._name, self._camera.min_days_vdo_cache)
             _LOGGER.error(error_msg)
             return
 
@@ -241,6 +244,7 @@ class ArloCam(Camera):
         attrs= {
             name: value for name, value in (
                 (ATTR_BATTERY_LEVEL, self._camera.battery_level),
+                (ATTR_BATTERY_TECH, self._camera.battery_tech),
                 (ATTR_BRIGHTNESS, self._camera.brightness),
                 (ATTR_FLIPPED, self._camera.flip_state),
                 (ATTR_MIRRORED, self._camera.mirror_state),
@@ -252,7 +256,8 @@ class ArloCam(Camera):
                 (ATTR_IMAGE_SRC, self._camera.last_image_source),
                 (ATTR_CHARGING, self._camera.charging),
                 (ATTR_CHARGER_TYPE, self._camera.charger_type),
-                (ATTR_WIRED, self._camera.wired_only),
+                (ATTR_WIRED, self._camera.wired),
+                (ATTR_WIRED_ONLY, self._camera.wired_only),
             ) if value is not None
         }
 
@@ -351,6 +356,8 @@ async def websocket_library(hass, connection, msg):
                 'thumbnail_type':'image/jpeg',
                 'object':v.object_type,
                 'object_region':v.object_region,
+                'trigger': v.object_type,
+                'trigger_region': v.object_region,
             })
     connection.send_message(websocket_api.result_message(
             msg['id'], {

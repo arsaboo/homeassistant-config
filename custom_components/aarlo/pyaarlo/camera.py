@@ -7,6 +7,7 @@ import zlib
 from custom_components.aarlo.pyaarlo.device import ArloChildDevice
 from custom_components.aarlo.pyaarlo.util import ( now_strftime,http_get )
 from custom_components.aarlo.pyaarlo.constant import( ACTIVITY_STATE_KEY,
+                                BATTERY_TECH_KEY,
                                 BRIGHTNESS_KEY,
                                 CAPTURED_TODAY_KEY,
                                 CHARGER_KEY,
@@ -103,11 +104,11 @@ class ArloCamera(ArloChildDevice):
 
     def _update_last_image( self ):
         self._arlo.debug('getting image for ' + self.name )
-        img = None
+        img = False
         url = self._arlo._st.get( [self.device_id,LAST_IMAGE_KEY],None )
         if url is not None:
             img = http_get( url )
-        if img is None:
+        if img is False:
             self._arlo.debug('using blank image for ' + self.name )
             img = self._arlo.blank_image
 
@@ -123,7 +124,7 @@ class ArloCamera(ArloChildDevice):
         url = self._arlo._st.get( [self.device_id,SNAPSHOT_KEY],None )
         if url is not None:
             img = http_get( url )
-            if img is not None:
+            if img is not False:
                 # signal up if nedeed
                 self._arlo._st.set( [self.device_id,LAST_IMAGE_SRC_KEY],'snapshot/' + now_strftime(self._arlo._last_format) )
                 self._save_and_do_callbacks( LAST_IMAGE_DATA_KEY,img )
@@ -304,6 +305,10 @@ class ArloCamera(ArloChildDevice):
         return self._recent
 
     @property
+    def battery_tech(self):
+        return self._arlo._st.get( [self._device_id,BATTERY_TECH_KEY],'None' )
+
+    @property
     def charging( self ):
         return self._arlo._st.get( [self._device_id,CHARGING_KEY],'off' ).lower() == 'on'
 
@@ -313,21 +318,23 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def wired( self ):
-        return self.charger_type.lower() == 'QuickCharger'
+        return self.charger_type.lower() != 'none'
 
     @property
     def wired_only( self ):
-        return not self.charging and self.wired
+        return self.battery_tech.lower() == 'none' and self.wired
 
     @min_days_vdo_cache.setter
     def min_days_vdo_cache(self, value):
         self._min_days_vdo_cache = value
 
     def update_media( self ):
+        """ Get latest list of recordings from the backend server. """
         self._arlo.debug( 'queing media update' )
         self._arlo._bg.run_low( self._update_media )
 
     def update_last_image( self ):
+        """ Get last thumbnail from the backend server. """
         self._arlo.debug( 'queing image update' )
         self._arlo._bg.run_low( self._update_last_image )
 
