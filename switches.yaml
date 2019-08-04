@@ -21,60 +21,18 @@
     name: DrivewayMotion
     username: !secret hikvision_username
     password: !secret hikvision_password
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: ToshibaAIO
-    verify_ssl: false
-    mac_address: !secret toshibaaio_mac
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: MotoE
-    verify_ssl: false
-    mac_address: !secret motoe_mac
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: Arnav's iPad
-    verify_ssl: false
-    mac_address: !secret arnav_ipad_mac
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: Samsung TV
-    verify_ssl: false
-    mac_address: !secret samsung_tv_mac
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: Lenovo Home
-    verify_ssl: false
-    mac_address: !secret lenovohome_mac
-  - platform: unifi_access_switch
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    name: RPi AIY
-    verify_ssl: false
-    mac_address: !secret rpi_aiy_mac
   - platform: template
     switches:
       downstairs_away:
         friendly_name: Downstairs Away
         value_template: "{{(states.climate.downstairs.attributes|default({})).away_mode|default('off') == 'on'}}"
         turn_on:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.downstairs
               away_mode: 'True'
         turn_off:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.downstairs
               away_mode: 'False'
@@ -82,12 +40,12 @@
         friendly_name: Upstairs Away
         value_template: "{{(states.climate.upstairs.attributes|default({})).away_mode|default('off') == 'on'}}"
         turn_on:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.upstairs
               away_mode: 'True'
         turn_off:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.upstairs
               away_mode: 'False'
@@ -95,12 +53,12 @@
         friendly_name: Master Away
         value_template: "{{(states.climate.bedroom.attributes|default({})).away_mode|default('off') == 'on'}}"
         turn_on:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.bedroom
               away_mode: 'True'
         turn_off:
-          - service: climate.set_away_mode
+          - service: climate.set_preset_mode
             data:
               entity_id: climate.bedroom
               away_mode: 'False'

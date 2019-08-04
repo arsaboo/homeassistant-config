@@ -588,9 +588,15 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  - platform: samsungtv_upnp
+  - platform: samsungtv_custom
+    host: 192.168.2.252
     name: Living Room TV
-    url: http://192.168.2.252:9197/dmr
+    port: 8002
+    password: 14303763
+    mac: !secret samsung_tv_mac
+  # - platform: samsungtv_upnp
+  #   name: Living Room TV
+  #   url: http://192.168.2.252:9197/dmr
   # - platform: samsungtv
   #   host: 192.168.2.252
   #   mac: !secret samsung_tv_mac
@@ -652,14 +658,17 @@ speedtestdotnet:
     - upload
 # owntracks:
 #   max_gps_accuracy: 200
-device_tracker:
-  - platform: unifi
-    host: 192.168.2.163
-    username: !secret unifi_username
-    password: !secret unifi_password
-    verify_ssl: False
-    monitored_conditions:
-      - rssi
+unifi:
+  controllers:
+    - host: 192.168.2.163
+      site: 'Default'
+      block_client:
+        - !secret rishaan_fire_hd_mac
+        - !secret arnav_ipad_mac
+        - !secret toshibaaio_mac
+        - !secret lenovohome_mac
+        - !secret samsung_tv_mac
+
 telegram_bot:
   platform: polling
   api_key: !secret telegram_key
@@ -745,7 +754,7 @@ logger:
     custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
-    custom_components.media_player.samsungtv: debug
+    homeassistant.components.switch.unifi: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

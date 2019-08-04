@@ -15,15 +15,6 @@
     scan_interval:
       minutes: 20
   - platform: season
-  - platform: tautulli
-    host: 192.168.2.212
-    api_key: !secret tautulli_api
-    monitored_conditions:
-      - stream_count
-      - stream_count_transcode
-      - stream_count_direct_play
-      - stream_count_direct_stream
-      - total_bandwidth
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
@@ -79,7 +70,7 @@
       minutes: 5
   - platform: history_stats
     name: Total TV Time
-    entity_id: media_player.samsungctl
+    entity_id: media_player.living_room_tv
     state: 'on'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
@@ -255,10 +246,10 @@
           {% endif %}
       alok_rssi:
         friendly_name: "Alok RSSI"
-        value_template: "{{state_attr('device_tracker.myiphone', 'rssi')}}"
+        value_template: "{{state_attr('device_tracker.aloks_iphone', 'rssi')}}"
       rashmi_rssi:
         friendly_name: "Rashmi RSSI"
-        value_template: "{{state_attr('device_tracker.rashmisiphone', 'rssi')}}"
+        value_template: "{{state_attr('device_tracker.rashmiphone', 'rssi')}}"
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"
@@ -392,11 +383,11 @@
       downstairsthermoper:
         friendly_name: "Downstairs Thermostat"
         value_template: >-
-           {{ state_attr('climate.downstairs', 'operation') }}
+           {{ state_attr('climate.downstairs', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.downstairs', 'operation') == "heat" -%}
+          {%- if state_attr('climate.downstairs', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.downstairs', 'operation') == "cool" -%}
+          {%- elif state_attr('climate.downstairs', 'hvac_action') == "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -404,11 +395,11 @@
       upstairsthermoper:
         friendly_name: "Upstairs Thermostat"
         value_template: >-
-           {{ state_attr('climate.upstairs', 'operation') }}
+           {{ state_attr('climate.upstairs', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.upstairs', 'operation') == "heat" -%}
+          {%- if state_attr('climate.upstairs', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.upstairs', 'operation') ==  "cool" -%}
+          {%- elif state_attr('climate.upstairs', 'hvac_action') ==  "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -416,11 +407,11 @@
       masterthermoper:
         friendly_name: "Master Thermostat"
         value_template: >-
-           {{ state_attr('climate.bedroom', 'operation') }}
+           {{ state_attr('climate.bedroom', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.bedroom', 'operation') == "heat" -%}
+          {%- if state_attr('climate.bedroom', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.bedroom', 'operation') ==  "cool" -%}
+          {%- elif state_attr('climate.bedroom', 'hvac_action') ==  "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
