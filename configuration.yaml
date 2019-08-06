@@ -662,6 +662,8 @@ unifi:
   controllers:
     - host: 192.168.2.163
       site: 'Default'
+      dont_track_wired_clients: true
+      dont_track_devices: true
       block_client:
         - !secret rishaan_fire_hd_mac
         - !secret arnav_ipad_mac
