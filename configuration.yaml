@@ -588,12 +588,12 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  - platform: samsungtv_custom
-    host: 192.168.2.252
-    name: Living Room TV
-    port: 8002
-    password: 14303763
-    mac: !secret samsung_tv_mac
+  # - platform: samsungtv_custom
+  #   host: 192.168.2.252
+  #   name: Living Room TV
+  #   port: 8002
+  #   password: 14303763
+  #   mac: !secret samsung_tv_mac
   # - platform: samsungtv_upnp
   #   name: Living Room TV
   #   url: http://192.168.2.252:9197/dmr
