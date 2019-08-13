@@ -43,5 +43,7 @@
      - 'darkorange'
      - 'darkred'
      - 'darkcyan'
+     - 'Google - Dark'
+     - 'Google - Light'
     initial: 'default'
     icon: 'mdi:palette'
