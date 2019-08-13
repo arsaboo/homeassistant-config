@@ -67,22 +67,6 @@
     - ding
   - platform: template
     sensors:
-      alok_main_level:
-        friendly_name: "Alok Main Level"
-        value_template: >-
-           {% if state_attr('device_tracker.aloks_iphone', 'rssi') %}
-             {{state_attr('device_tracker.aloks_iphone', 'rssi') < 30}}
-           {% else %}
-             None
-           {% endif %}
-      rashmi_main_level:
-        friendly_name: "Rashmi Main Level"
-        value_template: >-
-           {% if state_attr('device_tracker.rashmiphone', 'rssi') %}
-             {{state_attr('device_tracker.rashmiphone', 'rssi') < 30}}
-           {% else %}
-             None
-           {% endif %}
       garagedoor:
         friendly_name: Garage Door Open
         device_class: opening

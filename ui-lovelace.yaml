@@ -1156,11 +1156,7 @@ views:
           - input_select.current_theme
           - input_boolean.devmode
           - person.alok
-          - sensor.alok_rssi
-          - binary_sensor.alok_main_level
           - person.rashmi
-          - sensor.rashmi_rssi
-          - binary_sensor.rashmi_main_level
 
       - type: entities
         title: Network Details

@@ -244,12 +244,6 @@
           {% else %}
             {{state_attr('binary_sensor.cube_158d0001035aa7', 'last_action')}}
           {% endif %}
-      alok_rssi:
-        friendly_name: "Alok RSSI"
-        value_template: "{{state_attr('device_tracker.aloks_iphone', 'rssi')}}"
-      rashmi_rssi:
-        friendly_name: "Rashmi RSSI"
-        value_template: "{{state_attr('device_tracker.rashmiphone', 'rssi')}}"
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"
