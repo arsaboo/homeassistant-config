@@ -1,0 +1,8 @@
+{
+  "domain": "personalcapital",
+  "name": "Personal Capital",
+  "documentation": "https://github.com/custom-components/sensor.personalcapital/blob/master/README.md",
+  "dependencies": [],
+  "codeowners": ["@iantrich"],
+  "requirements": ["personalcapital==1.0.1"]
+}

@@ -15,7 +15,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (PLATFORM_SCHEMA)
 from homeassistant.util import Throttle
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 REQUIREMENTS = ['personalcapital==1.0.1']
 

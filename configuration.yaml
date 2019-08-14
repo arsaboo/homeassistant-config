@@ -52,6 +52,8 @@ influxdb:
        - climate.upstairs
        - climate.bedroom
 python_script:
+hacs:
+  token: !secret hacs_token
 zeroconf:
 weather:
   - platform: darksky
