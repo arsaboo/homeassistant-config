@@ -1,21 +1,13 @@
-
-import pprint
 import threading
-import custom_components.aarlo.pyaarlo.storage
 
-from custom_components.aarlo.pyaarlo.constant import( BATTERY_KEY,
-                                CONNECTION_KEY,
-                                PARENT_ID_KEY,
-                                PRIVACY_KEY,
-                                RESOURCE_KEYS,
-                                RESOURCE_UPDATE_KEYS,
-                                SIGNAL_STR_KEY,
-                                UNIQUE_ID_KEY,
-                                XCLOUD_ID_KEY )
+from .constant import (BATTERY_KEY, CONNECTION_KEY, PRIVACY_KEY, RESOURCE_KEYS,
+                       RESOURCE_UPDATE_KEYS, SIGNAL_STR_KEY,
+                       XCLOUD_ID_KEY)
+
 
 class ArloDevice(object):
 
-    def __init__( self,name,arlo,attrs ):
+    def __init__(self, name, arlo, attrs):
         self._name = name
         self._arlo = arlo
         self._attrs = attrs
@@ -24,38 +16,37 @@ class ArloDevice(object):
         self._attr_cbs_ = []
 
         # stuff we use a lot
-        self._device_id   = attrs.get('deviceId',None)
-        self._device_type = attrs.get('deviceType',None)
-        self._unique_id   = attrs.get('uniqueId',None)
+        self._device_id = attrs.get('deviceId', None)
+        self._device_type = attrs.get('deviceType', None)
+        self._unique_id = attrs.get('uniqueId', None)
 
         # add a listener
-        self._arlo._be.add_listener( self,self._event_handler )
+        self._arlo.be.add_listener(self, self._event_handler)
 
     def __repr__(self):
         # Representation string of object.
-        return "<{0}:{1}:{2}>".format(self.__class__.__name__,self._device_type,self._name)
+        return "<{0}:{1}:{2}>".format(self.__class__.__name__, self._device_type, self._name)
 
-    def _event_handler( self,resource,event ):
-        self._arlo.debug( self.name + ' DEVICE got one ' + resource )
+    def _event_handler(self, resource, event):
+        self._arlo.debug(self.name + ' DEVICE got one ' + resource)
 
-    def _do_callbacks( self,attr,value ):
+    def _do_callbacks(self, attr, value):
         cbs = []
         with self._lock:
-            for watch,cb in self._attr_cbs_:
+            for watch, cb in self._attr_cbs_:
                 if watch == attr or watch == '*':
-                    cbs.append( cb )
+                    cbs.append(cb)
         for cb in cbs:
-            cb( self,attr,value )
+            cb(self, attr, value)
 
-    def _save_and_do_callbacks( self,attr,value ):
-        key = [ self.device_id,attr ]
-        old_value = self._arlo._st.get( key,None )
-        # enable this to only callback on updates
-        #if not old_value or old_value != value:
-        #output = 'updating ' + attr + ' for ' + self.device_id + ' to ' + str(value)
-        #self._arlo.debug( output[:90] )
-        self._arlo._st.set( key,value )
-        self._do_callbacks( attr,value )
+    def _save(self, attr, value):
+        # TODO only care if it changes?
+        key = [self.device_id, attr]
+        self._arlo.st.set(key, value)
+
+    def _save_and_do_callbacks(self, attr, value):
+        self._save(attr, value)
+        self._do_callbacks(attr, value)
 
     @property
     def name(self):
@@ -79,28 +70,28 @@ class ArloDevice(object):
 
     @property
     def model_id(self):
-        return self._attrs.get('modelId',None)
+        return self._attrs.get('modelId', None)
 
     @property
     def hw_version(self):
-        return self._attrs.get('properties',{}).get('hwVersion',None)
+        return self._attrs.get('properties', {}).get('hwVersion', None)
 
     @property
     def timezone(self):
-        return self._attrs.get('properties',{}).get('olsonTimeZone',None)
+        return self._attrs.get('properties', {}).get('olsonTimeZone', None)
 
     @property
     def user_id(self):
-        return self._attrs.get('userId',None)
+        return self._attrs.get('userId', None)
 
     @property
     def user_role(self):
-        return self._attrs.get('userRole',None)
+        return self._attrs.get('userRole', None)
 
     @property
     def xcloud_id(self):
-        return self._arlo._st.get( [self._device_id,XCLOUD_ID_KEY],'UNKNOWN' )
- 
+        return self._arlo.st.get([self._device_id, XCLOUD_ID_KEY], 'UNKNOWN')
+
     @property
     def web_id(self):
         return self.user_id + '_web'
@@ -109,64 +100,64 @@ class ArloDevice(object):
     def unique_id(self):
         return self._unique_id
 
-    def attribute( self,attr,default=None ):
-        value = self._arlo._st.get( [self._device_id,attr],None )
+    def attribute(self, attr, default=None):
+        value = self._arlo.st.get([self._device_id, attr], None)
         if value is None:
-            value = self._attrs.get(attr,None)
+            value = self._attrs.get(attr, None)
         if value is None:
-            value = self._attrs.get('properties',{}).get(attr,None)
+            value = self._attrs.get('properties', {}).get(attr, None)
         if value is None:
             value = default
         return value
 
-    def add_attr_callback( self,attr,cb ):
+    def add_attr_callback(self, attr, cb):
         with self._lock:
-            self._attr_cbs_.append( (attr,cb) )
+            self._attr_cbs_.append((attr, cb))
 
-    def has_capability( self,cap ):
+    def has_capability(self, cap):
         return False
 
     @property
-    def state( self ):
+    def state(self):
         return 'idle'
 
 
 class ArloChildDevice(ArloDevice):
 
-    def __init__( self,name,arlo,attrs ):
-        super().__init__( name,arlo,attrs )
+    def __init__(self, name, arlo, attrs):
+        super().__init__(name, arlo, attrs)
 
-        self._parent_id   = attrs.get('parentId',None)
-        self._arlo.debug( 'parent is {}'.format( self._parent_id ) )
+        self._parent_id = attrs.get('parentId', None)
+        self._arlo.debug('parent is {}'.format(self._parent_id))
 
-    def _event_handler( self,resource,event ):
-        self._arlo.debug( self.name + ' got ' + resource )
+    def _event_handler(self, resource, event):
+        self._arlo.debug(self.name + ' got ' + resource)
 
         # this as generated by a 'devices' request to the base station
         if resource == 'cameras' or resource == 'doorbells':
-            self._arlo.debug( 'base info' )
+            self._arlo.debug('base info')
             for key in RESOURCE_KEYS:
-                value = event.get(key,None)
+                value = event.get(key, None)
                 if value is not None:
-                    self._save_and_do_callbacks( key,value )
+                    self._save_and_do_callbacks(key, value)
             return
 
         # this is sent by the actual device, normally as a response to something
         if resource.startswith('cameras/') or resource.startswith('doorbells/'):
-            self._arlo.debug( 'device info' )
-            props = event.get('properties',{})
+            self._arlo.debug('device info')
+            props = event.get('properties', {})
             for key in RESOURCE_UPDATE_KEYS:
-                value = props.get( key,None )
+                value = props.get(key, None)
                 if value is not None:
-                    self._save_and_do_callbacks( key,value )
+                    self._save_and_do_callbacks(key, value)
             return
 
     @property
     def parent_id(self):
         if self._parent_id is not None:
-            self._arlo.debug( 'real parent is {}'.format( self._parent_id ) )
+            self._arlo.debug('real parent is {}'.format(self._parent_id))
             return self._parent_id
-        self._arlo.debug( 'fake parent is {}'.format( self.device_id ) )
+        self._arlo.debug('fake parent is {}'.format(self.device_id))
         return self.device_id
 
     @property
@@ -184,36 +175,41 @@ class ArloChildDevice(ArloDevice):
 
     @property
     def battery_level(self):
-        return self._arlo._st.get( [self._device_id,BATTERY_KEY],100 )
+        return self._arlo.st.get([self._device_id, BATTERY_KEY], 100)
 
     @property
     def signal_strength(self):
-        return self._arlo._st.get( [self._device_id,SIGNAL_STR_KEY],3 )
+        return self._arlo.st.get([self._device_id, SIGNAL_STR_KEY], 3)
 
-    def has_capability( self,cap ):
-        if cap in ( 'motionDetected' ):
+    def has_capability(self, cap):
+        if cap in 'motionDetected':
             return True
         return False
 
     @property
-    def too_cold( self ):
-        return self._arlo._st.get( [self._device_id,CONNECTION_KEY],'unknown' ) == 'thermalShutdownCold'
+    def is_unavailable(self):
+        return self._arlo.st.get([self._device_id, CONNECTION_KEY], 'unknown') == 'unavailable'
 
     @property
-    def is_on( self ):
-        return not self._arlo._st.get( [self._device_id,PRIVACY_KEY],False )
-
-    def turn_on( self ):
-        self._arlo._bg.run( self._arlo._be.async_on_off,base=self.base_station,device=self,privacy_on=False )
-
-    def turn_off( self ):
-        self._arlo._bg.run( self._arlo._be.async_on_off,base=self.base_station,device=self,privacy_on=True )
+    def too_cold(self):
+        return self._arlo.st.get([self._device_id, CONNECTION_KEY], 'unknown') == 'thermalShutdownCold'
 
     @property
-    def state( self ):
+    def is_on(self):
+        return not self._arlo.st.get([self._device_id, PRIVACY_KEY], False)
+
+    def turn_on(self):
+        self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=False)
+
+    def turn_off(self):
+        self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=True)
+
+    @property
+    def state(self):
+        if self.is_unavailable:
+            return 'unavailable'
         if not self.is_on:
             return 'turned off'
         if self.too_cold:
             return 'offline, too cold'
         return 'idle'
-

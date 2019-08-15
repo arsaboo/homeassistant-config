@@ -35,7 +35,7 @@ resources:
     type: module
   - url: /local/custom_ui/simple-thermostat.js
     type: module
-  - url: /local/custom_ui/aarlo-glance.js
+  - url: /local/community/lovelace-hass-aarlo/hass-aarlo.js
     type: module
 
 title: ARS Home
@@ -582,6 +582,11 @@ views:
             name: Aarlo
             states:
               - arm_home
+              - arm_away
+          - type: alarm-panel
+            entity: alarm_control_panel.alexa_guard_227b3
+            name: Alexa
+            states:
               - arm_away
       - type: entities
         title: Ring Doorbell
@@ -1156,6 +1161,7 @@ views:
           - sensor.ssl_certificate_expiry
           - input_select.current_theme
           - input_boolean.devmode
+          - input_select.abodestatus
           - person.alok
           - person.rashmi
 

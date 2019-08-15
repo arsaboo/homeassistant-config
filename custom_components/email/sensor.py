@@ -24,6 +24,7 @@ from .parsers.newegg import ATTR_NEWEGG, parse_newegg
 from .parsers.rockauto import ATTR_ROCKAUTO, parse_rockauto
 from .parsers.bh_photo import ATTR_BH_PHOTO, parse_bh_photo
 from .parsers.ebay import ATTR_EBAY, parse_ebay
+from .parsers.dhl import ATTR_DHL, parse_dhl
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ class EmailEntity(Entity):
             return False
 
         try: 
-            messages = server.search(self.flag)
+            messages = server.search(self.flag )
             for uid, message_data in server.fetch(messages, 'RFC822').items():
                 try:
                     mail = parse_from_bytes(message_data[b'RFC822'])
@@ -107,6 +108,7 @@ class EmailEntity(Entity):
             self._attr[ATTR_TRACKING_NUMBERS][ATTR_ROCKAUTO] = parse_rockauto(emails)
             self._attr[ATTR_TRACKING_NUMBERS][ATTR_BH_PHOTO] = parse_bh_photo(emails)
             self._attr[ATTR_TRACKING_NUMBERS][ATTR_EBAY] = parse_ebay(emails)
+            self._attr[ATTR_TRACKING_NUMBERS][ATTR_DHL] = parse_dhl(emails)
         except Exception as err:
             _LOGGER.error('Parsers error: {}'.format(err))
 
