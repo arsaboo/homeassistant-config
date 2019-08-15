@@ -701,6 +701,10 @@
   trigger:
     - platform: state
       entity_id: sensor.battery_status
+  condition:
+    - condition: template
+      value_template: >
+        {{ trigger.to_state.state | length > 0 }}
   action:
     - service: persistent_notification.create
       data_template:
