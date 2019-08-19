@@ -30,12 +30,11 @@
           - service: climate.set_preset_mode
             data:
               entity_id: climate.downstairs
-              away_mode: 'True'
+              preset_mode: 'Away'
         turn_off:
-          - service: climate.set_preset_mode
+          - service: climate.ecobee_resume_program
             data:
               entity_id: climate.downstairs
-              away_mode: 'False'
       upstairs_away:
         friendly_name: Upstairs Away
         value_template: "{{(states.climate.upstairs.attributes|default({})).away_mode|default('off') == 'on'}}"
@@ -43,12 +42,11 @@
           - service: climate.set_preset_mode
             data:
               entity_id: climate.upstairs
-              away_mode: 'True'
+              preset_mode: 'Away'
         turn_off:
-          - service: climate.set_preset_mode
+          - service: climate.ecobee_resume_program
             data:
               entity_id: climate.upstairs
-              away_mode: 'False'
       bedroom_away:
         friendly_name: Master Away
         value_template: "{{(states.climate.bedroom.attributes|default({})).away_mode|default('off') == 'on'}}"
@@ -56,12 +54,11 @@
           - service: climate.set_preset_mode
             data:
               entity_id: climate.bedroom
-              away_mode: 'True'
+              preset_mode: 'Away'
         turn_off:
-          - service: climate.set_preset_mode
+          - service: climate.ecobee_resume_program
             data:
               entity_id: climate.bedroom
-              away_mode: 'False'
       security_armed:
         friendly_name: Home Security Arm
         value_template: "{{states('alarm_control_panel.abode_alarm') != 'disarmed'}}"
