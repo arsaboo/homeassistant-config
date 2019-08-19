@@ -735,10 +735,6 @@ var ze=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
         cursor: pointer;
     }
 
-    .day-wrapper .overview .title {
-        font-size: 1.2em;
-    }
-
     .day-wrapper .overview .time,
     .day-wrapper .location ha-icon {
         color: var(--primary-color);
@@ -755,8 +751,9 @@ var ze=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
     }
 
     .day-wrapper ha-icon.progress-bar {
-        height: 12px;
-        width: 12px;
+        height: 9px;
+        width: 9px;
+        margin-top: 2px;
         color: var(--accent-color);
     }
 
@@ -766,12 +763,18 @@ var ze=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
         color: var(--accent-color);
     }
 
+    .event-origin {
+        float: right;
+    }
+
     .event-origin span {
         color: var(--accent-color);
+        margin-right: -4px;
     }
 
     .event-origin ha-icon {
-        font-size: 0.6em;
+        height: 13px;
+        margin-top: -3px;
         color: var(--accent-color);
     }
 `;class Ke{constructor(e){this._calendarEvent=e}get id(){return(this._calendarEvent.id||this._calendarEvent.uid)+this.title}get rawEvent(){return this._calendarEvent}get originCalendar(){return this._calendarEvent.originCalendar}get startDateTime(){if(void 0===this._startDateTime){const e=this._calendarEvent.start&&this._calendarEvent.start.date||this._calendarEvent.start.dateTime||this._calendarEvent.start||"";this._startDateTime=this._processDate(e)}return this._startDateTime}get endDateTime(){if(void 0===this._endDateTime){const e=this._calendarEvent.end&&this._calendarEvent.end.date||this._calendarEvent.end.dateTime||this._calendarEvent.end;this._endDateTime=this._processDate(e,!0)}return this._endDateTime}get addDays(){return void 0!==this._calendarEvent.addDays&&this._calendarEvent.addDays}get daysLong(){return this._calendarEvent.daysLong}get isFirstDay(){return 0===this._calendarEvent.addDays}get isLastDay(){return this._calendarEvent.addDays===this._calendarEvent.daysLong-1}_processDate(e,t=!1){return e&&(e=Object(n.a)(e),!1!==this.addDays&&(!t&&this.addDays&&(e=e.add(this.addDays,"days")),this.isFirstDay&&t?e=Object(n.a)(this.startDateTime).endOf("day"):this.isLastDay&&!t&&(e=e.startOf("day")))),e}get htmlLink(){return this._calendarEvent.htmlLink||""}get isMultiDay(){return!(this.endDateTime.diff(this.startDateTime,"hours")<=24&&0===this.startDateTime.hour())&&(this.startDateTime.date()!==this.endDateTime.date()||void 0)}get title(){let e=this._calendarEvent.summary||this._calendarEvent.title||"";return this._calendarEvent.daysLong&&(e+=` (${this.addDays+1}/${this.daysLong})`),e}get description(){return this._calendarEvent.description}get location(){return this._calendarEvent.location&&this._calendarEvent.location.split(",")[0]||""}get locationAddress(){if(!this._calendarEvent.location)return"";return this._calendarEvent.location.substring(this._calendarEvent.location.indexOf(",")+1).split(" ").join("+")}get isAllDayEvent(){return(!this.isFirstDay||!this.startDateTime.hour()&&!this.startDateTime.minutes())&&(!!this.isFirstDay||(!this.isLastDay||!this.endDateTime.hour()&&!this.endDateTime.minutes())&&(!!this.isLastDay||(!!this.addDays||(this.endDateTime.diff(this.startDateTime,"hours")<=24&&0===this.startDateTime.hour()||void 0))))}}var qe={title:"Calendar",numberOfDays:7,timeFormat:"HH:mma",dateTopFormat:"DD",dateBottomFormat:"ddd",hideTime:!1,progressBar:!1,showLocation:!1,showLocationIcon:!0,showMultiDay:!1,startFromToday:!1,showEventOrigin:!1,hideHeader:!1};var Ze=He`
@@ -947,8 +950,8 @@ var ze=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
               </td>
               <td class="overview" @click=${()=>this.getLinkHtml(e)}>
                 <div class="title">${e.title}</div>
-                ${this.getTimeHtml(e)}
                 ${this.getEventOrigin(e)}
+                ${this.getTimeHtml(e)}
                 ${this.config.progressBar?this.getProgressBar(e):""}
               </td>
               <td class="location">
@@ -977,8 +980,8 @@ var ze=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
       <hr class="progress-bar" />
     `}getEventOrigin(e){return this.config.showEventOrigin&&e.originCalendar&&e.originCalendar.name?ee`
       <div class='event-origin'>
-        <ha-icon icon="mdi:calendar-blank-outline"></ha-icon> 
         <span>${e.originCalendar.name}</span>
+        <ha-icon icon="mdi:calendar-blank-outline"></ha-icon> 
       </div>
     `:ee``}groupEventsByDay(e){return e.reduce((e,t)=>{const a=s(t.startDateTime).format("YYYY-MM-DD"),n=e.findIndex(e=>e.day===a);return n>-1?e[n].events.push(t):e.push({day:a,events:[t]}),e},[])}getLinkHtml(e){e.htmlLink&&window.open(e.htmlLink)}getDateHtml(e,t){const a=0===e?t.format(this.config.dateTopFormat):"",n=0===e?t.format(this.config.dateBottomFormat):"";return ee`
       <div>
