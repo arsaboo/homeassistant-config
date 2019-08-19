@@ -37,7 +37,7 @@
         prob_given_false: 0.2
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.alokiosiphone'
+      - entity_id: 'device_tracker.alok_s_iphone_2'
         prob_given_true: 0.99
         prob_given_false: 0.10
         platform: 'state'

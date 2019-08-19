@@ -33,7 +33,7 @@ resources:
     type: module
   - url: /local/community/secondaryinfo-entity-row/secondaryinfo-entity-row.js
     type: module
-  - url: /local/custom_ui/simple-thermostat.js
+  - url: /local/community/simple-thermostat/simple-thermostat.js
     type: module
   - url: /local/community/lovelace-hass-aarlo/hass-aarlo.js
     type: module
@@ -522,6 +522,10 @@ views:
           - sensor.alok_to_home
           - sensor.plexspy
           - sensor.usdinr
+          - type: cast
+            name: Home
+            view: home
+            hide_if_unavailable: true
       - type: entities
         title: Lights
         entities:
@@ -1121,7 +1125,7 @@ views:
                   'Buckhead': /local/icons/alok_owntracks_not_home.png
                   'Downtown': /local/icons/alok_owntracks_not_home.png
               - type: picture-entity
-                entity: device_tracker.alokiosiphone
+                entity: device_tracker.alok_s_iphone_2
                 show_name: false
                 show_state: false
                 state_image:

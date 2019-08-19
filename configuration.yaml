@@ -658,8 +658,8 @@ speedtestdotnet:
   monitored_conditions:
     - download
     - upload
-# owntracks:
-#   max_gps_accuracy: 200
+owntracks:
+  max_gps_accuracy: 200
 unifi:
   controllers:
     - host: 192.168.2.163

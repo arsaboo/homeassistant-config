@@ -40,7 +40,7 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alokiosiphone
+        - device_tracker.alok_s_iphone_2
         - device_tracker.life360_alok_saboo
         - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
         - device_tracker.rashmiappiphone
