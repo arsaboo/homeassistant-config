@@ -1,12 +1,10 @@
 import codecs
+import http.client
 import re
 import time
 import warnings
 
-import six
-
 import requests
-
 
 # Technically, we should support streams that mix line endings.  This regex,
 # however, assumes that a system will provide consistent line endings.
@@ -20,6 +18,7 @@ class SSEClient(object):
         self.last_id = last_id
         self.retry = retry
         self.chunk_size = chunk_size
+        self.running = True
 
         # Optional support for passing in a requests.Session()
         self.session = session
@@ -39,6 +38,9 @@ class SSEClient(object):
         self.buf = u''
 
         self._connect()
+
+    def stop(self):
+        self.running = False
 
     def _connect(self):
         if self.last_id:
@@ -66,11 +68,16 @@ class SSEClient(object):
             try:
                 next_chunk = next(self.resp_iterator)
                 if not next_chunk:
+                    self.log.debug('crapped out')
                     raise EOFError()
                 self.buf += decoder.decode(next_chunk)
 
-            except (StopIteration, requests.RequestException, EOFError, six.moves.http_client.IncompleteRead) as e:
-                self.log.debug(e)
+            except (StopIteration, requests.RequestException, EOFError, http.client.IncompleteRead) as e:
+                if not self.running:
+                    self.log.debug('stopping')
+                    return None
+
+                self.log.debug( 'error2='.format(type(e).__name__) )
                 time.sleep(self.retry / 1000.0)
                 self._connect()
 
@@ -97,12 +104,8 @@ class SSEClient(object):
 
         return msg
 
-    if six.PY2:
-        next = __next__
-
 
 class Event(object):
-
     sse_line_pattern = re.compile('(?P<name>[^:]*):?( ?(?P<value>.*))?')
 
     def __init__(self, data='', event='message', id=None, retry=None):

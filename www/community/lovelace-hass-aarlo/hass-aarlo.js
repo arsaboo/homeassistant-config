@@ -281,18 +281,18 @@ class AarloGlance extends LitElement {
                 <div class="${this._v.brokeStatus} img-16x9" style="height: 100px" id="brokenImage"></div>
             </div>
             <div class="box box-top ${this._v.topBar}">
-                <div class="box-title ${this._v.topTitle?'':'hidden'}">
+                <div class="box-title ${this._v.topTitle}">
                     ${this._s.cameraName} 
                 </div>
-                <div class="box-status ${this._v.topDate?'':'hidden'} ${this._v.image_date}" title="${this._s.imageFullDate}">
+                <div class="box-status ${this._v.topDate} ${this._v.image_date}" title="${this._s.imageFullDate}">
                     ${this._s.imageDate}
                 </div>
-                <div class="box-status ${this._v.topStatus?'':'hidden'}">
+                <div class="box-status ${this._v.topStatus}">
                     ${this._s.cameraState}
                 </div>
             </div>
             <div class="box box-bottom ${this._v.bottomBar}">
-                <div class="box-title ${this._v.topTitle?'hidden':''}">
+                <div class="box-title ${this._v.bottomTitle}">
                     ${this._s.cameraName} 
                 </div>
                 <div>
@@ -304,7 +304,7 @@ class AarloGlance extends LitElement {
                     <ha-icon @click="${() => { this.moreInfo(this._s.batteryId); }}" class="${this._s.batteryState} ${this._v.battery}" icon="mdi:${this._s.batteryIcon}" title="${this._s.batteryText}"></ha-icon>
                     <ha-icon @click="${() => { this.moreInfo(this._s.signalId); }}" class="state-update ${this._v.signal}" icon="${this._s.signalIcon}" title="${this._s.signalText}"></ha-icon>
                 </div>
-                <div class="box-title ${this._v.topDate?'hidden':''} ${this._v.image_date}" title="${this._s.imageFullDate}">
+                <div class="box-title ${this._v.bottomDate} ${this._v.image_date}" title="${this._s.imageFullDate}">
                     ${this._s.imageDate}
                 </div>
                 <div class="box-status ${this._v.doorStatus}">
@@ -315,7 +315,7 @@ class AarloGlance extends LitElement {
                     <ha-icon @click="${() => { this.moreInfo(this._s.door2BellId); }}" class="${this._s.door2BellOn} ${this._v.door2Bell}" icon="${this._s.door2BellIcon}" title="${this._s.door2BellText}"></ha-icon>
                     <ha-icon @click="${() => { this.toggleLock(this._s.door2LockId); }}" class="${this._s.door2LockOn} ${this._v.door2Lock}" icon="${this._s.door2LockIcon}" title="${this._s.door2LockText}"></ha-icon>
                 </div>
-                <div class="box-status ${this._v.topStatus?'hidden':''}">
+                <div class="box-status ${this._v.bottomStatus}">
                     ${this._s.cameraState}
                 </div>
             </div>
@@ -691,7 +691,7 @@ class AarloGlance extends LitElement {
 
             this._v.image       = '';
             this._v.brokeStatus = 'hidden';
-            this._v.topBar      = this._v.topTitle || this._v.topStatus ? '':'hidden';
+            this._v.topBar      = this._v.topTitle === '' || this._v.topDate === '' || this._v.topStatus === '' ? '':'hidden';
             this._v.bottomBar   = '';
 
             // image title
@@ -708,7 +708,7 @@ class AarloGlance extends LitElement {
 
         } else {
             this._v.brokeStatus = '';
-            this._v.topBar      = this._v.topTitle || this._v.topStatus ? '':'hidden';
+            this._v.topBar      = this._v.topTitle === '' || this._v.topDate === '' || this._v.topStatus === '' ? '':'hidden';
             this._v.bottomBar   = '';
         }
 
@@ -810,6 +810,12 @@ class AarloGlance extends LitElement {
         this._s.door2BellId = config.door2_bell ? config.door2_bell : null;
         this._s.door2LockId = config.door2_lock ? config.door2_lock : null;
 
+        // what are we hiding?
+        const hide = this._config.hide || [];
+        const hide_title  = hide.includes('title') ? 'hidden':'';
+        const hide_date   = hide.includes('date') ? 'hidden':'';
+        const hide_status = hide.includes('status') ? 'hidden':'';
+
         // what are we showing?
         const show = this._config.show || [];
 
@@ -817,9 +823,12 @@ class AarloGlance extends LitElement {
         this._v.imageClick = config.image_click ? config.image_click : false;
 
         // ui configuration
-        this._v.topTitle  = config.top_title ? config.top_title : false;
-        this._v.topDate   = config.top_date ? config.top_date : false;
-        this._v.topStatus = config.top_status ? config.top_status : false;
+        this._v.topTitle     = config.top_title ? hide_title:'hidden';
+        this._v.topDate      = config.top_date ? hide_date:'hidden';
+        this._v.topStatus    = config.top_status ? hide_status:'hidden';
+        this._v.bottomTitle  = config.top_title ? 'hidden':hide_title;
+        this._v.bottomDate   = config.top_date ? 'hidden':hide_date;
+        this._v.bottomStatus = config.top_status ? 'hidden':hide_status;
 
         this._v.play       = show.includes('play') ? '':'hidden';
         this._v.snapshot   = show.includes('snapshot') ? '':'hidden';
