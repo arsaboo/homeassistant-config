@@ -49,7 +49,7 @@
     - platform: state
       entity_id:
         - device_tracker.aloks_iphone
-        - device_tracker.elantrase
+        - device_tracker.elantrase_2
         - device_tracker.rashmiphone
       to: 'home'
   action:

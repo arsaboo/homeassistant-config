@@ -27,6 +27,8 @@ resources:
     type: js
   - url: /local/custom_ui/card-modder.js?v=0.1
     type: js
+  - url: /local/community/lovelace-card-mod/card-mod.js?v=0.1
+    type: module
   - url: /local/custom_ui/auto-entities.js?v=0.1
     type: js
   - url: /local/community/config-template-card/config-template-card.js?v=0.1
@@ -36,6 +38,8 @@ resources:
   - url: /local/community/simple-thermostat/simple-thermostat.js
     type: module
   - url: /local/community/lovelace-hass-aarlo/hass-aarlo.js
+    type: module
+  - url: /local/community/unused-card/unused-card.js
     type: module
 
 title: ARS Home
@@ -1991,6 +1995,12 @@ views:
           filter:
             include:
               - domain: automation
+      - type: conditional
+        conditions:
+          - entity: input_boolean.devmode
+            state: "on"
+        card:
+          type: custom:unused-card
   - icon: mdi:cctv
     id: cameras_panel
     title: Cameras

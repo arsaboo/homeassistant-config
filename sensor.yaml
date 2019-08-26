@@ -78,42 +78,42 @@
   - platform: history_stats
     name: Downstairs heat
     entity_id: sensor.downstairsthermoper
-    state: 'heat'
+    state: 'heating'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: Downstairs cool
     entity_id: sensor.downstairsthermoper
-    state: 'cool'
+    state: 'cooling'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: Upstairs heat
     entity_id: sensor.upstairsthermoper
-    state: 'heat'
+    state: 'heating'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: Upstairs cool
     entity_id: sensor.upstairsthermoper
-    state: 'cool'
+    state: 'cooling'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: Master heat
     entity_id: sensor.masterthermoper
-    state: 'heat'
+    state: 'heating'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: Master cool
     entity_id: sensor.masterthermoper
-    state: 'cool'
+    state: 'cooling'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'

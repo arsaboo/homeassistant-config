@@ -633,7 +633,7 @@ media_player:
       com.mxtech.videoplayer.ad: "MXPlayer"
   - platform: androidtv
     name: FTV Master
-    host: 192.168.2.225
+    host: 192.168.2.180
     device_class: firetv
     adb_server_ip: 192.168.2.233
     apps:
