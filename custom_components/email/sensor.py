@@ -26,6 +26,21 @@ from .parsers.bh_photo import ATTR_BH_PHOTO, parse_bh_photo
 from .parsers.ebay import ATTR_EBAY, parse_ebay
 from .parsers.dhl import ATTR_DHL, parse_dhl
 from .parsers.hue import ATTR_HUE, parse_hue
+from .parsers.google_express import ATTR_GOOGLE_EXPRESS, parse_google_express
+
+parsers = [
+    (ATTR_UPS, parse_ups),
+    (ATTR_FEDEX, parse_fedex),
+    (ATTR_USPS, parse_usps),
+    (ATTR_ALI_EXPRESS, parse_ali_express),
+    (ATTR_NEWEGG, parse_newegg),
+    (ATTR_ROCKAUTO, parse_rockauto),
+    (ATTR_BH_PHOTO, parse_bh_photo),
+    (ATTR_EBAY, parse_ebay),
+    (ATTR_DHL, parse_dhl),
+    (ATTR_HUE, parse_hue),
+    (ATTR_GOOGLE_EXPRESS, parse_google_express),
+]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -101,66 +116,13 @@ class EmailEntity(Entity):
         self._attr[ATTR_COUNT] = len(emails)
 
         for email in emails:
-            try:
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_UPS, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_UPS] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_UPS] + parse_ups(email)
-            except Exception as err:
-                _LOGGER.error('parse_ups error: {}'.format(err))            
+            for ATTR, parser in parsers:
+                try:
+                    self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR, [])
+                    self._attr[ATTR_TRACKING_NUMBERS][ATTR] = self._attr[ATTR_TRACKING_NUMBERS][ATTR] + parser(email)
+                except Exception as err:
+                    _LOGGER.error('{} error: {}'.format(ATTR, err))            
            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_FEDEX, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_FEDEX] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_FEDEX] + parse_fedex(email)
-            except Exception as err:
-                _LOGGER.error('parse_fedex error: {}'.format(err))            
-            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_USPS, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_USPS] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_USPS] + parse_usps(email)
-            except Exception as err:
-                _LOGGER.error('parse_usps error: {}'.format(err))            
-           
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_ALI_EXPRESS, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_ALI_EXPRESS] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_ALI_EXPRESS] + parse_ali_express(email)
-            except Exception as err:
-                _LOGGER.error('parse_ali_express error: {}'.format(err))            
-            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_NEWEGG, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_NEWEGG] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_NEWEGG] + parse_newegg(email)
-            except Exception as err:
-                _LOGGER.error('parse_newegg error: {}'.format(err))            
-           
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_ROCKAUTO, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_ROCKAUTO] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_ROCKAUTO] + parse_rockauto(email)
-            except Exception as err:
-                _LOGGER.error('parse_rockauto error: {}'.format(err))            
-           
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_BH_PHOTO, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_BH_PHOTO] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_BH_PHOTO] + parse_bh_photo(email)
-            except Exception as err:
-                _LOGGER.error('parse_bh_photo error: {}'.format(err))            
-            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_EBAY, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_EBAY] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_EBAY] + parse_ebay(email)
-            except Exception as err:
-                _LOGGER.error('parse_ebay error: {}'.format(err))            
-            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_DHL, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_DHL] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_DHL] + parse_dhl(email)
-            except Exception as err:
-                _LOGGER.error('parse_dhl error: {}'.format(err))            
-            
-            try:   
-                self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR_HUE, [])
-                self._attr[ATTR_TRACKING_NUMBERS][ATTR_HUE] = self._attr[ATTR_TRACKING_NUMBERS][ATTR_HUE] + parse_hue(email)
-            except Exception as err:
-                _LOGGER.error('parse_hue error: {}'.format(err))
-        
         server.logout()
 
     @property

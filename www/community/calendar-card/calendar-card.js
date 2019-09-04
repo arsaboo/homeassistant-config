@@ -722,7 +722,7 @@ var Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
 
     .day-wrapper .overview .time,
     .day-wrapper .location ha-icon {
-        color: var(--primary-color);
+        color: var(--secondary-text-color);
     }
 
     .day-wrapper hr.progress-bar {
@@ -928,7 +928,7 @@ var Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
             </div>
           `}
       </ha-card>
-    `}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;const e=await this.getAllEvents(),t=this.groupEventsByDay(e).reduce((e,t)=>{const a=s(t.day);if(this.config.startFromToday&&s().startOf("day").isAfter(a))return e;const n=Be(t.events,e=>e.id,(e,n)=>te`
+    `}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;this.cardNeedsUpdating=!1;const e=await this.getAllEvents(),t=this.groupEventsByDay(e).reduce((e,t)=>{const a=s(t.day);if(this.config.startFromToday&&s().startOf("day").isAfter(a))return e;const n=Be(t.events,e=>e.id,(e,n)=>te`
             <tr class='day-wrapper ${t.events.length===n+1?" day-wrapper-last":""}'>
               <td class="date">
                 ${this.getDateHtml(n,a)}
@@ -946,7 +946,7 @@ var Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.start
           `);return te`
         ${e}
         ${n}
-      `},te``);this.cardNeedsUpdating=!1,this.events=te`
+      `},te``);this.events=te`
       <table>
         <tbody>
           ${t}
