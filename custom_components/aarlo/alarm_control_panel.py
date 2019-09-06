@@ -12,6 +12,7 @@ import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
+from homeassistant.components import websocket_api
 from homeassistant.components.alarm_control_panel import (DOMAIN,
                                                           AlarmControlPanel)
 from homeassistant.const import (ATTR_ATTRIBUTION,
@@ -50,13 +51,13 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_TRIGGER_TIME, default=DEFAULT_TRIGGER_TIME): vol.All(cv.time_period, cv.positive_timedelta),
 })
 
-SERVICE_MODE = 'aarlo_set_mode'
-SIREN_ON = 'aarlo_siren_on'
-SIREN_OFF = 'aarlo_siren_off'
 ATTR_MODE = 'mode'
 ATTR_VOLUME = 'volume'
 ATTR_DURATION = 'duration'
 
+SERVICE_MODE = 'aarlo_set_mode'
+SERVICE_SIREN_ON = 'aarlo_siren_on'
+SERVICE_SIREN_OFF = 'aarlo_siren_off'
 SERVICE_MODE_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
     vol.Required(ATTR_MODE): cv.string,
@@ -70,6 +71,18 @@ SIREN_OFF_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
 })
 
+WS_TYPE_SIREN_ON = 'aarlo_alarm_siren_on'
+WS_TYPE_SIREN_OFF = 'aarlo_alarm_siren_off'
+SCHEMA_WS_SIREN_ON = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_SIREN_ON,
+    vol.Required('entity_id'): cv.entity_id,
+    vol.Required(ATTR_DURATION): cv.positive_int,
+    vol.Required(ATTR_VOLUME): cv.positive_int
+})
+SCHEMA_WS_SIREN_OFF = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_SIREN_OFF,
+    vol.Required('entity_id'): cv.entity_id
+})
 
 async def async_setup_platform(hass, config, async_add_entities, _discovery_info=None):
     """Set up the Arlo Alarm Control Panels."""
@@ -90,12 +103,20 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         aarlo_mode_service_handler
     )
     component.async_register_entity_service(
-        SIREN_ON, SIREN_ON_SCHEMA,
+        SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
         aarlo_siren_on_service_handler
     )
     component.async_register_entity_service(
-        SIREN_OFF, SIREN_OFF_SCHEMA,
+        SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
         aarlo_siren_off_service_handler
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_SIREN_ON, websocket_siren_on,
+        SCHEMA_WS_SIREN_ON
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_SIREN_OFF, websocket_siren_off,
+        SCHEMA_WS_SIREN_OFF
     )
 
 
@@ -214,12 +235,62 @@ class ArloBaseStation(AlarmControlPanel):
         self._base.mode = lmode
 
     def siren_on(self, duration=30, volume=10):
-        _LOGGER.debug("{0} siren on {1}/{2}".format(self.unique_id, volume, duration))
-        self._base.siren_on(duration=duration, volume=volume)
+        if self._base.has_capability( 'siren' ):
+            _LOGGER.debug("{0} siren on {1}/{2}".format(self.unique_id, volume, duration))
+            self._base.siren_on(duration=duration, volume=volume)
+            return True
+        return False
 
     def siren_off(self):
-        _LOGGER.debug("{0} siren off".format(self.unique_id))
-        self._base.siren_off()
+        if self._base.has_capability( 'siren' ):
+            _LOGGER.debug("{0} siren off".format(self.unique_id))
+            self._base.siren_off()
+            return True
+        return False
+
+    def async_siren_on(self,duration,volume):
+        return self.hass.async_add_job(self.siren_on,duration=duration,volume=volume)
+
+    def async_siren_off(self):
+        return self.hass.async_add_job(self.siren_off)
+
+
+def _get_base_from_entity_id(hass, entity_id):
+    component = hass.data.get(DOMAIN)
+    if component is None:
+        raise HomeAssistantError('base component not set up')
+
+    base = component.get_entity(entity_id)
+    if base is None:
+        raise HomeAssistantError('base not found')
+
+    return base
+
+
+@websocket_api.async_response
+async def websocket_siren_on(hass, connection, msg):
+    base = _get_base_from_entity_id(hass, msg['entity_id'])
+    _LOGGER.debug('stop_activity for ' + str(base.unique_id))
+
+    siren = await base.async_siren_on(duration=msg['duration'],volume=msg['volume'])
+    connection.send_message(websocket_api.result_message(
+        msg['id'], {
+            'siren': 'on'
+        }
+    ))
+
+
+@websocket_api.async_response
+async def websocket_siren_off(hass, connection, msg):
+    base = _get_base_from_entity_id(hass, msg['entity_id'])
+    _LOGGER.debug('stop_activity for ' + str(base.unique_id))
+
+    siren = await base.async_siren_off()
+    connection.send_message(websocket_api.result_message(
+        msg['id'], {
+            'siren': 'off'
+        }
+    ))
 
 
 async def aarlo_mode_service_handler(base, service):
@@ -235,3 +306,4 @@ async def aarlo_siren_on_service_handler(base, service):
 
 async def aarlo_siren_off_service_handler(base, _service):
     base.siren_off()
+

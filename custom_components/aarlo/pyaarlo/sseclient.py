@@ -77,7 +77,7 @@ class SSEClient(object):
                     self.log.debug('stopping')
                     return None
 
-                self.log.debug( 'error2='.format(type(e).__name__) )
+                self.log.debug( 'error2={}'.format(type(e).__name__) )
                 time.sleep(self.retry / 1000.0)
                 self._connect()
 

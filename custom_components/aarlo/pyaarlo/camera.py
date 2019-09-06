@@ -345,6 +345,9 @@ class ArloCamera(ArloChildDevice):
                 return True
             if self.device_type.startswith('arloq'):
                 return True
+        if cap in ('siren'):
+            if self.model_id.startswith('VMC5040'):
+                return True
         return super().has_capability(cap)
 
     def take_streaming_snapshot(self):
@@ -456,3 +459,24 @@ class ArloCamera(ArloChildDevice):
                               'resource': self.resource_id,
                           })
         return True
+
+    def siren_on(self, duration=300, volume=8):
+        body = {
+            'action': 'set',
+            'resource': 'siren',
+            'publishResponse': True,
+            'properties': {'sirenState': 'on', 'duration': int(duration), 'volume': int(volume), 'pattern': 'alarm'}
+        }
+        self._arlo.debug(str(body))
+        self._arlo.bg.run(self._arlo.be.notify, base=self.base_station, body=body)
+
+    def siren_off(self):
+        body = {
+            'action': 'set',
+            'resource': 'siren',
+            'publishResponse': True,
+            'properties': {'sirenState': 'off'}
+        }
+        self._arlo.debug(str(body))
+        self._arlo.bg.run(self._arlo.be.notify, base=self.base_station, body=body)
+

@@ -48,6 +48,8 @@ ATTR_CHARGING = 'charging'
 ATTR_CHARGER_TYPE = 'charger_type'
 ATTR_WIRED = 'wired'
 ATTR_WIRED_ONLY = 'wired_only'
+ATTR_VOLUME = 'volume'
+ATTR_DURATION = 'duration'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
 
@@ -66,32 +68,54 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 SERVICE_REQUEST_SNAPSHOT = 'aarlo_request_snapshot'
 SERVICE_REQUEST_SNAPSHOT_TO_FILE = 'aarlo_request_snapshot_to_file'
 SERVICE_STOP_ACTIVITY = 'aarlo_stop_activity'
+SERVICE_SIREN_ON = 'aarlo_siren_on'
+SERVICE_SIREN_OFF = 'aarlo_siren_off'
+SIREN_ON_SCHEMA = vol.Schema({
+    vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+    vol.Required(ATTR_DURATION): cv.positive_int,
+    vol.Required(ATTR_VOLUME): cv.positive_int,
+})
+SIREN_OFF_SCHEMA = vol.Schema({
+    vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+})
 
 WS_TYPE_VIDEO_URL = 'aarlo_video_url'
+WS_TYPE_LIBRARY = 'aarlo_library'
+WS_TYPE_STREAM_URL = 'aarlo_stream_url'
+WS_TYPE_SNAPSHOT_IMAGE = 'aarlo_snapshot_image'
+WS_TYPE_STOP_ACTIVITY = 'aarlo_stop_activity'
+WS_TYPE_SIREN_ON = 'aarlo_camera_siren_on'
+WS_TYPE_SIREN_OFF = 'aarlo_camera_siren_off'
 SCHEMA_WS_VIDEO_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_VIDEO_URL,
     vol.Required('entity_id'): cv.entity_id,
     vol.Required('index'): cv.positive_int
 })
-WS_TYPE_LIBRARY = 'aarlo_library'
 SCHEMA_WS_LIBRARY = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_LIBRARY,
     vol.Required('entity_id'): cv.entity_id,
     vol.Required('at_most'): cv.positive_int
 })
-WS_TYPE_STREAM_URL = 'aarlo_stream_url'
 SCHEMA_WS_STREAM_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_STREAM_URL,
     vol.Required('entity_id'): cv.entity_id
 })
-WS_TYPE_SNAPSHOT_IMAGE = 'aarlo_snapshot_image'
 SCHEMA_WS_SNAPSHOT_IMAGE = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_SNAPSHOT_IMAGE,
     vol.Required('entity_id'): cv.entity_id
 })
-WS_TYPE_STOP_ACTIVITY = 'aarlo_stop_activity'
 SCHEMA_WS_STOP_ACTIVITY = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_STOP_ACTIVITY,
+    vol.Required('entity_id'): cv.entity_id
+})
+SCHEMA_WS_SIREN_ON = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_SIREN_ON,
+    vol.Required('entity_id'): cv.entity_id,
+    vol.Required(ATTR_DURATION): cv.positive_int,
+    vol.Required(ATTR_VOLUME): cv.positive_int
+})
+SCHEMA_WS_SIREN_OFF = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_SIREN_OFF,
     vol.Required('entity_id'): cv.entity_id
 })
 
@@ -119,6 +143,14 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         SERVICE_STOP_ACTIVITY, CAMERA_SERVICE_SCHEMA,
         aarlo_stop_activity_handler
     )
+    component.async_register_entity_service(
+        SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
+        aarlo_siren_on_service_handler
+    )
+    component.async_register_entity_service(
+        SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
+        aarlo_siren_off_service_handler
+    )
     hass.components.websocket_api.async_register_command(
         WS_TYPE_VIDEO_URL, websocket_video_url,
         SCHEMA_WS_VIDEO_URL
@@ -138,6 +170,14 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     hass.components.websocket_api.async_register_command(
         WS_TYPE_STOP_ACTIVITY, websocket_stop_activity,
         SCHEMA_WS_STOP_ACTIVITY
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_SIREN_ON, websocket_siren_on,
+        SCHEMA_WS_SIREN_ON
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_SIREN_OFF, websocket_siren_off,
+        SCHEMA_WS_SIREN_OFF
     )
 
 
@@ -335,7 +375,27 @@ class ArloCam(Camera):
         return self._camera.stop_activity()
 
     def async_stop_activity(self):
-        return self.hass.async_add_job(self._camera.stop_activity)
+        return self.hass.async_add_job(self.stop_activity)
+
+    def siren_on(self, duration=30, volume=10):
+        if self._camera.has_capability( 'siren' ):
+            _LOGGER.debug("{0} siren on {1}/{2}".format(self.unique_id, volume, duration))
+            self._camera.siren_on(duration=duration, volume=volume)
+            return True
+        return False
+
+    def siren_off(self):
+        if self._camera.has_capability( 'siren' ):
+            _LOGGER.debug("{0} siren off".format(self.unique_id))
+            self._camera.siren_off()
+            return True
+        return False
+
+    def async_siren_on(self,duration,volume):
+        return self.hass.async_add_job(self.siren_on,duration=duration,volume=volume)
+
+    def async_siren_off(self):
+        return self.hass.async_add_job(self.siren_off)
 
 
 def _get_camera_from_entity_id(hass, entity_id):
@@ -440,6 +500,29 @@ async def websocket_stop_activity(hass, connection, msg):
         }
     ))
 
+@websocket_api.async_response
+async def websocket_siren_on(hass, connection, msg):
+    camera = _get_camera_from_entity_id(hass, msg['entity_id'])
+    _LOGGER.debug('stop_activity for ' + str(camera.unique_id))
+
+    stopped = await camera.async_siren_on(duration=msg['duration'],volume=msg['volume'])
+    connection.send_message(websocket_api.result_message(
+        msg['id'], {
+            'siren': 'on'
+        }
+    ))
+
+@websocket_api.async_response
+async def websocket_siren_off(hass, connection, msg):
+    camera = _get_camera_from_entity_id(hass, msg['entity_id'])
+    _LOGGER.debug('stop_activity for ' + str(camera.unique_id))
+
+    stopped = await camera.async_siren_off()
+    connection.send_message(websocket_api.result_message(
+        msg['id'], {
+            'siren': 'off'
+        }
+    ))
 
 async def aarlo_snapshot_service_handler(camera, _service):
     _LOGGER.debug("{0} snapshot".format(camera.unique_id))
@@ -484,3 +567,14 @@ async def aarlo_snapshot_to_file_service_handler(camera, service):
 async def aarlo_stop_activity_handler(camera, _service):
     _LOGGER.info("{0} stop activity".format(camera.unique_id))
     camera.stop_activity()
+
+
+async def aarlo_siren_on_service_handler(camera, service):
+    volume = service.data[ATTR_VOLUME]
+    duration = service.data[ATTR_DURATION]
+    camera.siren_on(duration=duration, volume=volume)
+
+
+async def aarlo_siren_off_service_handler(camera, _service):
+    camera.siren_off()
+
