@@ -43,6 +43,7 @@ ATTR_CHARGING = 'charging'
 ATTR_CHARGER_TYPE = 'charger_type'
 ATTR_WIRED = 'wired'
 ATTR_WIRED_ONLY = 'wired_only'
+ATTR_LAST_VIDEO = 'last_video'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
 
@@ -260,6 +261,7 @@ class ArloCam(Camera):
                 (ATTR_CHARGER_TYPE, self._camera.charger_type),
                 (ATTR_WIRED, self._camera.wired),
                 (ATTR_WIRED_ONLY, self._camera.wired_only),
+                (ATTR_LAST_VIDEO, self.last_video_url),
             ) if value is not None
         }
 
@@ -283,6 +285,11 @@ class ArloCam(Camera):
     def motion_detection_enabled(self):
         """Return the camera motion detection status."""
         return self._motion_status
+
+    @property
+    def last_video_url(self):
+        video = self._camera.last_video
+        return video.video_url if video is not None else None
 
     def set_base_station_mode(self, mode):
         """Set the mode in the base station."""

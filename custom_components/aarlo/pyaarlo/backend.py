@@ -8,7 +8,9 @@ import pprint
 
 #from sseclient import ( SSEClient )
 from custom_components.aarlo.pyaarlo.sseclient import ( SSEClient )
+from custom_components.aarlo.pyaarlo.util import time_to_arlotime
 from custom_components.aarlo.pyaarlo.constant import ( EVENT_STREAM_TIMEOUT,
+                                DEVICES_URL,
                                 LOGIN_URL,
                                 LOGOUT_URL,
                                 NOTIFY_URL,
@@ -318,6 +320,8 @@ class ArloBackEnd(object):
                 headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
 
             self._session.headers.update(headers)
+            self._arlo.debug('Fetching device list after login (seems to make arming/disarming more stable)')
+            self.get( DEVICES_URL + "?t={}".format(time_to_arlotime()) )
             return True
 
     def is_connected( self ):
