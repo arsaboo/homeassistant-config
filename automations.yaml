@@ -58,6 +58,50 @@
         entityid: '{{trigger.entity_id}}'
         fromstate: '{{trigger.from_state.state}}'
         tostate: '{{trigger.to_state.state}}'
+
+- id: update_alok_test_tracker
+  alias: "Update Alok Test Tracker"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - device_tracker.aloks_iphone
+        - device_tracker.alokphone_alokphone_2
+      to: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id:
+        - device_tracker.alokphone_alokphone_2
+      to: 'home'
+      for: '00:00:30'
+    - platform: state
+      entity_id:
+        - device_tracker.alok_s_iphone_2
+        - device_tracker.life360_alok_saboo
+        - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
+    - platform: state
+      entity_id:
+        - device_tracker.aloks_iphone
+        - device_tracker.elantrase_2
+      to: 'home'
+  action:
+    - service: device_tracker.see
+      data_template:
+        dev_id: test_alok
+        location_name: '{{trigger.to_state.state}}'
+        gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
+        gps_accuracy: '{{ trigger.to_state.attributes.gps_accuracy }}'
+        attributes:
+          update_source: '{{trigger.entity_id}}'
+          source_type: '{{ trigger.to_state.attributes.source_type }}'
+          velocity: >-
+            {%- if trigger.to_state.attributes.velocity -%}
+              {{ trigger.to_state.attributes.velocity }}
+            {%- else -%}
+              {{ trigger.to_state.attributes.speed }}
+            {%- endif -%}
+          entity_picture: /local/icons/Alok.png
+
     # - service: logbook.log
     #   data_template:
     #     name: "Meta Tracker: "
