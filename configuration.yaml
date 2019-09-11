@@ -156,7 +156,7 @@ alarm_control_panel:
     armed_home:
       pending_time: 0
       delay_time: 0
-  # - platform: arlo
+
 xiaomi_aqara:
   gateways:
     - key: !secret xiaomikey
@@ -652,7 +652,28 @@ alexa_media:
       password: !secret amazon_pass
       url: amazon.com
       include_devices:
+        - "Alexa Guard 227b3"
         - "Echo Dot Gen2"
+      # exclude_devices:
+      #   - "Rashmi's Alexa Apps"
+      #   - "Alok's 2nd Fire TV"
+      #   - "Alok's 4th Fire TV"
+      #   - 'Master AFTV'
+      #   - "Alok's 2nd Fire"
+      #   - "Alok's 3rd Fire"
+      #   - 'My Dash'
+      #   - "Alok's 4th Fire"
+      #   - "Alok's 5th Fire"
+      #   - "Alok's 6th Fire"
+      #   - "William's TAB🗼"
+      #   - 'Family Room'
+      #   - 'LivingRoomSonos'
+      #   - "Alok's Echo Dot"
+      #   - "Alok's 2nd Fire TV Stick"
+      #   - 'AFTVMaster'
+      #   - 'AFTV4kStick'
+      #   - 'This Device'
+      #   - "Alok's Alexa Apps"
 geofency:
 speedtestdotnet:
   monitored_conditions:
@@ -749,13 +770,13 @@ logger:
     homeassistant.components.sensor.darksky: critical
     pychromecast.socket_client: critical
     aiohttp.access: critical
+    aiounifi.api: critical
     aiohttp.server: critical
     haffmpeg.core: critical
     homeassistant.core: critical
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
-    custom_components.alarm_control_panel: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
     homeassistant.components.switch.unifi: debug

@@ -11,8 +11,8 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 
 from .const import (
-    CONF_EMAIL, CONF_PASSWORD, CONF_SHOW_ALL, CONF_SMTP_SERVER,
-    CONF_SMTP_PORT, CONF_EMAIL_FOLDER, ATTR_EMAILS, ATTR_COUNT,
+    CONF_EMAIL, CONF_PASSWORD, CONF_SHOW_ALL, CONF_IMAP_SERVER,
+    CONF_IMAP_PORT, CONF_EMAIL_FOLDER, ATTR_EMAILS, ATTR_COUNT,
     ATTR_TRACKING_NUMBERS, EMAIL_ATTR_FROM, EMAIL_ATTR_SUBJECT,
     EMAIL_ATTR_BODY)
 
@@ -50,8 +50,8 @@ SCAN_INTERVAL = timedelta(seconds=5*60)
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_EMAIL): cv.string,
     vol.Required(CONF_PASSWORD): cv.string,
-    vol.Required(CONF_SMTP_SERVER, default='imap.gmail.com'): cv.string,
-    vol.Required(CONF_SMTP_PORT, default=993): cv.positive_int,
+    vol.Required(CONF_IMAP_SERVER, default='imap.gmail.com'): cv.string,
+    vol.Required(CONF_IMAP_PORT, default=993): cv.positive_int,
     vol.Required(CONF_EMAIL_FOLDER, default='INBOX'): cv.string,
     vol.Required(CONF_SHOW_ALL, default=False): cv.boolean,
 })
@@ -69,8 +69,8 @@ class EmailEntity(Entity):
         """Init the Email Entity."""
         self._attr = None
 
-        self.smtp_server = config[CONF_SMTP_SERVER]
-        self.smtp_port = config[CONF_SMTP_PORT]
+        self.imap_server = config[CONF_IMAP_SERVER]
+        self.imap_port = config[CONF_IMAP_PORT]
         self.email_address = config[CONF_EMAIL]
         self.password = config[CONF_PASSWORD]
         self.email_folder = config[CONF_EMAIL_FOLDER]
@@ -84,7 +84,7 @@ class EmailEntity(Entity):
             ATTR_TRACKING_NUMBERS: {}
         }
         emails = []
-        server = IMAPClient(self.smtp_server, use_uid=True)
+        server = IMAPClient(self.imap_server, use_uid=True)
 
         try:
             server.login(self.email_address, self.password)

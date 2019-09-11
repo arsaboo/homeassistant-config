@@ -264,3 +264,5 @@ sensor.10_year_treasury:
   icon: mdi:finance
 sensor.plexspy:
   icon: mdi:magnify
+sensor.pc_networth:
+  icon: mdi:coin-outline

@@ -33,7 +33,7 @@ class ArloBackgroundWorker(threading.Thread):
                     try:
                         job['callback'](**job['args'])
                     except Exception as e:
-                        self.log.debug('job-error={}'.format(type(e).__name__))
+                        self.arlo.debug('job-error={}'.format(type(e).__name__))
 
                     # reschedule?
                     self._lock.acquire()

@@ -65,7 +65,6 @@
   trigger:
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone
         - device_tracker.alokphone_alokphone_2
       to: 'not_home'
       for: '00:07:00'
@@ -79,6 +78,53 @@
         - device_tracker.alok_s_iphone_2
         - device_tracker.life360_alok_saboo
         - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
+  action:
+    - service: device_tracker.see
+      data_template:
+        dev_id: test_alok
+        location_name: '{{trigger.to_state.state|lower }}'
+        # gps: >-
+        #   {% if trigger.to_state.attributes.latitude is defined %}
+        #     [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
+        #   {%- else -%}
+        #     [none, none]
+        #   {%- endif -%}
+        gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
+        gps_accuracy: >-
+          {%- if trigger.to_state.attributes.gps_accuracy is defined -%}
+            {{ trigger.to_state.attributes.gps_accuracy }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+        attributes:
+          update_source: '{{trigger.entity_id}}'
+          source_type: '{{ trigger.to_state.attributes.source_type }}'
+          velocity: >-
+            {%- if trigger.to_state.attributes.velocity is defined -%}
+              {{ trigger.to_state.attributes.velocity }}
+            {%- elif trigger.to_state.attributes.speed is defined -%}
+              {{ trigger.to_state.attributes.speed }}
+            {%- else -%}
+              NA
+            {%- endif -%}
+          battery: >-
+            {%- if trigger.to_state.attributes.battery is defined -%}
+              {{ trigger.to_state.attributes.battery }}
+            {%- elif trigger.to_state.attributes.battery_level is defined -%}
+              {{ trigger.to_state.attributes.battery_level }}
+            {%- else -%}
+              NA
+            {%- endif -%}
+- id: update_alok_test_tracker_router
+  alias: "Update Alok Test Tracker Router"
+  initial_state: 'on'
+  trigger:
+    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
+    - platform: state
+      entity_id:
+        - device_tracker.aloks_iphone
+      to: 'not_home'
+      for: '00:07:00'
     - platform: state
       entity_id:
         - device_tracker.aloks_iphone
@@ -87,20 +133,85 @@
   action:
     - service: device_tracker.see
       data_template:
-        dev_id: test_alok
-        location_name: '{{trigger.to_state.state}}'
+        dev_id: test_rashmi
+        location_name: '{{trigger.to_state.state|lower }}'
+        attributes:
+          update_source: '{{trigger.entity_id}}'
+          source_type: '{{ trigger.to_state.attributes.source_type }}'
+
+- id: update_rashmi_test_tracker
+  alias: "Update Rashmi Test Tracker"
+  initial_state: 'on'
+  trigger:
+    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
+    - platform: state
+      entity_id:
+        - device_tracker.rashmiphone_rashmiphone_2
+      to: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id:
+        - device_tracker.rashmiphone_rashmiphone_2
+      to: 'home'
+      for: '00:00:30'
+    - platform: state
+      entity_id:
+        - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
+        - device_tracker.rashmiappiphone
+        - device_tracker.life360_sonu
+  action:
+    - service: device_tracker.see
+      data_template:
+        dev_id: test_rashmi
+        location_name: '{{trigger.to_state.state|lower }}'
         gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
-        gps_accuracy: '{{ trigger.to_state.attributes.gps_accuracy }}'
+        gps_accuracy: >-
+          {%- if trigger.to_state.attributes.gps_accuracy is defined -%}
+            {{ trigger.to_state.attributes.gps_accuracy }}
+          {%- else -%}
+            NA
+          {%- endif -%}
         attributes:
           update_source: '{{trigger.entity_id}}'
           source_type: '{{ trigger.to_state.attributes.source_type }}'
           velocity: >-
-            {%- if trigger.to_state.attributes.velocity -%}
+            {%- if trigger.to_state.attributes.velocity is defined -%}
               {{ trigger.to_state.attributes.velocity }}
-            {%- else -%}
+            {%- elif trigger.to_state.attributes.speed is defined -%}
               {{ trigger.to_state.attributes.speed }}
+            {%- else -%}
+              NA
             {%- endif -%}
-          entity_picture: /local/icons/Alok.png
+          battery: >-
+            {%- if trigger.to_state.attributes.battery is defined -%}
+              {{ trigger.to_state.attributes.battery }}
+            {%- elif trigger.to_state.attributes.battery_level is defined -%}
+              {{ trigger.to_state.attributes.battery_level }}
+            {%- else -%}
+              NA
+            {%- endif -%}
+- id: update_rashmi_test_tracker_router
+  alias: "Update Rashmi Test Tracker Router"
+  initial_state: 'on'
+  trigger:
+    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
+    - platform: state
+      entity_id:
+        - device_tracker.rashmiphone
+      to: 'not_home'
+      for: '00:07:00'
+    - platform: state
+      entity_id:
+        - device_tracker.rashmiphone
+      to: 'home'
+  action:
+    - service: device_tracker.see
+      data_template:
+        dev_id: test_rashmi
+        location_name: '{{trigger.to_state.state|lower }}'
+        attributes:
+          update_source: '{{trigger.entity_id}}'
+          source_type: '{{ trigger.to_state.attributes.source_type }}'
 
     # - service: logbook.log
     #   data_template:
@@ -443,37 +554,37 @@
           {% else %}
             image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
           {% endif %}
-    - service: image_processing.scan
-      data_template:
-        entity_id: >
-          {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
-            image_processing.deepstack_porch
-          {% else %}
-            image_processing.deepstack_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
-          {% endif %}
+    # - service: image_processing.scan
+    #   data_template:
+    #     entity_id: >
+    #       {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
+    #         image_processing.deepstack_porch
+    #       {% else %}
+    #         image_processing.deepstack_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
+    #       {% endif %}
     # - service: image_processing.scan
     #   data_template:
     #     entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
 
-- id: opencv_image_processing_notification
-  alias: 'OpenCV image processing'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - image_processing.opencv_porch
-        - image_processing.opencv_patio
-        - image_processing.opencv_driveway
-        - image_processing.opencv_backyard
-  condition:
-    - condition: template
-      value_template: '{{ trigger.to_state.state |int > 0 }}'
-  action:
-    - service: logbook.log
-      data_template:
-        name: "OpenCV: "
-        message: >-
-          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.to_state.attributes.camera.split('.')[1] }}.
+# - id: opencv_image_processing_notification
+#   alias: 'OpenCV image processing'
+#   initial_state: 'on'
+#   trigger:
+#     - platform: state
+#       entity_id:
+#         - image_processing.opencv_porch
+#         - image_processing.opencv_patio
+#         - image_processing.opencv_driveway
+#         - image_processing.opencv_backyard
+#   condition:
+#     - condition: template
+#       value_template: '{{ trigger.to_state.state |int > 0 }}'
+#   action:
+#     - service: logbook.log
+#       data_template:
+#         name: "OpenCV: "
+#         message: >-
+#           {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.to_state.attributes.camera.split('.')[1] }}.
 
 - id: tf_image_processing_notification
   alias: 'TF image processing'
@@ -518,55 +629,6 @@
         name: "TF: "
         message: >-
           {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }}.
-- id: deepstack_image_processing_notification
-  alias: 'Deepstack image processing'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - image_processing.deepstack_porch
-        - image_processing.deepstack_patio
-        - image_processing.deepstack_driveway
-        - image_processing.deepstack_backyard
-  condition:
-    - condition: template
-      value_template: '{{ trigger.to_state.state |int > 0 }}'
-  action:
-    - service: logbook.log
-      data_template:
-        name: "Deepstack: "
-        message: >-
-          {% for object in state_attr(trigger.entity_id,'predictions').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} and attributes are {{ states.image_processing[trigger.entity_id.split('.')[1]].attributes.predictions }}.
-# {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-# {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
-#
-# {% macro get_list(obj) %}
-#   {%- for x in state_attr(trigger.entity_id,'matches')[obj]|list if x.box[0] > 0.25 -%}
-#     {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
-#   {%- endfor -%}
-# {% endmacro %}
-#
-# {% macro run() %}
-#   {%- for object in tags -%}
-#   {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
-#     {{- get_list(object).split(',')|list|unique|list|join|title }}
-#   {%- endfor -%}
-# {% endmacro %}
-#
-# {% set output = run() %}
-# {{- output ~ ' detected in ' ~ camera if output != '' }}
-
-# {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-# {%- set tags = state_attr(trigger.entity_id,'matches').keys()|list -%}
-# {%- for object in tags -%}
-#   {%- set outer_loop = loop %}
-#   {%- for x in state_attr(trigger.entity_id,'matches')[object]|list if x.box[0] > 0.25 -%}
-#     {%- if outer_loop.first %}{% elif outer_loop.last %}, {% else %},{% endif -%}{{ object }}
-#   {%- endfor -%}
-# {% endfor -%}
-# {{- ' detected in ' ~ camera if tags|count |int > 0 }}
-
-# {% for object in state_attr(trigger.entity_id,'matches').keys() if states.image_processing[trigger.entity_id.split('.')[1]].attributes.matches[object][0].box[0] > 0.25 -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }}.
 
 - id: notify_camera_pictures
   alias: 'Notify camera pictures'
@@ -1142,18 +1204,18 @@
     #   for: '00:10:00'
     - platform: state
       entity_id:
-        - climate.master
+        - sensor.masterthermoper
         - sensor.upstairsthermoper
         - sensor.downstairsthermoper
-      to: 'cool'
-      for: '00:10:00'
+      to: 'cooling'
+      for: '00:30:00'
     - platform: state
       entity_id:
         - sensor.masterthermoper
         - sensor.upstairsthermoper
         - sensor.downstairsthermoper
-      to: 'heat'
-      for: '00:10:00'
+      to: 'heating'
+      for: '00:15:00'
   action:
     - service: notify.ios_alokiosiphone
       data_template:

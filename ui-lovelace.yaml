@@ -719,6 +719,8 @@ views:
                 name: Runtime
               - entity: sensor.downstairsthermoper
                 name: Operation
+              - entity: switch.downstairs_away
+                name: Away Mode
           - type: thermostat
             entity: climate.downstairs
           - type: picture-entity
@@ -745,6 +747,8 @@ views:
                 name: Runtime
               - entity: sensor.upstairsthermoper
                 name: Operation
+              - entity: switch.upstairs_away
+                name: Away Mode
           - type: thermostat
             entity: climate.upstairs
           - type: picture-entity
@@ -771,6 +775,8 @@ views:
                 name: Runtime
               - entity: sensor.masterthermoper
                 name: Operation
+              - entity: switch.bedroom_away
+                name: Away Mode
           - type: thermostat
             entity: climate.bedroom
           - type: picture-entity
@@ -1160,8 +1166,10 @@ views:
                 state_image:
                   'home': /local/icons/alok_geofency_home.png
                   'not_home': /local/icons/alok_geofency_not_home.png
+                  'Buckhead': /local/icons/alok_geofency_not_home.png
                   'buckhead': /local/icons/alok_geofency_not_home.png
                   'downtown': /local/icons/alok_geofency_not_home.png
+                  'Downtown': /local/icons/alok_geofency_not_home.png
       - type: entities
         title: HASS Details
         show_header_toggle: false
@@ -1171,7 +1179,9 @@ views:
           - input_boolean.devmode
           - input_select.abodestatus
           - person.alok
+          - device_tracker.test_alok
           - person.rashmi
+          - device_tracker.test_rashmi
 
       - type: entities
         title: Network Details

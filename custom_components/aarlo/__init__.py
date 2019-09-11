@@ -16,7 +16,7 @@ from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.const import (
         CONF_USERNAME, CONF_PASSWORD, CONF_SCAN_INTERVAL)
 
-__version__ = '0.5.10'
+__version__ = '0.5.11'
 
 _LOGGER = logging.getLogger(__name__)
 

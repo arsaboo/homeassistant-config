@@ -263,11 +263,13 @@
       table-row-background-color: "var(--paper-card-background-color)"
       table-row-alternative-background-color: "var(--sidebar-text_-_background)"
     darkcyan:
+    # Background image
+      background-image: 'center / cover no-repeat url("/local/assets/images/vintage-colors-blur.jpg") fixed'
     # Main colors that can be changed
-      primary-color: "#00bcd4"
+      primary-color: "#bd947e"
       disabled-text-color: "#545454"
       divider-color: "rgba(255, 255, 255, 0.12)"
-      paper-card-background-color: "#4e4e4e"
+      paper-card-background-color: "rgba(50, 0, 0, 0.58)"
       paper-grey-200: "#191919"
       paper-item-icon-color: "#d3d3d3"
       paper-listbox-background-color: "#202020"

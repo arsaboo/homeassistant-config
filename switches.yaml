@@ -25,7 +25,7 @@
     switches:
       downstairs_away:
         friendly_name: Downstairs Away
-        value_template: "{{(states.climate.downstairs.attributes|default({})).away_mode|default('off') == 'on'}}"
+        value_template: "{{(states.climate.downstairs.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
@@ -37,7 +37,7 @@
               entity_id: climate.downstairs
       upstairs_away:
         friendly_name: Upstairs Away
-        value_template: "{{(states.climate.upstairs.attributes|default({})).away_mode|default('off') == 'on'}}"
+        value_template: "{{(states.climate.upstairs.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
@@ -49,7 +49,7 @@
               entity_id: climate.upstairs
       bedroom_away:
         friendly_name: Master Away
-        value_template: "{{(states.climate.bedroom.attributes|default({})).away_mode|default('off') == 'on'}}"
+        value_template: "{{(states.climate.bedroom.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
@@ -63,15 +63,12 @@
         friendly_name: Home Security Arm
         value_template: "{{states('alarm_control_panel.abode_alarm') != 'disarmed'}}"
         turn_on:
-          - service: alarm_control_panel.alarm_arm_away
-            entity_id:
-              - alarm_control_panel.abode_alarm
-              - alarm_control_panel.aarlo_arlohome
+          - service: homeassistant.turn_on
+            entity_id: script.abodeaway
         turn_off:
-          - service: alarm_control_panel.alarm_disarm
-            entity_id:
-              - alarm_control_panel.abode_alarm
-              - alarm_control_panel.aarlo_arlohome
+          - service: homeassistant.turn_on
+            entity_id: script.abodestandby
+
       sonos_night_sound:
         friendly_name: Sonos Night Sound
         value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
