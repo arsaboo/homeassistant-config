@@ -2,11 +2,6 @@
 ## Groups
 #################################################################
 
-  living_room_lights:
-    - light.lifx3
-    - light.lifxnrguest
-    - light.lifxnrkitchen
-
   Thermostats:
     - switch.downstairs_away
     - switch.bedroom_away
@@ -15,8 +10,3 @@
   Household:
     - device_tracker.meta_rashmi
     - device_tracker.meta_alok
-
-  master_lights:
-    - light.hue_color_lamp_1
-    - light.hue_color_lamp_2
-    - light.hue_color_lamp_3
