@@ -325,6 +325,34 @@
         data:
           entity_id: input_select.current_theme
           option: "oxfordblue"
+      - service: device_tracker.see
+        data_template:
+          dev_id: test_rashmi
+          location_name: '{{states.device_tracker.life360_sonu.state|lower }}'
+          gps: [ '{{ states.device_tracker.life360_sonu.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
+          gps_accuracy: >-
+              {{ states.device_tracker.life360_sonu.attributes.gps_accuracy }}
+          attributes:
+            update_source: 'device_tracker.life360_sonu'
+            source_type: '{{ states.device_tracker.life360_sonu.attributes.source_type }}'
+            velocity: >-
+                {{ states.device_tracker.life360_sonu.attributes.speed }}
+            battery: >-
+                {{ states.device_tracker.life360_sonu.attributes.battery }}
+      - service: device_tracker.see
+        data_template:
+          dev_id: test_alok
+          location_name: '{{states.device_tracker.life360_alok_saboo.state|lower }}'
+          gps: [ '{{ states.device_tracker.life360_alok_saboo.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
+          gps_accuracy: >-
+              {{ states.device_tracker.life360_alok_saboo.attributes.gps_accuracy }}
+          attributes:
+            update_source: 'device_tracker.life360_alok_saboo'
+            source_type: '{{ states.device_tracker.life360_alok_saboo.attributes.source_type }}'
+            velocity: >-
+                {{ states.device_tracker.life360_alok_saboo.attributes.speed }}
+            battery: >-
+                {{ states.device_tracker.life360_alok_saboo.attributes.battery }}
       - service: script.updatetracker
         data_template:
           entityid: 'device_tracker.life360_sonu'
