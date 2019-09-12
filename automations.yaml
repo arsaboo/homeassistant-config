@@ -1009,16 +1009,16 @@
   initial_state: 'on'
   trigger:
     platform: state
-    entity_id: sensor.plexspy
+    entity_id: sensor.plex
   action:
     - service: notify.pushbullet
       data_template:
         message: >
-          {%- if states.sensor.plexspy.attributes -%}
+          {%- if states.sensor.plex.attributes -%}
             {% set space = joiner(' ') %}
-            {%- for attr in states.sensor.plexspy.attributes -%}
+            {%- for attr in states.sensor.plex.attributes -%}
              {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
-              {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
+              {{space()}}{{attr}} is watching {{states.sensor.plex.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
@@ -1028,11 +1028,11 @@
       data_template:
         name: "Plex {{ trigger.to_state.state }} people streaming. "
         message: >
-          {%- if states.sensor.plexspy.attributes -%}
+          {%- if states.sensor.plex.attributes -%}
             {% set space = joiner(' ') %}
-            {%- for attr in states.sensor.plexspy.attributes -%}
+            {%- for attr in states.sensor.plex.attributes -%}
              {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
-              {{space()}}{{attr}} is watching {{states.sensor.plexspy.attributes[attr]}}.
+              {{space()}}{{attr}} is watching {{states.sensor.plex.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
@@ -1232,9 +1232,9 @@
   trigger:
     - platform: state
       entity_id:
-        - group.living_room_lights
+        - light.living_room_lights
         - light.lifx5
-        - group.master_lights
+        - light.master_lights
       to: 'unavailable'
       for: '00:05:00'
     - platform: state

@@ -524,7 +524,7 @@ views:
         entities:
           - sensor.morning_commute
           - sensor.alok_to_home
-          - sensor.plexspy
+          - sensor.plex
           - sensor.usdinr
           - type: cast
             name: Home

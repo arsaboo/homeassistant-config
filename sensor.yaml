@@ -118,12 +118,11 @@
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: plex
-    name: PlexSpy
     host: 192.168.2.212
     port: 32400
-    # token: !secret plex_token
-    username: !secret plex_user
-    password: !secret plex_password
+    token: !secret plex_token
+    # username: !secret plex_user
+    # password: !secret plex_password
 #Morning Commute Google Travel Time Sensor
   - platform: google_travel_time
     name: Morning Commute

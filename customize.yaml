@@ -262,7 +262,7 @@ binary_sensor.motion_sensor_158d0001a1f2ab:
   homebridge_hidden: false
 sensor.10_year_treasury:
   icon: mdi:finance
-sensor.plexspy:
+sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
   icon: mdi:coin-outline
