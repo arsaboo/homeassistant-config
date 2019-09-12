@@ -1205,7 +1205,7 @@ views:
               - font-size: 12px
               - text-transform: capitalize
           - type: custom:button-card
-            entity: switch.lenovo_home
+            entity: switch.lenovohome
             name: Lenovo
             icon: mdi:laptop-windows
             color: rgb(250, 218, 79)
