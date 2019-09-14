@@ -3,10 +3,9 @@ import re
 import time
 import warnings
 
-import six
-
 import requests
-
+import six
+import six.moves.http_client
 
 # Technically, we should support streams that mix line endings.  This regex,
 # however, assumes that a system will provide consistent line endings.
@@ -14,12 +13,14 @@ end_of_field = re.compile(r'\r\n\r\n|\r\r|\n\n')
 
 
 class SSEClient(object):
-    def __init__(self, log, url, last_id=None, retry=3000, session=None, chunk_size=1024, **kwargs):
+    def __init__(self, log, url, last_id=None, retry=3000, session=None, chunk_size=1024, reconnect_cb=None, **kwargs):
         self.log = log
         self.url = url
         self.last_id = last_id
         self.retry = retry
         self.chunk_size = chunk_size
+        self.running = True
+        self.reconnect_cb = reconnect_cb
 
         # Optional support for passing in a requests.Session()
         self.session = session
@@ -39,6 +40,9 @@ class SSEClient(object):
         self.buf = u''
 
         self._connect()
+
+    def stop(self):
+        self.running = False
 
     def _connect(self):
         if self.last_id:
@@ -70,9 +74,17 @@ class SSEClient(object):
                 self.buf += decoder.decode(next_chunk)
 
             except (StopIteration, requests.RequestException, EOFError, six.moves.http_client.IncompleteRead) as e:
+                if not self.running:
+                    self.log.debug('stopping')
+                    return None
+
                 self.log.debug('sseclient-error={}'.format(type(e).__name__))
                 time.sleep(self.retry / 1000.0)
                 self._connect()
+
+                # signal up!
+                if self.reconnect_cb:
+                    self.reconnect_cb()
 
                 # The SSE spec only supports resuming from a whole message, so
                 # if we have half a message we should throw it out.
@@ -102,7 +114,6 @@ class SSEClient(object):
 
 
 class Event(object):
-
     sse_line_pattern = re.compile('(?P<name>[^:]*):?( ?(?P<value>.*))?')
 
     def __init__(self, data='', event='message', id=None, retry=None):
