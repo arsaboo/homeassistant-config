@@ -133,7 +133,7 @@
   action:
     - service: device_tracker.see
       data_template:
-        dev_id: test_rashmi
+        dev_id: test_alok
         location_name: '{{trigger.to_state.state|lower }}'
         attributes:
           update_source: '{{trigger.entity_id}}'
