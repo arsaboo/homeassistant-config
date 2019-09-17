@@ -20,7 +20,7 @@ from homeassistant.const import (CONF_NAME, CONF_RESOURCES, ATTR_ATTRIBUTION)
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 
-REQUIREMENTS = ['beautifulsoup4==4.7.1']
+REQUIREMENTS = ['beautifulsoup4==4.8.0']
 
 _LOGGER = logging.getLogger(__name__)
 _RESOURCE = 'http://money.cnn.com/data/premarket/'
@@ -164,9 +164,10 @@ class CNNFuturesData(object):
     def update(self):
         """Get the latest data from CNN."""
         from bs4 import BeautifulSoup
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'}
         if (self.data is None or datetime.today().isoweekday() != 6 or (datetime.today().isoweekday() == 7 and datetime.today().hour > 17)):
             try:
-                r = requests.get(self._resource, timeout=10)
+                r = requests.get(self._resource, headers=headers, timeout=10)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 req_soup = soup.find('div',class_='wsod_fLeft wsod_marketsLeftCol')
                 soup_info = req_soup.find_all('tr')
