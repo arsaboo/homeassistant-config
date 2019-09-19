@@ -339,8 +339,6 @@ http:
 
 # Discover some devices automatically
 discovery:
-  enable:
-    samsung_tv
   ignore:
     - apple_tv
     - panasonic_viera
