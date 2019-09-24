@@ -11,9 +11,9 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 
 from .const import (
-    CONF_EMAIL, CONF_PASSWORD, CONF_SHOW_ALL, CONF_IMAP_SERVER,
-    CONF_IMAP_PORT, CONF_EMAIL_FOLDER, ATTR_EMAILS, ATTR_COUNT,
-    ATTR_TRACKING_NUMBERS, EMAIL_ATTR_FROM, EMAIL_ATTR_SUBJECT,
+    CONF_EMAIL, CONF_PASSWORD, CONF_SHOW_ALL, CONF_IMAP_SERVER, 
+    CONF_IMAP_PORT, CONF_EMAIL_FOLDER, ATTR_EMAILS, ATTR_COUNT, 
+    ATTR_TRACKING_NUMBERS, EMAIL_ATTR_FROM, EMAIL_ATTR_SUBJECT, 
     EMAIL_ATTR_BODY)
 
 from .parsers.ups import ATTR_UPS, parse_ups
@@ -80,7 +80,7 @@ class EmailEntity(Entity):
     def update(self):
         """Update data from Email API."""
         self._attr = {
-            ATTR_EMAILS: [],
+            ATTR_EMAILS: [], 
             ATTR_TRACKING_NUMBERS: {}
         }
         emails = []
@@ -93,8 +93,8 @@ class EmailEntity(Entity):
             _LOGGER.error('IMAPClient login error {}'.format(err))
             return False
 
-        try:
-            messages = server.search(self.flag)
+        try: 
+            messages = server.search(self.flag )
             for uid, message_data in server.fetch(messages, 'RFC822').items():
                 try:
                     mail = parse_from_bytes(message_data[b'RFC822'])
@@ -108,28 +108,31 @@ class EmailEntity(Entity):
                         EMAIL_ATTR_SUBJECT: mail.subject,
                     })
                 except Exception as err:
-                    _LOGGER.error(
-                        'mailparser parse_from_bytes error: {}'.format(err))
+                    _LOGGER.error('mailparser parse_from_bytes error: {}'.format(err))
 
         except Exception as err:
             _LOGGER.error('IMAPClient update error: {}'.format(err))
 
         self._attr[ATTR_COUNT] = len(emails)
+        self._attr[ATTR_TRACKING_NUMBERS] = {}
 
+        # empty out all parser arrays
+        for ATTR, parser in parsers:
+            self._attr[ATTR_TRACKING_NUMBERS][ATTR] = []
+
+        # for each email run each parser and save in the corresponding ATTR
         for email in emails:
             for ATTR, parser in parsers:
                 try:
-                    self._attr[ATTR_TRACKING_NUMBERS].setdefault(ATTR, [])
-                    self._attr[ATTR_TRACKING_NUMBERS][ATTR] = self._attr[ATTR_TRACKING_NUMBERS][ATTR] + \
-                        parser(email)
+                    self._attr[ATTR_TRACKING_NUMBERS][ATTR] = self._attr[ATTR_TRACKING_NUMBERS][ATTR] + parser(email)
                 except Exception as err:
-                    _LOGGER.error('{} error: {}'.format(ATTR, err))
+                    _LOGGER.error('{} error: {}'.format(ATTR, err))            
 
         # remove duplicates
         for ATTR, parser in parsers:
             self._attr[ATTR_TRACKING_NUMBERS][ATTR] = list(
                 dict.fromkeys(self._attr[ATTR_TRACKING_NUMBERS][ATTR]))
-
+           
         server.logout()
 
     @property
