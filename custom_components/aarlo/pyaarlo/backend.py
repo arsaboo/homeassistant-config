@@ -1,5 +1,6 @@
 import json
 import pprint
+import re
 import threading
 import time
 import uuid
@@ -7,8 +8,8 @@ import uuid
 import requests
 import requests.adapters
 
-from .constant import (LOGIN_URL, LOGOUT_URL,
-                       NOTIFY_URL, SUBSCRIBE_URL, TRANSID_PREFIX, DEVICES_URL)
+from .constant import (DEFAULT_RESOURCES, LOGIN_PATH, LOGOUT_PATH,
+                       NOTIFY_PATH, SUBSCRIBE_PATH, TRANSID_PREFIX, DEVICES_PATH)
 from .sseclient import SSEClient
 from .util import time_to_arlotime
 
@@ -26,6 +27,7 @@ class ArloBackEnd(object):
 
         self._requests = {}
         self._callbacks = {}
+        self._resource_types = DEFAULT_RESOURCES
 
         self._token = None
         self._user_id = None
@@ -46,10 +48,10 @@ class ArloBackEnd(object):
 
         # start logout daemon
         if self._arlo.cfg.reconnect_every != 0:
-            self._arlo.debug('automatically reconneting')
+            self._arlo.debug('automatically reconnecting')
             self._arlo.bg.run_every(self.logout, self._arlo.cfg.reconnect_every)
 
-    def _request(self, url, method='GET', params=None, headers=None, stream=False, raw=False, timeout=None):
+    def _request(self, path, method='GET', params=None, headers=None, stream=False, raw=False, timeout=None):
         if params is None:
             params = {}
         if headers is None:
@@ -58,6 +60,7 @@ class ArloBackEnd(object):
             timeout = self._arlo.cfg.request_timeout
         try:
             with self._req_lock:
+                url = self._arlo.cfg.host + path
                 # self._arlo.debug('starting request=' + str(url))
                 # self._arlo.debug('starting request=' + str(params))
                 # self._arlo.debug('starting request=' + str(headers))
@@ -69,7 +72,8 @@ class ArloBackEnd(object):
                     r = self._session.put(url, json=params, headers=headers, timeout=timeout)
                 elif method == 'POST':
                     r = self._session.post(url, json=params, headers=headers, timeout=timeout)
-        except Exception:
+        except Exception as e:
+            self._arlo.debug('request-error={}'.format(type(e).__name__))
             if self._ev_stream is not None:
                 # self._ev_stream.close()
                 self._ev_stream.resp.close()
@@ -96,7 +100,7 @@ class ArloBackEnd(object):
 
     def _ev_reconnected(self):
         self._arlo.debug('Fetching device list after ev-reconnect')
-        self.get(DEVICES_URL + "?t={}".format(time_to_arlotime()))
+        self.devices()
 
     def _ev_dispatcher(self, response):
 
@@ -108,44 +112,57 @@ class ArloBackEnd(object):
         if err is not None:
             self._arlo.info('error: code=' + str(err.get('code', 'xxx')) + ',message=' + str(err.get('message', 'XXX')))
 
-        # these are camera or doorbell status updates
-        if resource.startswith('cameras/') or resource.startswith('doorbells/'):
-            device_id = resource.split('/')[1]
-            responses.append((device_id, resource, response))
+        #
+        # I'm trying to keep this as generic as possible... but it needs some
+        # smarts to figure out where to send responses.
+        # See docs/packets for and idea of what we're parsing.
+        #
 
-        # this is thumbnail or media library updates
-        elif resource == 'mediaUploadNotification':
-            device_id = response.get('deviceId')
-            responses.append((device_id, resource, response))
+        # Answer for async ping. Note and finish.
+        # Packet number #1.
+        if resource.startswith('subscriptions/'):
+            self._arlo.debug('async ping response ' + resource)
+            return
 
-        # these we split up and pass properties to the individual component
-        elif resource == 'cameras' or resource == 'doorbells':
-            for props in response.get('properties', []):
-                device_id = props.get('serialNumber')
-                responses.append((device_id, resource, props))
-
-        # these are base station specific
-        elif resource == 'modes':
-            device_id = response.get('from', None)
-            responses.append((device_id, resource, response))
-
-        # these are base station specific
-        elif resource == 'activeAutomations':
+        # These is a base station mode response. Find base station ID and
+        # forward response.
+        # Packet number #4.
+        if resource == 'activeAutomations':
             for device_id in response:
                 if device_id != 'resource':
                     responses.append((device_id, resource, response[device_id]))
 
-        # answer for async ping
-        elif resource.startswith('subscriptions/'):
-            self._arlo.debug('async ping response ' + resource)
-            return
+        # These are individual device responses. Find device ID and forward
+        # response.
+        # Packet number #?.
+        elif [x for x in self._resource_types if resource.startswith(x + '/')]:
+            device_id = resource.split('/')[1]
+            responses.append((device_id, resource, response))
 
-        # Just note this, we might not really care about this message.
+        # These are base station responses. Which can be about the base station
+        # or devices on it... Check if property is list.
+        # Packet number #3/#2
+        elif resource in self._resource_types:
+            prop_or_props = response.get('properties', [])
+            if isinstance(prop_or_props, list):
+                for prop in prop_or_props:
+                    device_id = prop.get('serialNumber')
+                    responses.append((device_id, resource, prop))
+            else:
+                device_id = response.get('from', None)
+                responses.append((device_id, resource, response))
+
+        # These are generic responses, we look for device IDs and forward
+        # hoping the device can handle it.
+        # Packet number #?.
         else:
-            self._arlo.debug('unhandled response ' + resource)
-            return
+            device_id = response.get('deviceId', None)
+            if device_id is not None:
+                responses.append((device_id, resource, response))
+            else:
+                self._arlo.debug('unhandled response ' + resource)
 
-        # now find something waiting for this/these
+        # Now find something waiting for this/these.
         for device_id, resource, response in responses:
             cbs = []
             self._arlo.debug('sending ' + resource + ' to ' + device_id)
@@ -216,15 +233,17 @@ class ArloBackEnd(object):
             try:
                 if self._arlo.cfg.stream_timeout == 0:
                     self._arlo.debug('starting stream with no timeout')
-                    # self._ev_stream = SSEClient( self.get( SUBSCRIBE_URL + self._token,stream=True,raw=True ) )
-                    self._ev_stream = SSEClient(self._arlo, SUBSCRIBE_URL + self._token, session=self._session,
+                    # self._ev_stream = SSEClient( self.get( SUBSCRIBE_PATH + self._token,stream=True,raw=True ) )
+                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH + self._token,
+                                                session=self._session,
                                                 reconnect_cb=self._ev_reconnected)
                 else:
                     self._arlo.debug('starting stream with {} timeout'.format(self._arlo.cfg.stream_timeout))
                     # self._ev_stream = SSEClient(
-                    #     self.get(SUBSCRIBE_URL + self._token, stream=True, raw=True,
+                    #     self.get(SUBSCRIBE_PATH + self._token, stream=True, raw=True,
                     #              timeout=self._arlo.cfg.stream_timeout))
-                    self._ev_stream = SSEClient(self._arlo, SUBSCRIBE_URL + self._token, session=self._session,
+                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH + self._token,
+                                                session=self._session,
                                                 reconnect_cb=self._ev_reconnected,
                                                 timeout=self._arlo.cfg.stream_timeout)
                 self._ev_loop(self._ev_stream)
@@ -262,7 +281,7 @@ class ArloBackEnd(object):
         body['to'] = base.device_id
         body['from'] = self._web_id
         body['transId'] = trans_id
-        self.post(NOTIFY_URL + base.device_id, body, headers={"xcloudId": base.xcloud_id})
+        self.post(NOTIFY_PATH + base.device_id, body, headers={"xcloudId": base.xcloud_id})
         return trans_id
 
     def notify_and_get_response(self, base, body, timeout=None):
@@ -312,7 +331,7 @@ class ArloBackEnd(object):
                                 requests.adapters.HTTPAdapter(
                                     pool_connections=self._arlo.cfg.http_connections,
                                     pool_maxsize=self._arlo.cfg.http_max_size))
-        body = self.post(LOGIN_URL, {'email': self._arlo.cfg.username, 'password': self._arlo.cfg.password})
+        body = self.post(LOGIN_PATH, {'email': self._arlo.cfg.username, 'password': self._arlo.cfg.password})
         if body is None:
             self._arlo.debug('login failed')
             return False
@@ -329,9 +348,9 @@ class ArloBackEnd(object):
             # 'DNT': '1',
             'Accept': 'application/json, text/plain, */*',
             'schemaVersion': '1',
-            'Host': 'arlo.netgear.com',
+            'Host': re.sub('https?://', '', self._arlo.cfg.host),
             'Content-Type': 'application/json; charset=utf-8;',
-            'Referer': 'https://arlo.netgear.com/',
+            'Referer': self._arlo.cfg.host,
             'Authorization': self._token
         }
         if self._arlo.cfg.user_agent == 'apple':
@@ -343,8 +362,6 @@ class ArloBackEnd(object):
                                      'Chrome/72.0.3626.81 Safari/537.36')
 
         self._session.headers.update(headers)
-        self._arlo.debug('Fetching device list after login (seems to make arming/disarming more stable)')
-        self.get(DEVICES_URL + "?t={}".format(time_to_arlotime()))
         return True
 
     def is_connected(self):
@@ -354,16 +371,20 @@ class ArloBackEnd(object):
         self._arlo.debug('trying to logout')
         if self._ev_stream is not None:
             self._ev_stream.stop()
-        self.put(LOGOUT_URL)
+        self.put(LOGOUT_PATH)
 
-    def get(self, url, params=None, headers=None, stream=False, raw=False, timeout=None):
-        return self._request(url, 'GET', params, headers, stream, raw, timeout)
+    def get(self, path, params=None, headers=None, stream=False, raw=False, timeout=None):
+        return self._request(path, 'GET', params, headers, stream, raw, timeout)
 
-    def put(self, url, params=None, headers=None, raw=False, timeout=None):
-        return self._request(url, 'PUT', params, headers, False, raw, timeout)
+    def put(self, path, params=None, headers=None, raw=False, timeout=None):
+        return self._request(path, 'PUT', params, headers, False, raw, timeout)
 
-    def post(self, url, params=None, headers=None, raw=False, timeout=None):
-        return self._request(url, 'POST', params, headers, False, raw, timeout)
+    def post(self, path, params=None, headers=None, raw=False, timeout=None):
+        return self._request(path, 'POST', params, headers, False, raw, timeout)
+
+    @property
+    def session(self):
+        return self._session
 
     def add_listener(self, device, callback):
         with self._lock:
@@ -379,3 +400,6 @@ class ArloBackEnd(object):
 
     def del_listener(self, device, callback):
         pass
+
+    def devices(self):
+        return self.get(DEVICES_PATH + "?t={}".format(time_to_arlotime()))

@@ -4,8 +4,9 @@ import time
 
 class ArloBackgroundWorker(threading.Thread):
 
-    def __init__(self):
+    def __init__(self, arlo):
         super().__init__()
+        self._arlo = arlo
         self._id = 0
         self._lock = threading.Condition()
         self._queue = {}
@@ -29,11 +30,10 @@ class ArloBackgroundWorker(threading.Thread):
                     self._lock.release()
 
                     # run it
-                    #print( 'run:' + str(int(time.monotonic())) + ' run_at=' + str(run_at) )
                     try:
                         job['callback'](**job['args'])
                     except Exception as e:
-                        self.arlo.debug('job-error={}'.format(type(e).__name__))
+                        self._arlo.debug('job-error={}'.format(type(e).__name__))
 
                     # reschedule?
                     self._lock.acquire()
@@ -89,7 +89,7 @@ class ArloBackgroundWorker(threading.Thread):
 class ArloBackground:
 
     def __init__(self, arlo):
-        self._worker = ArloBackgroundWorker()
+        self._worker = ArloBackgroundWorker(arlo)
         self._worker.name = 'ArloBackgroundWorker'
         self._worker.daemon = True
         self._worker.start()

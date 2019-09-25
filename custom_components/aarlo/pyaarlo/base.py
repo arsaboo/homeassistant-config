@@ -1,6 +1,7 @@
-from .constant import (AUTOMATION_URL, DEFAULT_MODES, DEFINITIONS_URL,
+from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH,
                        MODE_ID_TO_NAME_KEY, MODE_KEY,
-                       MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY, SCHEDULE_KEY)
+                       MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY,
+                       SCHEDULE_KEY, SIREN_STATE_KEY)
 from .device import ArloDevice
 from .util import time_to_arlotime
 
@@ -63,7 +64,7 @@ class ArloBase(ArloDevice):
                 self._save_and_do_callbacks(MODE_KEY, self._id_to_name(props['active']))
 
         # mode change?
-        if resource == 'activeAutomations':
+        elif resource == 'activeAutomations':
 
             # mode present? we just set to new ones...
             mode_ids = event.get('activeModes', [])
@@ -81,6 +82,10 @@ class ArloBase(ArloDevice):
             else:
                 self._arlo.debug(self.name + ' schedule cleared ')
                 self._save_and_do_callbacks(SCHEDULE_KEY, None)
+
+        # pass on to lower layer
+        else:
+            super()._event_handler(resource, event)
 
     @property
     def _v1_modes(self):
@@ -138,18 +143,29 @@ class ArloBase(ArloDevice):
                                         "publishResponse": True,
                                         "properties": {"active": mode_id}})
             else:
-                self._arlo.bg.run(self._arlo.be.post, url=AUTOMATION_URL,
-                                  params={'activeAutomations': [
-                                      {'deviceId': self.device_id,
-                                       'timestamp': time_to_arlotime(),
-                                       active: [mode_id],
-                                       inactive: []}
-                                  ]})
+                def _set_mode_v2_cb():
+                    params = {'activeAutomations':
+                              [{'deviceId': self.device_id,
+                                'timestamp': time_to_arlotime(),
+                                active: [mode_id],
+                                inactive: []}]}
+                    for i in range(1, 3):
+                        body = self._arlo.be.post(AUTOMATION_PATH, params=params, raw=True)
+                        if body['success']:
+                            return
+                        self._arlo.warning('attempt {0}: error in response when setting mode={1}'.format(i, str(body)))
+                        self._arlo.debug('Fetching device list (hoping this will fix arming/disarming)')
+                        self._arlo.be.devices()
+                    self._arlo.error('Failed to set mode.')
+                    self._arlo.debug('Giving up on setting mode! Session headers=' + self._arlo.be.session.headers)
+                    self._arlo.debug('Giving up on setting mode! Session cookies=' + self._arlo.be.session.cookies)
+
+                self._arlo.bg.run(_set_mode_v2_cb)
         else:
             self._arlo.warning('{0}: mode {1} is unrecognised'.format(self.name, mode_name))
 
     def update_mode(self):
-        data = self._arlo.be.get(AUTOMATION_URL)
+        data = self._arlo.be.get(AUTOMATION_PATH)
         for mode in data:
             if mode.get('uniqueId', '') == self.unique_id:
                 active_modes = mode.get('activeModes', [])
@@ -166,7 +182,7 @@ class ArloBase(ArloDevice):
             props = resp.get('properties', {})
             self._parse_modes(props.get('modes', []))
         else:
-            modes = self._arlo.be.get(DEFINITIONS_URL + "?uniqueIds={}".format(self.unique_id))
+            modes = self._arlo.be.get(DEFINITIONS_PATH + "?uniqueIds={}".format(self.unique_id))
             modes = modes.get(self.unique_id, {})
             self._parse_modes(modes.get('modes', []))
             self._parse_schedules(modes.get('schedules', []))
@@ -197,6 +213,10 @@ class ArloBase(ArloDevice):
                 return True
         return super().has_capability(cap)
 
+    @property
+    def siren_state(self):
+        return self._arlo.st.get([self._device_id, SIREN_STATE_KEY], "off")
+
     def siren_on(self, duration=300, volume=8):
         body = {
             'action': 'set',
@@ -216,4 +236,3 @@ class ArloBase(ArloDevice):
         }
         self._arlo.debug(str(body))
         self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
-

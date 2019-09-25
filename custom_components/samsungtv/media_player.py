@@ -1,4 +1,5 @@
 """Support for interface with an Samsung TV."""
+import socket
 import voluptuous as vol
 
 from homeassistant.components.media_player import MediaPlayerDevice, PLATFORM_SCHEMA
@@ -15,9 +16,14 @@ from homeassistant.components.media_player.const import (
     SUPPORT_VOLUME_MUTE,
     SUPPORT_VOLUME_STEP,
 )
+from homeassistant.components.ssdp import (
+    ATTR_HOST,
+    ATTR_NAME,
+    ATTR_MODEL_NAME,
+    ATTR_UDN,
+)
 from homeassistant.const import (
     CONF_HOST,
-    CONF_ID,
     CONF_MAC,
     CONF_NAME,
     CONF_PORT,
@@ -64,13 +70,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Samsung TV platform."""
-    import socket
-
     known_devices = hass.data.get(KNOWN_DEVICES_KEY)
     if known_devices is None:
         known_devices = set()
         hass.data[KNOWN_DEVICES_KEY] = known_devices
 
+    port = DEFAULT_PORT
+    timeout = DEFAULT_TIMEOUT
+    mac = None
     uuid = None
     # Is this a manual configuration?
     if config.get(CONF_HOST) is not None:
@@ -80,12 +87,15 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         mac = config.get(CONF_MAC)
         timeout = config.get(CONF_TIMEOUT)
     elif discovery_info is not None:
-        name = discovery_info.get("title")
-        host = discovery_info.get(CONF_HOST)
-        mac = discovery_info.get(CONF_MAC)
-        uuid = discovery_info.get(CONF_ID)
-        port = DEFAULT_PORT
-        timeout = DEFAULT_TIMEOUT
+        tv_name = discovery_info.get(ATTR_NAME)
+        model = discovery_info.get(ATTR_MODEL_NAME)
+        host = discovery_info.get(ATTR_HOST)
+        udn = discovery_info.get(ATTR_UDN)
+        if udn and udn.startswith("uuid:"):
+            uuid = udn[len("uuid:") :]
+        if tv_name.startswith("[TV]"):
+            tv_name = tv_name[4:]
+        name = "{} ({})".format(tv_name, model)
     else:
         LOGGER.warning("Cannot determine device")
         return
@@ -114,6 +124,8 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._exceptions_class = exceptions
         self._remote_class = Remote
         self._name = name
+        self._host = host
+        self._port = port
         self._mac = mac
         self._uuid = uuid
         self._wol = wakeonlan
@@ -143,7 +155,15 @@ class SamsungTVDevice(MediaPlayerDevice):
 
     def update(self):
         """Update state of device."""
-        self.send_key("KEY")
+        sock = self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+
+        try:
+            sock.connect((self._host, self._port))
+            sock.close()
+            self._state = STATE_ON
+        except socket.error:
+            self._state = STATE_OFF
 
     def get_remote(self):
         """Create or return a remote control instance."""

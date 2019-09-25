@@ -62,6 +62,10 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
                 if doorbell.has_capability(sensor_type):
                     name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], doorbell.name)
                     sensors.append(ArloSensor(name, doorbell, sensor_type))
+            for light in arlo.lights:
+                if light.has_capability(sensor_type):
+                    name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], light.name)
+                    sensors.append(ArloSensor(name, light, sensor_type))
 
     async_add_entities(sensors, True)
 

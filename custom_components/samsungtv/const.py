@@ -1,4 +1,4 @@
-"""Constants for the samsungtv component."""
+"""Constants for the Hue component."""
 import logging
 
 LOGGER = logging.getLogger(__package__)

@@ -22,7 +22,7 @@ class ArloDoorBell(ArloChildDevice):
         self._arlo.debug(self.name + ' DOORBELL got one ' + resource)
 
         # create fake motion/button press event...
-        if resource.startswith('doorbells/'):
+        if resource == self.resource_id:
             cons = event.get('properties', {}).get('connectionState', False)
             butp = event.get('properties', {}).get('buttonPressed', False)
             # acts = event.get('properties',{}).get('activityState',False)
@@ -44,8 +44,8 @@ class ArloDoorBell(ArloChildDevice):
         super()._event_handler(resource, event)
 
     @property
-    def resource_id(self):
-        return 'doorbells/' + self._device_id
+    def resource_type(self):
+        return "doorbells"
 
     def has_capability(self, cap):
         if cap in 'motionDetected':

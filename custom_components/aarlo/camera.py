@@ -133,11 +133,15 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     component = hass.data[DOMAIN]
 
     cameras = []
+    cameras_with_siren = False
     for camera in arlo.cameras:
         cameras.append(ArloCam(camera, config))
+        if camera.has_capability('siren'):
+            cameras_with_siren = True
 
     async_add_entities(cameras)
 
+    # Services
     component.async_register_entity_service(
         SERVICE_REQUEST_SNAPSHOT, CAMERA_SERVICE_SCHEMA,
         aarlo_snapshot_service_handler
@@ -154,14 +158,17 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         SERVICE_STOP_ACTIVITY, CAMERA_SERVICE_SCHEMA,
         aarlo_stop_activity_handler
     )
-    component.async_register_entity_service(
-        SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
-        aarlo_siren_on_service_handler
-    )
-    component.async_register_entity_service(
-        SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
-        aarlo_siren_off_service_handler
-    )
+    if cameras_with_siren:
+        component.async_register_entity_service(
+            SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
+            aarlo_siren_on_service_handler
+        )
+        component.async_register_entity_service(
+            SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
+            aarlo_siren_off_service_handler
+        )
+
+    # Websockets
     hass.components.websocket_api.async_register_command(
         WS_TYPE_VIDEO_URL, websocket_video_url,
         SCHEMA_WS_VIDEO_URL
@@ -186,14 +193,15 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         WS_TYPE_STOP_ACTIVITY, websocket_stop_activity,
         SCHEMA_WS_STOP_ACTIVITY
     )
-    hass.components.websocket_api.async_register_command(
-        WS_TYPE_SIREN_ON, websocket_siren_on,
-        SCHEMA_WS_SIREN_ON
-    )
-    hass.components.websocket_api.async_register_command(
-        WS_TYPE_SIREN_OFF, websocket_siren_off,
-        SCHEMA_WS_SIREN_OFF
-    )
+    if cameras_with_siren:
+        hass.components.websocket_api.async_register_command(
+            WS_TYPE_SIREN_ON, websocket_siren_on,
+            SCHEMA_WS_SIREN_ON
+        )
+        hass.components.websocket_api.async_register_command(
+            WS_TYPE_SIREN_OFF, websocket_siren_off,
+            SCHEMA_WS_SIREN_OFF
+        )
 
 
 class ArloCam(Camera):

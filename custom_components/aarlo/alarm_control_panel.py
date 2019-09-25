@@ -95,31 +95,39 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         return
 
     base_stations = []
+    base_stations_with_sirens = False
     for base_station in arlo.base_stations:
         base_stations.append(ArloBaseStation(base_station, config))
+        if base_station.has_capability('siren'):
+            base_stations_with_sirens = True
 
     async_add_entities(base_stations, True)
 
+    # Services.
     component.async_register_entity_service(
         SERVICE_MODE, SERVICE_MODE_SCHEMA,
         aarlo_mode_service_handler
     )
-    component.async_register_entity_service(
-        SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
-        aarlo_siren_on_service_handler
-    )
-    component.async_register_entity_service(
-        SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
-        aarlo_siren_off_service_handler
-    )
-    hass.components.websocket_api.async_register_command(
-        WS_TYPE_SIREN_ON, websocket_siren_on,
-        SCHEMA_WS_SIREN_ON
-    )
-    hass.components.websocket_api.async_register_command(
-        WS_TYPE_SIREN_OFF, websocket_siren_off,
-        SCHEMA_WS_SIREN_OFF
-    )
+    if base_stations_with_sirens:
+        component.async_register_entity_service(
+            SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
+            aarlo_siren_on_service_handler
+        )
+        component.async_register_entity_service(
+            SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
+            aarlo_siren_off_service_handler
+        )
+
+    # Websockets.
+    if base_stations_with_sirens:
+        hass.components.websocket_api.async_register_command(
+            WS_TYPE_SIREN_ON, websocket_siren_on,
+            SCHEMA_WS_SIREN_ON
+        )
+        hass.components.websocket_api.async_register_command(
+            WS_TYPE_SIREN_OFF, websocket_siren_off,
+            SCHEMA_WS_SIREN_OFF
+        )
 
 
 class ArloBaseStation(AlarmControlPanel):

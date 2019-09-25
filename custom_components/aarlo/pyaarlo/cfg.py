@@ -1,3 +1,5 @@
+from .constant import DEFAULT_HOST
+
 
 class ArloCfg(object):
     """ Helper class to get at Arlo configuration options.
@@ -33,6 +35,10 @@ class ArloCfg(object):
     @property
     def password(self, default='unknown'):
         return self._kw.get('password', default)
+
+    @property
+    def host(self, default=DEFAULT_HOST):
+        return self._kw.get('host', default)
 
     @property
     def dump(self, default=False):
