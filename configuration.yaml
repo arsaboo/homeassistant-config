@@ -141,7 +141,8 @@ aarlo:
   password: !secret arlo_password
 aesop:
   username: !secret aesop_user
-  password: !secret aesop_password  
+  password: !secret aesop_password
+  driver: 'chrome'
   # scan_interval: 120
 tuya:
   username: !secret tuya_user
@@ -791,6 +792,7 @@ logger:
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
     homeassistant.components.switch.unifi: debug
+    homeassistant.components.sensor.aesop: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

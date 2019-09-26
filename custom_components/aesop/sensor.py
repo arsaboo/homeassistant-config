@@ -8,6 +8,7 @@ from homeassistant.util import slugify
 from homeassistant.util.dt import now
 
 from . import DATA_AESOP
+REQUIREMENTS = ['requests_cache']
 
 _LOGGER = logging.getLogger(__name__)
 

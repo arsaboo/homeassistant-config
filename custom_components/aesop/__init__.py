@@ -44,7 +44,7 @@ def setup(hass, config):
     name = conf.get(CONF_NAME)
     driver = conf.get(CONF_DRIVER)
 
-    from .aesop import aesop
+    from . import aesop
 
     try:
         cookie = hass.config.path(COOKIE)
