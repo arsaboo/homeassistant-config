@@ -126,6 +126,10 @@ iqvia:
   monitored_conditions:
     - allergy_average_forecasted
     - disease_average_forecasted
+plex:
+  host: 192.168.2.212
+  port: 32400
+  token: !secret plex_token
 wemo:
   static:
     - 192.168.2.104

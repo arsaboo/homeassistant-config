@@ -106,10 +106,10 @@
   sonos_say:
     alias: "Sonos TTS script"
     sequence:
-      - service: media_player.sonos_snapshot
+      - service: sonos.snapshot
         data_template:
           entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
-      - service: media_player.sonos_unjoin
+      - service: sonos.unjoin
         data_template:
           entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
       - service: media_player.volume_set
@@ -123,7 +123,7 @@
       - delay: "{{ delay|default('00:00:00') }}"
       - wait_template: "{{ is_state(sonos_entity|default('media_player.livingroomsonos'), 'playing') }}"
         timeout: '00:00:05'
-      - service: media_player.sonos_restore
+      - service: sonos.restore
         data_template:
           entity_id: "{{ sonos_entity|default('media_player.livingroomsonos') }}"
   notificationgaragedoor:
