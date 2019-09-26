@@ -46,3 +46,4 @@ dlib_unknown_faces
 .cloud
 *.pickle
 .pc-session
+google*.deb
