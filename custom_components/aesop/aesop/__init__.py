@@ -98,17 +98,18 @@ def _login(session):
     except WebDriverException as exception:
         raise AESOPError(str(exception))
     driver.get('https://sub.aesoponline.com/Substitute/Home')
-    time.sleep (5)
+    time.sleep (3)
     username = driver.find_element_by_id('Username')
     username.send_keys(session.auth.username)
     password = driver.find_element_by_id('Password')
     password.send_keys(session.auth.password)
+    time.sleep (2)
 #     driver.find_element_by_id('qa-button-login').click()
-    try:
-        WebDriverWait(driver, LOGIN_TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "accountBox")))
-    except TimeoutException:
-        raise AESOPError('login failed')
+    # try:
+    #     WebDriverWait(driver, LOGIN_TIMEOUT).until(
+    #         EC.presence_of_element_located((By.ID, "accountBox")))
+    # except TimeoutException:
+    #     raise AESOPError('login failed')
     for cookie in driver.get_cookies():
         session.cookies.set(name=cookie['name'], value=cookie['value'])
     _save_cookies(session.cookies, session.auth.cookie_path)
@@ -132,9 +133,10 @@ def authenticated(function):
 def get_availjobs(session):
     """Get profile data."""
     response = session.get(LOGIN_URL, allow_redirects=False)
-    if response.status_code == 302:
-        raise AESOPError('expired session')
+    # if response.status_code == 302:
+    #     raise AESOPError('expired session')
     soup = BeautifulSoup(response.text, HTML_PARSER)
+    _LOGGER.debug(soup.text)
     availJobs = json.loads(soup.findAll('script')[-4].text.split(',\r\n')[1].split('availJobs:')[1])
     _LOGGER.debug(availJobs)
     return availJobs

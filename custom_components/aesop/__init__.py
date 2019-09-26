@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "aesop"
 DATA_AESOP = "data_aesop"
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=30)
+MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=60)
 COOKIE = "aesop_cookies.pickle"
 CACHE = "aesop_cache"
 CONF_DRIVER = "driver"
@@ -73,14 +73,12 @@ class AESOPData:
         """Initialize the data object."""
         self.session = session
         self.name = name
-        self.packages = []
-        self.mail = []
         self.attribution = None
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self, **kwargs):
         """Fetch the latest info from Aesop."""
-        from .aesop import aesop
+        from . import aesop
 
         self.availJobs = aesop.get_availjobs(self.session)
         self.curJobs = aesop.get_curjobs(self.session)

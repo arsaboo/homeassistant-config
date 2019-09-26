@@ -61,3 +61,43 @@ class AesopAvailJobs(Entity):
     def icon(self):
         """Return the icon to use in the frontend."""
         return "mdi:package-variant-closed"
+
+class AesopCurrJobs(Entity):
+    """Aesop Current Jobs Sensor."""
+
+    def __init__(self, aesop):
+        """Initialize the sensor."""
+        self._aesop = aesop
+        self._name = self._aesop.name
+        self._attributes = None
+        self._state = None
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return f"{self._name} packages"
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    def update(self):
+        """Update device state."""
+        self._aesop.update()
+        status_counts = defaultdict(int)
+        for package in self._aesop.curJobs:
+            status = 1
+        self._attributes = {ATTR_ATTRIBUTION: self._aesop.attribution,'curJobs': self._aesop.curJobs}
+        self._attributes.update(status_counts)
+        self._state = status
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return "mdi:package-variant-closed"
