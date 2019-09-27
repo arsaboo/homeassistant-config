@@ -28,10 +28,9 @@ LOGIN_URL = 'https://sub.aesoponline.com/Substitute/Home'
 LOGIN_TIMEOUT = 10
 COOKIE_PATH = './aesop_cookies.pickle'
 CACHE_PATH = './aesop_cache'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 CHROME_WEBDRIVER_ARGS = [
-    '--headless', '--user-agent={}'.format(USER_AGENT), '--disable-extensions',
-    '--disable-gpu', '--no-sandbox'
+    '--headless', '--user-agent={}'.format(USER_AGENT), '--disable-extensions', '--disable-gpu', '--no-sandbox'
 ]
 CHROMEDRIVER_PATH = 'C:/Users/asaboo/Downloads/chromedriver_76/chromedriver'
 FIREFOXOPTIONS = Options()
@@ -137,8 +136,10 @@ def get_availjobs(session):
     #     raise AESOPError('expired session')
     soup = BeautifulSoup(response.text, HTML_PARSER)
     _LOGGER.debug(soup.text)
-    availJobs = json.loads(soup.findAll('script')[-4].text.split(',\r\n')[1].split('availJobs:')[1])
-    _LOGGER.debug(availJobs)
+    availJobs = soup.findAll('script')
+    _LOGGER.critical(availJobs )
+    # availJobs = json.loads(soup.findAll('script')[-4].text.split(',\r\n')[1].split('availJobs:')[1])
+    # _LOGGER.debug(availJobs)
     return availJobs
 
 @authenticated

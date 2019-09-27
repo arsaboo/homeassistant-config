@@ -792,7 +792,8 @@ logger:
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
     homeassistant.components.switch.unifi: debug
-    homeassistant.components.sensor.aesop: debug
+    custom_components.aesop: debug
+    custom_components.aesop.sensor: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug
