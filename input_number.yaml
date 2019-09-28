@@ -56,3 +56,18 @@
     min: 0
     max: 359
     step: 1
+  master_prev_temp:
+    icon: mdi:chart-line-variant
+    name: Master Temperature
+    min: 50
+    max: 100
+  upstairs_prev_temp:
+    icon: mdi:chart-line-variant
+    name: Upstairs Temperature
+    min: 50
+    max: 100
+  downstairs_prev_temp:
+    icon: mdi:chart-line-variant
+    name: Downstairs Temperature
+    min: 50
+    max: 100

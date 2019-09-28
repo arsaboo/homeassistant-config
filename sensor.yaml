@@ -287,6 +287,49 @@
       #       {{ ', ' }}
       #     {%- endif -%}
       #     {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
+      master_temp_change:
+        friendly_name: "Master HVAC 1 Deg change time"
+        unit_of_measurement: "min"
+        value_template: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - as_timestamp(states.input_number.master_prev_temp.last_changed))/60 -%}
+          {%- set temp_diff_cool = states('input_number.master_prev_temp')|float - state_attr('climate.bedroom','current_temperature') -%}
+          {%- set temp_diff_heat = state_attr('climate.bedroom','current_temperature') - states('input_number.master_prev_temp')|float -%}
+          {%- if states('sensor.masterthermoper') == 'cooling' -%}
+            {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.masterthermoper') == 'heating' -%}
+            {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      downstairs_temp_change:
+        friendly_name: "Downstairs HVAC 1 Deg change time"
+        unit_of_measurement: "min"
+        value_template: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - as_timestamp(states.input_number.downstairs_prev_temp.last_changed))/60 -%}
+          {%- set temp_diff_cool = states('input_number.downstairs_prev_temp')|float - state_attr('climate.downstairs','current_temperature') -%}
+          {%- set temp_diff_heat = state_attr('climate.downstairs','current_temperature') - states('input_number.downstairs_prev_temp')|float -%}
+          {%- if states('sensor.downstairsthermoper') == 'cooling' -%}
+            {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.downstairsthermoper') == 'heating' -%}
+            {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+      upstairs_temp_change:
+        friendly_name: "Upstairs HVAC 1 Deg change time"
+        unit_of_measurement: "min"
+        value_template: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - as_timestamp(states.input_number.upstairs_prev_temp.last_changed))/60 -%}
+          {%- set temp_diff_cool = states('input_number.upstairs_prev_temp')|float - state_attr('climate.upstairs','current_temperature') -%}
+          {%- set temp_diff_heat = state_attr('climate.upstairs','current_temperature') - states('input_number.upstairs_prev_temp')|float -%}
+          {%- if states('sensor.upstairsthermoper') == 'cooling' -%}
+            {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.upstairsthermoper') == 'heating' -%}
+            {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
+          {%- else -%}
+            NA
+          {%- endif -%}
+
       downstairs_hvac_runtime:
         friendly_name: "Downstairs HVAC Runtime"
         unit_of_measurement: "h"

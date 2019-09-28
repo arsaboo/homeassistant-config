@@ -721,6 +721,8 @@ views:
                 name: Operation
               - entity: switch.downstairs_away
                 name: Away Mode
+              - entity: sensor.downstairs_temp_change
+                name: Time/Deg
           - type: thermostat
             entity: climate.downstairs
           - type: picture-entity
@@ -749,6 +751,8 @@ views:
                 name: Operation
               - entity: switch.upstairs_away
                 name: Away Mode
+              - entity: sensor.upstairs_temp_change
+                name: Time/Deg
           - type: thermostat
             entity: climate.upstairs
           - type: picture-entity
@@ -777,6 +781,8 @@ views:
                 name: Operation
               - entity: switch.bedroom_away
                 name: Away Mode
+              - entity: sensor.master_temp_change
+                name: Time/Deg
           - type: thermostat
             entity: climate.bedroom
           - type: picture-entity

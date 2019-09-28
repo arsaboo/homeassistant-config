@@ -1195,6 +1195,41 @@
      data:
        entity_id: switch.wemoinsight
 
+- id: hvac_set_prev_temp
+  alias: 'HVAC set previous temperature'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+        - sensor.upstairsthermoper
+        - sensor.downstairsthermoper
+      to: 'cooling'
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+        - sensor.upstairsthermoper
+        - sensor.downstairsthermoper
+      to: 'heating'
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: >
+          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+            input_number.master_prev_temp
+          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+            input_number.upstairs_prev_temp
+          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
+            input_number.downstairs_prev_temp
+          {%- endif -%}
+        value: >
+          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+            {{state_attr("climate.bedroom","current_temperature")}}
+          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+            {{state_attr("climate.upstairs","current_temperature")}}
+          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
+            {{state_attr("climate.downstairs","current_temperature")}}
+          {%- endif -%}
 - id: prevent_hvac_failure
   alias: 'Prevent hvac failure'
   initial_state: 'on'
