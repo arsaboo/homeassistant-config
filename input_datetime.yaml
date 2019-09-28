@@ -1,0 +1,16 @@
+#################################################################
+## Input_datetime
+#################################################################
+
+  master_time:
+    name: Master timestamp
+    has_time: true
+    has_date: true
+  upstairs_time:
+    name: Upstairs timestamp
+    has_time: true
+    has_date: true
+  downstairs_time:
+    name: Downstairs timestamp
+    has_time: true
+    has_date: true

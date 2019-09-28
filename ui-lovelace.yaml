@@ -722,7 +722,13 @@ views:
               - entity: switch.downstairs_away
                 name: Away Mode
               - entity: sensor.downstairs_temp_change
-                name: Time/Deg
+                name: Efficiency
+              - entity: input_number.downstairs_prev_temp
+                name: Prev Temp
+              - entity: input_number.downstairs_prev_eff
+                name: Prev Eff
+              - entity: input_datetime.downstairs_time
+                name: Start Time
           - type: thermostat
             entity: climate.downstairs
           - type: picture-entity
@@ -752,7 +758,14 @@ views:
               - entity: switch.upstairs_away
                 name: Away Mode
               - entity: sensor.upstairs_temp_change
-                name: Time/Deg
+                name: Efficiency
+              - entity: input_number.upstairs_prev_temp
+                name: Prev Temp
+              - entity: input_number.upstairs_prev_eff
+                name: Prev Eff
+              - entity: input_datetime.upstairs_time
+                name: Start Time
+
           - type: thermostat
             entity: climate.upstairs
           - type: picture-entity
@@ -782,7 +795,14 @@ views:
               - entity: switch.bedroom_away
                 name: Away Mode
               - entity: sensor.master_temp_change
-                name: Time/Deg
+                name: Efficiency
+              - entity: input_number.master_prev_temp
+                name: Prev Temp
+              - entity: input_number.master_prev_eff
+                name: Prev Eff
+              - entity: input_datetime.master_time
+                name: Start Time
+
           - type: thermostat
             entity: climate.bedroom
           - type: picture-entity

@@ -71,3 +71,18 @@
     name: Downstairs Temperature
     min: 50
     max: 100
+  master_prev_eff:
+    icon: mdi:chart-line-variant
+    name: Master Prev Efficiency
+    min: 0
+    max: 100
+  upstairs_prev_eff:
+    icon: mdi:chart-line-variant
+    name: Upstairs Prev Efficiency
+    min: 0
+    max: 100
+  downstairs_prev_eff:
+    icon: mdi:chart-line-variant
+    name: Downstairs Prev Efficiency
+    min: 0
+    max: 100

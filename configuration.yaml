@@ -844,6 +844,7 @@ input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 input_number: !include input_number.yaml
 input_text: !include input_text.yaml
+input_datetime: !include input_datetime.yaml
 frontend: !include frontend.yaml
 recorder: !include recorder.yaml
 logbook: !include logbook.yaml

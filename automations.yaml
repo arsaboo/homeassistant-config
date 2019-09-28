@@ -1195,6 +1195,31 @@
      data:
        entity_id: switch.wemoinsight
 
+- id: hvac_set_prev_efficiency
+  alias: 'HVAC set previous efficiency'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.master_temp_change
+        - sensor.upstairs_temp_change
+        - sensor.downstairs_temp_change
+      to: 'NA'
+  action:
+    - service: input_number.set_value
+      data_template:
+        entity_id: >
+          {%- if trigger.entity_id == 'sensor.master_temp_change' -%}
+            input_number.master_prev_eff
+          {%- elif trigger.entity_id == 'sensor.upstairs_temp_change' -%}
+            input_number.upstairs_prev_eff
+          {%- elif trigger.entity_id == 'sensor.downstairs_temp_change' -%}
+            input_number.downstairs_prev_eff
+          {%- endif -%}
+        value: >
+          {{ trigger.from_state.state|float }}
+
+
 - id: hvac_set_prev_temp
   alias: 'HVAC set previous temperature'
   initial_state: 'on'
@@ -1212,6 +1237,17 @@
         - sensor.downstairsthermoper
       to: 'heating'
   action:
+    - service: input_datetime.set_datetime
+      data_template:
+        entity_id: >
+          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+            input_datetime.master_time
+          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+            input_datetime.upstairs_time
+          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
+            input_datetime.downstairs_time
+          {%- endif -%}
+        datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
     - service: input_number.set_value
       data_template:
         entity_id: >
@@ -1224,40 +1260,29 @@
           {%- endif -%}
         value: >
           {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
-            {{state_attr("climate.bedroom","current_temperature")}}
+            {{state_attr("climate.bedroom","current_temperature")|float}}
           {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
-            {{state_attr("climate.upstairs","current_temperature")}}
+            {{state_attr("climate.upstairs","current_temperature")|float}}
           {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
-            {{state_attr("climate.downstairs","current_temperature")}}
+            {{state_attr("climate.downstairs","current_temperature")|float}}
           {%- endif -%}
-- id: prevent_hvac_failure
-  alias: 'Prevent hvac failure'
+- id: prevent_master_hvac_failure
+  alias: 'Prevent master hvac failure'
   initial_state: 'on'
   trigger:
-    # - platform: template
-    #   value_template: "{{state_attr('climate.bedroom','operation') in ('cool', 'heat')}}"
-    #   for: '00:10:00'
     - platform: state
       entity_id:
-        - sensor.masterthermoper
-        - sensor.upstairsthermoper
-        - sensor.downstairsthermoper
-      to: 'cooling'
-      for: '00:30:00'
-    - platform: state
-      entity_id:
-        - sensor.masterthermoper
-        - sensor.upstairsthermoper
-        - sensor.downstairsthermoper
-      to: 'heating'
-      for: '00:15:00'
+        - sensor.downstairs_temp_change
+        - sensor.master_temp_change
+        - sensor.upstairs_temp_change
+      above: 20
   action:
     - service: notify.ios_alokiosiphone
       data_template:
         message: >
-          Check {{ trigger.to_state.name }}
+          Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
         data:
-          subtitle: "{{ trigger.to_state.name }} ran for over 10 minutes"
+          subtitle: "{{ trigger.entity_id.split('.')[1].split('_')[0] }} ran for over 20 minutes without any temperature change"
           push:
             badge: 0
 
