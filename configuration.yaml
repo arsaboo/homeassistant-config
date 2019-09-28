@@ -139,10 +139,10 @@ wemo:
 aarlo:
   username: !secret arlo_user
   password: !secret arlo_password
-aesop:
-  username: !secret aesop_user
-  password: !secret aesop_password
-  driver: 'chrome'
+# aesop:
+#   username: !secret aesop_user
+#   password: !secret aesop_password
+#   driver: 'chrome'
   # scan_interval: 120
 tuya:
   username: !secret tuya_user

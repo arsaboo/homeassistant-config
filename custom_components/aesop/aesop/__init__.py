@@ -28,7 +28,7 @@ LOGIN_URL = 'https://sub.aesoponline.com/Substitute/Home'
 LOGIN_TIMEOUT = 10
 COOKIE_PATH = './aesop_cookies.pickle'
 CACHE_PATH = './aesop_cache'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
 CHROME_WEBDRIVER_ARGS = [
     '--headless', '--user-agent={}'.format(USER_AGENT), '--disable-extensions', '--disable-gpu', '--no-sandbox'
 ]
@@ -146,11 +146,13 @@ def get_availjobs(session):
 def get_curjobs(session):
     """Get profile data."""
     response = session.get(LOGIN_URL, allow_redirects=False)
-    if response.status_code == 302:
-        raise AESOPError('expired session')
+    # if response.status_code == 302:
+    #     raise AESOPError('expired session')
     soup = BeautifulSoup(response.text, HTML_PARSER)
-    curJobs = json.loads(soup.findAll('script')[-4].text.split(',\r\n')[0].split('curJobs:')[1])
-    _LOGGER.debug(curJobs)
+    curJobs = soup.findAll('script')
+    _LOGGER.critical(curJobs )
+    # curJobs = json.loads(soup.findAll('script')[-4].text.split(',\r\n')[0].split('curJobs:')[1])
+    # _LOGGER.debug(curJobs)
     return curJobs
 
 # pylint: disable=too-many-arguments
