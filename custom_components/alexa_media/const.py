@@ -9,7 +9,7 @@ https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers
 """
 from datetime import timedelta
 
-__version__ = '2.2.1'
+__version__ = '2.3.0'
 PROJECT_URL = "https://github.com/custom-components/alexa_media_player/"
 ISSUE_URL = "{}issues".format(PROJECT_URL)
 
@@ -25,17 +25,20 @@ ALEXA_COMPONENTS = [
     'media_player',
     'notify',
     'alarm_control_panel',
-    'switch'
+    'switch',
+    'sensor'
 ]
 
 CONF_ACCOUNTS = 'accounts'
 CONF_DEBUG = 'debug'
 CONF_INCLUDE_DEVICES = 'include_devices'
 CONF_EXCLUDE_DEVICES = 'exclude_devices'
+
+SERVICE_CLEAR_HISTORY = 'clear_history'
 SERVICE_UPDATE_LAST_CALLED = 'update_last_called'
 ATTR_MESSAGE = 'message'
 ATTR_EMAIL = 'email'
-
+ATTR_NUM_ENTRIES = 'entries'
 STARTUP = """
 -------------------------------------------------------------------
 {}
