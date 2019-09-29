@@ -1270,7 +1270,7 @@
   alias: 'Prevent master hvac failure'
   initial_state: 'on'
   trigger:
-    - platform: state
+    - platform: numeric_state
       entity_id:
         - sensor.downstairs_temp_change
         - sensor.master_temp_change

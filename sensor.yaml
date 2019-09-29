@@ -19,9 +19,30 @@
     db_url: !secret recorder_db_url
     queries:
       - name: Portfolio morning
-        query: "SELECT state FROM states WHERE entity_id='sensor.pc_investment' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) = 1 or DATEDIFF(NOW(), last_changed) = 2 or DATEDIFF(NOW(), last_changed) = 3 or DATEDIFF(NOW(), last_changed) = 4)) ORDER BY last_changed desc LIMIT 1;"
+        query: "SELECT state FROM states WHERE entity_id='sensor.pc_investment' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) < 5)) ORDER BY last_changed desc LIMIT 1;"
         column: 'state'
         unit_of_measurement: $
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: Master HVAC Efficiency
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.master_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        column: 'AvgEff'
+        unit_of_measurement: min
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: Upstairs HVAC Efficiency
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.upstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        column: 'AvgEff'
+        unit_of_measurement: min
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: Downstairs HVAC Efficiency
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        column: 'AvgEff'
+        unit_of_measurement: min
   - platform: personalcapital
     email: !secret pc_username
     password: !secret pc_password
