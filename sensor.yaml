@@ -26,21 +26,21 @@
     db_url: !secret recorder_db_url
     queries:
       - name: Master HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.master_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.master_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Upstairs HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.upstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.upstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Downstairs HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 24;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
   - platform: personalcapital
@@ -320,7 +320,7 @@
           {%- elif states('sensor.masterthermoper') == 'heating' and temp_diff_heat != 0 -%}
             {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
           {%- else -%}
-            NA
+            -999
           {%- endif -%}
       downstairs_temp_change:
         friendly_name: "Downstairs Efficiency"
@@ -334,7 +334,7 @@
           {%- elif states('sensor.downstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
             {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
           {%- else -%}
-            NA
+            -999
           {%- endif -%}
       upstairs_temp_change:
         friendly_name: "Upstairs Efficiency"
@@ -348,7 +348,7 @@
           {%- elif states('sensor.upstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
             {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
           {%- else -%}
-            NA
+            -999
           {%- endif -%}
 
       downstairs_hvac_runtime:

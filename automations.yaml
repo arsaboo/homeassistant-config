@@ -1204,7 +1204,7 @@
         - sensor.master_temp_change
         - sensor.upstairs_temp_change
         - sensor.downstairs_temp_change
-      to: 'NA'
+      to: '-999'
   action:
     - service: input_number.set_value
       data_template:
@@ -1276,6 +1276,7 @@
         - sensor.master_temp_change
         - sensor.upstairs_temp_change
       above: 20
+      for: '00:05:00'
   action:
     - service: notify.ios_alokiosiphone
       data_template:

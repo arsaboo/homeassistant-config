@@ -52,9 +52,16 @@ influxdb:
        - climate.downstairs
        - climate.upstairs
        - climate.bedroom
+       - input_number.downstairs_prev_eff
+       - sensor.downstairs_hvac_efficiency
+       - input_number.upstairs_prev_eff
+       - sensor.upstairs_hvac_efficiency
+       - input_number.master_prev_eff
+       - sensor.master_hvac_efficiency       
 python_script:
 hacs:
   token: !secret hacs_token
+  python_script: True
 zeroconf:
 weather:
   - platform: darksky

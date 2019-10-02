@@ -723,6 +723,8 @@ views:
                 name: Away Mode
               - entity: sensor.downstairs_temp_change
                 name: Efficiency
+              - entity: input_number.downstairs_prev_temp
+                name: Prev Temp
               - entity: input_number.downstairs_prev_eff
                 name: Prev Eff
               - entity: sensor.downstairs_hvac_efficiency
@@ -759,6 +761,8 @@ views:
                 name: Away Mode
               - entity: sensor.upstairs_temp_change
                 name: Efficiency
+              - entity: input_number.upstairs_prev_temp
+                name: Prev Temp
               - entity: input_number.upstairs_prev_eff
                 name: Prev Eff
               - entity: sensor.upstairs_hvac_efficiency
@@ -795,6 +799,8 @@ views:
                 name: Away Mode
               - entity: sensor.master_temp_change
                 name: Efficiency
+              - entity: input_number.master_prev_temp
+                name: Prev Temp                              
               - entity: input_number.master_prev_eff
                 name: Prev Eff
               - entity: sensor.master_hvac_efficiency

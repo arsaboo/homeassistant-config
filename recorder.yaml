@@ -34,6 +34,9 @@
       - sensor.downstairs_hvac_runtime
       - sensor.upstairs_hvac_runtime
       - sensor.master_hvac_runtime
+      - sensor.downstairs_temp_change
+      - sensor.master_temp_change
+      - sensor.upstairs_temp_change
       - sensor.pws_weather
       - sensor.dark_sky_hourly_summary
       - sensor.dark_sky_daily_summary
