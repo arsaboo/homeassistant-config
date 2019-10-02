@@ -322,12 +322,12 @@ class ArloCamera(ArloChildDevice):
         if cap in ('temperature', 'humidity', 'air_quality', 'airQuality') and self.model_id == 'ABC1000':
             return True
         if cap in ('audio', 'audioDetected', 'sound'):
-            if self.model_id.startswith('VMC4030') or self.model_id.startswith('VMC5040') or self.model_id == 'ABC1000':
+            if self.model_id.startswith('VMC4030') or self.model_id.startswith('VMC5040') or self.model_id.startswith('VMC4040') or self.model_id == 'ABC1000':
                 return True
             if self.device_type.startswith('arloq'):
                 return True
         if cap in 'siren':
-            if self.model_id.startswith('VMC5040'):
+            if self.model_id.startswith('VMC5040') or self.model_id.startswith('VMC4040'):
                 return True
         return super().has_capability(cap)
 
