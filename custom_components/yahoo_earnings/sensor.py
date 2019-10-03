@@ -10,7 +10,7 @@ import urllib3
 import logging
 
 import voluptuous as vol
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from lxml import html
 
 
@@ -107,7 +107,7 @@ class YahooEarningsSensor(Entity):
         edited = []
         for entry in history:
             edit = entry.copy()
-            edit["epochGradeDate"] = datetime.fromtimestamp(edit["epochGradeDate"]).isoformat()
+            edit["epochGradeDate"] = datetime.fromtimestamp(edit["epochGradeDate"], pytz.timezone("UTC")).strftime('%Y-%m-%d')
             if edit["action"] == "up":
                 edit["action"] = "Upgraded"
             elif edit["action"] == "init":
