@@ -81,7 +81,6 @@ class YahooEarningsSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attr = {}
-        # attr['estimate'] = self.rest.data
         attr['history'] = self.rest.data['History']
         attr['Ticker'] = self.rest.data['Ticker']
         attr['Mean Target'] = self.rest.data['Mean Target']
