@@ -81,7 +81,7 @@ class YahooEarningsSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attr = {}
-        attr['history'] = self.rest.data['History']
+        attr['history'] = self.format_history(self.rest.data['History'])
         attr['Ticker'] = self.rest.data['Ticker']
         attr['Mean Target'] = self.rest.data['Mean Target']
         attr['Median Target'] = self.rest.data['Median Target']
@@ -102,6 +102,20 @@ class YahooEarningsSensor(Entity):
         """Update current date."""
         self.rest.update()
         self._state = float(self.rest.data['Recommendation Mean'])
+
+    def format_history(self, history):
+        edited = []
+        for entry in history:
+            edit = entry.copy()
+            edit["epochGradeDate"] = datetime.fromtimestamp(edit["epochGradeDate"]).isoformat()
+            if edit["action"] == "up":
+                edit["action"] = "Upgraded"
+            elif edit["action"] == "init":
+                edit["action"] = "Initiated"
+            elif edit["action"] == "down":
+                edit["action"] = "Downgraded"
+            edited.append(edit)
+        return edited
 
 class YahooEarningsData(object):
     """Get data from yahoo.com."""
