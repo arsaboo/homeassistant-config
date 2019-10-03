@@ -1,0 +1,8 @@
+{
+  "domain": "yahoo_earnings",
+  "name": "yahoo_earnings",
+  "documentation": "https://www.home-assistant.io/components/sensor",
+  "requirements": ["random_user_agent==1.0.1"],
+  "dependencies": [],
+  "codeowners": ["@arsaboo"]
+}
