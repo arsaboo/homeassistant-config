@@ -39,6 +39,8 @@ resources:
     type: module
   - url: /local/community/lovelace-hass-aarlo/hass-aarlo.js
     type: module
+  - url: /local/community/list-card/list-card.js
+    type: js
   - url: /local/community/unused-card/unused-card.js
     type: module
 
