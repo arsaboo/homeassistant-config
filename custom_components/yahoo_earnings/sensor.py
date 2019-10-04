@@ -114,6 +114,8 @@ class YahooEarningsSensor(Entity):
                 edit["action"] = "Initiated"
             elif edit["action"] == "down":
                 edit["action"] = "Downgraded"
+            elif edit["action"] == "main":
+                edit["action"] = "Maintained"
             edited.append(edit)
         return edited
 

@@ -4,6 +4,9 @@
   - platform: yahoo_earnings
     ticker: WPC
     name: Yahoo WPC
+  - platform: yahoo_earnings
+    ticker: COP
+    name: Yahoo COP
   - platform: moon_here
     app_id: !secret here_app_id
     app_code: !secret here_app_code
@@ -187,6 +190,10 @@
     command: !secret grafana_temp_down
     scan_interval: 300
   - platform: command_line
+    name: Grafana HVAC Eff down
+    command: !secret grafana_downstairs_hvac_efficiency
+    scan_interval: 300
+  - platform: command_line
     name: Grafana mode down
     command: !secret grafana_mode_down
     scan_interval: 300
@@ -195,12 +202,20 @@
     command: !secret grafana_temp_up
     scan_interval: 300
   - platform: command_line
+    name: Grafana HVAC Eff up
+    command: !secret grafana_upstairs_hvac_efficiency
+    scan_interval: 300
+  - platform: command_line
     name: Grafana mode up
     command: !secret grafana_mode_up
     scan_interval: 300
   - platform: command_line
     name: Grafana temp master
     command: !secret grafana_temp_master
+    scan_interval: 300
+  - platform: command_line
+    name: Grafana HVAC Eff master
+    command: !secret grafana_master_hvac_efficiency
     scan_interval: 300
   - platform: command_line
     name: Grafana mode master

@@ -57,11 +57,13 @@ influxdb:
        - input_number.upstairs_prev_eff
        - sensor.upstairs_hvac_efficiency
        - input_number.master_prev_eff
-       - sensor.master_hvac_efficiency       
+       - sensor.master_hvac_efficiency
 python_script:
 hacs:
   token: !secret hacs_token
   python_script: True
+  options:
+    experimental: True
 zeroconf:
 weather:
   - platform: darksky
@@ -187,7 +189,6 @@ bloomsky:
   api_key: !secret bloomsky_key
 ecobee:
   api_key: !secret ecobee_key
-  hold_temp: True
 
 shell_command:
   image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
@@ -439,6 +440,15 @@ camera:
   - platform: local_file
     name: Grafana USD INR
     file_path: /home/homeassistant/.homeassistant/downloads/grafana/usdinr.png
+  - platform: local_file
+    name: Grafana master efficiency
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_hvac_efficiency.png
+  - platform: local_file
+    name: Grafana upstairs efficiency
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/upstairs_hvac_efficiency.png
+  - platform: local_file
+    name: Grafana downstairs efficiency
+    file_path: /home/homeassistant/.homeassistant/downloads/grafana/downstairs_hvac_efficiency.png
   - platform: generic
     stream_source: !secret porch_rtsp_camera_image_url
     still_image_url: !secret porch_camera_image_url

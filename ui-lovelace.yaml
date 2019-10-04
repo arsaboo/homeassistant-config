@@ -743,6 +743,10 @@ views:
             entity: camera.grafana_mode_down
             show_name: false
             show_state: false
+          - type: picture-entity
+            entity: camera.grafana_downstairs_efficiency
+            show_name: false
+            show_state: false
       - type: vertical-stack
         cards:
           - type: custom:simple-thermostat
@@ -781,6 +785,10 @@ views:
             entity: camera.grafana_mode_up
             show_name: false
             show_state: false
+          - type: picture-entity
+            entity: camera.grafana_upstairs_efficiency
+            show_name: false
+            show_state: false
       - type: vertical-stack
         cards:
           - type: custom:simple-thermostat
@@ -802,7 +810,7 @@ views:
               - entity: sensor.master_temp_change
                 name: Efficiency
               - entity: input_number.master_prev_temp
-                name: Prev Temp                              
+                name: Prev Temp
               - entity: input_number.master_prev_eff
                 name: Prev Eff
               - entity: sensor.master_hvac_efficiency
@@ -820,6 +828,11 @@ views:
             entity: camera.grafana_mode_master
             show_name: false
             show_state: false
+          - type: picture-entity
+            entity: camera.grafana_master_efficiency
+            show_name: false
+            show_state: false
+
       - type: picture-entity
         entity: camera.grafana_portfolio
         show_name: false
@@ -2048,6 +2061,41 @@ views:
             state: "on"
         card:
           type: custom:unused-card
+      - type: vertical-stack
+        cards:
+          - type: custom:list-card
+            entity: sensor.yahoo_wpc
+            title: Analyst Estimates - WPC
+            feed_attribute: history
+            row_limit: 10
+            columns:
+              - title: 'Date'
+                field: epochGradeDate
+              - title: Firm
+                field: firm
+              - title: Action
+                field: action
+              - title: From
+                field: fromGrade
+              - title: To
+                field: toGrade
+          - type: custom:list-card
+            entity: sensor.yahoo_cop
+            title: Analyst Estimates - COP
+            feed_attribute: history
+            row_limit: 10
+            columns:
+              - title: 'Date'
+                field: epochGradeDate
+              - title: Firm
+                field: firm
+              - title: Action
+                field: action
+              - title: From
+                field: fromGrade
+              - title: To
+                field: toGrade
+
   - icon: mdi:cctv
     id: cameras_panel
     title: Cameras
