@@ -32,7 +32,7 @@
               entity_id: climate.downstairs
               preset_mode: 'Away'
         turn_off:
-          - service: climate.ecobee_resume_program
+          - service: ecobee.resume_program
             data:
               entity_id: climate.downstairs
       upstairs_away:
@@ -44,7 +44,7 @@
               entity_id: climate.upstairs
               preset_mode: 'Away'
         turn_off:
-          - service: climate.ecobee_resume_program
+          - service: ecobee.resume_program
             data:
               entity_id: climate.upstairs
       bedroom_away:
@@ -56,7 +56,7 @@
               entity_id: climate.bedroom
               preset_mode: 'Away'
         turn_off:
-          - service: climate.ecobee_resume_program
+          - service: ecobee.resume_program
             data:
               entity_id: climate.bedroom
       security_armed:
