@@ -1,4 +1,4 @@
-"""Constants for the Hue component."""
+"""Constants for the Samsung TV integration."""
 import logging
 
 LOGGER = logging.getLogger(__package__)
@@ -6,3 +6,5 @@ DOMAIN = "samsungtv"
 
 CONF_MANUFACTURER = "manufacturer"
 CONF_MODEL = "model"
+
+SERVICE_SEND_KEY = "send_key"
