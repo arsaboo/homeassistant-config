@@ -75,21 +75,49 @@ class YahooEarningsSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
+        try:
+            self._state = float(self.rest.data['Recommendation Mean'])
+        except (KeyError, TypeError):
+            self._state = None
         return self._state
 
     @property
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         attr = {}
-        attr['history'] = self.format_history(self.rest.data['History'])
         attr['Ticker'] = self.rest.data['Ticker']
-        attr['Mean Target'] = self.rest.data['Mean Target']
-        attr['Median Target'] = self.rest.data['Median Target']
-        attr['Recommendation Mean'] = self.rest.data['Recommendation Mean']
-        attr['Recommendation'] = self.rest.data['Recommendation']
-        attr['Number of Analysts'] = self.rest.data['Number of Analysts']
-        attr['Insider Ownership'] = self.rest.data['Insider Ownership']
-        attr['Institutional Ownership'] = self.rest.data['Institutional Ownership']
+        try:
+            attr['history'] = self.format_history(self.rest.data['History'])
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Mean Target'] = self.rest.data['Mean Target']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Median Target'] = self.rest.data['Median Target']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Recommendation Mean'] = self.rest.data['Recommendation Mean']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Recommendation'] = self.rest.data['Recommendation']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Number of Analysts'] = self.rest.data['Number of Analysts']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Insider Ownership'] = self.rest.data['Insider Ownership']
+        except (KeyError, TypeError):
+            pass
+        try:
+            attr['Institutional Ownership'] = self.rest.data['Institutional Ownership']
+        except (KeyError, TypeError):
+            pass
         attr[ATTR_ATTRIBUTION] = ATTRIBUTION
         return attr
 
@@ -101,7 +129,6 @@ class YahooEarningsSensor(Entity):
     def update(self):
         """Update current date."""
         self.rest.update()
-        self._state = float(self.rest.data['Recommendation Mean'])
 
     def format_history(self, history):
         edited = []
@@ -149,26 +176,49 @@ class YahooEarningsData(object):
         try:
             summary_json_response = requests.get(other_details_json_link, verify=False, headers=headers, timeout=10)
             _LOGGER.debug("Yahoo earnings updated")
-            json_loaded_summary =  json.loads(summary_json_response.text)
-            quotes_json = json_loaded_summary["quoteSummary"]["result"][0]
-            upgradeDowngradeHistory = quotes_json["upgradeDowngradeHistory"]['history']
-            recommendationMean = quotes_json["financialData"]["recommendationMean"]['raw']
-            targetMeanPrice = quotes_json["financialData"]["targetMeanPrice"]['raw']
-            targetMedianPrice = quotes_json["financialData"]["targetMedianPrice"]['raw']
-            recommendationKey = quotes_json["financialData"]["recommendationKey"]
-            numberOfAnalystOpinions = quotes_json["financialData"]["numberOfAnalystOpinions"]['raw']
-            heldPercentInsiders = quotes_json["defaultKeyStatistics"]["heldPercentInsiders"]["raw"]
-            heldPercentInstitutions = quotes_json["defaultKeyStatistics"]["heldPercentInstitutions"]["raw"]
-
             results_json = {}
             results_json['Ticker'] = self._ticker
-            results_json['Mean Target'] = targetMeanPrice
-            results_json['Median Target'] = targetMedianPrice
-            results_json['Recommendation Mean'] = recommendationMean
-            results_json['Recommendation'] = recommendationKey
-            results_json['Number of Analysts'] = numberOfAnalystOpinions
-            results_json['Insider Ownership'] = heldPercentInsiders
+            json_loaded_summary =  json.loads(summary_json_response.text)
+            quotes_json = json_loaded_summary["quoteSummary"]["result"][0]
+            try:
+                upgradeDowngradeHistory = quotes_json["upgradeDowngradeHistory"]['history']
+            except (KeyError, TypeError):
+                upgradeDowngradeHistory = None
+            try:
+                recommendationMean = quotes_json["financialData"]["recommendationMean"]['raw']
+            except (KeyError, TypeError):
+                recommendationMean = None
+            try:
+                targetMeanPrice = quotes_json["financialData"]["targetMeanPrice"]['raw']
+            except (KeyError, TypeError):
+                targetMeanPrice = None
+            try:
+                targetMedianPrice = quotes_json["financialData"]["targetMedianPrice"]['raw']
+            except (KeyError, TypeError):
+                targetMedianPrice = None
+            try:
+                recommendationKey = quotes_json["financialData"]["recommendationKey"]
+            except (KeyError, TypeError):
+                recommendationKey = None
+            try:
+                numberOfAnalystOpinions = quotes_json["financialData"]["numberOfAnalystOpinions"]['raw']
+            except (KeyError, TypeError):
+                numberOfAnalystOpinions = None
+            try:
+                heldPercentInsiders = quotes_json["defaultKeyStatistics"]["heldPercentInsiders"]["raw"]
+            except (KeyError, TypeError):
+                heldPercentInsiders = None
+            try:
+                heldPercentInstitutions = quotes_json["defaultKeyStatistics"]["heldPercentInstitutions"]["raw"]
+            except (KeyError, TypeError):
+                heldPercentInstitutions = None
             results_json['Institutional Ownership'] = heldPercentInstitutions
+            results_json['Insider Ownership'] = heldPercentInsiders
+            results_json['Number of Analysts'] = numberOfAnalystOpinions
+            results_json['Recommendation'] = recommendationKey
+            results_json['Median Target'] = targetMedianPrice
+            results_json['Mean Target'] = targetMeanPrice
+            results_json['Recommendation Mean'] = recommendationMean
             results_json['History'] = upgradeDowngradeHistory
             self.data = results_json
             self.available = True
