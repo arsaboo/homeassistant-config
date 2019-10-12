@@ -62,9 +62,13 @@ class HacsIntegration(HacsRepository):
                     self.content.path.remote = item.path
                     break
 
-        self.content.objects = await self.repository_object.get_contents(
-            self.content.path.remote, self.ref
-        )
+        if self.repository_manifest.zip_release:
+            self.content.objects = self.releases.last_release_object.assets
+
+        else:
+            self.content.objects = await self.repository_object.get_contents(
+                self.content.path.remote, self.ref
+            )
 
         self.content.files = []
         for filename in self.content.objects or []:
@@ -138,13 +142,13 @@ class HacsIntegration(HacsRepository):
     async def get_manifest(self):
         """Get info from the manifest file."""
         manifest_path = f"{self.content.path.remote}/manifest.json"
-        manifest = None
-
-        if "manifest.json" not in self.content.files:
+        try:
+            manifest = await self.repository_object.get_contents(
+                manifest_path, self.ref
+            )
+            manifest = json.loads(manifest.content)
+        except Exception:  # pylint: disable=broad-except
             return False
-
-        manifest = await self.repository_object.get_contents(manifest_path, self.ref)
-        manifest = json.loads(manifest.content)
 
         if manifest:
             self.manifest = manifest

@@ -1,0 +1,12 @@
+{
+  "domain": "samsungtv_custom",
+  "name": "Samsungtv Custom",
+  "documentation": "https://github.com/roberodin/ha-samsungtv-custom",
+  "requirements": [
+    "samsungctl[websocket]==0.7.1",
+    "wakeonlan==1.1.6"
+  ],
+  "dependencies": [],
+  "codeowners": ["@roberodin"],
+  "homeassistant": "0.99.3"
+}

@@ -90,34 +90,13 @@ class YahooEarningsSensor(Entity):
             attr['history'] = self.format_history(self.rest.data['History'])
         except (KeyError, TypeError):
             pass
-        try:
-            attr['Mean Target'] = self.rest.data['Mean Target']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Median Target'] = self.rest.data['Median Target']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Recommendation Mean'] = self.rest.data['Recommendation Mean']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Recommendation'] = self.rest.data['Recommendation']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Number of Analysts'] = self.rest.data['Number of Analysts']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Insider Ownership'] = self.rest.data['Insider Ownership']
-        except (KeyError, TypeError):
-            pass
-        try:
-            attr['Institutional Ownership'] = self.rest.data['Institutional Ownership']
-        except (KeyError, TypeError):
-            pass
+        attr['Mean Target'] = self.rest.data.get('Mean Target')
+        attr['Median Target'] = self.rest.data.get('Median Target')
+        attr['Recommendation Mean'] = self.rest.data.get('Recommendation Mean')
+        attr['Recommendation'] = self.rest.data.get('Recommendation')
+        attr['Number of Analysts'] = self.rest.data.get('Number of Analysts')
+        attr['Insider Ownership'] = self.rest.data.get('Insider Ownership')
+        attr['Institutional Ownership'] = self.rest.data.get('Institutional Ownership')
         attr[ATTR_ATTRIBUTION] = ATTRIBUTION
         return attr
 
@@ -180,38 +159,14 @@ class YahooEarningsData(object):
             results_json['Ticker'] = self._ticker
             json_loaded_summary =  json.loads(summary_json_response.text)
             quotes_json = json_loaded_summary["quoteSummary"]["result"][0]
-            try:
-                upgradeDowngradeHistory = quotes_json["upgradeDowngradeHistory"]['history']
-            except (KeyError, TypeError):
-                upgradeDowngradeHistory = None
-            try:
-                recommendationMean = quotes_json["financialData"]["recommendationMean"]['raw']
-            except (KeyError, TypeError):
-                recommendationMean = None
-            try:
-                targetMeanPrice = quotes_json["financialData"]["targetMeanPrice"]['raw']
-            except (KeyError, TypeError):
-                targetMeanPrice = None
-            try:
-                targetMedianPrice = quotes_json["financialData"]["targetMedianPrice"]['raw']
-            except (KeyError, TypeError):
-                targetMedianPrice = None
-            try:
-                recommendationKey = quotes_json["financialData"]["recommendationKey"]
-            except (KeyError, TypeError):
-                recommendationKey = None
-            try:
-                numberOfAnalystOpinions = quotes_json["financialData"]["numberOfAnalystOpinions"]['raw']
-            except (KeyError, TypeError):
-                numberOfAnalystOpinions = None
-            try:
-                heldPercentInsiders = quotes_json["defaultKeyStatistics"]["heldPercentInsiders"]["raw"]
-            except (KeyError, TypeError):
-                heldPercentInsiders = None
-            try:
-                heldPercentInstitutions = quotes_json["defaultKeyStatistics"]["heldPercentInstitutions"]["raw"]
-            except (KeyError, TypeError):
-                heldPercentInstitutions = None
+            upgradeDowngradeHistory = quotes_json.get("upgradeDowngradeHistory", {}).get("history")
+            recommendationMean = quotes_json.get("financialData", {}).get("recommendationMean", {}).get('raw')
+            targetMeanPrice = quotes_json.get("financialData", {}).get("targetMeanPrice", {}).get('raw')
+            targetMedianPrice = quotes_json.get("financialData", {}).get("targetMedianPrice", {}).get('raw')
+            recommendationKey = quotes_json.get("financialData", {}).get("recommendationKey")
+            numberOfAnalystOpinions = quotes_json.get("financialData", {}).get("numberOfAnalystOpinions", {}).get('raw')
+            heldPercentInsiders = quotes_json.get("defaultKeyStatistics", {}).get("heldPercentInsiders", {}).get('raw')
+            heldPercentInstitutions = quotes_json.get("defaultKeyStatistics", {}).get("heldPercentInstitutions", {}).get('raw')
             results_json['Institutional Ownership'] = heldPercentInstitutions
             results_json['Insider Ownership'] = heldPercentInsiders
             results_json['Number of Analysts'] = numberOfAnalystOpinions

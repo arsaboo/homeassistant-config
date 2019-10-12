@@ -8,53 +8,58 @@ from typing import Optional
 import aiohttp
 import voluptuous as vol
 
-from homeassistant.components.media_player import (
-    MediaPlayerDevice, PLATFORM_SCHEMA)
+from homeassistant.components.media_player import MediaPlayerDevice, PLATFORM_SCHEMA
 from homeassistant.components.media_player.const import (
-    MEDIA_TYPE_CHANNEL, SUPPORT_SELECT_SOURCE)
+    MEDIA_TYPE_CHANNEL,
+    SUPPORT_SELECT_SOURCE,
+)
 from homeassistant.const import (
-    CONF_NAME, CONF_URL, EVENT_HOMEASSISTANT_STOP, STATE_OFF,
-    STATE_IDLE, STATE_PLAYING)
+    CONF_NAME,
+    CONF_URL,
+    EVENT_HOMEASSISTANT_STOP,
+    STATE_OFF,
+    STATE_IDLE,
+    STATE_PLAYING,
+)
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import HomeAssistantType
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import get_local_ip
 
+DOMAIN = "samsungtv_upnp"
 _LOGGER = logging.getLogger(__name__)
 
-SAMSUNGTV_UPNP_DATA = 'samsungtv_upnp'
+SAMSUNGTV_UPNP_DATA = "samsungtv_upnp"
 SAMSUNGTV_UPNP_SUPPORT = SUPPORT_SELECT_SOURCE
 
-SAMSUNGTV_UPNP_DEVICE_TYPES = [
-        'urn:samsung.com:device:MainTVServer2:1',
-]
-SAMSUNGTV_UPNP_SERVICE_TYPES = {
-        'MTVA': {
-            'urn:samsung.com:service:MainTVAgent2:1',
-        },
-}
+SAMSUNGTV_UPNP_DEVICE_TYPES = ["urn:samsung.com:device:MainTVServer2:1"]
+SAMSUNGTV_UPNP_SERVICE_TYPES = {"MTVA": {"urn:samsung.com:service:MainTVAgent2:1"}}
 
-DEFAULT_NAME = 'Samsung TV'
+DEFAULT_NAME = "Samsung TV"
 DEFAULT_LISTEN_PORT = 7676
 
-CONF_LISTEN_IP = 'listen_ip'
-CONF_LISTEN_PORT = 'listen_port'
-CONF_CALLBACK_URL_OVERRIDE = 'callback_url_override'
+CONF_LISTEN_IP = "listen_ip"
+CONF_LISTEN_PORT = "listen_port"
+CONF_CALLBACK_URL_OVERRIDE = "callback_url_override"
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_URL): cv.string,
-    vol.Optional(CONF_LISTEN_IP): cv.string,
-    vol.Optional(CONF_LISTEN_PORT, default=DEFAULT_LISTEN_PORT): cv.port,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_CALLBACK_URL_OVERRIDE): cv.url,
-})
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
+    {
+        vol.Required(CONF_URL): cv.string,
+        vol.Optional(CONF_LISTEN_IP): cv.string,
+        vol.Optional(CONF_LISTEN_PORT, default=DEFAULT_LISTEN_PORT): cv.port,
+        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+        vol.Optional(CONF_CALLBACK_URL_OVERRIDE): cv.url,
+    }
+)
 
 
 def catch_request_errors():
     """Catch asyncio.TimeoutError, aiohttp.ClientError errors."""
+
     def call_wrapper(func):
         """Call wrapper for decorator."""
+
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
             """Catch asyncio.TimeoutError, aiohttp.ClientError errors."""
@@ -69,77 +74,82 @@ def catch_request_errors():
 
 
 async def async_start_event_handler(
-        hass: HomeAssistantType,
-        server_host: str,
-        server_port: int,
-        requester,
-        callback_url_override: Optional[str] = None):
+    hass: HomeAssistantType,
+    server_host: str,
+    server_port: int,
+    requester,
+    callback_url_override: Optional[str] = None,
+):
     """Register notify view."""
     hass_data = hass.data[SAMSUNGTV_UPNP_DATA]
-    if 'event_handler' in hass_data:
-        return hass_data['event_handler']
+    if "event_handler" in hass_data:
+        return hass_data["event_handler"]
 
     # start event handler
     from async_upnp_client.aiohttp import AiohttpNotifyServer
+
     server = AiohttpNotifyServer(
         requester,
         listen_port=server_port,
         listen_host=server_host,
         loop=hass.loop,
-        callback_url=callback_url_override)
+        callback_url=callback_url_override,
+    )
     await server.start_server()
     _LOGGER.info(
-        'Samsung TV UPNP event handler listening, url: %s',
-        server.callback_url)
-    hass_data['notify_server'] = server
-    hass_data['event_handler'] = server.event_handler
+        "Samsung TV UPNP event handler listening, url: %s", server.callback_url
+    )
+    hass_data["notify_server"] = server
+    hass_data["event_handler"] = server.event_handler
 
     # register for graceful shutdown
     async def async_stop_server(event):
         """Stop server."""
-        _LOGGER.debug('Stopping Samsung TV UPNP event handler')
+        _LOGGER.debug("Stopping Samsung TV UPNP event handler")
         await server.stop_server()
+
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_stop_server)
 
-    return hass_data['event_handler']
+    return hass_data["event_handler"]
 
 
 async def async_setup_platform(
-        hass: HomeAssistantType,
-        config,
-        async_add_entities,
-        discovery_info=None):
+    hass: HomeAssistantType, config, async_add_entities, discovery_info=None
+):
     """Set up Samsung TV UPNP platform."""
     if config.get(CONF_URL) is not None:
         url = config[CONF_URL]
         name = config.get(CONF_NAME)
     elif discovery_info is not None:
-        url = discovery_info['ssdp_description']
-        name = discovery_info.get('name')
+        url = discovery_info["ssdp_description"]
+        name = discovery_info.get("name")
 
     if SAMSUNGTV_UPNP_DATA not in hass.data:
         hass.data[SAMSUNGTV_UPNP_DATA] = {}
 
-    if 'lock' not in hass.data[SAMSUNGTV_UPNP_DATA]:
-        hass.data[SAMSUNGTV_UPNP_DATA]['lock'] = asyncio.Lock()
+    if "lock" not in hass.data[SAMSUNGTV_UPNP_DATA]:
+        hass.data[SAMSUNGTV_UPNP_DATA]["lock"] = asyncio.Lock()
 
     # build upnp/aiohttp requester
     from async_upnp_client.aiohttp import AiohttpSessionRequester
+
     session = async_get_clientsession(hass)
     requester = AiohttpSessionRequester(session, True)
 
     # ensure event handler has been started
-    with await hass.data[SAMSUNGTV_UPNP_DATA]['lock']:
+    with await hass.data[SAMSUNGTV_UPNP_DATA]["lock"]:
         server_host = config.get(CONF_LISTEN_IP)
         if server_host is None:
             server_host = get_local_ip()
         server_port = config.get(CONF_LISTEN_PORT, DEFAULT_LISTEN_PORT)
         callback_url_override = config.get(CONF_CALLBACK_URL_OVERRIDE)
         event_handler = await async_start_event_handler(
-            hass, server_host, server_port, requester, callback_url_override)
+            hass, server_host, server_port, requester, callback_url_override
+        )
 
     # create upnp device
-    from async_upnp_client import (UpnpFactory, UpnpError)
+    from async_upnp_client import UpnpFactory, UpnpError
+
     factory = UpnpFactory(requester, disable_state_variable_validation=True)
     try:
         upnp_device = await factory.async_create_device(url)
@@ -148,6 +158,7 @@ async def async_setup_platform(
 
     # wrap with UpnpProfileDevice
     from async_upnp_client.profiles.profile import UpnpProfileDevice
+
     upnp_device = UpnpProfileDevice(upnp_device, event_handler)
     upnp_device.DEVICE_TYPES = SAMSUNGTV_UPNP_DEVICE_TYPES
     upnp_device._SERVICE_TYPES = SAMSUNGTV_UPNP_SERVICE_TYPES
@@ -179,12 +190,11 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
     async def async_added_to_hass(self):
         """Handle addition."""
         bus = self.hass.bus
-        bus.async_listen_once(
-            EVENT_HOMEASSISTANT_STOP, self._async_on_hass_stop)
+        bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, self._async_on_hass_stop)
 
     async def _async_on_hass_stop(self, event):
         """Event handler on HASS stop."""
-        with await self.hass.data[SAMSUNGTV_UPNP_DATA]['lock']:
+        with await self.hass.data[SAMSUNGTV_UPNP_DATA]["lock"]:
             await self._device.async_unsubscribe_services()
 
     async def async_update(self):
@@ -203,10 +213,10 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
 
         # do we need to (re-)subscribe?
         now = datetime.now()
-        should_renew = self._subscription_renew_time and \
-            now >= self._subscription_renew_time
-        if should_renew or \
-           not was_available and self._available:
+        should_renew = (
+            self._subscription_renew_time and now >= self._subscription_renew_time
+        )
+        if should_renew or not was_available and self._available:
             try:
                 timeout = await self._device.async_subscribe_services()
                 self._subscription_renew_time = datetime.now() + timeout / 2
@@ -227,6 +237,16 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
         return self._device.udn
 
     @property
+    def device_info(self):
+        """Return device info."""
+        return {
+            "identifiers": {(DOMAIN, self.unique_id)},
+            "name": self.name,
+            "manufacturer": self._device.manufacturer,
+            "model": self._device.model_name,
+        }
+
+    @property
     def supported_features(self):
         """Flag media player features that are supported."""
         return SAMSUNGTV_UPNP_SUPPORT
@@ -241,14 +261,17 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
         """State of the player."""
         if not self._available:
             return STATE_OFF
-        elif self._source == 'TV':
+        elif self._source == "TV":
             return STATE_PLAYING
         return STATE_IDLE
 
     @property
     def source_list(self):
         """List of available input sources."""
-        return list(self._source_list)
+        if self._source_list is None:
+            return []
+        else:
+            return list(self._source_list)
 
     @property
     def source(self):
@@ -277,7 +300,7 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
 
     @property
     def media_channel(self):
-        """Channel currently playing"""
+        """Channel currently playing."""
         return self._media_channel
 
     @property
@@ -285,29 +308,24 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
         """Title of current playing media."""
         return self._media_title
 
-    @property
-    def media_content_type(self):
-        """Content type of current playing media."""
-        return MEDIA_TYPE_CHANNEL if self._media_channel else None
-
     async def async_select_source(self, source):
         """Select input source."""
         if source not in self._source_list:
-            _LOGGER.debug('Unsupported source')
+            _LOGGER.debug("Unsupported source")
             return
         id = self._source_list[source]
 
-        action = self._device._action('MTVA', 'SetMainTVSource')
+        action = self._device._action("MTVA", "SetMainTVSource")
         if not action:
-            _LOGGER.debug('Missing action MTVA/SetMainTVSource')
+            _LOGGER.debug("Missing action MTVA/SetMainTVSource")
             return
 
         try:
             result = await action.async_call(Source=source, ID=id, UiID=0)
-        except:
+        except Exception:
             result = None
-        if not result or result.get('Result') != 'OK':
-            _LOGGER.debug('unable to select source')
+        if not result or result.get("Result") != "OK":
+            _LOGGER.debug(f"unable to get select source: {result}")
             return
 
         self._source = source
@@ -316,32 +334,32 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
         self._source = None
         self._source_list = None
 
-        action = self._device._action('MTVA', 'GetSourceList')
+        action = self._device._action("MTVA", "GetSourceList")
         if not action:
-            _LOGGER.debug('Missing action MTVA/GetSourceList')
+            _LOGGER.debug("Missing action MTVA/GetSourceList")
             return
 
         try:
             result = await action.async_call()
-        except:
+        except Exception:
             result = None
-        if not result or result.get('Result') != 'OK':
-            _LOGGER.debug('unable to get sources')
+        if not result or result.get("Result") != "OK":
+            _LOGGER.debug(f"unable to get sources: {result}")
             return
 
         from collections import OrderedDict
         from xml.dom.minidom import parseString
-        dom = parseString(result.get('SourceList'))
-        self._source = dom.getElementsByTagName('CurrentSourceType')[0] \
-                          .firstChild.nodeValue
+
+        dom = parseString(result.get("SourceList"))
+        self._source = dom.getElementsByTagName("CurrentSourceType")[
+            0
+        ].firstChild.nodeValue
         self._source_list = OrderedDict()
-        for node in dom.getElementsByTagName('Source'):
-            con = node.getElementsByTagName('Connected')[0].firstChild\
-                                                           .nodeValue
-            name = node.getElementsByTagName('SourceType')[0].firstChild\
-                                                             .nodeValue
-            id = int(node.getElementsByTagName('ID')[0] .firstChild.nodeValue)
-            if con == 'Yes':
+        for node in dom.getElementsByTagName("Source"):
+            con = node.getElementsByTagName("Connected")[0].firstChild.nodeValue
+            name = node.getElementsByTagName("SourceType")[0].firstChild.nodeValue
+            id = int(node.getElementsByTagName("ID")[0].firstChild.nodeValue)
+            if con == "Yes":
                 self._source_list[name] = id
 
     async def _get_program_info(self):
@@ -351,45 +369,45 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
         self._media_channel = None
         self._media_title = None
 
-        if self._source != 'TV':
+        if self._source != "TV":
             return
 
-        action = self._device._action('MTVA', 'GetCurrentMainTVChannel')
+        action = self._device._action("MTVA", "GetCurrentMainTVChannel")
         if not action:
-            _LOGGER.debug('Missing action MTVA/GetCurrentMainTVChannel')
+            _LOGGER.debug("Missing action MTVA/GetCurrentMainTVChannel")
             return
 
         try:
             result = await action.async_call()
-        except:
+        except Exception:
             result = None
-        if not result or result.get('Result') != 'OK':
-            _LOGGER.debug('unable to current channel')
+        if not result or result.get("Result") != "OK":
+            _LOGGER.debug(f"unable to get current channel: {result}")
             return
 
         from xml.dom.minidom import parseString
-        dom = parseString(result.get('CurrentChannel'))
-        major = dom.getElementsByTagName('MajorCh')[0].firstChild.nodeValue
-        minor = dom.getElementsByTagName('MinorCh')[0].firstChild.nodeValue
-        prog = dom.getElementsByTagName('ProgNum')[0].firstChild.nodeValue
 
-        action = self._device._action('MTVA',
-                                      'GetCurrentProgramInformationURL')
+        dom = parseString(result.get("CurrentChannel"))
+        major = dom.getElementsByTagName("MajorCh")[0].firstChild.nodeValue
+        minor = dom.getElementsByTagName("MinorCh")[0].firstChild.nodeValue
+        prog = dom.getElementsByTagName("ProgNum")[0].firstChild.nodeValue
+
+        action = self._device._action("MTVA", "GetCurrentProgramInformationURL")
         if not action:
-            _LOGGER.debug('Missing action ' \
-                          'MTVA/GetCurrentProgramInformationURL')
+            _LOGGER.debug("Missing action " "MTVA/GetCurrentProgramInformationURL")
             return
 
         try:
             result = await action.async_call()
-        except:
+        except Exception:
             result = None
-        if not result or result.get('Result') != 'OK':
-            _LOGGER.debug('unable to get program info')
+        if not result or result.get("Result") != "OK":
+            _LOGGER.debug(f"unable to get program info: {result}")
             return
-        url = result.get('CurrentProgInfoURL')
+        url = result.get("CurrentProgInfoURL")
 
         from aiohttp import ClientSession
+
         session = ClientSession()
         response = await session.get(url)
         xml = await response.text()
@@ -397,17 +415,16 @@ class SamsungTvUpnpDevice(MediaPlayerDevice):
 
         from datetime import date, datetime, timedelta
         from homeassistant.util import dt
+
         dom = parseString(xml)
-        for item in dom.getElementsByTagName('ProgramInfo'):
-            ma = item.getElementsByTagName('MajorCh')[0].firstChild.nodeValue
-            mi = item.getElementsByTagName('MinorCh')[0].firstChild.nodeValue
-            pr = item.getElementsByTagName('ProgNum')[0].firstChild.nodeValue
-            be = item.getElementsByTagName('StartTime')[0].firstChild\
-                                                          .nodeValue
-            en = item.getElementsByTagName('EndTime')[0].firstChild.nodeValue
-            ch = item.getElementsByTagName('DispChName')[0].firstChild\
-                                                           .nodeValue
-            ti = item.getElementsByTagName('Title')[0].firstChild.nodeValue
+        for item in dom.getElementsByTagName("ProgramInfo"):
+            ma = item.getElementsByTagName("MajorCh")[0].firstChild.nodeValue
+            mi = item.getElementsByTagName("MinorCh")[0].firstChild.nodeValue
+            pr = item.getElementsByTagName("ProgNum")[0].firstChild.nodeValue
+            be = item.getElementsByTagName("StartTime")[0].firstChild.nodeValue
+            en = item.getElementsByTagName("EndTime")[0].firstChild.nodeValue
+            ch = item.getElementsByTagName("DispChName")[0].firstChild.nodeValue
+            ti = item.getElementsByTagName("Title")[0].firstChild.nodeValue
             if ma == major and mi == minor and pr == prog and be and en:
                 start = datetime.combine(date.today(), dt.parse_time(be))
                 end = datetime.combine(date.today(), dt.parse_time(en))

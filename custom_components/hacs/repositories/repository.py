@@ -3,6 +3,8 @@
 import pathlib
 import json
 import os
+import tempfile
+import zipfile
 from distutils.version import LooseVersion
 from integrationhelper import Validate, Logger
 from aiogithubapi import AIOGitHubException
@@ -69,6 +71,7 @@ class RepositoryReleases:
     last_release = None
     last_release_object = None
     published_tags = []
+    objects = []
     releases = False
 
 
@@ -369,7 +372,7 @@ class HacsRepository(Hacs):
                 ):
                     persistent_directory = Backup(
                         f"{self.content.path.local}/{self.repository_manifest.persistent_directory}",
-                        "/tmp/hacs_persistent_directory/",
+                        tempfile.TemporaryFile() + "/hacs_persistent_directory/",
                     )
                     persistent_directory.create()
 
@@ -377,9 +380,15 @@ class HacsRepository(Hacs):
             backup = Backup(self.content.path.local)
             backup.create()
 
-        validate = await self.download_content(
-            self.validate, self.content.path.remote, self.content.path.local, self.ref
-        )
+        if self.repository_manifest.zip_release:
+            validate = await self.download_zip(self.validate)
+        else:
+            validate = await self.download_content(
+                self.validate,
+                self.content.path.remote,
+                self.content.path.local,
+                self.ref,
+            )
 
         if validate.errors:
             for error in validate.errors:
@@ -423,6 +432,44 @@ class HacsRepository(Hacs):
                 },
             )
 
+    async def download_zip(self, validate):
+        """Download ZIP archive from repository release."""
+        try:
+            contents = False
+
+            for release in self.releases.objects:
+                self.logger.info(f"ref: {self.ref}  ---  tag: {release.tag_name}")
+                if release.tag_name == self.ref.split("/")[1]:
+                    contents = release.assets
+
+            if not contents:
+                return validate
+
+            for content in contents or []:
+                filecontent = await async_download_file(self.hass, content.download_url)
+
+                if filecontent is None:
+                    validate.errors.append(f"[{content.name}] was not downloaded.")
+                    continue
+
+                result = await async_save_file(
+                    f"{tempfile.gettempdir()}/{self.repository_manifest.filename}",
+                    filecontent,
+                )
+                with zipfile.ZipFile(
+                    f"{tempfile.gettempdir()}/{self.repository_manifest.filename}", "r"
+                ) as zip_file:
+                    zip_file.extractall(self.content.path.local)
+
+                if result:
+                    self.logger.info(f"download of {content.name} complete")
+                    continue
+                validate.errors.append(f"[{content.name}] was not downloaded.")
+        except SystemError:
+            pass
+
+        return validate
+
     async def download_content(self, validate, directory_path, local_directory, ref):
         """Download the content of a directory."""
         try:
@@ -435,7 +482,10 @@ class HacsRepository(Hacs):
                 )
 
             for content in contents:
-                if content.type == "dir" and (self.repository_manifest.content_in_root or self.content.path.remote != ""):
+                if content.type == "dir" and (
+                    self.repository_manifest.content_in_root
+                    or self.content.path.remote != ""
+                ):
                     await self.download_content(
                         validate, content.path, local_directory, ref
                     )
@@ -468,7 +518,6 @@ class HacsRepository(Hacs):
                     local_directory = local_directory.split("/")
                     del local_directory[-1]
                     local_directory = "/".join(local_directory)
-
 
                 # Check local directory
                 pathlib.Path(local_directory).mkdir(parents=True, exist_ok=True)
@@ -540,32 +589,32 @@ class HacsRepository(Hacs):
     async def get_releases(self):
         """Get repository releases."""
         if self.status.show_beta:
-            temp = await self.repository_object.get_releases(
+            self.releases.objects = await self.repository_object.get_releases(
                 prerelease=True, returnlimit=self.configuration.release_limit
             )
         else:
-            temp = await self.repository_object.get_releases(
+            self.releases.objects = await self.repository_object.get_releases(
                 prerelease=False, returnlimit=self.configuration.release_limit
             )
 
-        if not temp:
+        if not self.releases.objects:
             return
 
         self.releases.releases = True
 
         self.releases.published_tags = []
 
-        for release in temp:
+        for release in self.releases.objects:
             self.releases.published_tags.append(release.tag_name)
 
-        self.releases.last_release_object = temp[0]
+        self.releases.last_release_object = self.releases.objects[0]
         if self.status.selected_tag is not None:
             if self.status.selected_tag != self.information.default_branch:
-                for release in temp:
+                for release in self.releases.objects:
                     if release.tag_name == self.status.selected_tag:
                         self.releases.last_release_object = release
                         break
-        self.versions.available = temp[0].tag_name
+        self.versions.available = self.releases.objects[0].tag_name
 
     def remove(self):
         """Run remove tasks."""
