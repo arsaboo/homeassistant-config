@@ -2,16 +2,15 @@
 Support for getting sector performance information from Alphavantage.
 
 """
-import logging
 import json
+import logging
 from datetime import timedelta
 
-import voluptuous as vol
-
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import Entity
+import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import CONF_API_KEY, CONF_MONITORED_CONDITIONS
+from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)

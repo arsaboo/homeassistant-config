@@ -4,21 +4,22 @@
 """
 
 import json
+import logging
+from datetime import date, datetime, timedelta
+
+import homeassistant.helpers.config_validation as cv
 import pytz
 import requests
 import urllib3
-import logging
-
 import voluptuous as vol
-from datetime import datetime, timedelta, date
-from lxml import html
-
-
-import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (CONF_NAME, ATTR_ATTRIBUTION)
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
+from lxml import html
+
+from random_user_agent.params import OperatingSystem, SoftwareName
+from random_user_agent.user_agent import UserAgent
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -136,9 +137,7 @@ class YahooEarningsData(object):
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
-        """Get the latest data from CNN."""
-        from random_user_agent.user_agent import UserAgent
-        from random_user_agent.params import SoftwareName, OperatingSystem
+        """Get the latest data from Yahoo earnings."""
 
         software_names = [SoftwareName.CHROME.value]
         operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
