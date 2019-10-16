@@ -261,28 +261,15 @@ class AdbDevice(object):
         ------
         adb_shell.exceptions.InvalidResponseError
             Wrong local_id sent to us.
-        adb_shell.exceptions.InvalidCommandError
-            Didn't get a ready response.
 
         """
         local_id = 1
         msg = AdbMessage(constants.OPEN, local_id, 0, destination + b'\0')
         self._send(msg, timeout_s)
-        cmd, remote_id, their_local_id, _ = self._read([constants.OKAY], timeout_s, total_timeout_s)
+        _, remote_id, their_local_id, _ = self._read([constants.OKAY], timeout_s, total_timeout_s)
 
         if local_id != their_local_id:
             raise exceptions.InvalidResponseError('Expected the local_id to be {}, got {}'.format(local_id, their_local_id))
-
-        if cmd == constants.CLSE:
-            # Some devices seem to be sending CLSE once more after a request, this *should* handle it
-            cmd, remote_id, their_local_id, _ = self._read([constants.CLSE, constants.OKAY], timeout_s, total_timeout_s)
-            # Device doesn't support this service.
-            if cmd == constants.CLSE:
-                return None, None
-
-        # I don't think this block will ever be entered...
-        if cmd != constants.OKAY:  # pragma: no cover
-            raise exceptions.InvalidCommandError('Expected a ready response, got {}'.format(cmd), cmd, (remote_id, their_local_id))
 
         return local_id, remote_id
 
@@ -455,13 +442,6 @@ class AdbDevice(object):
         data : bytes
             The data that was read by :meth:`AdbDevice._read_until`
 
-        Raises
-        ------
-        adb_shell.exceptions.AdbCommandFailureException
-            Command failed (``b'FAIL'``)
-        adb_shell.exceptions.InvalidCommandError
-            Expected a ``b'WRTE'`` or ``b'CLSE'`` command, but got something else
-
         """
         while True:
             cmd, data = self._read_until(local_id, remote_id, [constants.CLSE, constants.WRTE], timeout_s, total_timeout_s)
@@ -470,13 +450,6 @@ class AdbDevice(object):
                 msg = AdbMessage(constants.CLSE, local_id, remote_id)
                 self._send(msg, timeout_s)
                 break
-
-            # I don't think this block will ever be entered...
-            if cmd != constants.WRTE:  # pragma: no cover
-                if cmd == constants.FAIL:
-                    raise exceptions.AdbCommandFailureException('Command failed.')
-
-                raise exceptions.InvalidCommandError('Expected a WRITE or a CLOSE, got {0} ({1})'.format(cmd, data), cmd, data)
 
             yield data
 
@@ -531,8 +504,6 @@ class AdbDevice(object):
 
         """
         local_id, remote_id = self._open(b'%s:%s' % (service, command), timeout_s, total_timeout_s)
-        if local_id is None or remote_id is None:
-            return
 
         for data in self._read_until_close(local_id, remote_id, timeout_s, total_timeout_s):
             yield data.decode('utf8')

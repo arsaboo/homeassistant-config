@@ -4,8 +4,8 @@ from homeassistant.core import callback
 from .hacsbase import Hacs
 
 
-@callback
-def hacs_settings(hass, connection, msg):
+@websocket_api.async_response
+async def hacs_settings(hass, connection, msg):
     """Handle get media player cover command."""
     action = msg["action"]
     Hacs().logger.debug(f"WS action '{action}'")
@@ -19,11 +19,11 @@ def hacs_settings(hass, connection, msg):
     else:
         Hacs().logger.error(f"WS action '{action}' is not valid")
 
-    hacs_config(hass, connection, msg)
+    hass.bus.fire("hacs/config", {})
 
 
-@callback
-def hacs_config(hass, connection, msg):
+@websocket_api.async_response
+async def hacs_config(hass, connection, msg):
     """Handle get media player cover command."""
     config = Hacs().configuration
 

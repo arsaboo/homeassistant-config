@@ -12,7 +12,11 @@ class AutoEntities extends cardTools.LitElement {
     this.card = cardTools.createCard(Object.assign({entities: this.entities}, config.card));
   }
 
-
+ getCardSize() {
+    if(this.card && typeof this.card.getCardSize === "function")
+      this.card.getCardSize();
+    return 1;
+ }
   match(pattern, str){
     if (typeof(str) === "string" && typeof(pattern) === "string") {
       if((pattern.startsWith('/') && pattern.endsWith('/')) || pattern.indexOf('*') !== -1) {
