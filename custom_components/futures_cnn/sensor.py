@@ -8,15 +8,14 @@
                 Check the configuration in sensor.yaml (search for futures_cnn).
 """
 
-from datetime import datetime, timedelta
 import logging
-import requests
-
-import voluptuous as vol
+from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
+import requests
+import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (CONF_NAME, CONF_RESOURCES, ATTR_ATTRIBUTION)
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, CONF_RESOURCES
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 
