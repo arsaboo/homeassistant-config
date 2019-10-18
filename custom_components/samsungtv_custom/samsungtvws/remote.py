@@ -28,7 +28,7 @@ import websocket
 
 
 class SamsungTVWS():
-    _URL_FORMAT = 'wss://{host}:{port}/api/v2/channels/samsung.remote.control?name={name}'
+    _URL_FORMAT = 'ws://{host}:{port}/api/v2/channels/samsung.remote.control?name={name}'
     _SSL_URL_FORMAT = 'wss://{host}:{port}/api/v2/channels/samsung.remote.control?name={name}&token={token}'
 
     def __init__(self, host, token=None, token_file=None, port=8002, timeout=None, key_press_delay=1.5, name='SamsungTvRemote'):
