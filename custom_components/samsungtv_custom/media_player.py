@@ -46,10 +46,10 @@ from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
-MEDIA_TYPE_KEY = 'send_key'
+MEDIA_TYPE_KEY = "send_key"
 DEFAULT_NAME = "Samsung TV Remote"
 DEFAULT_PORT = 55000
-DEFAULT_TIMEOUT = 10
+DEFAULT_TIMEOUT = 2
 KEY_PRESS_TIMEOUT = 1.2
 KNOWN_DEVICES_KEY = "samsungtv_known_devices"
 SOURCES = {"TV": "KEY_TV", "HDMI": "KEY_HDMI"}
@@ -135,16 +135,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     # config.
     ip_addr = socket.gethostbyname(host)
     if ip_addr not in known_devices:
-        known_devices.add(ip_addr)
+        #known_devices.add(ip_addr)
         
-        if protocol == "ctl":
-            add_entities([SamsungTVDevice(host, port, name, timeout, mac, uuid, sourcelist, protocol)])
-        elif protocol == "ctl_beta":
-            add_entities([SamsungTVDevice(host, port, name, timeout, mac, uuid, sourcelist, protocol)])
-        elif protocol == "ctl_qled":
+        if protocol == "ctl_qled":
             add_entities([SamsungTVDeviceQLED(host, port, name, timeout, mac, uuid, sourcelist, applist)])
         elif protocol == "ws":
             add_entities([SamsungTVDeviceWS(host, port, name, timeout, mac, uuid, sourcelist)])
+        else:
+            add_entities([SamsungTVDevice(host, port, name, timeout, mac, uuid, sourcelist, protocol)])
 
         _LOGGER.info("Samsung TV %s:%d added as '%s'", host, port, name)
     else:
@@ -358,11 +356,7 @@ class SamsungTVDevice(MediaPlayerDevice):
 
     async def async_select_source(self, source):
         """Select input source."""
-        if source not in SOURCES:
-            _LOGGER.error("Unsupported source")
-            return
-
-        await self.hass.async_add_job(self.send_key, SOURCES[source])
+        await self.hass.async_add_job(self.send_key, self._sourcelist[source])
 
 
 class SamsungTVDeviceQLED(MediaPlayerDevice):
@@ -529,7 +523,7 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
     @property
     def source(self):
         """Name of the current input source."""
-        if self._config['port'] == 8002:
+        if self._config['port'] in (8001,8002):
             self._application = self.get_application()
             if self._application.current_app() is None:
                 self._current_source = 'TV/HDMI'
@@ -543,13 +537,11 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
     @property
     def source_list(self):
         """List of available input sources."""
-        if self._config['port'] == 8002:
-            source_list = ['TV/HDMI']
-            for app in self._applist:
-                source_list.append(app)
-            return source_list
-        else:
-            return self._sourcelist
+        source_list = ['TV/HDMI']
+        source_list.extend(list(self._sourcelist))
+        source_list.extend(list(self._applist))
+        
+        return source_list
 
     @property
     def supported_features(self):
@@ -685,7 +677,7 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
 
     def select_source(self, source):
         """Select input source."""
-        if self._config['port'] == 8002:
+        if source not in self._sourcelist:
             if source == 'TV/HDMI':
                 self.get_application().stop(self._current_source)
             else: 
@@ -697,7 +689,8 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
         """Select input source.
         This method must be run in the event loop and returns a coroutine.
         """
-        return self.hass.async_add_job(self.select_source, source)  
+        return self.hass.async_add_job(self.select_source, source) 
+        
 
 class SamsungTVDeviceWS(MediaPlayerDevice):
     """Representation of a Samsung TV."""
@@ -705,7 +698,7 @@ class SamsungTVDeviceWS(MediaPlayerDevice):
     def __init__(self, host, port, name, timeout, mac, uuid, sourcelist):
         """Initialize the Samsung device."""
         # Load WS implementation from samsungtvws folder
-        from custom_components.samsungtv_custom.samsungtvws.remote import SamsungTVWS
+        from .samsungtvws.remote import SamsungTVWS
 
         # Save a reference to the imported classes
         self._name = name
@@ -872,7 +865,7 @@ class SamsungTVDeviceWS(MediaPlayerDevice):
                 await self.hass.async_add_job(self.send_key, "KEY_" + digit)
                 await asyncio.sleep(KEY_PRESS_TIMEOUT, self.hass.loop)
             await self.hass.async_add_job(self.send_key, "KEY_ENTER")
-        elif media_type == "send_key":
+        elif media_type == MEDIA_TYPE_KEY:
             self.send_key(media_id)
         else:
             _LOGGER.error("Unsupported media type")
@@ -887,8 +880,4 @@ class SamsungTVDeviceWS(MediaPlayerDevice):
 
     async def async_select_source(self, source):
         """Select input source."""
-        if source not in SOURCES:
-            _LOGGER.error("Unsupported source")
-            return
-
-        await self.hass.async_add_job(self.send_key, SOURCES[source])
+        await self.hass.async_add_job(self.send_key, self._sourcelist[source])
