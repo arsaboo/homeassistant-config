@@ -47,3 +47,4 @@ dlib_unknown_faces
 *.pickle
 .pc-session
 google*.deb
+.homekit.state

@@ -149,7 +149,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                 adbkey,
                 device_class=config[CONF_DEVICE_CLASS],
                 state_detection_rules=config[CONF_STATE_DETECTION_RULES],
-                auth_timeout_s=60.0,
+                auth_timeout_s=10.0,
             )
 
         else:
@@ -162,7 +162,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                 config[CONF_ADBKEY],
                 device_class=config[CONF_DEVICE_CLASS],
                 state_detection_rules=config[CONF_STATE_DETECTION_RULES],
-                auth_timeout_s=60.0,
+                auth_timeout_s=10.0,
             )
 
     else:

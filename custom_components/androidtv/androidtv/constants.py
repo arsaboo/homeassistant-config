@@ -36,7 +36,7 @@ CMD_MEDIA_SESSION_STATE_FULL = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STAT
 CMD_RUNNING_APPS = "ps | grep u0_a"
 
 #: Determine if the device is on
-CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
+CMD_SCREEN_ON = "(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true')"
 
 #: Get the "STREAM_MUSIC" block from ``dumpsys audio``
 CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"

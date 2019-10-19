@@ -1,0 +1,12 @@
+{
+  "domain": "samsungtv_custom2",
+  "name": "Samsungtv Custom",
+  "documentation": "https://github.com/xchwarze/ha-samsungtv-custom",
+  "requirements": [
+    "samsungtvws[websocket-client]==1.1.2",
+    "wakeonlan==1.1.6"
+  ],
+  "dependencies": [],
+  "codeowners": ["@xchwarze"],
+  "homeassistant": "0.99.3"
+}
