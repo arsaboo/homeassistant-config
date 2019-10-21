@@ -3,7 +3,7 @@
   "name": "Samsungtv Custom",
   "documentation": "https://github.com/xchwarze/ha-samsungtv-custom",
   "requirements": [
-    "samsungtvws[websocket-client]==1.1.2",
+    "samsungtvws[websocket-client]==1.1.3",
     "wakeonlan==1.1.6"
   ],
   "dependencies": [],
