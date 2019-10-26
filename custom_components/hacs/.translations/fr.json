@@ -33,7 +33,7 @@
                     "theme": "Activer la découverte et le suivi des thèmes",
                     "token": "Jeton d'accès personnel GitHub"
                 },
-                "description": "Si vous avez besoin d'aide pour la configuration, jetez un œil ici: https:\/\/hacs.netlify.com\/installation\/configuration\/",
+                "description": "Si vous avez besoin d'aide pour la configuration, jetez un œil ici: https:\/\/hacs.xyz\/docs\/configuration\/start\/",
                 "title": "HACS (Home Assistant Community Store)"
             }
         },
@@ -60,7 +60,6 @@
         "changelog": "Change log",
         "flag_this": "Marquer",
         "hide": "Masquer",
-        "hide_beta": "Masquer les béta",
         "install": "Installer",
         "installed": "Installés",
         "lovelace_copy_example": "Copier cet exemple dans le presse-papier",
@@ -70,7 +69,6 @@
         "note_appdaemon": "vous devez toujours l'ajouter à votre fichier 'apps.yaml'",
         "note_installed": "Une fois installé, il se trouvera dans",
         "note_integration": "Vous devez toujours l'ajouter à votre fichier 'configuration.yaml'",
-        "note_plugin": "Vous devez toujours l'ajouter à votre configuration lovelace ( 'ui-lovelace.yaml' ou l'éditeur de configuration de l'interface)",
         "open_issue": "Ouvrir un ticket",
         "open_plugin": "Ouvrir le plugin",
         "reinstall": "Réinstaller",

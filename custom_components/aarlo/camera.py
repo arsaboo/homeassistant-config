@@ -6,10 +6,12 @@ https://home-assistant.io/components/camera.arlo/
 """
 import base64
 import logging
+from datetime import timedelta
 
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
+import homeassistant.util.dt as dt_util
 from homeassistant.components import websocket_api
 from homeassistant.components.camera import (ATTR_FILENAME,
                                              CAMERA_SERVICE_SCHEMA,
@@ -27,6 +29,7 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_stream
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
+from homeassistant.helpers.event import async_track_point_in_time
 from . import CONF_ATTRIBUTION, DATA_ARLO, DEFAULT_BRAND
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,6 +76,8 @@ SERVICE_REQUEST_VIDEO_TO_FILE = 'aarlo_request_video_to_file'
 SERVICE_STOP_ACTIVITY = 'aarlo_stop_activity'
 SERVICE_SIREN_ON = 'aarlo_siren_on'
 SERVICE_SIREN_OFF = 'aarlo_siren_off'
+SERVICE_RECORD_START = 'aarlo_start_recording'
+SERVICE_RECORD_STOP = 'aarlo_stop_recording'
 SIREN_ON_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
     vol.Required(ATTR_DURATION): cv.positive_int,
@@ -80,6 +85,10 @@ SIREN_ON_SCHEMA = vol.Schema({
 })
 SIREN_OFF_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+})
+RECORD_START_SCHEMA = vol.Schema({
+    vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+    vol.Required(ATTR_DURATION): cv.positive_int,
 })
 
 WS_TYPE_VIDEO_URL = 'aarlo_video_url'
@@ -168,6 +177,14 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
             SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
             aarlo_siren_off_service_handler
         )
+    component.async_register_entity_service(
+        SERVICE_RECORD_START, RECORD_START_SCHEMA,
+        aarlo_start_recording_handler
+    )
+    component.async_register_entity_service(
+        SERVICE_RECORD_STOP, CAMERA_SERVICE_SCHEMA,
+        aarlo_stop_recording_handler
+    )
 
     # Websockets
     hass.components.websocket_api.async_register_command(
@@ -443,6 +460,25 @@ class ArloCam(Camera):
     def async_siren_off(self):
         return self.hass.async_add_job(self.siren_off)
 
+    def start_recording(self, duration):
+
+        def _stop_recording(_now):
+            self.stop_recording()
+
+        if self._camera.get_stream() is not None:
+            self._camera.start_recording()
+            async_track_point_in_time(self.hass, _stop_recording, dt_util.utcnow() + timedelta(seconds=duration))
+
+    def stop_recording(self):
+        self._camera.stop_recording()
+        self._camera.stop_activity()
+
+    def async_start_recording(self, duration):
+        return self.hass.async_add_job(self.start_recording, duration=duration)
+
+    def async_stop_recording(self):
+        return self.hass.async_add_job(self.stop_recording)
+
 
 def _get_camera_from_entity_id(hass, entity_id):
     component = hass.data.get(DOMAIN)
@@ -592,6 +628,7 @@ async def websocket_siren_off(hass, connection, msg):
     ))
 
 
+
 async def aarlo_snapshot_service_handler(camera, _service):
     _LOGGER.debug("{0} snapshot".format(camera.unique_id))
     await camera.async_get_snapshot()
@@ -677,3 +714,13 @@ async def aarlo_siren_on_service_handler(camera, service):
 
 async def aarlo_siren_off_service_handler(camera, _service):
     camera.siren_off()
+
+
+async def aarlo_start_recording_handler(camera, service):
+    duration = service.data[ATTR_DURATION]
+    camera.start_recording(duration=duration)
+
+async def aarlo_stop_recording_handler(camera, service):
+    duration = service.data[ATTR_DURATION]
+    camera.stop_recording()
+

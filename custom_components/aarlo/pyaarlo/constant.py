@@ -10,6 +10,8 @@ NOTIFY_PATH = '/hmsweb/users/devices/notify/'
 SUBSCRIBE_PATH = '/hmsweb/client/subscribe?token='
 UNSUBSCRIBE_PATH = '/hmsweb/client/unsubscribe'
 MODES_PATH = '/hmsweb/users/devices/automation/active'
+RECORD_START_PATH = "/hmsweb/users/devices/startRecord"
+RECORD_STOP_PATH = "/hmsweb/users/devices/stopRecord"
 STREAM_SNAPSHOT_PATH = '/hmsweb/users/devices/takeSnapshot'
 STREAM_START_PATH = '/hmsweb/users/devices/startStream'
 IDLE_SNAPSHOT_PATH = '/hmsweb/users/devices/fullFrameSnapshot'

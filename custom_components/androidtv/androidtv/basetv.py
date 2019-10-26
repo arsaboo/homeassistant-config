@@ -25,8 +25,8 @@ class BaseTV(object):
                                 'com.ellation.vrv': ['audio_state'],
                                 'com.hulu.plus': [{'playing': {'wake_lock_size' : 4}},
                                                   {'paused': {'wake_lock_size': 2}}],
-                                'com.plexapp.android': [{'playing': {'media_session_state': 3, 'wake_lock_size': 3}},
-                                                        {'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
+                                'com.plexapp.android': [{'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
+                                                        {'playing': {'media_session_state': 3}},
                                                         'standby']}
 
     The keys are app IDs, and the values are lists of rules that are evaluated in order.

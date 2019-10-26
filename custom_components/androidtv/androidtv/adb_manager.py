@@ -13,7 +13,7 @@ import threading
 
 from .adb_shell.adb_device import AdbDevice
 from .adb_shell.auth.sign_pythonrsa import PythonRSASigner
-from adb_messenger.client import Client
+from custom_components.androidtv.androidtv.ppadb.client import Client
 
 from .constants import DEFAULT_AUTH_TIMEOUT_S
 

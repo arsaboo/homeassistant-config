@@ -9,6 +9,7 @@ from .constant import (ACTIVITY_STATE_KEY, BRIGHTNESS_KEY,
                        LAST_IMAGE_SRC_KEY, MEDIA_COUNT_KEY,
                        MEDIA_UPLOAD_KEYS, MIRROR_KEY, MOTION_SENS_KEY,
                        POWER_SAVE_KEY, PRELOAD_DAYS, PRIVACY_KEY,
+                       RECORD_START_PATH, RECORD_STOP_PATH,
                        SNAPSHOT_KEY, SIREN_STATE_KEY, STREAM_SNAPSHOT_KEY,
                        STREAM_SNAPSHOT_PATH, STREAM_START_PATH, CAMERA_MEDIA_DELAY)
 from .device import ArloChildDevice
@@ -446,6 +447,29 @@ class ArloCamera(ArloChildDevice):
                               'resource': self.resource_id,
                           })
         return True
+
+    def start_recording(self, duration=None):
+        body = {
+            'parentId': self.parent_id,
+            'deviceId': self.device_id,
+            'olsonTimeZone': self.timezone,
+        }
+        self._arlo.debug('starting recording')
+        self._save_and_do_callbacks(ACTIVITY_STATE_KEY, 'alertStreamActive')
+        self._arlo.bg.run(self._arlo.be.post, path=RECORD_START_PATH, params=body,
+                          headers={"xcloudId": self.xcloud_id})
+        if duration is not None:
+            self._arlo.debug('queueing stop')
+            self._arlo.bg.run_in(self.stop_recording)
+
+    def stop_recording(self):
+        body = {
+            'parentId': self.parent_id,
+            'deviceId': self.device_id,
+        }
+        self._arlo.debug('stopping recording')
+        self._arlo.bg.run(self._arlo.be.post, path=RECORD_STOP_PATH, params=body,
+                          headers={"xcloudId": self.xcloud_id})
 
     @property
     def siren_resource_id(self):
