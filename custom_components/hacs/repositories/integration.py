@@ -16,7 +16,6 @@ class HacsIntegration(HacsRepository):
         super().__init__()
         self.information.full_name = full_name
         self.information.category = self.category
-        self.manifest = None
         self.domain = None
         self.content.path.remote = "custom_components"
         self.content.path.local = self.localpath
@@ -29,8 +28,8 @@ class HacsIntegration(HacsRepository):
     @property
     def config_flow(self):
         """Return bool if integration has config_flow."""
-        if self.manifest is not None:
-            if self.information.full_name == "custom-components/hacs" or self.information.full_name == "hacs/integration":
+        if self.manifest:
+            if self.information.full_name == "hacs/integration":
                 return False
             return self.manifest.get("config_flow", False)
         return False
@@ -100,6 +99,8 @@ class HacsIntegration(HacsRepository):
 
     async def update_repository(self):
         """Update."""
+        if self.github.ratelimits.remaining == 0:
+            return
         await self.common_update()
 
         # Get integration objects.

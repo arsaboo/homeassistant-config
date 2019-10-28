@@ -54,6 +54,7 @@ class RepositoryInformation:
     category = None
     default_branch = None
     description = ""
+    state = None
     full_name = None
     file_name = None
     javascript_type = None
@@ -102,7 +103,9 @@ class HacsRepository(Hacs):
         self.information = RepositoryInformation()
         self.repository_object = None
         self.status = RepositoryStatus()
-        self.repository_manifest = HacsManifest({})
+        self.state = None
+        self.manifest = {}
+        self.repository_manifest = HacsManifest.from_dict({})
         self.validate = Validate()
         self.releases = RepositoryReleases()
         self.versions = RepositoryVersions()
@@ -141,6 +144,8 @@ class HacsRepository(Hacs):
             return False
         if self.information.full_name in self.common.default:
             return False
+        if self.information.full_name == "hacs/integration":
+            return False
         return True
 
     @property
@@ -164,7 +169,7 @@ class HacsRepository(Hacs):
         """Return display name."""
         name = None
         if self.information.category == "integration":
-            if self.manifest is not None:
+            if self.manifest:
                 name = self.manifest["name"]
 
         if self.repository_manifest is not None:
@@ -405,7 +410,7 @@ class HacsRepository(Hacs):
 
         if validate.success:
             if self.information.full_name not in self.common.installed:
-                if self.information.full_name == "custom-components/hacs" or self.information.full_name == "hacs/integration":
+                if self.information.full_name == "hacs/integration":
                     self.common.installed.append(self.information.full_name)
             self.status.installed = True
             self.versions.installed_commit = self.versions.available_commit
@@ -418,8 +423,7 @@ class HacsRepository(Hacs):
             if self.information.category == "integration":
                 if (
                     self.config_flow
-                    and (self.information.full_name != "custom-components/hacs"
-                    or self.information.full_name == "hacs/integration")
+                    and self.information.full_name != "hacs/integration"
                 ):
                     await self.reload_custom_components()
                 else:
@@ -472,8 +476,8 @@ class HacsRepository(Hacs):
                     self.logger.info(f"download of {content.name} complete")
                     continue
                 validate.errors.append(f"[{content.name}] was not downloaded.")
-        except SystemError:
-            pass
+        except Exception:
+            validate.errors.append(f"Download was not complete.")
 
         return validate
 
@@ -536,15 +540,15 @@ class HacsRepository(Hacs):
                     continue
                 validate.errors.append(f"[{content.name}] was not downloaded.")
 
-        except SystemError:
-            pass
+        except Exception:
+            validate.errors.append(f"Download was not complete.")
         return validate
 
     async def get_repository_manifest_content(self):
         """Get the content of the hacs.json file."""
         try:
             manifest = await self.repository_object.get_contents("hacs.json", self.ref)
-            self.repository_manifest = HacsManifest(json.loads(manifest.content))
+            self.repository_manifest = HacsManifest.from_dict(json.loads(manifest.content))
         except (AIOGitHubException, Exception):  # Gotta Catch 'Em All
             pass
 

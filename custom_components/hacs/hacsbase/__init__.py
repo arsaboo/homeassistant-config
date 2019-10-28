@@ -144,13 +144,14 @@ class Hacs:
                     self.logger.error(
                         f"Validation for {full_name} failed with {exception}."
                     )
-                return
+                return exception
         self.hass.bus.async_fire(
             "hacs/repository",
             {
                 "id": 1337,
                 "action": "registration",
                 "repository": repository.information.full_name,
+                "repository_id": repository.information.uid,
             },
         )
         self.repositories.append(repository)
@@ -158,6 +159,7 @@ class Hacs:
     async def startup_tasks(self):
         """Tasks tha are started after startup."""
         self.system.status.background_task = True
+        self.hass.bus.async_fire("hacs/status", {})
         self.logger.debug(self.github.ratelimits.remaining)
         self.logger.debug(self.github.ratelimits.reset_utc)
         await self.load_known_repositories()
@@ -175,6 +177,7 @@ class Hacs:
 
         self.system.status.startup = False
         self.system.status.background_task = False
+        self.hass.bus.async_fire("hacs/status", {})
         self.data.write()
 
     async def recuring_tasks_installed(self, notarealarg=None):
@@ -183,6 +186,7 @@ class Hacs:
             "Starting recuring background task for installed repositories"
         )
         self.system.status.background_task = True
+        self.hass.bus.async_fire("hacs/status", {})
         self.logger.debug(self.github.ratelimits.remaining)
         self.logger.debug(self.github.ratelimits.reset_utc)
         for repository in self.repositories:
@@ -192,12 +196,14 @@ class Hacs:
                     repository.logger.debug("Information update done.")
                 except AIOGitHubException:
                     self.system.status.background_task = False
+                    self.hass.bus.async_fire("hacs/status", {})
                     self.data.write()
                     self.logger.debug(
                         "Recuring background task for installed repositories done"
                     )
                     return
         self.system.status.background_task = False
+        self.hass.bus.async_fire("hacs/status", {})
         self.data.write()
         self.logger.debug("Recuring background task for installed repositories done")
 
@@ -205,6 +211,7 @@ class Hacs:
         """Recuring tasks for all repositories."""
         self.logger.debug("Starting recuring background task for all repositories")
         self.system.status.background_task = True
+        self.hass.bus.async_fire("hacs/status", {})
         self.logger.debug(self.github.ratelimits.remaining)
         self.logger.debug(self.github.ratelimits.reset_utc)
         for repository in self.repositories:
@@ -213,6 +220,7 @@ class Hacs:
                 repository.logger.debug("Information update done.")
             except AIOGitHubException:
                 self.system.status.background_task = False
+                self.hass.bus.async_fire("hacs/status", {})
                 self.data.write()
                 self.logger.debug("Recuring background task for all repositories done")
                 return
@@ -220,6 +228,7 @@ class Hacs:
         self.clear_out_blacklisted_repositories()
         self.system.status.background_task = False
         self.data.write()
+        self.hass.bus.async_fire("hacs/status", {})
         self.hass.bus.async_fire("hacs/repository", {"action": "reload"})
         self.logger.debug("Recuring background task for all repositories done")
 
@@ -231,7 +240,7 @@ class Hacs:
                 repository = self.get_by_name(repository)
                 if repository.status.installed:
                     self.logger.error(
-                        f"You have {repository.information.full_name} installed with HACS, this repositroy have not been blacklisted, please consider removing it."
+                        f"You have {repository.information.full_name} installed with HACS, this repositroy has been blacklisted, please consider removing it."
                     )
                 else:
                     need_to_save = True
