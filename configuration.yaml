@@ -343,6 +343,22 @@ google_assistant:
     cover.garagedoor:
       expose: true
       room: garage
+homekit:
+  auto_start: false
+  filter:
+    include_entities:
+      - alarm_control_panel.aarlo_arlohome
+      - alarm_control_panel.abode_alarm
+      - cover.garagedoor
+      - light.living_room_lights
+      - light.lifx5
+      - light.kitchen
+      - light.master_lights
+      - switch.driveway
+      - binary_sensor.water_leak_sensor_158d0001d77800
+      - binary_sensor.water_leak_sensor_158d00027b0db6
+      - binary_sensor.water_leak_sensor_158d0001bb788c
+      # - binary_sensor.water_leak_sensor_158d00024bfa97
 # map:
 downloader:
   download_dir: downloads
@@ -621,6 +637,17 @@ media_player:
     password: !secret kodi_password
   # - platform: samsungtv_custom
   #   host: 192.168.2.252
+  #   protocol: ctl_beta
+  #   port: 8002
+  #   mac: !secret samsung_tv_mac
+  #   name: Living Room TV
+  - platform: samsungtv_custom2
+    host: 192.168.2.252
+    port: 8002
+    mac: !secret samsung_tv_mac
+    name: Living Room test
+  # - platform: samsungtv_custom
+  #   host: 192.168.2.252
   #   name: Living Room TV
   #   port: 8002
   #   password: 14303763
@@ -675,6 +702,7 @@ media_player:
       com.amazon.tv.launcher: Home
       com.synology.dsvideo: "DS Video"
       com.mxtech.videoplayer.ad: "MXPlayer"
+      com.amazon.firetv.youtube: "Youtube"
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -683,6 +711,8 @@ alexa_media:
       include_devices:
         - "Alexa Guard 227b3"
         - "Echo Dot Gen2"
+        - "EchoDot3"
+        - "Alok's Echo Dot"
       # exclude_devices:
       #   - "Rashmi's Alexa Apps"
       #   - "Alok's 2nd Fire TV"
@@ -722,6 +752,7 @@ unifi:
         - !secret toshibaaio_mac
         - !secret lenovohome_mac
         - !secret samsung_tv_mac
+        - !secret rpi_aiy_mac
 
 telegram_bot:
   platform: polling
@@ -811,6 +842,12 @@ logger:
     homeassistant.components.switch.unifi: debug
     custom_components.aesop: debug
     custom_components.aesop.sensor: debug
+    # custom_components.alexa_media: debug
+    homeassistant.components.samsungtv: debug
+    custom_components.samsungtv: debug
+    homeassistant.components.ssdp: debug
+    custom_components.samsungtv_upnp: debug
+    # custom_components.samsungtv_custom: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

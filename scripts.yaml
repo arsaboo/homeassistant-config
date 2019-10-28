@@ -400,6 +400,15 @@
               {{ (state_attr('media_player.family_room_2', 'volume_level') * 100) | int }}
       - service: homeassistant.turn_on
         entity_id: script.classify_images
+      - wait_template: >-
+          {% if states("binary_sensor.homekit_ready") %}
+            true
+          {% else %}
+            false
+          {% endif %}
+        timeout: 00:05  # Waits 15 minutes
+        continue_on_timeout: false
+      - service: homekit.start
   classify_images:
     alias: 'Process all images'
     sequence:
