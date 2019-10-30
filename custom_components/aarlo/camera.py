@@ -628,7 +628,6 @@ async def websocket_siren_off(hass, connection, msg):
     ))
 
 
-
 async def aarlo_snapshot_service_handler(camera, _service):
     _LOGGER.debug("{0} snapshot".format(camera.unique_id))
     await camera.async_get_snapshot()
@@ -720,7 +719,6 @@ async def aarlo_start_recording_handler(camera, service):
     duration = service.data[ATTR_DURATION]
     camera.start_recording(duration=duration)
 
-async def aarlo_stop_recording_handler(camera, service):
-    duration = service.data[ATTR_DURATION]
-    camera.stop_recording()
 
+async def aarlo_stop_recording_handler(camera, _service):
+    camera.stop_recording()
