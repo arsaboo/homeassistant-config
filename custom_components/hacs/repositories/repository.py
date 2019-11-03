@@ -5,13 +5,14 @@ import json
 import os
 import tempfile
 import zipfile
-from distutils.version import LooseVersion
 from integrationhelper import Validate, Logger
 from aiogithubapi import AIOGitHubException
 from .manifest import HacsManifest
+from ..helpers.misc import get_repository_name
 from ..hacsbase import Hacs
 from ..hacsbase.backup import Backup
 from ..handler.download import async_download_file, async_save_file
+from ..helpers.misc import version_is_newer_than_version
 
 
 RERPOSITORY_CLASSES = {}
@@ -160,33 +161,19 @@ class HacsRepository(Hacs):
 
         if target is not None:
             if self.releases.releases:
-                if LooseVersion(self.system.ha_version) < LooseVersion(target):
+                if version_is_newer_than_version(target, self.system.ha_version):
                     return False
         return True
 
     @property
     def display_name(self):
         """Return display name."""
-        name = None
-        if self.information.category == "integration":
-            if self.manifest:
-                name = self.manifest["name"]
-
-        if self.repository_manifest is not None:
-            name = self.repository_manifest.name
-
-        if name is not None:
-            return name
-
-        if self.information.name:
-            name = self.information.name.replace("-", " ").replace("_", " ").title()
-
-        if name is not None:
-            return name
-
-        name = self.information.full_name
-
-        return name
+        return get_repository_name(
+            self.repository_manifest,
+            self.information.name,
+            self.information.category,
+            self.manifest,
+        )
 
     @property
     def display_status(self):
@@ -548,7 +535,9 @@ class HacsRepository(Hacs):
         """Get the content of the hacs.json file."""
         try:
             manifest = await self.repository_object.get_contents("hacs.json", self.ref)
-            self.repository_manifest = HacsManifest.from_dict(json.loads(manifest.content))
+            self.repository_manifest = HacsManifest.from_dict(
+                json.loads(manifest.content)
+            )
         except (AIOGitHubException, Exception):  # Gotta Catch 'Em All
             pass
 

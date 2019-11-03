@@ -10,8 +10,8 @@ from aiogithubapi import AIOGitHubException, AIOGitHubRatelimit
 from integrationhelper import Logger
 
 
-from ..handler.logger import HacsLogger
 from ..const import ELEMENT_TYPES
+from ..store import async_load_from_store, async_save_to_store
 
 
 class HacsStatus:
@@ -19,6 +19,8 @@ class HacsStatus:
 
     startup = False
     background_task = False
+    reloading_data = False
+    upgrading_all = False
 
 
 class HacsCommon:
@@ -77,6 +79,11 @@ class Hacs:
     tasks = []
     common = HacsCommon()
 
+    @staticmethod
+    def init(hass, github_token):
+        """Return a initialized HACS object."""
+        return Hacs()
+
     def get_by_id(self, repository_id):
         """Get repository by ID."""
         try:
@@ -119,8 +126,9 @@ class Hacs:
         from ..repositories.repository import RERPOSITORY_CLASSES
 
         if full_name in self.common.skip:
-            self.logger.debug(f"Skipping {full_name}")
-            return
+            if full_name != "hacs/integration":
+                self.logger.debug(f"Skipping {full_name}")
+                return
 
         if category not in RERPOSITORY_CLASSES:
             self.logger.error(f"{category} is not a valid repository category.")
@@ -162,8 +170,12 @@ class Hacs:
         self.hass.bus.async_fire("hacs/status", {})
         self.logger.debug(self.github.ratelimits.remaining)
         self.logger.debug(self.github.ratelimits.reset_utc)
+
+        await self.handle_critical_repositories_startup()
+        await self.handle_critical_repositories()
         await self.load_known_repositories()
-        self.clear_out_blacklisted_repositories()
+        await self.clear_out_blacklisted_repositories()
+
         self.tasks.append(
             async_track_time_interval(
                 self.hass, self.recuring_tasks_installed, timedelta(minutes=30)
@@ -178,7 +190,77 @@ class Hacs:
         self.system.status.startup = False
         self.system.status.background_task = False
         self.hass.bus.async_fire("hacs/status", {})
-        self.data.write()
+        await self.data.async_write()
+
+    async def handle_critical_repositories_startup(self):
+        """Handled critical repositories during startup."""
+        alert = False
+        critical = await async_load_from_store(self.hass, "critical")
+        if not critical:
+            return
+        for repo in critical:
+            if not repo["acknowledged"]:
+                alert = True
+        if alert:
+            self.logger.critical("URGENT!: Check the HACS panel!")
+            self.hass.components.persistent_notification.create(
+                title="URGENT!", message="**Check the HACS panel!**"
+            )
+
+    async def handle_critical_repositories(self):
+        """Handled critical repositories during runtime."""
+        # Get critical repositories
+        instored = []
+        critical = []
+        was_installed = False
+
+        try:
+            critical = await self.data_repo.get_contents("critical")
+            critical = json.loads(critical.content)
+        except AIOGitHubException:
+            pass
+
+        if not critical:
+            self.logger.debug("No critical repositories")
+            return
+
+        stored_critical = await async_load_from_store(self.hass, "critical")
+
+        for stored in stored_critical or []:
+            instored.append(stored["repository"])
+
+        stored_critical = []
+
+        for repository in critical:
+            self.common.blacklist.append(repository["repository"])
+            repo = self.get_by_name(repository["repository"])
+
+            stored = {
+                "repository": repository["repository"],
+                "reason": repository["reason"],
+                "link": repository["link"],
+                "acknowledged": True,
+            }
+
+            if repository["repository"] not in instored:
+                if repo is not None and repo.installed:
+                    self.logger.critical(
+                        f"Removing repository {repository['repository']}, it is marked as critical"
+                    )
+                    was_installed = True
+                    stored["acknowledged"] = False
+                    # Uninstall from HACS
+                    repo.remove()
+                    await repo.uninstall()
+            stored_critical.append(stored)
+
+        # Save to FS
+        await async_save_to_store(self.hass, "critical", stored_critical)
+
+        # Resart HASS
+        if was_installed:
+            self.logger.critical("Resarting Home Assistant")
+            self.hass.async_create_task(self.hass.async_stop(100))
 
     async def recuring_tasks_installed(self, notarealarg=None):
         """Recuring tasks for installed repositories."""
@@ -197,14 +279,15 @@ class Hacs:
                 except AIOGitHubException:
                     self.system.status.background_task = False
                     self.hass.bus.async_fire("hacs/status", {})
-                    self.data.write()
+                    await self.data.async_write()
                     self.logger.debug(
                         "Recuring background task for installed repositories done"
                     )
                     return
+        await self.handle_critical_repositories()
         self.system.status.background_task = False
         self.hass.bus.async_fire("hacs/status", {})
-        self.data.write()
+        await self.data.async_write()
         self.logger.debug("Recuring background task for installed repositories done")
 
     async def recuring_tasks_all(self, notarealarg=None):
@@ -221,18 +304,18 @@ class Hacs:
             except AIOGitHubException:
                 self.system.status.background_task = False
                 self.hass.bus.async_fire("hacs/status", {})
-                self.data.write()
+                await self.data.async_write()
                 self.logger.debug("Recuring background task for all repositories done")
                 return
         await self.load_known_repositories()
-        self.clear_out_blacklisted_repositories()
+        await self.clear_out_blacklisted_repositories()
         self.system.status.background_task = False
-        self.data.write()
+        await self.data.async_write()
         self.hass.bus.async_fire("hacs/status", {})
         self.hass.bus.async_fire("hacs/repository", {"action": "reload"})
         self.logger.debug("Recuring background task for all repositories done")
 
-    def clear_out_blacklisted_repositories(self):
+    async def clear_out_blacklisted_repositories(self):
         """Clear out blaclisted repositories."""
         need_to_save = False
         for repository in self.common.blacklist:
@@ -247,7 +330,7 @@ class Hacs:
                     repository.remove()
 
         if need_to_save:
-            self.data.write()
+            await self.data.async_write()
 
     async def get_repositories(self):
         """Return a list of repositories."""

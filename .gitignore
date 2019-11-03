@@ -37,6 +37,7 @@ deps
 tts
 www/icons
 www/floorplans
+custom_components/hacs
 downloads
 icloud
 dlib_faces
