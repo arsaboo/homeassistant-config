@@ -52,9 +52,11 @@ async def hacs_settings(hass, connection, msg):
         hass.bus.async_fire("hacs/status", {})
         for repository in Hacs().repositories:
             if repository.pending_upgrade:
+                repository.status.selected_tag = None
                 await repository.install()
         Hacs().system.status.upgrading_all = False
         hass.bus.async_fire("hacs/status", {})
+        hass.bus.async_fire("hacs/repository", {})
 
     elif action == "clear_new":
         for repo in Hacs().repositories:
@@ -116,6 +118,8 @@ async def hacs_repositories(hass, connection, msg):
                 "category": repo.information.category,
                 "installed": repo.status.installed,
                 "id": repo.information.uid,
+                "can_install": repo.can_install,
+                "homeassistant": repo.repository_manifest.homeassistant,
                 "hide": repo.status.hide,
                 "new": repo.status.new,
                 "beta": repo.status.show_beta,
