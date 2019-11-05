@@ -18,6 +18,7 @@ __pycache__
 *.backup
 life360.sh
 .ip_authenticated.yaml
+ip_bans.yaml
 .config_entries.json
 *.google.token
 .google.token

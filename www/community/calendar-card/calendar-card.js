@@ -766,7 +766,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
         margin-top: -3px;
         color: var(--accent-color);
     }
-`,Qe={title:"Calendar",numberOfDays:7,timeFormat:"HH:mma",dateTopFormat:"DD",dateBottomFormat:"ddd",hideTime:!1,progressBar:!1,showLocation:!1,showLocationIcon:!0,startFromToday:!1,hidePastEvents:!1,showMultiDay:!1,showEventOrigin:!1,hideHeader:!1,highlightToday:!1,ignoreEventsExpression:"",ignoreEventsByLocationExpression:""};var Xe=xe`
+`,Qe={title:"Calendar",numberOfDays:7,timeFormat:"HH:mma",dateTopFormat:"DD",dateBottomFormat:"ddd",hideTime:!1,progressBar:!1,showLocation:!1,showLocationIcon:!0,startFromToday:!1,hidePastEvents:!1,showMultiDay:!1,eventsLimit:99,showEventOrigin:!1,hideHeader:!1,highlightToday:!1,ignoreEventsExpression:"",ignoreEventsByLocationExpression:""};var Xe=xe`
     .entities {
         padding-top: 10px;
     }
@@ -802,7 +802,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
         width: 50%;
         margin-left: 35px;
     }
-`;const et=(e,t,a={},n={})=>{const s=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return s.detail=a,e.dispatchEvent(s),s};customElements.define("calendar-card-editor",class extends Je{static get styles(){return Xe}static get properties(){return{hass:{},_config:{}}}setConfig(e){this._config=Object.assign({},Qe,e)}get entityOptions(){return Object.keys(this.hass.states).filter(e=>"calendar"===e.substr(0,e.indexOf("."))).map(e=>{const t=this._config.entities.find(t=>(t&&t.entity||t)===e);return{entity:e,name:t&&t.name||e,checked:!!t}})}firstUpdated(){this._firstRendered=!0}render(){return this.hass?ee`
+`;const et=(e,t,a={},n={})=>{const s=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return s.detail=a,e.dispatchEvent(s),s};customElements.define("calendar-card-editor",class extends Je{static get styles(){return Xe}static get properties(){return{hass:{},_config:{}}}setConfig(e){this._config=Object.assign({},Qe,e)}get entityOptions(){return Object.keys(this.hass.states).filter(e=>"calendar"===e.substr(0,e.indexOf("."))).map(e=>{const t=this._config.entities.find(t=>(t&&t.entity||t)===e),a=this.hass.states[e];return{entity:e,name:t&&t.name||a.attributes.friendly_name||e,checked:!!t}})}firstUpdated(){this._firstRendered=!0}render(){return this.hass?ee`
       <div class="card-config">
 
         <div class=overall-config'>
@@ -866,6 +866,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
               .checked=${this._config.showEventOrigin}
               .configValue="${"showEventOrigin"}"
             >Show Event Origin</paper-checkbox>
+            
             <paper-checkbox
               @checked-changed="${this.checkboxChanged}" 
               .checked=${this._config.highlightToday}
@@ -923,6 +924,13 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
               .configValue="${"ignoreEventsByLocationExpression"}"
               @value-changed="${this.inputChanged}"
             ></paper-input>
+
+            <paper-input
+              label="Maximum Number of Events to Show"
+              .value="${this._config.eventsLimit}"
+              .configValue="${"eventsLimit"}"
+              @value-changed="${this.inputChanged}"
+            ></paper-input>
           </div>
 
           
@@ -950,7 +958,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
               `)}
         </div>
       </div>
-    `:ee``}checkboxChanged(e){if(this.cantFireEvent)return;const{target:{configValue:t},detail:{value:a}}=e;this._config=Object.assign({},this._config,{[t]:a}),et(this,"config-changed",{config:this._config})}inputChanged(e){if(this.cantFireEvent)return;const{target:{configValue:t},detail:{value:a}}=e;this._config=Object.assign({},this._config,{[t]:a}),et(this,"config-changed",{config:this._config})}get entities(){return[...this._config.entities||[]].map(e=>e.entity?e:{entity:e,name:e})}entityNameChanged(e){if(this.cantFireEvent)return;const{target:{entityId:t},detail:{value:a}}=e;let n=[...this.entities];n=n.map(e=>(e.entity===t&&(e.name=a||""),e)),this._config=Object.assign({},this._config,{entities:n}),et(this,"config-changed",{config:this._config})}entityChanged(e){if(this.cantFireEvent)return;const{target:{entityId:t},detail:{value:a}}=e;let n=[...this.entities];a?n.push({entity:t,name:t}):n=n.filter(e=>e.entity!==t),this._config=Object.assign({},this._config,{entities:n}),et(this,"config-changed",{config:this._config})}get cantFireEvent(){return!this._config||!this.hass||!this._firstRendered}});customElements.define("calendar-card",class extends Je{static get properties(){return{hass:{type:Object},config:{type:Object},events:{type:Object}}}constructor(){super(),this.events=!1}static async getConfigElement(){return document.createElement("calendar-card-editor")}setConfig(e){if(!e.entities||!e.entities.length)throw new Error("You need to define at least one calendar entity via entities");const t=(e.entities||[]).map(e=>e.entity||e),a=((this.config||{}).entities||[]).map(e=>e.entity||e);this.config&&JSON.stringify(t)===JSON.stringify(a)&&e.numberOfDays===this.config.numberOfDays||(this.cardNeedsUpdating=!0),JSON.stringify(e)!==JSON.stringify(this.config||{})&&(this.cardNeedsUpdating=!0),this.config=Object.assign({},Qe,e)}getCardSize(){return 8}static get styles(){return Ze}render(){return this.updateCard(),ee`
+    `:ee``}checkboxChanged(e){if(this.cantFireEvent)return;const{target:{configValue:t},detail:{value:a}}=e;this._config=Object.assign({},this._config,{[t]:a}),et(this,"config-changed",{config:this._config})}inputChanged(e){if(this.cantFireEvent)return;const{target:{configValue:t},detail:{value:a}}=e;this._config=Object.assign({},this._config,{[t]:a}),et(this,"config-changed",{config:this._config})}get entities(){return[...this._config.entities||[]].map(e=>e.entity?e:{entity:e,name:e})}entityNameChanged({target:{entityId:e},detail:{value:t}}){if(this.cantFireEvent)return;let a=[...this.entities];a=a.map(a=>(a.entity===e&&(a.name=t||""),a)),this._config=Object.assign({},this._config,{entities:a}),et(this,"config-changed",{config:this._config})}entityChanged({target:{entityId:e},detail:{value:t}}){if(this.cantFireEvent)return;let a=[...this.entities];if(t){const t=this.hass.states[e];a.push({entity:e,name:t.attributes.friendly_name||e})}else a=a.filter(t=>t.entity!==e);this._config=Object.assign({},this._config,{entities:a}),et(this,"config-changed",{config:this._config})}get cantFireEvent(){return!this._config||!this.hass||!this._firstRendered}});customElements.define("calendar-card",class extends Je{static get properties(){return{hass:{type:Object},config:{type:Object},events:{type:Object}}}constructor(){super(),this.events=!1}static async getConfigElement(){return document.createElement("calendar-card-editor")}setConfig(e){if(!(e={...Qe,...e}).entities||!e.entities.length)throw new Error("You need to define at least one calendar entity via entities");if(e.entities&&(isNaN(e.eventsLimit)||e.eventsLimit<0))throw new Error("The eventsLimit option needs to be a positive number");const t=(e.entities||[]).map(e=>e.entity||e),a=((this.config||{}).entities||[]).map(e=>e.entity||e);this.config&&JSON.stringify(t)===JSON.stringify(a)&&e.numberOfDays===this.config.numberOfDays||(this.cardNeedsUpdating=!0),JSON.stringify(e)!==JSON.stringify(this.config||{})&&(this.cardNeedsUpdating=!0),this.config={...e}}getCardSize(){return 8}static get styles(){return Ze}render(){return this.updateCard(),ee`
       <ha-card class='calendar-card'>
         ${e=this.config,e.hideHeader||!1===e.title?ee``:ee`<div class='header'>${e.title}</div>`}
         ${this.events?ee`${this.events}`:ee`
@@ -959,7 +967,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
             </div>
           `}
       </ha-card>
-    `;var e}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;this.lastEventsUpdate=s(),this.cardNeedsUpdating=!1;const{events:e,failedEvents:t}=await async function(e,t){const a=s().startOf("day"),n=a.format("YYYY-MM-DDTHH:mm:ss"),r=a.add(e.numberOfDays,"days").format("YYYY-MM-DDTHH:mm:ss"),i=[],d=[],_=[];return e.entities.forEach(e=>{const a=e&&e.entity||e,s=`calendars/${a}?start=${n}Z&end=${r}Z`;_.push(t.callApi("get",s).then(t=>t.map(t=>(t.entity=e,t))).then(e=>{i.push(...e)}).catch(t=>{d.push({name:e.name||a,error:t})}))}),await Promise.all(_),{failedEvents:d,events:qe(i,e)}}(this.config,this.__hass),a=function(e){return e.reduce((e,t)=>{const a=s(t.startDateTime).format("YYYY-MM-DD"),n=e.findIndex(e=>e.day===a);return n>-1?e[n].events.push(t):e.push({day:a,events:[t]}),e},[])}(e),n=t.reduce((e,t)=>ee`
+    `;var e}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;this.lastEventsUpdate=s(),this.cardNeedsUpdating=!1;const{events:e,failedEvents:t}=await async function(e,t){const a=s().startOf("day"),n=a.format("YYYY-MM-DDTHH:mm:ss"),r=a.add(e.numberOfDays,"days").format("YYYY-MM-DDTHH:mm:ss"),i=[],d=[],_=[];return e.entities.forEach(e=>{const a=e&&e.entity||e,s=`calendars/${a}?start=${n}Z&end=${r}Z`;_.push(t.callApi("get",s).then(t=>t.map(t=>(t.entity=e,t))).then(e=>{i.push(...e)}).catch(t=>{d.push({name:e.name||a,error:t})}))}),await Promise.all(_),{failedEvents:d,events:qe(i,e)}}(this.config,this.__hass),a=function(e,t){let a=e.reduce((e,t)=>{const a=s(t.startDateTime).format("YYYY-MM-DD"),n=e.findIndex(e=>e.day===a);return n>-1?e[n].events.push(t):e.push({day:a,events:[t]}),e},[]),n=0,r=!1;return a=a.map(e=>{if(!r)return n+=e.events.length,r=t.eventsLimit<n,e}).filter(Boolean)}(e,this.config),n=t.reduce((e,t)=>ee`
         ${e}
         <tr>
           <td class="failed-name">${t.name}</td>
