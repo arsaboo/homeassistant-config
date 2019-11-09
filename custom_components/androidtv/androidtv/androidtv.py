@@ -225,7 +225,7 @@ class AndroidTV(BaseTV):
             output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY)
         else:
             output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY)
-        _LOGGER.debug("Android TV %s update response: %s", self.host, output)
+        _LOGGER.debug("Android TV %s `get_properties` response: %s", self.host, output)
 
         # ADB command was unsuccessful
         if output is None:

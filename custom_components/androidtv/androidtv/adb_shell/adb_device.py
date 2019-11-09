@@ -209,7 +209,7 @@ class AdbDevice(object):
             The output of the ADB shell command
 
         """
-        return ''.join(self._streaming_command(b'shell', command.encode('utf8'), timeout_s, total_timeout_s))
+        return b''.join(self._streaming_command(b'shell', command.encode('utf8'), timeout_s, total_timeout_s)).decode('utf8')
 
     def _okay(self, local_id, remote_id, timeout_s):
         """Send an ``b'OKAY'`` mesage.
@@ -317,7 +317,7 @@ class AdbDevice(object):
 
         while True:
             msg = self._handle.bulk_read(constants.MESSAGE_SIZE, timeout_s)
-            _LOGGER.debug("bulk_read(%d): %s", constants.MESSAGE_SIZE, msg)
+            _LOGGER.debug("bulk_read(%d): %s", constants.MESSAGE_SIZE, repr(msg))
             cmd, arg0, arg1, data_length, data_checksum = unpack(msg)
             command = constants.WIRE_TO_ID.get(cmd)
 
@@ -334,7 +334,7 @@ class AdbDevice(object):
             data = bytearray()
             while data_length > 0:
                 temp = self._handle.bulk_read(data_length, timeout_s)
-                _LOGGER.debug("bulk_read(%d): %s", data_length, temp)
+                _LOGGER.debug("bulk_read(%d): %s", data_length, repr(temp))
 
                 data += temp
                 data_length -= len(temp)
@@ -468,9 +468,9 @@ class AdbDevice(object):
             Timeout in seconds for TCP packets, or ``None``; see :meth:`TcpHandle.bulk_write() <adb_shell.tcp_handle.TcpHandle.bulk_write>`
 
         """
-        _LOGGER.debug("bulk_write: %s", msg.pack())
+        _LOGGER.debug("bulk_write: %s", repr(msg.pack()))
         self._handle.bulk_write(msg.pack(), timeout_s)
-        _LOGGER.debug("bulk_write: %s", msg.data)
+        _LOGGER.debug("bulk_write: %s", repr(msg.data))
         self._handle.bulk_write(msg.data, timeout_s)
 
     def _streaming_command(self, service, command, timeout_s, total_timeout_s):
@@ -506,4 +506,4 @@ class AdbDevice(object):
         local_id, remote_id = self._open(b'%s:%s' % (service, command), timeout_s, total_timeout_s)
 
         for data in self._read_until_close(local_id, remote_id, timeout_s, total_timeout_s):
-            yield data.decode('utf8')
+            yield data

@@ -322,7 +322,7 @@ class FireTV(BaseTV):
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
-        _LOGGER.debug("Fire TV %s update response: %s", self.host, output)
+        _LOGGER.debug("Fire TV %s `get_properties` response: %s", self.host, output)
 
         # ADB command was unsuccessful
         if output is None:

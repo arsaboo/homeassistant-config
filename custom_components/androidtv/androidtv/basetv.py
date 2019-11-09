@@ -181,6 +181,8 @@ class BaseTV(object):
                                      constants.CMD_MAC_WLAN0 + " && " +
                                      constants.CMD_MAC_ETH0)
 
+        _LOGGER.debug("%s `get_device_properties` response: %s", self.host, properties)
+
         if not properties:
             return {}
 
