@@ -47,6 +47,10 @@
       paper-toggle-button-unchecked-button-color: 'var(--disabled-text-color)'
       paper-toggle-button-unchecked-bar-color: 'var(--disabled-text-color)'
       paper-toggle-button-unchecked-ink-color: 'var(--disabled-text-color)'
+      switch-checked-color: 'var(--accent-color)'
+      switch-unchecked-color: 'var(--disabled-text-color)'
+      switch-unchecked-button-color: 'var(--disabled-text-color)'
+      switch-unchecked-track-color: 'var(--disabled-text-color)'
       # Sliders
       paper-slider-knob-color: 'var(--accent-color)'
       paper-slider-knob-start-color: 'var(--accent-color)'

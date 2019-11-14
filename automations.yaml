@@ -712,6 +712,35 @@
             {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- endif -%}
 
+- id: notify_tensorflow_bus
+  alias: 'Notify Tensorflow bus'
+  initial_state: 'on'
+  condition:
+    - condition: template
+      value_template: '{{ trigger.to_state.state |int > 0 }}'
+  trigger:
+    - platform: template
+      value_template: >
+        {{ 'bus' in state_attr('image_processing.tensorflow_driveway','matches') }}
+  action:
+    - service: script.sonos_say
+      data:
+        sonos_entity: media_player.family_room_2
+        volume: 0.6
+        delay: '00:00:05'
+        message: 'Bus detected in Driveway'
+    - service: notify.ios_alokiosiphone
+      data_template:
+        message: "Bus detected"
+        data:
+          push:
+            category: camera
+          entity_id: "camera.driveway"
+          attachment:
+            url: "{{ states.camera.driveway.attributes.entity_picture }}"
+            content-type: jpg
+
+
 - id: notify_tensorflow_detection
   alias: 'Notify Tensorflow detection'
   initial_state: 'on'
@@ -2224,7 +2253,7 @@
         message: >
           {{trigger.event.data}}
 
-- alias: 'Sleeping - turn on'
+- alias: 'Arlo snapshop'
   initial_state: True
   hide_entity: true
   trigger:
@@ -2233,13 +2262,32 @@
     event_data:
       entity_id: binary_sensor.vibration_158d0002a51fc2
       movement_type: vibrate
-  condition:
-    - condition: time
-      after: '21:00:00'
-      before: '06:00:00'
-    - condition: state
-      entity_id: input_boolean.sleeping
-      state: 'off'
   action:
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.sleeping
+    - service: camera.aarlo_request_snapshot_to_file
+      entity_id: camera.aarlo_livingroom2
+      data_template:
+        filename: '/home/homeassistant/.homeassistant/downloads/camera/arlo_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
+
+- id: earnings_estimate_logging
+  alias: 'Log Earnings Estimate changes'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.yahoo_cop
+        - sensor.yahoo_wpc
+        - sensor.yahoo_pm
+        - sensor.yahoo_brk_b
+        - sensor.yahoo_well
+        - sensor.yahoo_irm
+        - sensor.yahoo_doc
+        - sensor.yahoo_cvs
+  action:
+    - service: logbook.log
+      data_template:
+        name: "Yahoo Estimates: "
+        message: "{{trigger.to_state.attributes.Ticker}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}. {{ trigger.to_state.attributes.history[0].firm }} - {{ trigger.to_state.attributes.history[0].action|default('Initiated', true) }} to {{ trigger.to_state.attributes.history[0].toGrade }} on {{ trigger.to_state.attributes.history[0].epochGradeDate }}"
+    - service: notify.telegram
+      data_template:
+        message: "{{trigger.to_state.attributes.Ticker}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}. {{ trigger.to_state.attributes.history[0].firm }} - {{ trigger.to_state.attributes.history[0].action|default('Initiated', true) }} to {{ trigger.to_state.attributes.history[0].toGrade }} on {{ trigger.to_state.attributes.history[0].epochGradeDate }}"
+        title: "{{trigger.to_state.attributes.Ticker}} updated"

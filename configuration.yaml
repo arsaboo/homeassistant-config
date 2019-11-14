@@ -62,6 +62,7 @@ python_script:
 hacs:
   token: !secret hacs_token
   python_script: True
+  theme: True
   options:
     experimental: True
 zeroconf:
@@ -179,9 +180,7 @@ xiaomi_aqara:
   gateways:
     - key: !secret xiaomikey
       host: 192.168.2.82
-abode:
-  username: !secret abode_username
-  password: !secret abode_password
+
 ring:
   username: !secret ring_username
   password: !secret ring_password
@@ -834,6 +833,7 @@ logger:
     aiohttp.server: critical
     haffmpeg.core: critical
     homeassistant.core: critical
+    homeassistant.components.http: debug
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
@@ -847,7 +847,7 @@ logger:
     custom_components.samsungtv: debug
     homeassistant.components.ssdp: debug
     custom_components.samsungtv_upnp: debug
-    # custom_components.samsungtv_custom: debug
+    custom_components.samsungtv_custom2: critical
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

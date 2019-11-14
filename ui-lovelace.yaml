@@ -117,6 +117,16 @@ views:
               left: 11%
               width: 7%
               padding: 50px 50px 100px 50px
+          - type: state-icon
+            entity: binary_sensor.water_leak_sensor_158d00027b0db6
+            style:
+              top: 42%
+              left: 21%
+          - type: state-icon
+            entity: binary_sensor.water_leak_sensor_158d00024bfa97
+            style:
+              top: 62%
+              left: 22%
           - type: image
             entity: camera.porch
             image: /local/icons/camera_porch_streaming.png
@@ -255,6 +265,11 @@ views:
             entity: binary_sensor.motion_sensor_158d0001a1f2ab
             style:
               top: 27%
+              left: 85%
+          - type: state-icon
+            entity: binary_sensor.water_leak_sensor_158d0001bb788c
+            style:
+              top: 42%
               left: 85%
             # Porch
           # - type: state-icon
@@ -525,8 +540,14 @@ views:
         title: Information
         show_header_toggle: false
         entities:
-          - sensor.morning_commute
-          - sensor.alok_to_home
+          - entity: sensor.morning_commute
+            tap_action:
+              action: url
+              url_path: !secret google_maps_morning_commute
+          - entity: sensor.alok_to_home
+            tap_action:
+              action: url
+              url_path: !secret google_maps_evening_commute
           - sensor.plex
           - sensor.usdinr
           - type: cast
@@ -693,6 +714,9 @@ views:
           - sensor.illumination_34ce00813670
           - sensor.illumination_158d0001a1f2ab
           - binary_sensor.water_leak_sensor_158d0001d77800
+          - binary_sensor.water_leak_sensor_158d00027b0db6
+          - binary_sensor.water_leak_sensor_158d00024bfa97
+          - binary_sensor.water_leak_sensor_158d0001bb788c
           - sensor.leeoalarmstatus
       - type: picture-entity
         entity: camera.meteogram
@@ -710,9 +734,9 @@ views:
         cards:
           - type: custom:simple-thermostat
             entity: climate.downstairs
-            modes:
-              auto: false
-              auxHeatOnly: false
+            control:
+              hvac: true
+              _names: false
             hide:
               state: true
             sensors:
@@ -726,14 +750,10 @@ views:
                 name: Away Mode
               - entity: sensor.downstairs_temp_change
                 name: Efficiency
-              - entity: input_number.downstairs_prev_temp
-                name: Prev Temp
               - entity: input_number.downstairs_prev_eff
                 name: Prev Eff
               - entity: sensor.downstairs_hvac_efficiency
                 name: Avg Eff
-              - entity: input_datetime.downstairs_time
-                name: Start Time
           - type: thermostat
             entity: climate.downstairs
           - type: picture-entity
@@ -752,9 +772,9 @@ views:
         cards:
           - type: custom:simple-thermostat
             entity: climate.upstairs
-            modes:
-              auto: false
-              auxHeatOnly: false
+            control:
+              hvac: true
+              _names: false
             hide:
               state: true
             sensors:
@@ -768,14 +788,10 @@ views:
                 name: Away Mode
               - entity: sensor.upstairs_temp_change
                 name: Efficiency
-              - entity: input_number.upstairs_prev_temp
-                name: Prev Temp
               - entity: input_number.upstairs_prev_eff
                 name: Prev Eff
               - entity: sensor.upstairs_hvac_efficiency
                 name: Avg Eff
-              - entity: input_datetime.upstairs_time
-                name: Start Time
           - type: thermostat
             entity: climate.upstairs
           - type: picture-entity
@@ -794,9 +810,9 @@ views:
         cards:
           - type: custom:simple-thermostat
             entity: climate.master
-            modes:
-              auto: false
-              auxHeatOnly: false
+            control:
+              hvac: true
+              _names: false
             hide:
               state: true
             sensors:
@@ -810,14 +826,10 @@ views:
                 name: Away Mode
               - entity: sensor.master_temp_change
                 name: Efficiency
-              - entity: input_number.master_prev_temp
-                name: Prev Temp
               - entity: input_number.master_prev_eff
                 name: Prev Eff
               - entity: sensor.master_hvac_efficiency
                 name: Avg Eff
-              - entity: input_datetime.master_time
-                name: Start Time
 
           - type: thermostat
             entity: climate.bedroom
@@ -1238,12 +1250,11 @@ views:
         title: Network Details
         show_header_toggle: false
         entities:
-          - sensor.speedtest_download
           - switch.pihole
-          - type: divider
-          - sensor.glances_cpu_load
-          - sensor.glances_disk_used_percent
-          - sensor.glances_ram_used_percent
+          - sensor.nuc_cpu_load
+          - sensor.nuc_disk_used_percent
+          - sensor.nuc_ram_used_percent
+          - sensor.nuc_containers_active
       - type: horizontal-stack
         cards:
           - type: custom:button-card
@@ -1296,136 +1307,141 @@ views:
     title: Testing
     cards:
       - type: custom:pc-card
-      - type: vertical-stack
-        cards:
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                name: Dow Futures
-                unit: '%'
-                entity: sensor.dow_futures_change_pct
-                min: -8
-                max: 8
-                severity:
-                  red: -8
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Technology
-                unit: '%'
-                entity: sensor.information_technology
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Real Estate
-                unit: '%'
-                entity: sensor.real_estate
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                name: Finance
-                unit: '%'
-                entity: sensor.financials
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Industrial
-                unit: '%'
-                entity: sensor.industrials
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Utilities
-                unit: '%'
-                entity: sensor.utilities
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                name: Materials
-                unit: '%'
-                entity: sensor.materials
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Telecom
-                unit: '%'
-                entity: sensor.communication_services
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Energy
-                unit: '%'
-                entity: sensor.energy
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                name: Staples
-                unit: '%'
-                entity: sensor.consumer_staples
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Discretionary
-                unit: '%'
-                entity: sensor.consumer_discretionary
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
-              - type: gauge
-                name: Health
-                unit: '%'
-                entity: sensor.health_care
-                min: -6
-                max: 6
-                severity:
-                  red: -6
-                  yellow: -2
-                  green: 0
+      - type: conditional
+        conditions:
+          - entity: sensor.information_technology
+            state_not: "unavailable"
+        card:
+          type: vertical-stack
+          cards:
+            - type: horizontal-stack
+              cards:
+                - type: gauge
+                  name: Dow Futures
+                  unit: '%'
+                  entity: sensor.dow_futures_change_pct
+                  min: -8
+                  max: 8
+                  severity:
+                    red: -8
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Technology
+                  unit: '%'
+                  entity: sensor.information_technology
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Real Estate
+                  unit: '%'
+                  entity: sensor.real_estate
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+            - type: horizontal-stack
+              cards:
+                - type: gauge
+                  name: Finance
+                  unit: '%'
+                  entity: sensor.financials
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Industrial
+                  unit: '%'
+                  entity: sensor.industrials
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Utilities
+                  unit: '%'
+                  entity: sensor.utilities
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+            - type: horizontal-stack
+              cards:
+                - type: gauge
+                  name: Materials
+                  unit: '%'
+                  entity: sensor.materials
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Telecom
+                  unit: '%'
+                  entity: sensor.communication_services
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Energy
+                  unit: '%'
+                  entity: sensor.energy
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+            - type: horizontal-stack
+              cards:
+                - type: gauge
+                  name: Staples
+                  unit: '%'
+                  entity: sensor.consumer_staples
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Discretionary
+                  unit: '%'
+                  entity: sensor.consumer_discretionary
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
+                - type: gauge
+                  name: Health
+                  unit: '%'
+                  entity: sensor.health_care
+                  min: -6
+                  max: 6
+                  severity:
+                    red: -6
+                    yellow: -2
+                    green: 0
       - type: custom:mini-graph-card
         entities:
           - sensor.speedtest_download
@@ -2062,41 +2078,122 @@ views:
             state: "on"
         card:
           type: custom:unused-card
-      - type: vertical-stack
-        cards:
-          - type: custom:list-card
-            entity: sensor.yahoo_wpc
-            title: Analyst Estimates - WPC
-            feed_attribute: history
-            row_limit: 10
-            columns:
-              - title: 'Date'
-                field: epochGradeDate
-              - title: Firm
-                field: firm
-              - title: Action
-                field: action
-              - title: From
-                field: fromGrade
-              - title: To
-                field: toGrade
-          - type: custom:list-card
-            entity: sensor.yahoo_cop
-            title: Analyst Estimates - COP
-            feed_attribute: history
-            row_limit: 10
-            columns:
-              - title: 'Date'
-                field: epochGradeDate
-              - title: Firm
-                field: firm
-              - title: Action
-                field: action
-              - title: From
-                field: fromGrade
-              - title: To
-                field: toGrade
-
+  - icon: mdi:coin-outline
+    id: stocks
+    title: Stocks
+    cards:
+      - type: custom:list-card
+        entity: sensor.yahoo_wpc
+        title: Analyst Estimates - WPC
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_cop
+        title: Analyst Estimates - COP
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_cvs
+        title: Analyst Estimates - CVS
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_doc
+        title: Analyst Estimates - DOC
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_irm
+        title: Analyst Estimates - IRM
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_pm
+        title: Analyst Estimates - PM
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_well
+        title: Analyst Estimates - WELL
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
   - icon: mdi:cctv
     id: cameras_panel
     title: Cameras
