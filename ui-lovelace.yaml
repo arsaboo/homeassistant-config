@@ -1,6 +1,4 @@
 resources:
-  - url: /local/custom_ui/card-tools.js?track=true
-    type: js
   - url: /local/custom_ui/weather-card.js?v=0.24
     type: module
   - url: /local/community/pc-card/pc-card.js?v=0.2
@@ -13,6 +11,8 @@ resources:
     type: module
   - url: /local/community/button-card/button-card.js
     type: module
+  - url: /local/community/restriction-card/restriction-card.js
+    type: module
   - url: https://unpkg.com/moment@2.22.2/moment.js
     type: js
   - url: /local/community/lovelace-slider-entity-row/slider-entity-row.js?v=0.3
@@ -21,16 +21,16 @@ resources:
     type: module
   - url: /local/community/mini-graph-card/mini-graph-card-bundle.js?v=0.0.1
     type: module
-  - url: /local/custom_ui/gap-card.js?v=0.1
-    type: js
-  - url: /local/custom_ui/layout-card.js?v=0.1
-    type: js
+  - url: /local/community/lovelace-gap-card/gap-card.js?v=0.1
+    type: module
+  - url: /local/community/lovelace-layout-card/layout-card.js?v=0.2
+    type: module
   - url: /local/custom_ui/card-modder.js?v=0.1
     type: js
   - url: /local/community/lovelace-card-mod/card-mod.js?v=0.1
     type: module
-  - url: /local/custom_ui/auto-entities.js?v=0.1
-    type: js
+  - url: /local/community/lovelace-auto-entities/auto-entities.js?v=0.2
+    type: module
   - url: /local/community/config-template-card/config-template-card.js?v=0.1
     type: module
   - url: /local/community/secondaryinfo-entity-row/secondaryinfo-entity-row.js
@@ -43,7 +43,8 @@ resources:
     type: js
   - url: /local/community/unused-card/unused-card.js
     type: module
-
+  - url: /local/community/lovelace-card-tools/card-tools.js
+    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant

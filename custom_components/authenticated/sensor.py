@@ -1,6 +1,6 @@
 """
 A platform which allows you to get information
-about successfull logins to Home Assistant.
+about successful logins to Home Assistant.
 For more details about this component, please refer to the documentation at
 https://github.com/custom-components/authenticated
 """
@@ -182,16 +182,18 @@ class AuthenticatedSensor(Entity):
 
                     if new == stored:
                         continue
+                    if new is None or stored is None:
+                        continue
                     elif new > stored:
                         updated = True
-                        _LOGGER.info("New successfull login from known IP (%s)", access)
+                        _LOGGER.info("New successful login from known IP (%s)", access)
                         ipaddress.prev_used_at = ipaddress.last_used_at
                         ipaddress.last_used_at = tokens[access]["last_used_at"]
                 except Exception:  # pylint: disable=broad-except
                     pass
             else:
                 updated = True
-                _LOGGER.warning("New successfull login from unknown IP (%s)", access)
+                _LOGGER.warning("New successful login from unknown IP (%s)", access)
                 accessdata = AuthenticatedData(access, tokens[access])
                 ipaddress = IPData(accessdata, users, self.provider)
                 ipaddress.lookup()
@@ -323,25 +325,24 @@ def load_authentications(authfile, exclude):
                 if ValidateIP(token["last_used_ip"]) in ip_network(
                     excludeaddress, False
                 ):
-                    break
-            else:
-                if token["last_used_ip"] in tokens_cleaned:
-                    if (
-                        token["last_used_at"]
-                        > tokens_cleaned[token["last_used_ip"]]["last_used_at"]
-                    ):
-                        tokens_cleaned[token["last_used_ip"]]["last_used_at"] = token[
-                            "last_used_at"
-                        ]
-                        tokens_cleaned[token["last_used_ip"]]["user_id"] = token[
-                            "user_id"
-                        ]
-                else:
-                    tokens_cleaned[token["last_used_ip"]] = {}
+                    continue
+            if token.get("last_used_at") is None:
+                continue
+            if token["last_used_ip"] in tokens_cleaned:
+                if (
+                    token["last_used_at"]
+                    > tokens_cleaned[token["last_used_ip"]]["last_used_at"]
+                ):
                     tokens_cleaned[token["last_used_ip"]]["last_used_at"] = token[
                         "last_used_at"
                     ]
                     tokens_cleaned[token["last_used_ip"]]["user_id"] = token["user_id"]
+            else:
+                tokens_cleaned[token["last_used_ip"]] = {}
+                tokens_cleaned[token["last_used_ip"]]["last_used_at"] = token[
+                    "last_used_at"
+                ]
+                tokens_cleaned[token["last_used_ip"]]["user_id"] = token["user_id"]
         except Exception:  # Gotta Catch 'Em All
             pass
 

@@ -1,3 +1,8 @@
+# Copyright (c) 2019 Jeff Irion and contributors
+#
+# This file is part of the adb-shell package.  It was originally written by
+# @joeleong, and it was obtained from: https://github.com/google/python-adb/pull/144
+
 """This file implements encoding and decoding logic for Android's custom RSA
 public key binary format. Public keys are stored as a sequence of
 little-endian 32 bit words. Note that Android only supports little-endian
