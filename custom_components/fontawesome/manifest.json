@@ -1,0 +1,9 @@
+{
+    "domain": "fontawesome",
+    "name": "Fontawesome icons",
+    "documentation": "",
+    "dependencies": ["frontend"],
+    "codeowners": [],
+    "requirements": [],
+    "config_flow": true
+}

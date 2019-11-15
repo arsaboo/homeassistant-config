@@ -1,0 +1,21 @@
+{
+  "config": {
+    "title": "FontAwesome",
+    "abort": {
+      "single_instance_allowed": "Only a single configuration of FontAwesome is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Icon sets",
+        "description": "Which icon sets to include",
+        "data": {
+          "regular": "Include Regular icons (far:)",
+          "solid": "Include Solid icons (fas:)",
+          "brands": "Include Brand icons (fab:)"
+        }
+      }
+    }
+  }
+}
