@@ -12,6 +12,7 @@ from integrationhelper import Logger
 
 from ..const import ELEMENT_TYPES
 from ..store import async_load_from_store, async_save_to_store
+from ..helpers.get_defaults import get_default_repos_lists, get_default_repos_orgs
 
 
 class HacsStatus:
@@ -40,6 +41,7 @@ class System:
     config_path = None
     ha_version = None
     disabled = False
+    lovelace_mode = "storage"
 
 
 class Developer:
@@ -187,6 +189,8 @@ class Hacs:
             )
         )
 
+        await self.recuring_tasks_installed()
+
         self.system.status.startup = False
         self.system.status.background_task = False
         self.hass.bus.async_fire("hacs/status", {})
@@ -323,7 +327,8 @@ class Hacs:
                 repository = self.get_by_name(repository)
                 if repository.status.installed:
                     self.logger.error(
-                        f"You have {repository.information.full_name} installed with HACS, this repositroy has been blacklisted, please consider removing it."
+                        f"You have {repository.information.full_name} installed with HACS "
+                        + "this repository has been blacklisted, please consider removing it."
                     )
                 else:
                     need_to_save = True
@@ -335,33 +340,13 @@ class Hacs:
     async def get_repositories(self):
         """Return a list of repositories."""
         repositories = {}
-        if self.configuration.dev:
-            if self.developer.devcontainer:
-                repositories = {
-                    "appdaemon": ["ludeeus/ad-hacs"],
-                    "integration": ["ludeeus/integration-hacs"],
-                    "plugin": ["maykar/compact-custom-header"],
-                    "python_script": ["ludeeus/ps-hacs"],
-                    "theme": ["ludeeus/theme-hacs"],
-                }
-        else:
-            for category in self.common.categories:
-                remote = await self.data_repo.get_contents(category)
-                repositories[category] = json.loads(remote.content)
-                if category == "plugin":
-                    org = await self.github.get_org_repos("custom-cards")
-                    for repo in org:
-                        repositories[category].append(repo.full_name)
-                if category == "integration":
-                    org = await self.github.get_org_repos("custom-components")
-                    for repo in org:
-                        repositories[category].append(repo.full_name)
-                if category == "theme":
-                    org = await self.github.get_org_repos(
-                        "home-assistant-community-themes"
-                    )
-                    for repo in org:
-                        repositories[category].append(repo.full_name)
+        for category in self.common.categories:
+            repositories[category] = await get_default_repos_lists(
+                self.github, category
+            )
+            org = await get_default_repos_orgs(self.github, category)
+            for repo in org:
+                repositories[category].append(repo)
 
         for category in repositories:
             for repo in repositories[category]:
@@ -372,10 +357,9 @@ class Hacs:
     async def load_known_repositories(self):
         """Load known repositories."""
         self.logger.info("Loading known repositories")
-        blacklist = await self.data_repo.get_contents("blacklist")
         repositories = await self.get_repositories()
 
-        for item in json.loads(blacklist.content):
+        for item in await get_default_repos_lists(self.github, "blacklist"):
             if item not in self.common.blacklist:
                 self.common.blacklist.append(item)
 

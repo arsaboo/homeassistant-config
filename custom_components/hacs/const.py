@@ -1,7 +1,7 @@
 """Constants for HACS"""
 NAME_LONG = "HACS (Home Assistant Community Store)"
 NAME_SHORT = "HACS"
-VERSION = "0.16.3"
+VERSION = "0.17.3"
 DOMAIN = "hacs"
 PROJECT_URL = "https://github.com/hacs/integration/"
 CUSTOM_UPDATER_LOCATIONS = [
@@ -28,8 +28,6 @@ CUSTOM_UPDATER_WARNING = """
 This cannot be used with custom_updater.
 To use this you need to remove custom_updater form {}
 """
-
-DEV_MODE = "You have 'dev' enabled for HACS, this is not intended for regular use, no support will be given if you break something."
 
 STARTUP = f"""
 -------------------------------------------------------------------

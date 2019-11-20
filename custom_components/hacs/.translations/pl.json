@@ -40,9 +40,11 @@
         "title": "HACS (Home Assistant Community Store)"
     },
     "confirm": {
+        "add_to_lovelace": "Na pewno chcesz dodać to do swoich zasobów Lovelace?",
         "continue": "Na pewno chcesz kontynuować?",
         "delete": "Na pewno chcesz usunąć \"{item}\"?",
         "exsist": "{item} już istnieje",
+        "generic": "Jesteś pewny?",
         "overwrite": "Spowoduje to zastąpienie istniejącej kopii.",
         "uninstall": "Na pewno chcesz odinstalować \"{item}\"?"
     },
@@ -65,19 +67,20 @@
         "restart_pending": "Oczekiwanie na ponowne uruchomienie"
     },
     "repository": {
+        "add_to_lovelace": "Dodaj do Lovelace",
         "authors": "Autorzy",
-        "available": "Wersja dostępna",
-        "back_to": "Wstecz",
+        "available": "Dostępna",
+        "back_to": "Wróć do",
         "changelog": "Lista zmian",
         "flag_this": "Oflaguj",
         "hide": "Ukryj",
         "hide_beta": "Ukryj wydania beta",
         "install": "Zainstaluj",
-        "installed": "Wersja zainstalowana",
+        "installed": "Zainstalowano",
         "lovelace_copy_example": "Skopiuj przykład do schowka",
         "lovelace_instruction": "Interfejs użytkownika użyje tej wtyczki po dodaniu konfiguracji",
         "lovelace_no_js_type": "Nie można określić typu tej wtyczki, sprawdź repozytorium.",
-        "newest": "najnowsze",
+        "newest": "najnowsza",
         "note_appdaemon": "musisz jeszcze dodać aplikację do pliku 'apps.yaml'",
         "note_installed": "Po zainstalowaniu dodatek będzie znajdować się w",
         "note_integration": "musisz jeszcze dodać integrację do pliku 'configuration.yaml'",
@@ -99,9 +102,11 @@
         "display": "Sposób wyświetlania",
         "grid": "kratka",
         "hacs_repo": "Repozytorium HACS",
+        "hidden_repositories": "ukryte repozytoria",
         "reload_data": "Wczytaj ponownie dane",
         "save": "Zapisz",
         "table": "tabela",
+        "unhide": "pokaż",
         "upgrade_all": "Uaktualnij wszystkie"
     },
     "store": {

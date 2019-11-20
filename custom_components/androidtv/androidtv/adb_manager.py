@@ -84,8 +84,9 @@ class ADBPython(object):
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             # Make sure that we release the lock
             try:
-                # Catch errors
+                # Catch exceptions
                 try:
+                    # Connect with authentication
                     if self.adbkey:
                         # private key
                         with open(self.adbkey) as f:
@@ -100,14 +101,16 @@ class ADBPython(object):
 
                         signer = PythonRSASigner(pub, priv)
 
-                        # Connect to the device
                         self._adb.connect(rsa_keys=[signer], auth_timeout_s=auth_timeout_s)
+
+                    # Connect without authentication
                     else:
                         self._adb.connect(auth_timeout_s=auth_timeout_s)
 
                     # ADB connection successfully established
-                    self._available = True
                     _LOGGER.debug("ADB connection to %s successfully established", self.host)
+                    self._available = True
+                    return True
 
                 except OSError as exc:
                     if self._available or always_log_errors:
@@ -116,24 +119,25 @@ class ADBPython(object):
                         _LOGGER.warning("Couldn't connect to host %s.  %s: %s", self.host, exc.__class__.__name__, exc.strerror)
 
                     # ADB connection attempt failed
-                    self._adb.close()
+                    self.close()
                     self._available = False
+                    return False
 
                 except Exception as exc:  # pylint: disable=broad-except
                     if self._available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to host %s.  %s: %s", self.host, exc.__class__.__name__, exc)
 
                     # ADB connection attempt failed
-                    self._adb.close()
+                    self.close()
                     self._available = False
-
-                finally:
-                    return self._available
+                    return False
 
             finally:
                 self._adb_lock.release()
 
         # Lock could not be acquired
+        _LOGGER.warning("Couldn't connect to host %s because adb-shell lock not acquired.", self.host)
+        self.close()
         self._available = False
         return False
 
@@ -163,7 +167,7 @@ class ADBPython(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
-        _LOGGER.debug("ADB command not sent to %s because adb-shell lock not acquired: %s", self.host, cmd)
+        _LOGGER.warning("ADB command not sent to %s because adb-shell lock not acquired: %s", self.host, cmd)
         return None
 
 
@@ -238,6 +242,12 @@ class ADBServer(object):
                 self._available = False
             return False
 
+        except Exception as exc:  # noqa pylint: disable=broad-except
+            if self._available:
+                _LOGGER.error('ADB server is unavailable, error: %s', exc)
+                self._available = False
+            return False
+
     def close(self):
         """Close the ADB server socket connection.
 
@@ -262,6 +272,7 @@ class ADBServer(object):
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             # Make sure that we release the lock
             try:
+                # Catch exceptions
                 try:
                     self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
                     self._adb_device = self._adb_client.device(self.host)
@@ -270,27 +281,31 @@ class ADBServer(object):
                     if self._adb_device:
                         _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
                         self._available = True
+                        return True
 
                     # ADB connection attempt failed (without an exception)
-                    else:
-                        if self._available or always_log_errors:
-                            _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = False
+                    if self._available or always_log_errors:
+                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
 
+                    self.close()
+                    self._available = False
+                    return False
+
+                # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
                     if self._available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
 
-                    # ADB connection attempt failed
+                    self.close()
                     self._available = False
-
-                finally:
-                    return self._available
+                    return False
 
             finally:
                 self._adb_lock.release()
 
         # Lock could not be acquired
+        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s because pure-python-adb lock not acquired.", self.host, self.adb_server_ip, self.adb_server_port)
+        self.close()
         self._available = False
         return False
 
@@ -320,5 +335,5 @@ class ADBServer(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
-        _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
+        _LOGGER.warning("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
         return None

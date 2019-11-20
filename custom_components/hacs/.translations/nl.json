@@ -40,7 +40,13 @@
         "title": "HACS (Home Assistant Community Store)"
     },
     "confirm": {
-        "delete": "Weet u zeker dat u \"{item}\" wilt verwijderen?"
+        "add_to_lovelace": "Weet u zeker dat u dit wilt toevoegen aan uw Lovelace bronnen?",
+        "continue": "Weet je zeker dat je door wilt gaan?",
+        "delete": "Weet u zeker dat u \"{item}\" wilt verwijderen?",
+        "exsist": "{item} bestaat al",
+        "generic": "Weet je het zeker?",
+        "overwrite": "Door dit te doen, wordt het overschreven.",
+        "uninstall": "Weet u zeker dat u \"{item}\" wilt verwijderen?"
     },
     "options": {
         "step": {
@@ -53,7 +59,15 @@
             }
         }
     },
+    "repository_banner": {
+        "integration_not_loaded": "Deze integratie wordt niet geladen in Home Assistant.",
+        "not_loaded": "Niet geladen",
+        "plugin_not_loaded": "Deze plugin wordt niet toegevoegd aan je Lovelace resources.",
+        "restart": "U moet Home Assistant opnieuw starten.",
+        "restart_pending": "Herstart in afwachting"
+    },
     "repository": {
+        "add_to_lovelace": "Toevoegen aan Lovelace",
         "authors": "Auteurs",
         "available": "Beschikbaar",
         "back_to": "Terug naar",
@@ -88,12 +102,16 @@
         "display": "Weergave",
         "grid": "Rooster",
         "hacs_repo": "HACS repo",
+        "hidden_repositories": "verborgen repositories",
         "reload_data": "Herlaad data",
         "save": "Opslaan",
         "table": "Tabel",
+        "unhide": "zichtbaar maken",
         "upgrade_all": "Upgrade alles"
     },
     "store": {
+        "clear_new": "Wissen van alle nieuwe repositories",
+        "new_repositories": "Nieuwe Repositories",
         "placeholder_search": "Typ iets om te zoeken..."
     }
 }

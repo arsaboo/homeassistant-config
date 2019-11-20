@@ -40,9 +40,11 @@
         "title": "HACS (Home Assistant Community Store)"
     },
     "confirm": {
+        "add_to_lovelace": "Er du sikker på at du vil legge dette til i dine Lovelace resources?",
         "continue": "Er du sikker på at du vil fortsette?",
         "delete": "Er du sikker på at du vil fjerne \"{item}\"?",
         "exsist": "{item} eksisterer",
+        "generic": "Er du sikker?",
         "overwrite": "Å gjøre dette vil overskrive det.",
         "uninstall": "Er du sikker på at du vil avinstallere \"{item}\"?"
     },
@@ -65,6 +67,7 @@
         "restart_pending": "Restart er nødvendig"
     },
     "repository": {
+        "add_to_lovelace": "Legg til i Lovelace",
         "authors": "Laget av",
         "available": "Tilgjengelig",
         "back_to": "Tilbake til",
@@ -99,9 +102,11 @@
         "display": "Vise",
         "grid": "Nett",
         "hacs_repo": "HACS repo",
+        "hidden_repositories": "Gjemte repositories",
         "reload_data": "Last inn data på nytt",
         "save": "Lagre",
         "table": "Tabell",
+        "unhide": "Vis igjen",
         "upgrade_all": "Oppgradere alle"
     },
     "store": {

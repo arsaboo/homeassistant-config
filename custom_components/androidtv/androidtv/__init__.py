@@ -9,7 +9,7 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv import FireTV
 
 
-__version__ = '0.0.33'
+__version__ = '0.0.34'
 
 
 def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):

@@ -26,7 +26,7 @@
         "step": {
             "user": {
                 "data": {
-                    "appdaemon": "AppDaemon App-Discovery & Tracking aktivieren.",
+                    "appdaemon": "AppDaemon App-Discovery & Tracking aktivieren",
                     "python_script": "Python Script-Discovery & Tracking aktivieren",
                     "sidepanel_icon": "Sidepanel Symbol",
                     "sidepanel_title": "Sidepanel Titel",
@@ -40,9 +40,11 @@
         "title": "HACS (Home Assistant Community Store)"
     },
     "confirm": {
+        "add_to_lovelace": "Möchtest du dies wirklich zu deinen Lovelace-Ressourcen hinzufügen?",
         "continue": "Bist du dir sicher, dass du fortfahren möchtest?",
         "delete": "Möchtest du \"{item}\" wirklich löschen?",
         "exsist": "{item} existiert bereits",
+        "generic": "Bist du dir sicher?",
         "overwrite": "Dadurch wird die Datei überschrieben.",
         "uninstall": "Möchtest du \"{item}\" wirklich löschen?"
     },
@@ -65,6 +67,7 @@
         "restart_pending": "Neustart ausstehend"
     },
     "repository": {
+        "add_to_lovelace": "Zu Lovelace hinzufügen",
         "authors": "Autoren",
         "available": "Verfügbar",
         "back_to": "Zurück zu",
@@ -75,13 +78,13 @@
         "install": "Installieren",
         "installed": "Installiert",
         "lovelace_copy_example": "Beispiel in die Zwischenablage kopieren",
-        "lovelace_instruction": "Wenn du dies in deine Lovelace Einstellungen hinzufügst, benutze dies",
+        "lovelace_instruction": "Wenn du dies in deine Lovelace-Config hinzufügst, benutze dies",
         "lovelace_no_js_type": "Konnte die Art dieses Plugins nicht erkennen. Prüfe die Repository.",
         "newest": "neueste",
-        "note_appdaemon": "Du musst deine Apps noch in deine 'apps.yaml' einfügen.",
+        "note_appdaemon": "Du musst deine Apps noch in deine 'apps.yaml' einfügen",
         "note_installed": "Nach der Installation wird dies zu finden sein in",
-        "note_integration": "Du musst dies noch deiner 'configuration.yaml' hinzufügen.",
-        "note_plugin": "Du musst dies noch in deine Lovelace-Einstellungen ('ui-lovelace.yaml' oder UI-Einstellungseditor) hinzufügen.",
+        "note_integration": "Du musst dies noch deiner 'configuration.yaml' hinzufügen",
+        "note_plugin": "Du musst dies noch in deine Lovelace-Einstellungen ('ui-lovelace.yaml' oder Raw-Konfigurationseditor) hinzufügen",
         "open_issue": "Problem eröffnen",
         "open_plugin": "Plugin öffnen",
         "reinstall": "Neu installieren",
@@ -99,9 +102,11 @@
         "display": "Anzeige",
         "grid": "Gitter",
         "hacs_repo": "HACS repo",
+        "hidden_repositories": "versteckte Repositories",
         "reload_data": "Daten neu laden",
         "save": "Speichern",
         "table": "Tabelle",
+        "unhide": "einblenden",
         "upgrade_all": "Alle aktualisieren"
     },
     "store": {

@@ -14,12 +14,11 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.event import async_call_later
 
 from .configuration_schema import hacs_base_config_schema, hacs_config_option_schema
-from .const import DEV_MODE, DOMAIN, ELEMENT_TYPES, STARTUP, VERSION
+from .const import DOMAIN, ELEMENT_TYPES, STARTUP, VERSION
 from .constrains import check_constans
 from .hacsbase import Hacs
 from .hacsbase.configuration import Configuration
 from .hacsbase.data import HacsData
-from .hacsbase.migration import ValidateData
 from .setup import add_sensor, load_hacs_repository, setup_frontend
 
 SCHEMA = hacs_base_config_schema()
@@ -88,6 +87,9 @@ async def hacs_startup(hacs):
     hacs.logger.info(STARTUP)
     hacs.system.config_path = hacs.hass.config.path()
     hacs.system.ha_version = HAVERSION
+    hacs.system.lovelace_mode = (
+        hacs.hass.data.get(DOMAIN, {}).get("lovelace", {}).get("mode", "yaml")
+    )
     hacs.system.disabled = False
     hacs.github = AIOGitHub(
         hacs.configuration.token, async_create_clientsession(hacs.hass)
@@ -104,15 +106,11 @@ async def hacs_startup(hacs):
     # Set up frontend
     await setup_frontend(hacs)
 
+    # Set up sensor
+    add_sensor(hacs)
+
     # Load HACS
     if not await load_hacs_repository(hacs):
-        if hacs.configuration.config_type == "flow":
-            if hacs.configuration.config_entry is not None:
-                await async_remove_entry(hacs.hass, hacs.configuration.config_entry)
-        return False
-
-    val = ValidateData()
-    if not val.validate_local_data_file():
         if hacs.configuration.config_type == "flow":
             if hacs.configuration.config_entry is not None:
                 await async_remove_entry(hacs.hass, hacs.configuration.config_entry)
@@ -144,19 +142,6 @@ async def hacs_startup(hacs):
     else:
         async_call_later(hacs.hass, 5, hacs().startup_tasks())
 
-    # Print DEV warning
-    if hacs.configuration.dev:
-        hacs.logger.warning(DEV_MODE)
-        hacs.hass.components.persistent_notification.create(
-            title="HACS DEV MODE", message=DEV_MODE, notification_id="hacs_dev_mode"
-        )
-
-    # Add sensor
-    add_sensor(hacs)
-
-    # Set up services
-    # await add_services(hacs)
-
     # Mischief managed!
     return True
 
@@ -174,7 +159,7 @@ async def async_remove_entry(hass, config_entry):
         pass
     Hacs().logger.info("Removing sidepanel")
     try:
-        hass.components.frontend.async_remove_panel("hacs_web")
+        hass.components.frontend.async_remove_panel("hacs")
     except AttributeError:
         pass
     Hacs().system.disabled = True

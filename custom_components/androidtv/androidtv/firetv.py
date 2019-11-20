@@ -181,6 +181,16 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
+            # Plex
+            elif current_app == constants.APP_PLEX:
+                if media_session_state == 3:
+                    if wake_lock_size == 2:
+                        state = constants.STATE_PAUSED
+                    else:
+                        state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Sport 1
             elif current_app == constants.APP_SPORT1:
                 if wake_lock_size == 2:
