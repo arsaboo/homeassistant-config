@@ -9,6 +9,7 @@ from aiogithubapi import AIOGitHub
 from homeassistant import config_entries
 from homeassistant.const import EVENT_HOMEASSISTANT_START
 from homeassistant.const import __version__ as HAVERSION
+from homeassistant.components.lovelace import system_health_info
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.event import async_call_later
@@ -63,7 +64,9 @@ async def async_setup_entry(hass, config_entry):
     config_entry.add_update_listener(reload_hacs)
     startup_result = await hacs_startup(Hacs)
     if not startup_result:
+        Hacs.system.disabled = True
         raise ConfigEntryNotReady
+    Hacs.system.disabled = False
     return startup_result
 
 
@@ -71,6 +74,7 @@ async def startup_wrapper_for_yaml(hacs):
     """Startup wrapper for yaml config."""
     startup_result = await hacs_startup(hacs)
     if not startup_result:
+        hacs.system.disabled = True
         hacs.hass.components.frontend.async_remove_panel(
             hacs.configuration.sidepanel_title.lower()
             .replace(" ", "_")
@@ -78,18 +82,20 @@ async def startup_wrapper_for_yaml(hacs):
         )
         hacs.logger.info("Could not setup HACS, trying again in 15 min")
         async_call_later(hacs.hass, 900, startup_wrapper_for_yaml(hacs))
+        return
+    hacs.system.disabled = False
 
 
 async def hacs_startup(hacs):
     """HACS startup tasks."""
+    lovelace_info = await system_health_info(hacs.hass)
     hacs.logger.debug(f"Configuration type: {hacs.configuration.config_type}")
     hacs.version = VERSION
     hacs.logger.info(STARTUP)
     hacs.system.config_path = hacs.hass.config.path()
     hacs.system.ha_version = HAVERSION
-    hacs.system.lovelace_mode = (
-        hacs.hass.data.get(DOMAIN, {}).get("lovelace", {}).get("mode", "yaml")
-    )
+
+    hacs.system.lovelace_mode = lovelace_info.get("mode", "yaml")
     hacs.system.disabled = False
     hacs.github = AIOGitHub(
         hacs.configuration.token, async_create_clientsession(hacs.hass)
