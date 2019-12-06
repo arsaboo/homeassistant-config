@@ -80,7 +80,11 @@ class TcpHandle(object):
 
         """
         if self._connection:
-            self._connection.shutdown(socket.SHUT_RDWR)
+            try:
+                self._connection.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+
             self._connection.close()
             self._connection = None
 

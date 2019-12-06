@@ -55,6 +55,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 ATTR_MODE = 'mode'
 ATTR_VOLUME = 'volume'
 ATTR_DURATION = 'duration'
+ATTR_TIME_ZONE = 'time_zone'
 
 SERVICE_MODE = 'aarlo_set_mode'
 SERVICE_SIREN_ON = 'aarlo_siren_on'
@@ -173,6 +174,18 @@ class ArloBaseStation(AlarmControlPanel):
             self.alarm_clear()
         return self._state
 
+    @property
+    def supported_features(self) -> int:
+        """Return the list of supported features."""
+        """Make this non-dynamic later..."""
+        try:
+            c = __import__("homeassistant.components.alarm_control_panel.const",fromlist=['SUPPORT_ALARM_ARM_HOME', 'SUPPORT_ALARM_ARM_AWAY', 'SUPPORT_ALARM_ARM_NIGHT', 'SUPPORT_ALARM_TRIGGER'])
+            _LOGGER.debug('supported: ' + str(c.SUPPORT_ALARM_ARM_HOME | c.SUPPORT_ALARM_ARM_AWAY | c.SUPPORT_ALARM_ARM_NIGHT | c.SUPPORT_ALARM_TRIGGER))
+            return c.SUPPORT_ALARM_ARM_HOME | c.SUPPORT_ALARM_ARM_AWAY | c.SUPPORT_ALARM_ARM_NIGHT | c.SUPPORT_ALARM_TRIGGER
+        except ModuleNotFoundError:
+            _LOGGER.debug('not supported')
+            return 0
+
     def alarm_disarm(self, code=None):
         self.set_mode_in_ha(DISARMED)
 
@@ -212,6 +225,7 @@ class ArloBaseStation(AlarmControlPanel):
         attrs = {}
 
         attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
+        attrs[ATTR_TIME_ZONE] = self._base.timezone
         attrs['brand'] = DEFAULT_BRAND
         attrs['device_id'] = self._base.device_id
         attrs['model_id'] = self._base.model_id

@@ -1,0 +1,11 @@
+# Describes the format for available wyzesense services
+
+scan:
+  description: Allow new devices to join for the next 30s
+
+remove:
+  description: Remove a device
+  fields:
+    mac:
+      description: MAC address of the node to remove
+      example: "777A4656"

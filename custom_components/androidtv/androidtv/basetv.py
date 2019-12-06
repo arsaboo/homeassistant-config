@@ -120,6 +120,38 @@ class BaseTV(object):
         """
         return self._adb.shell(cmd)
 
+    def adb_pull(self, local_path, device_path):
+        """Pull a file from the device.
+
+        This calls :py:meth:`androidtv.adb_manager.ADBPython.pull` or :py:meth:`androidtv.adb_manager.ADBServer.pull`,
+        depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
+
+        Parameters
+        ----------
+        local_path : str
+            The path where the file will be saved
+        device_path : str
+            The file on the device that will be pulled
+
+        """
+        return self._adb.pull(local_path, device_path)
+
+    def adb_push(self, local_path, device_path):
+        """Push a file to the device.
+
+        This calls :py:meth:`androidtv.adb_manager.ADBPython.push` or :py:meth:`androidtv.adb_manager.ADBServer.push`,
+        depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
+
+        Parameters
+        ----------
+        local_path : str
+            The file that will be pushed to the device
+        device_path : str
+            The path where the file will be saved on the device
+
+        """
+        return self._adb.push(local_path, device_path)
+
     def adb_connect(self, always_log_errors=True, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         """Connect to an Android TV / Fire TV device.
 

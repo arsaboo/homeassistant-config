@@ -134,7 +134,7 @@ class AdbMessage(object):
         ``self.command`` with its bits flipped; in other words, ``self.command + self.magic == 2**32 - 1``
 
     """
-    def __init__(self, command, arg0=None, arg1=None, data=b''):
+    def __init__(self, command, arg0, arg1, data=b''):
         self.command = constants.ID_TO_WIRE[command]
         self.magic = self.command ^ 0xFFFFFFFF
         self.arg0 = arg0

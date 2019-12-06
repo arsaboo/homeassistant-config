@@ -55,6 +55,7 @@ ATTR_LAST_VIDEO = 'last_video'
 ATTR_VOLUME = 'volume'
 ATTR_LAST_THUMBNAIL = 'last_thumbnail'
 ATTR_DURATION = 'duration'
+ATTR_TIME_ZONE = 'time_zone'
 
 CONF_FFMPEG_ARGUMENTS = 'ffmpeg_arguments'
 
@@ -353,6 +354,7 @@ class ArloCam(Camera):
                 (ATTR_WIRED_ONLY, self._camera.wired_only),
                 (ATTR_LAST_THUMBNAIL, self.last_thumbnail_url),
                 (ATTR_LAST_VIDEO, self.last_video_url),
+                (ATTR_TIME_ZONE, self._camera.timezone),
             ) if value is not None
         }
 

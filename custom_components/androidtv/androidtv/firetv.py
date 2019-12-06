@@ -57,11 +57,11 @@ class FireTV(BaseTV):
         Parameters
         ----------
         pkg : str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
         intent : str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
         count : int, str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
 
         Returns
         -------

@@ -1,0 +1,9 @@
+{
+    "domain": "wyzesense",
+    "name": "Wyze Sense Component",
+    "documentation": "https://github.com/kevinvincent/wyzesense",
+    "requirements": ["wyzesense==0.0.4","retry==0.9.2"],
+    "dependencies": [],
+    "codeowners": ["@kevinvincent"],
+    "homeassistant": "0.92.0"
+}

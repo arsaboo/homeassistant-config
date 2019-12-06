@@ -69,6 +69,12 @@ class InvalidResponseError(Exception):
     """
 
 
+class PushFailedError(Exception):
+    """Pushing a file failed for some reason.
+
+    """
+
+
 class TcpTimeoutException(Exception):
     """TCP connection timed read/write operation exceeded the allowed time.
 
