@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_USERNAME, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_HOST)
 from homeassistant.helpers import config_validation as cv
 
-__version__ = '0.6.2'
+__version__ = '0.6.5'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(CONF_HOST,default=DEFAULT_HOST): cv.url,
+        vol.Optional(CONF_HOST, default=DEFAULT_HOST): cv.url,
         vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL): cv.time_period,
         vol.Optional(CONF_PACKET_DUMP, default=PACKET_DUMP): cv.boolean,
         vol.Optional(CONF_CACHE_VIDEOS, default=CACHE_VIDEOS): cv.boolean,

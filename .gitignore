@@ -33,6 +33,7 @@ known_devices.yaml
 entity_registry.yaml
 secrets.yaml
 google_calendars.yaml
+SERVICE_ACCOUNT.json
 components
 deps
 tts

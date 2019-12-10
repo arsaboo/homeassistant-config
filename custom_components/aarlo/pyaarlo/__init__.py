@@ -23,7 +23,7 @@ from .util import time_to_arlotime
 logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger('pyaarlo')
 
-__version__ = '0.6.2'
+__version__ = '0.6.5'
 
 
 class PyArlo(object):
@@ -72,11 +72,13 @@ class PyArlo(object):
                 self.info('skipping ' + dname + ': state unknown')
                 continue
 
-            if dtype == 'basestation' or device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs':
+            if dtype == 'basestation' or \
+                    device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs' or \
+                    device.get('modelId') == 'AVD1001A':
                 self._bases.append(ArloBase(dname, self, device))
             if dtype == 'arlobridge':
                 self._bases.append(ArloBase(dname, self, device))
-            if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs':
+            if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs' or device.get('modelId') == 'AVD1001A':
                 self._cameras.append(ArloCamera(dname, self, device))
             if dtype == 'doorbell':
                 self._doorbells.append(ArloDoorBell(dname, self, device))
