@@ -15,8 +15,7 @@ from homeassistant.components.alarm_control_panel import AlarmControlPanel
 from homeassistant.const import STATE_ALARM_ARMED_AWAY, STATE_ALARM_DISARMED
 from homeassistant.helpers.event import async_call_later
 
-from . import (CONF_EMAIL, CONF_EXCLUDE_DEVICES, CONF_INCLUDE_DEVICES,
-               DATA_ALEXAMEDIA)
+from . import CONF_EMAIL, CONF_EXCLUDE_DEVICES, CONF_INCLUDE_DEVICES, DATA_ALEXAMEDIA
 from . import DOMAIN as ALEXA_DOMAIN
 from . import MIN_TIME_BETWEEN_FORCED_SCANS, MIN_TIME_BETWEEN_SCANS, hide_email
 from .helpers import _catch_login_errors, add_devices, retry_async
@@ -27,61 +26,65 @@ DEPENDENCIES = [ALEXA_DOMAIN]
 
 
 @retry_async(limit=5, delay=2, catch_exceptions=True)
-async def async_setup_platform(hass,
-                               config,
-                               add_devices_callback,
-                               discovery_info=None) -> bool:
+async def async_setup_platform(
+    hass, config, add_devices_callback, discovery_info=None
+) -> bool:
     """Set up the Alexa alarm control panel platform."""
     devices = []  # type: List[AlexaAlarmControlPanel]
     account = config[CONF_EMAIL]
     include_filter = config.get(CONF_INCLUDE_DEVICES, [])
     exclude_filter = config.get(CONF_EXCLUDE_DEVICES, [])
-    account_dict = hass.data[DATA_ALEXAMEDIA]['accounts'][account]
-    if 'alarm_control_panel' not in (account_dict
-                                     ['entities']):
-        (hass.data[DATA_ALEXAMEDIA]
-         ['accounts']
-         [account]
-         ['entities']['alarm_control_panel']) = {}
+    account_dict = hass.data[DATA_ALEXAMEDIA]["accounts"][account]
+    if "alarm_control_panel" not in (account_dict["entities"]):
+        (
+            hass.data[DATA_ALEXAMEDIA]["accounts"][account]["entities"][
+                "alarm_control_panel"
+            ]
+        ) = {}
     alexa_client: AlexaAlarmControlPanel = AlexaAlarmControlPanel(
-        account_dict['login_obj'])
+        account_dict["login_obj"]
+    )
     await alexa_client.init()
     if not (alexa_client and alexa_client.unique_id):
-        _LOGGER.debug("%s: Skipping creation of uninitialized device: %s",
-                      hide_email(account),
-                      alexa_client)
-    elif alexa_client.unique_id not in (account_dict
-                                        ['entities']
-                                        ['alarm_control_panel']):
+        _LOGGER.debug(
+            "%s: Skipping creation of uninitialized device: %s",
+            hide_email(account),
+            alexa_client,
+        )
+    elif alexa_client.unique_id not in (
+        account_dict["entities"]["alarm_control_panel"]
+    ):
         devices.append(alexa_client)
-        (hass.data[DATA_ALEXAMEDIA]
-         ['accounts']
-         [account]
-         ['entities']
-         ['alarm_control_panel'][alexa_client.unique_id]) = alexa_client
+        (
+            hass.data[DATA_ALEXAMEDIA]["accounts"][account]["entities"][
+                "alarm_control_panel"
+            ][alexa_client.unique_id]
+        ) = alexa_client
     else:
-        _LOGGER.debug("%s: Skipping already added device: %s",
-                      hide_email(account),
-                      alexa_client)
-    return await add_devices(hide_email(account),
-                             devices, add_devices_callback,
-                             include_filter, exclude_filter)
+        _LOGGER.debug(
+            "%s: Skipping already added device: %s", hide_email(account), alexa_client
+        )
+    return await add_devices(
+        hide_email(account),
+        devices,
+        add_devices_callback,
+        include_filter,
+        exclude_filter,
+    )
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Set up the Alexa alarm control panel platform by config_entry."""
     return await async_setup_platform(
-        hass,
-        config_entry.data,
-        async_add_devices,
-        discovery_info=None)
+        hass, config_entry.data, async_add_devices, discovery_info=None
+    )
 
 
 async def async_unload_entry(hass, entry) -> bool:
     """Unload a config entry."""
     account = entry.data[CONF_EMAIL]
-    account_dict = hass.data[DATA_ALEXAMEDIA]['accounts'][account]
-    for device in account_dict['entities']['alarm_control_panel'].values():
+    account_dict = hass.data[DATA_ALEXAMEDIA]["accounts"][account]
+    for device in account_dict["entities"]["alarm_control_panel"].values():
         await device.async_remove()
     return True
 
@@ -93,6 +96,7 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
         # pylint: disable=unexpected-keyword-arg
         """Initialize the Alexa device."""
         from alexapy import AlexaAPI
+
         # Class info
         self._login = login
         self.alexa_api = AlexaAPI(self, login)
@@ -111,24 +115,29 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
         """Initialize."""
         try:
             from simplejson import JSONDecodeError
+
             data = await self.alexa_api.get_guard_details(self._login)
-            guard_dict = (data['locationDetails']
-                          ['locationDetails']['Default_Location']
-                          ['amazonBridgeDetails']['amazonBridgeDetails']
-                          ['LambdaBridge_AAA/OnGuardSmartHomeBridgeService']
-                          ['applianceDetails']['applianceDetails'])
+            guard_dict = data["locationDetails"]["locationDetails"]["Default_Location"][
+                "amazonBridgeDetails"
+            ]["amazonBridgeDetails"]["LambdaBridge_AAA/OnGuardSmartHomeBridgeService"][
+                "applianceDetails"
+            ][
+                "applianceDetails"
+            ]
         except (KeyError, TypeError, JSONDecodeError):
             guard_dict = {}
         for _, value in guard_dict.items():
-            if value['modelName'] == "REDROCK_GUARD_PANEL":
-                self._appliance_id = value['applianceId']
-                self._guard_entity_id = value['entityId']
+            if value["modelName"] == "REDROCK_GUARD_PANEL":
+                self._appliance_id = value["applianceId"]
+                self._guard_entity_id = value["entityId"]
                 self._friendly_name += " " + self._appliance_id[-5:]
-                _LOGGER.debug("%s: Discovered %s: %s %s",
-                              self.account,
-                              self._friendly_name,
-                              self._appliance_id,
-                              self._guard_entity_id)
+                _LOGGER.debug(
+                    "%s: Discovered %s: %s %s",
+                    self.account,
+                    self._friendly_name,
+                    self._appliance_id,
+                    self._guard_entity_id,
+                )
         if not self._appliance_id:
             _LOGGER.debug("%s: No Alexa Guard entity found", self.account)
 
@@ -141,8 +150,8 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
             pass
         # Register event handler on bus
         self._listener = self.hass.bus.async_listen(
-            f'{ALEXA_DOMAIN}_{hide_email(self._login.email)}'[0:32],
-            self._handle_event)
+            f"{ALEXA_DOMAIN}_{hide_email(self._login.email)}"[0:32], self._handle_event
+        )
 
     async def async_will_remove_from_hass(self):
         """Prepare to remove entity."""
@@ -159,10 +168,14 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
                 return
         except AttributeError:
             pass
-        if 'push_activity' in event.data:
-            async_call_later(self.hass, 2, lambda _:
-                             self.hass.async_create_task(
-                                self.async_update(no_throttle=True)))
+        if "push_activity" in event.data:
+            async_call_later(
+                self.hass,
+                2,
+                lambda _: self.hass.async_create_task(
+                    self.async_update(no_throttle=True)
+                ),
+            )
 
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
     @_catch_login_errors
@@ -174,27 +187,29 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
         except AttributeError:
             pass
         import json
+
         _LOGGER.debug("%s: Refreshing %s", self.account, self.name)
         state = None
-        state_json = await self.alexa_api.get_guard_state(self._login,
-                                                          self._appliance_id)
+        state_json = await self.alexa_api.get_guard_state(
+            self._login, self._appliance_id
+        )
         # _LOGGER.debug("%s: state_json %s", self.account, state_json)
-        if (state_json and 'deviceStates' in state_json
-                and state_json['deviceStates']):
-            cap = state_json['deviceStates'][0]['capabilityStates']
+        if state_json and "deviceStates" in state_json and state_json["deviceStates"]:
+            cap = state_json["deviceStates"][0]["capabilityStates"]
             # _LOGGER.debug("%s: cap %s", self.account, cap)
             for item_json in cap:
                 item = json.loads(item_json)
                 # _LOGGER.debug("%s: item %s", self.account, item)
-                if item['name'] == 'armState':
-                    state = item['value']
+                if item["name"] == "armState":
+                    state = item["value"]
                     # _LOGGER.debug("%s: state %s", self.account, state)
-        elif state_json['errors']:
-            _LOGGER.debug("%s: Error refreshing alarm_control_panel %s: %s",
-                          self.account,
-                          self.name,
-                          json.dumps(state_json['errors']) if state_json
-                          else None)
+        elif state_json["errors"]:
+            _LOGGER.debug(
+                "%s: Error refreshing alarm_control_panel %s: %s",
+                self.account,
+                self.name,
+                json.dumps(state_json["errors"]) if state_json else None,
+            )
         if state is None:
             return
         if state == "ARMED_AWAY":
@@ -209,28 +224,15 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
     @_catch_login_errors
     async def async_alarm_disarm(self, code=None) -> None:
         # pylint: disable=unexpected-keyword-arg
-        """Send disarm command.
-
-        We use the arm_home state as Alexa does not have disarm state.
-        """
+        """Send disarm command."""
         try:
             if not self.enabled:
                 return
         except AttributeError:
             pass
-        await self.async_alarm_arm_home()
-
-    @_catch_login_errors
-    async def async_alarm_arm_home(self, code=None) -> None:
-        """Send arm home command."""
-        try:
-            if not self.enabled:
-                return
-        except AttributeError:
-            pass
-        await self.alexa_api.set_guard_state(self._login,
-                                             self._guard_entity_id,
-                                             "ARMED_STAY")
+        await self.alexa_api.set_guard_state(
+            self._login, self._guard_entity_id, "ARMED_STAY"
+        )
         await self.async_update(no_throttle=True)
         self.async_schedule_update_ha_state()
 
@@ -243,23 +245,11 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
                 return
         except AttributeError:
             pass
-        await self.alexa_api.set_guard_state(self._login,
-                                             self._guard_entity_id,
-                                             "ARMED_AWAY")
+        await self.alexa_api.set_guard_state(
+            self._login, self._guard_entity_id, "ARMED_AWAY"
+        )
         await self.async_update(no_throttle=True)
         self.async_schedule_update_ha_state()
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        """Make this non-dynamic later..."""
-        try:
-            c = __import__("homeassistant.components.alarm_control_panel.const",fromlist=['SUPPORT_ALARM_ARM_HOME', 'SUPPORT_ALARM_ARM_AWAY', 'SUPPORT_ALARM_ARM_NIGHT', 'SUPPORT_ALARM_TRIGGER'])
-            _LOGGER.debug('supported: ' + str(c.SUPPORT_ALARM_ARM_HOME | c.SUPPORT_ALARM_ARM_AWAY | c.SUPPORT_ALARM_ARM_NIGHT | c.SUPPORT_ALARM_TRIGGER))
-            return c.SUPPORT_ALARM_ARM_HOME | c.SUPPORT_ALARM_ARM_AWAY | c.SUPPORT_ALARM_ARM_NIGHT | c.SUPPORT_ALARM_TRIGGER
-        except ModuleNotFoundError:
-            _LOGGER.debug('not supported')
-            return 0
 
     @property
     def unique_id(self):
@@ -284,6 +274,17 @@ class AlexaAlarmControlPanel(AlarmControlPanel):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return self._should_poll or not (self.hass.data[DATA_ALEXAMEDIA]
-                                         ['accounts'][self._login.email]
-                                         ['websocket'])
+        return self._should_poll or not (
+            self.hass.data[DATA_ALEXAMEDIA]["accounts"][self._login.email]["websocket"]
+        )
+
+    @property
+    def supported_features(self) -> int:
+        """Return the list of supported features."""
+        try:
+            from homeassistant.components.alarm_control_panel import (
+                SUPPORT_ALARM_ARM_AWAY,
+            )
+        except ImportError:
+            return 0
+        return SUPPORT_ALARM_ARM_AWAY

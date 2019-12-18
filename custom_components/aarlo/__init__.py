@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_USERNAME, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_HOST)
 from homeassistant.helpers import config_validation as cv
 
-__version__ = '0.6.5'
+__version__ = '0.6.6'
 
 _LOGGER = logging.getLogger(__name__)
 

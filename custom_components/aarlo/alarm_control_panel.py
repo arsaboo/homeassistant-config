@@ -5,6 +5,7 @@ For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/alarm_control_panel.arlo/
 """
 import logging
+import re
 import time
 from datetime import timedelta
 
@@ -14,9 +15,12 @@ import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
 from homeassistant.components import websocket_api
 from homeassistant.components.alarm_control_panel import (DOMAIN,
-                                                          AlarmControlPanel)
+                                                          AlarmControlPanel,
+                                                          FORMAT_NUMBER,
+                                                          FORMAT_TEXT)
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  ATTR_ENTITY_ID,
+                                 CONF_CODE,
                                  CONF_TRIGGER_TIME,
                                  STATE_ALARM_ARMED_AWAY,
                                  STATE_ALARM_ARMED_HOME,
@@ -36,15 +40,25 @@ ARMED = 'armed'
 DISARMED = 'disarmed'
 ICON = 'mdi:security'
 
+CONF_CODE_ARM_REQUIRED = "code_arm_required"
+CONF_CODE_DISARM_REQUIRED = "code_disarm_required"
 CONF_HOME_MODE_NAME = 'home_mode_name'
 CONF_AWAY_MODE_NAME = 'away_mode_name'
 CONF_NIGHT_MODE_NAME = 'night_mode_name'
 CONF_ALARM_VOLUME = 'alarm_volume'
+CONF_COMMAND_TEMPLATE = "command_template"
 
+DEFAULT_COMMAND_TEMPLATE = "{{action}}"
 DEFAULT_TRIGGER_TIME = timedelta(seconds=60)
 ALARM_VOLUME = '8'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+    vol.Optional(CONF_CODE): cv.string,
+    vol.Optional(CONF_CODE_ARM_REQUIRED, default=True): cv.boolean,
+    vol.Optional(CONF_CODE_DISARM_REQUIRED, default=True): cv.boolean,
+    vol.Optional(
+        CONF_COMMAND_TEMPLATE, default=DEFAULT_COMMAND_TEMPLATE
+    ): cv.template,
     vol.Optional(CONF_HOME_MODE_NAME, default=ARMED): cv.string,
     vol.Optional(CONF_AWAY_MODE_NAME, default=ARMED): cv.string,
     vol.Optional(CONF_NIGHT_MODE_NAME, default=ARMED): cv.string,
@@ -136,6 +150,7 @@ class ArloBaseStation(AlarmControlPanel):
 
     def __init__(self, device, config):
         """Initialize the alarm control panel."""
+        self._config = config
         self._name = device.name
         self._unique_id = self._name.lower().replace(' ', '_')
         self._base = device
@@ -186,16 +201,44 @@ class ArloBaseStation(AlarmControlPanel):
             _LOGGER.debug('not supported')
             return 0
 
+    @property
+    def code_format(self):
+        """Return one or more digits/characters."""
+        code = self._config.get(CONF_CODE)
+        if code is None:
+            return None
+        if isinstance(code, str) and re.search("^\\d+$", code):
+            return FORMAT_NUMBER
+        return FORMAT_TEXT
+
+    @property
+    def code_arm_required(self):
+        """Whether the code is required for arm actions."""
+        code_required = self._config.get(CONF_CODE_ARM_REQUIRED)
+        return code_required
+
     def alarm_disarm(self, code=None):
+        code_required = self._config[CONF_CODE_DISARM_REQUIRED]
+        if code_required and not self._validate_code(code, "disarming"):
+            return
         self.set_mode_in_ha(DISARMED)
 
     def alarm_arm_away(self, code=None):
+        code_required = self._config[CONF_CODE_ARM_REQUIRED]
+        if code_required and not self._validate_code(code, "arming away"):
+            return
         self.set_mode_in_ha(self._away_mode_name)
 
     def alarm_arm_home(self, code=None):
+        code_required = self._config[CONF_CODE_ARM_REQUIRED]
+        if code_required and not self._validate_code(code, "arming home"):
+            return
         self.set_mode_in_ha(self._home_mode_name)
 
     def alarm_arm_night(self, code=None):
+        code_required = self._config[CONF_CODE_ARM_REQUIRED]
+        if code_required and not self._validate_code(code, "arming night"):
+            return
         self.set_mode_in_ha(self._night_mode_name)
 
     def alarm_trigger(self, code=None):
@@ -280,6 +323,13 @@ class ArloBaseStation(AlarmControlPanel):
     def async_siren_off(self):
         return self.hass.async_add_job(self.siren_off)
 
+    def _validate_code(self, code, state):
+        """Validate given code."""
+        conf_code = self._config.get(CONF_CODE)
+        check = conf_code is None or code == conf_code
+        if not check:
+            _LOGGER.warning("Wrong code entered for %s", state)
+        return check
 
 def _get_base_from_entity_id(hass, entity_id):
     component = hass.data.get(DOMAIN)
