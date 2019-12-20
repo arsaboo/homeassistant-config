@@ -1,0 +1,12 @@
+{
+  "domain": "ring",
+  "name": "Ring",
+  "documentation": "https://www.home-assistant.io/integrations/ring",
+  "requirements": [
+    "https://github.com/xernaj/python-ring-doorbell/archive/fix/oauth-fail-due-to-blocked-user-agent.zip#ring_doorbell==0.2.4"
+  ],
+  "dependencies": [
+    "ffmpeg"
+  ],
+  "codeowners": []
+}
