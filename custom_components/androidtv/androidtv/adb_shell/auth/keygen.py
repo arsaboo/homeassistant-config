@@ -124,8 +124,8 @@ def decode_pubkey(public_key):
     rr = reversed(rr_bytes)
     _LOGGER.debug('modulus_size_words: %s', hex(modulus_size_words))
     _LOGGER.debug('n0inv: %s', hex(n0inv))
-    _LOGGER.debug('modulus: %s', ':'.join(map(hex, modulus)))
-    _LOGGER.debug('rr: %s', ':'.join(map(hex, rr)))
+    _LOGGER.debug('modulus: %s', ':'.join((hex(m) for m in modulus)))
+    _LOGGER.debug('rr: %s', ':'.join((hex(r) for r in rr)))
     _LOGGER.debug('exponent: %s', hex(exponent))
 
 

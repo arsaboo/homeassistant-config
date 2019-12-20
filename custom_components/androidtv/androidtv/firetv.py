@@ -12,76 +12,32 @@ from . import constants
 _LOGGER = logging.getLogger(__name__)
 
 
-# Apps
-APP_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
-APP_PACKAGE_SETTINGS = "com.amazon.tv.settings"
-
-# Intents
-INTENT_LAUNCH = "android.intent.category.LAUNCHER"
-INTENT_HOME = "android.intent.category.HOME"
-
-
 class FireTV(BaseTV):
     """Representation of an Amazon Fire TV device.
 
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
-        state_detection_rules : dict, None
-            A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
-        auth_timeout_s : float
-            Authentication timeout (in seconds)
+    Parameters
+    ----------
+    host : str
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+    auth_timeout_s : float
+        Authentication timeout (in seconds)
 
-        """
+    """
 
     DEVICE_CLASS = 'firetv'
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
-        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
-
-    # ======================================================================= #
-    #                                                                         #
-    #                               ADB methods                               #
-    #                                                                         #
-    # ======================================================================= #
-    def _send_intent(self, pkg, intent, count=1):
-        """Send an intent to the device.
-
-        Parameters
-        ----------
-        pkg : str
-            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
-        intent : str
-            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
-        count : int, str
-            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
-
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
-        """
-        cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
-
-        # adb shell outputs in weird format, so we cut it into lines,
-        # separate the retcode and return info to the user
-        res = self._adb.shell(cmd)
-        if res is None:
-            return {}
-
-        res = res.strip().split("\r\n")
-        retcode = res[-1]
-        output = "\n".join(res[:-1])
-
-        return {"output": output, "retcode": retcode}
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     # ======================================================================= #
     #                                                                         #
@@ -138,7 +94,7 @@ class FireTV(BaseTV):
                 return state, current_app, running_apps
 
             # Determine the state based on the `current_app`
-            if current_app in [APP_PACKAGE_LAUNCHER, APP_PACKAGE_SETTINGS, None]:
+            if current_app in [constants.APP_FIRETV_PACKAGE_LAUNCHER, constants.APP_FIRETV_PACKAGE_SETTINGS, None]:
                 state = constants.STATE_STANDBY
 
             # Amazon Video
@@ -249,43 +205,6 @@ class FireTV(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
-    #                              App methods                                #
-    #                                                                         #
-    # ======================================================================= #
-    def launch_app(self, app):
-        """Launch an app.
-
-        Parameters
-        ----------
-        app : str
-            The ID of the app that will be launched
-
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
-        """
-        return self._send_intent(app, INTENT_LAUNCH)
-
-    def stop_app(self, app):
-        """Stop an app.
-
-        Parameters
-        ----------
-        app : str
-            The ID of the app that will be stopped
-
-        Returns
-        -------
-        str, None
-            The output of the ``am force-stop`` ADB shell command, or ``None`` if the device is unavailable
-
-        """
-        return self._adb.shell("am force-stop {0}".format(app))
-
-    # ======================================================================= #
-    #                                                                         #
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
@@ -332,7 +251,7 @@ class FireTV(BaseTV):
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
-        _LOGGER.debug("Fire TV %s `get_properties` response: %s", self.host, output)
+        _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         # ADB command was unsuccessful
         if output is None:
@@ -397,6 +316,25 @@ class FireTV(BaseTV):
                 'current_app': current_app,
                 'media_session_state': media_session_state,
                 'running_apps': running_apps}
+
+    # ======================================================================= #
+    #                                                                         #
+    #                               Properties                                #
+    #                                                                         #
+    # ======================================================================= #
+    @property
+    def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        running_apps_response = self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
+
+        return self._running_apps(running_apps_response)
 
     # ======================================================================= #
     #                                                                         #

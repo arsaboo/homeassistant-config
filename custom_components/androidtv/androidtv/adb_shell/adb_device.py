@@ -70,13 +70,14 @@ import time
 from . import constants
 from . import exceptions
 from .adb_message import AdbMessage, checksum, unpack
-from .tcp_handle import TcpHandle
+from .handle.base_handle import BaseHandle
+from .handle.tcp_handle import TcpHandle
 
 
 try:
-    file_types = (file, io.IOBase)
-except NameError:
-    file_types = (io.IOBase,)
+    FILE_TYPES = (file, io.IOBase)
+except NameError:  # pragma: no cover
+    FILE_TYPES = (io.IOBase,)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -123,8 +124,8 @@ class _AdbTransactionInfo(object):  # pylint: disable=too-few-public-methods
     remote_id : int
         The ID for the recipient
     timeout_s : float, None
-        Timeout in seconds for TCP packets, or ``None``; see :meth:`TcpHandle.bulk_read() <adb_shell.tcp_handle.TcpHandle.bulk_read>`
-        and :meth:`TcpHandle.bulk_write() <adb_shell.tcp_handle.TcpHandle.bulk_write>`
+        Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+        and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
     total_timeout_s : float
         The total time in seconds to wait for a command in ``expected_cmds`` in :meth:`AdbDevice._read`
 
@@ -135,8 +136,8 @@ class _AdbTransactionInfo(object):  # pylint: disable=too-few-public-methods
     remote_id : int
         The ID for the recipient
     timeout_s : float, None
-        Timeout in seconds for TCP packets, or ``None``; see :meth:`TcpHandle.bulk_read() <adb_shell.tcp_handle.TcpHandle.bulk_read>`
-        and :meth:`TcpHandle.bulk_write() <adb_shell.tcp_handle.TcpHandle.bulk_write>`
+        Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+        and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
     total_timeout_s : float
         The total time in seconds to wait for a command in ``expected_cmds`` in :meth:`AdbDevice._read`
 
@@ -197,47 +198,48 @@ class _FileSyncTransactionInfo(object):  # pylint: disable=too-few-public-method
 
 
 class AdbDevice(object):
-    """A class with methods for connecting to a device and sending shell commands.
+    """A class with methods for connecting to a device and executing ADB commands.
 
     Parameters
     ----------
-    serial : str
-        ``<host>`` or ``<host>:<port>``
-    banner : str, None
+    handle : BaseHandle
+        A user-provided handle for communicating with the device; must be an instance of a subclass of :class:`~adb_shell.handle.base_handle.BaseHandle`
+    banner : str, bytes, None
         The hostname of the machine where the Python interpreter is currently running; if
         it is not provided, it will be determined via ``socket.gethostname()``
-    default_timeout_s : float, None
-        Default timeout in seconds for TCP packets, or ``None``; see :class:`~adb_shell.tcp_handle.TcpHandle`
+
+    Raises
+    ------
+    adb_shell.exceptions.InvalidHandleError
+        The passed ``handle`` is not an instance of a subclass of :class:`~adb_shell.handle.base_handle.BaseHandle`
 
     Attributes
     ----------
     _available : bool
         Whether an ADB connection to the device has been established
-    _banner : str
+    _banner : bytearray, bytes
         The hostname of the machine where the Python interpreter is currently running
-    _banner_bytes : bytearray
-        ``self._banner`` converted to a bytearray
-    _handle : TcpHandle
-        The :class:`~adb_shell.tcp_handle.TcpHandle` instance that is used to connect to the device
-    _serial : str
-        ``<host>`` or ``<host>:<port>``
+    _handle : BaseHandle
+        The handle that is used to connect to the device; must be a subclass of :class:`~adb_shell.handle.base_handle.BaseHandle`
 
     """
 
-    def __init__(self, serial, banner=None, default_timeout_s=None):
-        if banner and isinstance(banner, str):
-            self._banner = banner
+    def __init__(self, handle, banner=None):
+        if banner:
+            if not isinstance(banner, (bytes, bytearray)):
+                self._banner = bytearray(banner, 'utf-8')
+            else:
+                self._banner = banner
         else:
             try:
-                self._banner = socket.gethostname()
+                self._banner = bytearray(socket.gethostname(), 'utf-8')
             except:  # noqa pylint: disable=bare-except
-                self._banner = 'unknown'
+                self._banner = bytearray('unknown', 'utf-8')
 
-        self._banner_bytes = bytearray(self._banner, 'utf-8')
+        if not isinstance(handle, BaseHandle):
+            raise exceptions.InvalidHandleError("`handle` must be an instance of a subclass of `BaseHandle`")
 
-        self._serial = serial
-
-        self._handle = TcpHandle(self._serial, default_timeout_s)
+        self._handle = handle
 
         self._available = False
 
@@ -254,7 +256,7 @@ class AdbDevice(object):
         return self._available
 
     def close(self):
-        """Close the socket connection via :meth:`adb_shell.tcp_handle.TcpHandle.close`.
+        """Close the connection via the provided handle's ``close()`` method.
 
         """
         self._available = False
@@ -263,7 +265,7 @@ class AdbDevice(object):
     def connect(self, rsa_keys=None, timeout_s=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S):
         """Establish an ADB connection to the device.
 
-        1. Use the handle to establish a socket connection
+        1. Use the handle to establish a connection
         2. Send a ``b'CNXN'`` message
         3. Unpack the ``cmd``, ``arg0``, ``arg1``, and ``banner`` fields from the response
         4. If ``cmd`` is not ``b'AUTH'``, then authentication is not necesary and so we are done
@@ -284,8 +286,8 @@ class AdbDevice(object):
             A list of signers of type :class:`~adb_shell.auth.sign_cryptography.CryptographySigner`,
             :class:`~adb_shell.auth.sign_pycryptodome.PycryptodomeAuthSigner`, or :class:`~adb_shell.auth.sign_pythonrsa.PythonRSASigner`
         timeout_s : float, None
-            Timeout in seconds for TCP packets, or ``None``; see :meth:`TcpHandle.bulk_read() <adb_shell.tcp_handle.TcpHandle.bulk_read>`
-            and :meth:`TcpHandle.bulk_write() <adb_shell.tcp_handle.TcpHandle.bulk_write>`
+            Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+            and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
         auth_timeout_s : float, None
             The time in seconds to wait for a ``b'CNXN'`` authentication response
         total_timeout_s : float
@@ -304,12 +306,12 @@ class AdbDevice(object):
             Invalid auth response from the device
 
         """
-        # 1. Use the handle to establish a socket connection
+        # 1. Use the handle to establish a connection
         self._handle.close()
         self._handle.connect(timeout_s)
 
         # 2. Send a ``b'CNXN'`` message
-        msg = AdbMessage(constants.CNXN, constants.VERSION, constants.MAX_ADB_DATA, b'host::%s\0' % self._banner_bytes)
+        msg = AdbMessage(constants.CNXN, constants.VERSION, constants.MAX_ADB_DATA, b'host::%s\0' % self._banner)
         adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
         self._send(msg, adb_info)
 
@@ -348,7 +350,7 @@ class AdbDevice(object):
 
         # 7. None of the keys worked, so send ``rsa_keys[0]``'s public key; if the response does not time out, we must have connected successfully
         pubkey = rsa_keys[0].GetPublicKey()
-        if isinstance(pubkey, str):
+        if not isinstance(pubkey, (bytes, bytearray)):
             pubkey = bytearray(pubkey, 'utf-8')
 
         msg = AdbMessage(constants.AUTH, constants.AUTH_RSAPUBLICKEY, 0, pubkey + b'\0')
@@ -367,8 +369,8 @@ class AdbDevice(object):
         command : str
             The shell command that will be sent
         timeout_s : float, None
-            Timeout in seconds for TCP packets, or ``None``; see :meth:`TcpHandle.bulk_read() <adb_shell.tcp_handle.TcpHandle.bulk_read>`
-            and :meth:`TcpHandle.bulk_write() <adb_shell.tcp_handle.TcpHandle.bulk_write>`
+            Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+            and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
         total_timeout_s : float
             The total time in seconds to wait for a ``b'CLSE'`` or ``b'OKAY'`` command in :meth:`AdbDevice._read`
 
@@ -453,7 +455,7 @@ class AdbDevice(object):
         if not dest_file:
             dest_file = io.BytesIO()
 
-        if not isinstance(dest_file, file_types + (str,)):
+        if not isinstance(dest_file, FILE_TYPES + (str,)):
             raise ValueError("dest_file is of unknown type")
 
         adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
@@ -571,7 +573,7 @@ class AdbDevice(object):
         self._filesync_send(constants.SEND, adb_info, filesync_info, data=fileinfo)
 
         if progress_callback:
-            total_bytes = os.fstat(datafile.fileno()).st_size if isinstance(datafile, file_types) else -1
+            total_bytes = os.fstat(datafile.fileno()).st_size if isinstance(datafile, FILE_TYPES) else -1
             progress = self._handle_progress(lambda current: progress_callback(filename, current, total_bytes))
             next(progress)
 
@@ -764,7 +766,7 @@ class AdbDevice(object):
                 raise exceptions.InvalidChecksumError('Received checksum {0} != {1}'.format(actual_checksum, data_checksum))
 
         else:
-            data = b''
+            data = bytearray()
 
         return command, arg0, arg1, bytes(data)
 
@@ -1116,3 +1118,34 @@ class AdbDevice(object):
                 progress_callback(current)
             except Exception:  # pylint: disable=broad-except
                 continue
+
+
+class AdbDeviceTcp(AdbDevice):
+    """A class with methods for connecting to a device via TCP and executing ADB commands.
+
+    Parameters
+    ----------
+    host : str
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
+    default_timeout_s : float, None
+        Default timeout in seconds for TCP packets, or ``None``
+    banner : str, bytes, None
+        The hostname of the machine where the Python interpreter is currently running; if
+        it is not provided, it will be determined via ``socket.gethostname()``
+
+    Attributes
+    ----------
+    _available : bool
+        Whether an ADB connection to the device has been established
+    _banner : bytearray, bytes
+        The hostname of the machine where the Python interpreter is currently running
+    _handle : TcpHandle
+        The handle that is used to connect to the device
+
+    """
+
+    def __init__(self, host, port=5555, default_timeout_s=None, banner=None):
+        handle = TcpHandle(host, port, default_timeout_s)
+        super(AdbDeviceTcp, self).__init__(handle, banner)

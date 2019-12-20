@@ -37,12 +37,15 @@ wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_com
 
 # 3. Download `adb-shell` package
 mkdir -p "$DIR/androidtv/adb_shell/auth"
+mkdir -p "$DIR/androidtv/adb_shell/handle"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/__init__.py -O "$DIR/androidtv/adb_shell/__init__.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/adb_device.py -O "$DIR/androidtv/adb_shell/adb_device.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/adb_message.py -O "$DIR/androidtv/adb_shell/adb_message.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/constants.py -O "$DIR/androidtv/adb_shell/constants.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/exceptions.py -O "$DIR/androidtv/adb_shell/exceptions.py"
-wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/tcp_handle.py -O "$DIR/androidtv/adb_shell/tcp_handle.py"
+wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/handle/__init__.py -O "$DIR/androidtv/adb_shell/handle/__init__.py"
+wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/handle/base_handle.py -O "$DIR/androidtv/adb_shell/handle/base_handle.py"
+wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/handle/tcp_handle.py -O "$DIR/androidtv/adb_shell/handle/tcp_handle.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/auth/__init__.py -O "$DIR/androidtv/adb_shell/auth/__init__.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/auth/keygen.py -O "$DIR/androidtv/adb_shell/auth/keygen.py"
 wget https://raw.githubusercontent.com/JeffLIrion/ha-androidtv/master/custom_components/androidtv/androidtv/adb_shell/auth/sign_cryptography.py -O "$DIR/androidtv/adb_shell/auth/sign_cryptography.py"

@@ -9,16 +9,18 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv import FireTV
 
 
-__version__ = '0.0.34'
+__version__ = '0.0.36'
 
 
-def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
+def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
     ----------
     host : str
-        The address of the device in the format ``<ip address>:<host>``
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
     adb_server_ip : str
@@ -39,15 +41,15 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detecti
 
     """
     if device_class == 'androidtv':
-        return AndroidTV(host, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+        return AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     if device_class == 'firetv':
-        return FireTV(host, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+        return FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     if device_class != 'auto':
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
-    aftv = BaseTV(host, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+    aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':

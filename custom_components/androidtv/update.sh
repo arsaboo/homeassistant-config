@@ -23,12 +23,15 @@ wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androi
 
 # 4. Download `adb-shell` package
 mkdir -p androidtv/adb_shell/auth
+mkdir -p androidtv/adb_shell/handle
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/__init__.py -O androidtv/adb_shell/__init__.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/adb_device.py -O androidtv/adb_shell/adb_device.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/adb_message.py -O androidtv/adb_shell/adb_message.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/constants.py -O androidtv/adb_shell/constants.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/exceptions.py -O androidtv/adb_shell/exceptions.py
-wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/tcp_handle.py -O androidtv/adb_shell/tcp_handle.py
+wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/handle/__init__.py -O androidtv/adb_shell/handle/__init__.py
+wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/handle/base_handle.py -O androidtv/adb_shell/handle/base_handle.py
+wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/handle/tcp_handle.py -O androidtv/adb_shell/handle/tcp_handle.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/auth/__init__.py -O androidtv/adb_shell/auth/__init__.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/auth/keygen.py -O androidtv/adb_shell/auth/keygen.py
 wget https://raw.githubusercontent.com/JeffLIrion/adb_shell/master/adb_shell/auth/sign_cryptography.py -O androidtv/adb_shell/auth/sign_cryptography.py

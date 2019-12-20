@@ -63,6 +63,12 @@ class InvalidCommandError(Exception):
         super(InvalidCommandError, self).__init__(message, response_header, response_data)
 
 
+class InvalidHandleError(Exception):
+    """The provided handle does not implement the necessary methods: ``close``, ``connect``, ``bulk_read``, and ``bulk_write``.
+
+    """
+
+
 class InvalidResponseError(Exception):
     """Got an invalid response to our command.
 

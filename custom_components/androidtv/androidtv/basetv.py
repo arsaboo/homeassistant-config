@@ -51,7 +51,9 @@ class BaseTV(object):
     Parameters
     ----------
     host : str
-        The address of the device in the format ``<ip address>:<host>``
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
     adb_server_ip : str
@@ -65,8 +67,9 @@ class BaseTV(object):
 
     """
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         self.host = host
+        self.port = int(port)
         self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
@@ -85,10 +88,10 @@ class BaseTV(object):
         # the handler for ADB commands
         if not adb_server_ip:
             # python-adb
-            self._adb = ADBPython(host, adbkey)
+            self._adb = ADBPython(host, port, adbkey)
         else:
             # pure-python-adb
-            self._adb = ADBServer(host, adb_server_ip, adb_server_port)
+            self._adb = ADBServer(host, port, adb_server_ip, adb_server_port)
 
         # establish the ADB connection
         self.adb_connect(auth_timeout_s=auth_timeout_s)
@@ -181,17 +184,6 @@ class BaseTV(object):
         """
         self._adb.close()
 
-    def _key(self, key):
-        """Send a key event to device.
-
-        Parameters
-        ----------
-        key : str, int
-            The Key constant
-
-        """
-        self._adb.shell('input keyevent {0}'.format(key))
-
     # ======================================================================= #
     #                                                                         #
     #                        Home Assistant device info                       #
@@ -213,7 +205,7 @@ class BaseTV(object):
                                      constants.CMD_MAC_WLAN0 + " && " +
                                      constants.CMD_MAC_ETH0)
 
-        _LOGGER.debug("%s `get_device_properties` response: %s", self.host, properties)
+        _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
 
         if not properties:
             return {}
@@ -225,7 +217,7 @@ class BaseTV(object):
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
 
         if not serialno.strip():
-            _LOGGER.warning("Could not obtain serialno for %s, got: '%s'", self.host, serialno)
+            _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)
             serialno = None
 
         mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
@@ -402,18 +394,18 @@ class BaseTV(object):
         return self._current_app(current_app_response)
 
     @property
-    def device(self):
-        """Get the current playback device.
+    def audio_output_device(self):
+        """Get the current audio playback device.
 
         Returns
         -------
         str, None
-            The current playback device, or ``None`` if it could not be determined
+            The current audio playback device, or ``None`` if it could not be determined
 
         """
         stream_music = self._get_stream_music()
 
-        return self._device(stream_music)
+        return self._audio_output_device(stream_music)
 
     @property
     def is_volume_muted(self):
@@ -446,20 +438,6 @@ class BaseTV(object):
         return media_session_state
 
     @property
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS)
-
-        return self._running_apps(running_apps_response)
-
-    @property
     def screen_on(self):
         """Check if the screen is on.
 
@@ -482,9 +460,9 @@ class BaseTV(object):
 
         """
         stream_music = self._get_stream_music()
-        device = self._device(stream_music)
+        audio_output_device = self._audio_output_device(stream_music)
 
-        return self._volume(stream_music, device)
+        return self._volume(stream_music, audio_output_device)
 
     @property
     def volume_level(self):
@@ -593,8 +571,8 @@ class BaseTV(object):
         return current_app, media_session_state
 
     @staticmethod
-    def _device(stream_music):
-        """Get the current playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+    def _audio_output_device(stream_music):
+        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
         ----------
@@ -604,7 +582,7 @@ class BaseTV(object):
         Returns
         -------
         str, None
-            The current playback device, or ``None`` if it could not be determined
+            The current audio playback device, or ``None`` if it could not be determined
 
         """
         if not stream_music:
@@ -714,15 +692,15 @@ class BaseTV(object):
 
         return None
 
-    def _volume(self, stream_music, device):
+    def _volume(self, stream_music, audio_output_device):
         """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
         ----------
         stream_music : str, None
             The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
-        device : str, None
-            The current playback device
+        audio_output_device : str, None
+            The current audio playback device
 
         Returns
         -------
@@ -740,10 +718,10 @@ class BaseTV(object):
             else:
                 self.max_volume = 15.
 
-        if not device:
+        if not audio_output_device:
             return None
 
-        volume_matches = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        volume_matches = re.findall(audio_output_device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
         if volume_matches:
             return int(volume_matches[0])
 
@@ -792,9 +770,100 @@ class BaseTV(object):
 
     # ======================================================================= #
     #                                                                         #
+    #                               App methods                               #
+    #                                                                         #
+    # ======================================================================= #
+    def _send_intent(self, pkg, intent, count=1):
+        """Send an intent to the device.
+
+        Parameters
+        ----------
+        pkg : str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+        intent : str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+        count : int, str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
+
+        """
+        cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
+
+        # adb shell outputs in weird format, so we cut it into lines,
+        # separate the retcode and return info to the user
+        res = self._adb.shell(cmd)
+        if res is None:
+            return {}
+
+        res = res.strip().split("\r\n")
+        retcode = res[-1]
+        output = "\n".join(res[:-1])
+
+        return {"output": output, "retcode": retcode}
+
+    def launch_app(self, app):
+        """Launch an app.
+
+        Parameters
+        ----------
+        app : str
+            The ID of the app that will be launched
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
+
+        """
+        return self._send_intent(app, constants.INTENT_LAUNCH)
+
+    def stop_app(self, app):
+        """Stop an app.
+
+        Parameters
+        ----------
+        app : str
+            The ID of the app that will be stopped
+
+        Returns
+        -------
+        str, None
+            The output of the ``am force-stop`` ADB shell command, or ``None`` if the device is unavailable
+
+        """
+        return self._adb.shell("am force-stop {0}".format(app))
+
+    def start_intent(self, uri):
+        """Start an intent on the device.
+
+        Parameters
+        ----------
+        uri : str
+            The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
+
+        """
+        self._adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
+
+    # ======================================================================= #
+    #                                                                         #
     #                      "key" methods: basic commands                      #
     #                                                                         #
     # ======================================================================= #
+    def _key(self, key):
+        """Send a key event to device.
+
+        Parameters
+        ----------
+        key : str, int
+            The Key constant
+
+        """
+        self._adb.shell('input keyevent {0}'.format(key))
+
     def power(self):
         """Send power action."""
         self._key(constants.KEY_POWER)
