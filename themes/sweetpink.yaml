@@ -1,0 +1,72 @@
+sweetpink:
+  # used these colors
+  light: "#dbebfb"
+  dark: "#32334a"
+  pink: "#e83e8c"
+  gray: "#1d1e2f"
+  gray-dark: "#11111d"
+  indigo: "#6610f2"
+  purple: "#6f42c1"
+  teal: "#20c997"
+  cyan: "#17a2b8"
+
+  # could use these colors
+  blue: "#007bff"
+  red: "#dc3545"
+  orange: "#fd7e14"
+  yellow: "#ffc107"
+  green: "#28a745"
+  white: "#fff"
+
+  primary-color: "var(--pink)"
+  primary-background-color: "var(--dark)"
+  primary-text-color: "var(--light)"
+  light-primary-color: "var(--cyan)"
+  accent-color: "var(--teal)"
+
+  secondary-background-color: "var(--gray)"
+  secondary-text-color: "var(--cyan)"
+
+  disabled-text-color: "var(--gray)"
+  
+  divider-color: "rgba(255, 255, 255, 0.12)"
+  
+  paper-card-background-color: "var(--gray-dark)"
+  paper-card-header-color: "#var(--paper-item-icon-color)"
+  card-background-color: "var(--paper-card-background-color)"
+
+  paper-item-icon-color: "var(--pink)"
+  paper-listbox-background-color: "var(--indigo)"
+  paper-listbox-color: "var(--light)"
+
+  paper-grey-50: "var(--primary-text-color)"
+  paper-grey-200: "var(-gray)"
+  google-red-500: "var(--orange)"
+  
+  label-badge-background-color: "var(--secondary-background-color)"
+  label-badge-text-color: "var(--text-primary-color)"
+  
+  paper-item-icon-active-color: "var(--cyan)"
+  paper-item-icon_-_color: "var(--primary-text-color)"
+  
+  sidebar-icon-color: "var(--light)"
+  sidebar-text-color: "var(--light)"
+  sidebar-selected-background-color: "var(--cyan)"
+  sidebar-selected-icon-color: "var(--light)"
+  sidebar-selected-text-color: "var(--light)"
+  sidebar-text_-_background: "var(--light)"
+
+  paper-progress-active-color: "var(--pink)"
+  paper-progress-container-color: "var(--purple)"
+  paper-slider-knob-color: "var(--teal)"
+  paper-slider-knob-start-color: "var(--purple)"
+
+  switch-unchecked-color: "var(--teal)"
+  switch-unchecked-button-color: "var(--teal)"
+    
+  # Themable CCS vars in HACS (https://hacs.xyz/docs/basic/theming)
+  link-text-color: "var(--cyan)"
+  hacs-status-installed: "var(--teal)"
+  hacs-status-pending-restart: "var(--indigo)"
+  hacs-status-pending-update: "var(--purple)"
+  hacs-status-not-loaded: "var(--indigo)"
