@@ -11,7 +11,8 @@ from .constant import (ACTIVITY_STATE_KEY, BRIGHTNESS_KEY,
                        POWER_SAVE_KEY, PRELOAD_DAYS, PRIVACY_KEY,
                        RECORD_START_PATH, RECORD_STOP_PATH,
                        SNAPSHOT_KEY, SIREN_STATE_KEY, STREAM_SNAPSHOT_KEY,
-                       STREAM_SNAPSHOT_PATH, STREAM_START_PATH, CAMERA_MEDIA_DELAY)
+                       STREAM_SNAPSHOT_PATH, STREAM_START_PATH, CAMERA_MEDIA_DELAY,
+                       AUDIO_POSITION_KEY, AUDIO_TRACK_KEY, DEFAULT_TRACK_ID, MEDIA_PLAYER_RESOURCE_ID)
 from .device import ArloChildDevice
 from .util import http_get, http_get_img
 
@@ -331,6 +332,8 @@ class ArloCamera(ArloChildDevice):
         if cap in 'siren':
             if self.model_id.startswith('VMC5040') or self.model_id.startswith('VMC4040'):
                 return True
+        if cap in 'mediaPlayer' and self.model_id == 'ABC1000':
+            return True
         return super().has_capability(cap)
 
     def take_streaming_snapshot(self):
@@ -507,3 +510,107 @@ class ArloCamera(ArloChildDevice):
 
     def turn_off(self):
         self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=True)
+
+    def get_audio_playback_status(self):
+        """Gets the current playback status and available track list"""
+        body = {
+            'action': 'get',
+            'publishResponse': True,
+            'resource': 'audioPlayback'
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def play_track(self, track_id=DEFAULT_TRACK_ID, position=0):
+        body = {
+            'action': 'playTrack',
+            'publishResponse': True,
+            'resource': MEDIA_PLAYER_RESOURCE_ID,
+            'properties': {
+                AUDIO_TRACK_KEY: track_id,
+                AUDIO_POSITION_KEY: position
+            }
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def pause_track(self):
+        body = {
+            'action': 'pause',
+            'publishResponse': True,
+            'resource': MEDIA_PLAYER_RESOURCE_ID,
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def previous_track(self):
+        """Skips to the previous track in the playlist."""
+        body = {
+            'action': 'prevTrack',
+            'publishResponse': True,
+            'resource': MEDIA_PLAYER_RESOURCE_ID,
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def next_track(self):
+        """Skips to the next track in the playlist."""
+        body = {
+            'action': 'nextTrack',
+            'publishResponse': True,
+            'resource': MEDIA_PLAYER_RESOURCE_ID,
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def set_music_loop_mode_continuous(self):
+        """Sets the music loop mode to repeat the entire playlist."""
+        body = {
+            'action': 'set',
+            'publishResponse': True,
+            'resource': 'audioPlayback/config',
+            'properties': {
+                'config': {
+                    'loopbackMode': 'continuous'
+                }
+            }
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def set_music_loop_mode_single(self):
+        """Sets the music loop mode to repeat the current track."""
+        body = {
+            'action': 'set',
+            'publishResponse': True,
+            'resource': 'audioPlayback/config',
+            'properties': {
+                'config': {
+                    'loopbackMode': 'singleTrack'
+                }
+            }
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def set_shuffle(self, shuffle=True):
+        """Sets playback to shuffle."""
+        body = {
+            'action': 'set',
+            'publishResponse': True,
+            'resource': 'audioPlayback/config',
+            'properties': {
+                'config': {
+                    'shuffleActive': shuffle
+                }
+            }
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+
+    def set_volume(self, mute=False, volume=50):
+        """Sets the music volume (0-100)"""
+        body = {
+            'action': 'set',
+            'publishResponse': True,
+            'resource': self.resource_id,
+            'properties': {
+                'speaker': {
+                    'mute': mute,
+                    'volume': volume
+                }
+            }
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)

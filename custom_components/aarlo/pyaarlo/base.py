@@ -211,6 +211,8 @@ class ArloBase(ArloDevice):
         if cap in 'siren':
             if self.model_id.startswith('VMB400'):
                 return True
+            if self.model_id.startswith('VMB450'):
+                return True
         return super().has_capability(cap)
 
     @property

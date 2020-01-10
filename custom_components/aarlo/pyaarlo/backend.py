@@ -76,7 +76,7 @@ class ArloBackEnd(object):
             self._arlo.warning('request-error={}'.format(type(e).__name__))
             return None
 
-        self._arlo.debug('finish request=' + str(r.status_code))
+        # self._arlo.debug('finish request=' + str(r.status_code))
         if r.status_code != 200:
             return None
 
@@ -149,6 +149,17 @@ class ArloBackEnd(object):
                 device_id = response.get('from', None)
                 responses.append((device_id, resource, response))
 
+        elif resource.startswith('audioPlayback'):
+            device_id = response.get('from')
+            properties = response.get('properties')
+            if resource == 'audioPlayback/status':
+                # Wrap the status event to match the 'audioPlayback' event
+                properties = {'status': response.get('properties')}
+
+            self._arlo.info('audio playback response {} - {}'.format(resource, response))
+            if device_id is not None and properties is not None:
+                responses.append((device_id, resource, properties))
+
         # These are generic responses, we look for device IDs and forward
         # hoping the device can handle it.
         # Packet number #?.
@@ -157,7 +168,7 @@ class ArloBackEnd(object):
             if device_id is not None:
                 responses.append((device_id, resource, response))
             else:
-                self._arlo.debug('unhandled response ' + resource)
+                self._arlo.debug('unhandled response {} - {}'.format(resource, response))
 
         # Now find something waiting for this/these.
         for device_id, resource, response in responses:

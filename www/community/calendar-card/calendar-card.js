@@ -508,7 +508,7 @@ e.defineLocale("zh-tw",{months:"一月_二月_三月_四月_五月_六月_七月
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-var l="{{lit-".concat(String(Math.random()).slice(2),"}}"),c="\x3c!--".concat(l,"--\x3e"),h=new RegExp("".concat(l,"|").concat(c)),M=function e(t,a){!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,e),this.parts=[],this.element=a;for(var n=[],s=[],r=document.createTreeWalker(a.content,133,null,!1),i=0,d=-1,_=0,o=t.strings,u=t.values.length;_<u;){var m=r.nextNode();if(null!==m){if(d++,1===m.nodeType){if(m.hasAttributes()){for(var c=m.attributes,M=c.length,y=0,f=0;f<M;f++)L(c[f].name,"$lit$")&&y++;for(;y-- >0;){var k=o[_],D=p.exec(k)[2],g=D.toLowerCase()+"$lit$",v=m.getAttribute(g);m.removeAttribute(g);var T=v.split(h);this.parts.push({type:"attribute",index:d,name:D,strings:T}),_+=T.length-1}}"TEMPLATE"===m.tagName&&(s.push(m),r.currentNode=m.content)}else if(3===m.nodeType){var w=m.data;if(w.indexOf(l)>=0){for(var b=m.parentNode,S=w.split(h),H=S.length-1,j=0;j<H;j++){var x=void 0,P=S[j];if(""===P)x=Y();else{var O=p.exec(P);null!==O&&L(O[2],"$lit$")&&(P=P.slice(0,O.index)+O[1]+O[2].slice(0,-"$lit$".length)+O[3]),x=document.createTextNode(P)}b.insertBefore(x,m),this.parts.push({type:"node",index:++d})}""===S[H]?(b.insertBefore(Y(),m),n.push(m)):m.data=S[H],_+=H}}else if(8===m.nodeType)if(m.data===l){var E=m.parentNode;null!==m.previousSibling&&d!==i||(d++,E.insertBefore(Y(),m)),i=d,this.parts.push({type:"node",index:d}),null===m.nextSibling?m.data="":(n.push(m),d--),_++}else for(var W=-1;-1!==(W=m.data.indexOf(l,W+1));)this.parts.push({type:"node",index:-1}),_++}else r.currentNode=s.pop()}for(var A=0,F=n;A<F.length;A++){var z=F[A];z.parentNode.removeChild(z)}},L=function(e,t){var a=e.length-t.length;return a>=0&&e.slice(a)===t},y=function(e){return-1!==e.index},Y=function(){return document.createComment("")},p=/([ \x09\x0a\x0c\x0d])([^\0-\x1F\x7F-\x9F "'>=\/]+)([ \x09\x0a\x0c\x0d]*=[ \x09\x0a\x0c\x0d]*(?:[^ \x09\x0a\x0c\x0d"'`<>=]*|"[^"]*|'[^']*))$/;function f(e){return function(e){if(Array.isArray(e)){for(var t=0,a=new Array(e.length);t<e.length;t++)a[t]=e[t];return a}}(e)||function(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}function k(e,t){for(var a=0;a<t.length;a++){var n=t[a];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}
+var l="{{lit-".concat(String(Math.random()).slice(2),"}}"),c="\x3c!--".concat(l,"--\x3e"),h=new RegExp("".concat(l,"|").concat(c)),M=function e(t,a){!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,e),this.parts=[],this.element=a;for(var n=[],s=[],r=document.createTreeWalker(a.content,133,null,!1),i=0,d=-1,_=0,o=t.strings,u=t.values.length;_<u;){var m=r.nextNode();if(null!==m){if(d++,1===m.nodeType){if(m.hasAttributes()){for(var c=m.attributes,M=c.length,y=0,f=0;f<M;f++)L(c[f].name,"$lit$")&&y++;for(;y-- >0;){var k=o[_],D=p.exec(k)[2],g=D.toLowerCase()+"$lit$",v=m.getAttribute(g);m.removeAttribute(g);var T=v.split(h);this.parts.push({type:"attribute",index:d,name:D,strings:T}),_+=T.length-1}}"TEMPLATE"===m.tagName&&(s.push(m),r.currentNode=m.content)}else if(3===m.nodeType){var w=m.data;if(w.indexOf(l)>=0){for(var b=m.parentNode,S=w.split(h),H=S.length-1,j=0;j<H;j++){var x=void 0,P=S[j];if(""===P)x=Y();else{var O=p.exec(P);null!==O&&L(O[2],"$lit$")&&(P=P.slice(0,O.index)+O[1]+O[2].slice(0,-"$lit$".length)+O[3]),x=document.createTextNode(P)}b.insertBefore(x,m),this.parts.push({type:"node",index:++d})}""===S[H]?(b.insertBefore(Y(),m),n.push(m)):m.data=S[H],_+=H}}else if(8===m.nodeType)if(m.data===l){var E=m.parentNode;null!==m.previousSibling&&d!==i||(d++,E.insertBefore(Y(),m)),i=d,this.parts.push({type:"node",index:d}),null===m.nextSibling?m.data="":(n.push(m),d--),_++}else for(var W=-1;-1!==(W=m.data.indexOf(l,W+1));)this.parts.push({type:"node",index:-1}),_++}else r.currentNode=s.pop()}for(var A=0,F=n;A<F.length;A++){var z=F[A];z.parentNode.removeChild(z)}},L=function(e,t){var a=e.length-t.length;return a>=0&&e.slice(a)===t},y=function(e){return-1!==e.index},Y=function(){return document.createComment("")},p=/([ \x09\x0a\x0c\x0d])([^\0-\x1F\x7F-\x9F "'>=/]+)([ \x09\x0a\x0c\x0d]*=[ \x09\x0a\x0c\x0d]*(?:[^ \x09\x0a\x0c\x0d"'`<>=]*|"[^"]*|'[^']*))$/;function f(e){return function(e){if(Array.isArray(e)){for(var t=0,a=new Array(e.length);t<e.length;t++)a[t]=e[t];return a}}(e)||function(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}function k(e,t){for(var a=0;a<t.length;a++){var n=t[a];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}
 /**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -753,7 +753,6 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
     }
 
     .day-wrapper .overview {
-        max-width: 150px;
         word-break: break-word;
     }
 
@@ -782,7 +781,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
         margin-top: -3px;
         color: var(--accent-color);
     }
-`,Qe={title:"Calendar",numberOfDays:7,timeFormat:"HH:mma",dateTopFormat:"DD",dateBottomFormat:"ddd",hideTime:!1,progressBar:!1,showLocation:!1,showLocationIcon:!0,hidePastEvents:!1,showMultiDay:!1,eventsLimit:99,showEventOrigin:!1,hideHeader:!1,highlightToday:!1,ignoreEventsExpression:"",ignoreEventsByLocationExpression:"",maxHeight:!1,fullDayEventText:"All day",startText:"Start",endText:"End"};var Xe=xe`
+`,Qe={title:"Calendar",numberOfDays:7,timeFormat:"HH:mma",dateTopFormat:"DD",dateBottomFormat:"ddd",hideTime:!1,progressBar:!1,showLocation:!1,showLocationIcon:!0,hidePastEvents:!1,showMultiDay:!1,eventsLimit:99,showEventOrigin:!1,hideHeader:!1,highlightToday:!1,ignoreEventsExpression:"",ignoreEventsByLocationExpression:"",maxHeight:!1,hardLimit:!1,fullDayEventText:"All day",startText:"Start",endText:"End"};var Xe=xe`
     .entities {
         padding-top: 10px;
     }
@@ -892,9 +891,17 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
           <div class='checkbox-options'>
             <paper-checkbox
               @checked-changed="${this.checkboxChanged}" 
-              .checked=${this._config.maxHeight}
-              .configValue="${"maxHeight"}"
-            >Max Height</paper-checkbox>
+              .checked=${this._config.showEventOrigin}
+              .configValue="${"showEventOrigin"}"
+            >Show Event Origin</paper-checkbox>
+          </div>
+
+          <div class='checkbox-options'>
+            <paper-checkbox
+              @checked-changed="${this.checkboxChanged}" 
+              .checked=${this._config.hardLimit}
+              .configValue="${"hardLimit"}"
+            >Hard Limit</paper-checkbox>
           </div>
 
           <div class='other-options'>
@@ -1003,7 +1010,7 @@ var Ne,Ce=function(e,t){var a=e.startNode.parentNode,n=void 0===t?e.endNode:t.st
             </div>
           `}
       </ha-card>
-    `;var e}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;this.lastEventsUpdate=s(),this.cardNeedsUpdating=!1;const{events:e,failedEvents:t}=await async function(e,t){const a=s().startOf("day"),n=a.format("YYYY-MM-DDTHH:mm:ss"),r=a.add(e.numberOfDays,"days").format("YYYY-MM-DDTHH:mm:ss"),i=[],d=[],_=[];return e.entities.forEach(e=>{const a=e&&e.entity||e,s=`calendars/${a}?start=${n}Z&end=${r}Z`;_.push(t.callApi("get",s).then(t=>t.map(t=>(t.entity=e,t))).then(e=>{i.push(...e)}).catch(t=>{d.push({name:e.name||a,error:t})}))}),await Promise.all(_),{failedEvents:d,events:qe(i,e)}}(this.config,this.__hass),a=function(e,t){let a=e.reduce((e,t)=>{const a=s(t.startDateTime).format("YYYY-MM-DD"),n=e.findIndex(e=>e.day===a);return n>-1?e[n].events.push(t):e.push({day:a,events:[t]}),e},[]),n=0,r=!1;return a=a.map(e=>{if(!r)return n+=e.events.length,r=t.eventsLimit<n,e}).filter(Boolean)}(e,this.config),n=t.reduce((e,t)=>ee`
+    `;var e}async updateCard(){if(s.locale(this.hass.language),!this.cardNeedsUpdating&&s().diff(this.lastEventsUpdate,"seconds")<60)return;this.lastEventsUpdate=s(),this.cardNeedsUpdating=!1;const{events:e,failedEvents:t}=await async function(e,t){const a=s().startOf("day"),n=a.format("YYYY-MM-DDTHH:mm:ss"),r=a.add(e.numberOfDays,"days").format("YYYY-MM-DDTHH:mm:ss"),i=[],d=[],_=[];return e.entities.forEach(e=>{const a=e&&e.entity||e,s=`calendars/${a}?start=${n}Z&end=${r}Z`;_.push(t.callApi("get",s).then(t=>t.map(t=>(t.entity=e,t))).then(e=>{i.push(...e)}).catch(t=>{d.push({name:e.name||a,error:t})}))}),await Promise.all(_),{failedEvents:d,events:qe(i,e)}}(this.config,this.__hass),a=function(e,t){let a=e.reduce((e,t)=>{const a=s(t.startDateTime).format("YYYY-MM-DD"),n=e.findIndex(e=>e.day===a);return n>-1?e[n].events.push(t):e.push({day:a,events:[t]}),e},[]),n=0,r=!1;return a=a.map(e=>{if(!r){if(n+=e.events.length,r=t.eventsLimit<n,t.hardLimit){const a=n-t.eventsLimit;e.events=e.events.slice(0,e.events.length-a)}return e}}).filter(Boolean)}(e,this.config),n=t.reduce((e,t)=>ee`
         ${e}
         <tr>
           <td class="failed-name">${t.name}</td>

@@ -29,7 +29,7 @@ class ArloDevice(object):
         return "<{0}:{1}:{2}>".format(self.__class__.__name__, self._device_type, self._name)
 
     def _event_handler(self, resource, event):
-        self._arlo.debug("{}: got {} event".format(self.name, resource))
+        self._arlo.debug("*DEVICE* {}: got {} event {}".format(self.name, resource, event))
 
         # Find properties. Event either contains a item called properites or it
         # is the whole thing.
