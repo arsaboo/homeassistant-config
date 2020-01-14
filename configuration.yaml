@@ -59,12 +59,10 @@ influxdb:
        - input_number.master_prev_eff
        - sensor.master_hvac_efficiency
 python_script:
-hacs:
-  token: !secret hacs_token
-  python_script: True
-  theme: True
-  options:
-    experimental: True
+# hacs:
+#   token: !secret hacs_token
+#   options:
+#     experimental: True
 zeroconf:
 weather:
   - platform: darksky
@@ -94,6 +92,10 @@ zone 3:
 zwave:
   usb_path: /dev/ttyACM0
   network_key: !secret zwave_network_key
+  device_config:
+    light.kitchen_light:
+      refresh_value: true
+      delay: 3
 hue:
   bridges:
     - host: 192.168.2.229
@@ -106,19 +108,19 @@ lifx:
   light:
 light:
   # z-wave dimmer switch (http://amzn.to/2j1UEli)
-  - platform: mqtt
-    name: "Kitchen Lights"
-    state_topic: "smartthings/Kitchen/switch"
-    command_topic: "smartthings/Kitchen/switch"
-    payload_on: "on"
-    payload_off: "off"
-    brightness_state_topic: "smartthings/Kitchen/level"
-    brightness_command_topic: "smartthings/Kitchen/level"
-    brightness_scale: 99
-    brightness_value_template: '{{ value }}'
-    retain: true
-    optimistic: false
-    qos: 0
+  # - platform: mqtt
+  #   name: "Kitchen Lights"
+  #   state_topic: "smartthings/Kitchen/switch"
+  #   command_topic: "smartthings/Kitchen/switch"
+  #   payload_on: "on"
+  #   payload_off: "off"
+  #   brightness_state_topic: "smartthings/Kitchen/level"
+  #   brightness_command_topic: "smartthings/Kitchen/level"
+  #   brightness_scale: 99
+  #   brightness_value_template: '{{ value }}'
+  #   retain: true
+  #   optimistic: false
+  #   qos: 0
   - platform: group
     name: Living Room Lights
     entities:
@@ -181,9 +183,6 @@ xiaomi_aqara:
     - key: !secret xiaomikey
       host: 192.168.2.82
 
-ring:
-  username: !secret ring_username
-  password: !secret ring_password
 bloomsky:
   api_key: !secret bloomsky_key
 ecobee:
@@ -192,6 +191,7 @@ ecobee:
 shell_command:
   image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
   facebox: bash /home/homeassistant/.homeassistant/shell_scripts/facebox.sh "{{camera}}"
+  delete_unifi: curl http://192.168.2.113:8086/query -d db=unifi -d q='DELETE WHERE time < now() - 5h'
 
 rest_command:
   youtube:
@@ -216,7 +216,7 @@ alexa:
         - light.master_lights
         - input_boolean.abodeupdate
         - light.gateway_light_34ce00813670
-        - light.kitchen
+        - light.kitchen_light
         - light.lifx5
         - switch.driveway
         - switch.garage_relay_switch
@@ -231,7 +231,6 @@ alexa:
       script.tv_youtube_on:
         name: Youtube
         description: Youtube on
-
 # cloud:
 #   alexa:
 #     filter:
@@ -297,7 +296,7 @@ alexa:
 mobile_app:
 google_assistant:
   project_id: !secret google_project_id
-  api_key: !secret google_project_api_key
+  service_account: !include SERVICE_ACCOUNT.json
   expose_by_default: false
   entity_config:
     light.living_room_lights:
@@ -313,7 +312,7 @@ google_assistant:
       expose: true
       name: Porch Lights
       room: porch
-    light.kitchen:
+    light.kitchen_light:
       expose: true
       room: kitchen
     light.lifx5:
@@ -351,7 +350,7 @@ homekit:
       - cover.garagedoor
       - light.living_room_lights
       - light.lifx5
-      - light.kitchen
+      - light.kitchen_light
       - light.master_lights
       - switch.driveway
       - binary_sensor.water_leak_sensor_158d0001d77800
@@ -366,7 +365,7 @@ http:
   ssl_key: !secret ssl_key
   base_url: !secret base_url
   ip_ban_enabled: true
-  login_attempts_threshold: 2
+  login_attempts_threshold: 1
 
 # Discover some devices automatically
 discovery:
@@ -625,6 +624,7 @@ sonos:
     hosts:
       - 192.168.2.150
       - 192.168.2.253
+      - 192.168.2.160
 sun:
 person:
 media_player:
@@ -645,6 +645,9 @@ media_player:
     port: 8002
     mac: !secret samsung_tv_mac
     name: Living Room test
+  - platform: panasonic_viera
+    host: 192.168.2.242
+    name: Panasonic Viera TV
   # - platform: samsungtv_custom
   #   host: 192.168.2.252
   #   name: Living Room TV
@@ -659,10 +662,6 @@ media_player:
   #   mac: !secret samsung_tv_mac
   #   name: Living Room TV
   #   port: 8002
-  # - platform: panasonic_viera
-  #   host: 192.168.2.242
-  #   port: 55000
-  #   name: Panasonic Viera TV
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
@@ -684,7 +683,7 @@ media_player:
       com.netflix.ninja: "Netflix"
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
-      livetvstream.thoptv.com.thoptv: "ThopTV"
+      live.aiplex.software: "ThopTV"
       com.mxtech.videoplayer.ad: "MXPlayer"
   - platform: androidtv
     name: FTV Master
@@ -697,7 +696,7 @@ media_player:
       com.netflix.ninja: "Netflix"
       com.google.android.tv: "Live Channels"
       org.xbmc.kodi: "Kodi"
-      livetvstream.thoptv.com.thoptv: "ThopTV"
+      live.aiplex.software: "ThopTV"
       com.amazon.tv.launcher: Home
       com.synology.dsvideo: "DS Video"
       com.mxtech.videoplayer.ad: "MXPlayer"
@@ -760,7 +759,6 @@ telegram_bot:
     - !secret telegram_chatID_Alok
 hangouts:
 notify:
-  - platform: ios
   - platform: hangouts
     name: alok_hangouts
     default_conversations:
@@ -786,12 +784,12 @@ notify:
   - platform: group
     name: iOS
     services:
-      - service: ios_alokiosiphone
-      - service: ios_rashmiappiphone
+      - service: mobile_app_alok_s_iphone
+      - service: mobile_app_iphone
   - platform: group
     name: ios_abode_updates
     services:
-      - service: ios_alokiosiphone
+      - service: mobile_app_alok_s_iphone
         data:
           title: 'Enable Abode updates?'
           data:
@@ -801,7 +799,7 @@ notify:
   - platform: group
     name: ios_home_automation
     services:
-      - service: ios_alokiosiphone
+      - service: mobile_app_alok_s_iphone
         data:
           title: 'Enable Home automation?'
           data:
@@ -833,7 +831,6 @@ logger:
     aiohttp.server: critical
     haffmpeg.core: critical
     homeassistant.core: critical
-    homeassistant.components.http: debug
     pywemo.ouimeaux_device: critical
     pywemo.ssdp: critical
     homeassistant.helpers.entity: critical
@@ -848,6 +845,8 @@ logger:
     homeassistant.components.ssdp: debug
     custom_components.samsungtv_upnp: debug
     custom_components.samsungtv_custom2: critical
+    custom_components.wyzesense: debug
+    wyzesense.gateway: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

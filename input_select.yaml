@@ -45,5 +45,6 @@
      - 'darkcyan'
      - 'Google - Dark'
      - 'Google - Light'
+     - 'sweetpink'
     initial: 'default'
     icon: 'mdi:palette'

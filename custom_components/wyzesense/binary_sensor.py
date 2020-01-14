@@ -1,12 +1,17 @@
 """ 
 
 wyzesense integration
+v0.0.7
 
 """
 
 from .wyzesense_custom import *
 import logging
 import voluptuous as vol
+import json
+import os.path
+
+from os import path
 from retry import retry
 import subprocess
 
@@ -22,6 +27,8 @@ from homeassistant.helpers.restore_state import RestoreEntity
 import homeassistant.helpers.config_validation as cv
 
 DOMAIN = "wyzesense"
+
+STORAGE = ".storage/wyzesense.json"
 
 ATTR_MAC = "mac"
 ATTR_RSSI = "rssi"
@@ -44,6 +51,16 @@ SERVICE_REMOVE_SCHEMA = vol.Schema({
 
 _LOGGER = logging.getLogger(__name__)
 
+def getStorage(hass):
+    if not path.exists(hass.config.path(STORAGE)):
+        return []
+    with open(hass.config.path(STORAGE),'r') as f:
+        return json.load(f)
+
+def setStorage(hass,data):
+    with open(hass.config.path(STORAGE),'w') as f:
+        json.dump(data, f)
+
 def findDongle():
     df = subprocess.check_output(["ls", "-la", "/sys/class/hidraw"]).decode('utf-8').lower()
     for l in df.split('\n'):
@@ -55,7 +72,7 @@ def findDongle():
 def setup_platform(hass, config, add_entites, discovery_info=None):
     if config[CONF_DEVICE].lower() == 'auto': 
         config[CONF_DEVICE] = findDongle()
-    _LOGGER.debug("WYZESENSE v0.0.4")
+    _LOGGER.debug("WYZESENSE v0.0.7")
     _LOGGER.debug("Attempting to open connection to hub at " + config[CONF_DEVICE])
 
     forced_initial_states = config[CONF_INITIAL_STATE]
@@ -80,6 +97,12 @@ def setup_platform(hass, config, add_entites, discovery_info=None):
                 new_entity = WyzeSensor(data)
                 entities[event.MAC] = new_entity
                 add_entites([new_entity])
+        
+                storage = getStorage(hass)
+                if event.MAC not in storage:
+                    storage.append(event.MAC)
+                setStorage(hass, storage)
+                
             else:
                 entities[event.MAC]._data = data
                 entities[event.MAC].schedule_update_ha_state()
@@ -90,12 +113,18 @@ def setup_platform(hass, config, add_entites, discovery_info=None):
 
     ws = beginConn()
 
-    # Get bound sensors
-    result = ws.List()
-    _LOGGER.debug("%d Sensors Paired" % len(result))
+    storage = getStorage(hass)
 
-    for mac in result:
+    _LOGGER.debug("%d Sensors Loaded from storage" % len(storage))
+
+    for mac in storage:
         _LOGGER.debug("Registering Sensor Entity: %s" % mac)
+
+        mac = mac.strip()
+
+        if not len(mac) == 8:
+            _LOGGER.debug("Ignoring %s, Invalid length for MAC" % mac)
+            continue
 
         initial_state = forced_initial_states.get(mac)
 
@@ -136,6 +165,11 @@ def setup_platform(hass, config, add_entites, discovery_info=None):
             toDelete = entities[mac]
             hass.add_job(toDelete.async_remove)
             del entities[mac]
+
+            storage = getStorage(hass)
+            storage.remove(mac)
+            setStorage(hass, storage)
+
             notification = "Successfully Removed Sensor: %s" % mac
             hass.components.persistent_notification.create(notification, DOMAIN)
             _LOGGER.debug(notification)

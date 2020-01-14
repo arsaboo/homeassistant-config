@@ -1,3 +1,5 @@
+  # - platform: wyzesense
+  #   device: auto
   - platform: 'bayesian'
     prior: 0.75
     name: 'Rashmi Home'
@@ -8,7 +10,7 @@
         prob_given_false: 0.2
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.rashmiappiphone'
+      - entity_id: 'device_tracker.rashmiappiphone_2'
         prob_given_true: 0.99
         prob_given_false: 0.10
         platform: 'state'
@@ -60,6 +62,7 @@
   - platform: workday
     country: US
     province: GA
+    workdays: [mon, tue, wed, thu, fri]
   - platform: aarlo
     monitored_conditions:
     - motion
@@ -89,7 +92,7 @@
         friendly_name: Homekit Ready
         device_class: connectivity
         value_template: >-
-          {% if states.cover.garagedoor and states.light.living_room_lights and states.switch.driveway and states.light.master_lights and states.light.lifx5 and states.light.kitchen and states.alarm_control_panel.abode_alarm and states.alarm_control_panel.aarlo_arlohome and states.binary_sensor.water_leak_sensor_158d0001d77800 and states.binary_sensor.water_leak_sensor_158d00027b0db6 %}
+          {% if states.cover.garagedoor and states.light.living_room_lights and states.switch.driveway and states.light.master_lights and states.light.lifx5 and states.light.kitchen_light and states.alarm_control_panel.abode_alarm and states.alarm_control_panel.aarlo_arlohome and states.binary_sensor.water_leak_sensor_158d0001d77800 and states.binary_sensor.water_leak_sensor_158d00027b0db6 %}
             true
           {% else %}
             false

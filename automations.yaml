@@ -43,7 +43,7 @@
         - device_tracker.alok_s_iphone_2
         - device_tracker.life360_alok_saboo
         - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
-        - device_tracker.rashmiappiphone
+        - device_tracker.rashmiappiphone_2
         - device_tracker.life360_sonu
         - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
     - platform: state
@@ -157,7 +157,7 @@
     - platform: state
       entity_id:
         - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
-        - device_tracker.rashmiappiphone
+        - device_tracker.rashmiappiphone_2
         - device_tracker.life360_sonu
   action:
     - service: device_tracker.see
@@ -421,8 +421,8 @@
     platform: time
     at: '22:00:00'
   action:
-     service: homeassistant.turn_on
-     entity_id: script.abodehome
+    - service: homeassistant.turn_on
+      entity_id: script.abodehome
 
 - id: abode_disarm_morning
   alias: 'Disarm Abode in the morning'
@@ -446,6 +446,7 @@
       entity_id: automation.turn_off_master_lights
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
+    - service: shell_command.delete_unifi
 
 - id: enable_recording
   alias: Enable Recording
@@ -716,8 +717,20 @@
   alias: 'Notify Tensorflow bus'
   initial_state: 'on'
   condition:
-    - condition: template
-      value_template: '{{ trigger.to_state.state |int > 0 }}'
+    - condition: state
+      entity_id: input_select.abodestatus
+      state: 'disarmed'
+    - condition: state
+      entity_id: calendar.us_holidays
+      state: 'off'
+    - condition: or
+      conditions:
+        - condition: time
+          after: '07:45:00'
+          before: '08:45:00'
+        - condition: time
+          after: '15:20:00'
+          before: '16:30:00'
   trigger:
     - platform: template
       value_template: >
@@ -726,20 +739,9 @@
     - service: script.sonos_say
       data:
         sonos_entity: media_player.family_room_2
-        volume: 0.6
-        delay: '00:00:05'
-        message: 'Bus detected in Driveway'
-    - service: notify.ios_alokiosiphone
-      data_template:
-        message: "Bus detected"
-        data:
-          push:
-            category: camera
-          entity_id: "camera.driveway"
-          attachment:
-            url: "{{ states.camera.driveway.attributes.entity_picture }}"
-            content-type: jpg
-
+        volume: 0.4
+        delay: '00:00:03'
+        message: 'Bus is detected in Driveway'
 
 - id: notify_tensorflow_detection
   alias: 'Notify Tensorflow detection'
@@ -765,7 +767,7 @@
        - image_processing.tensorflow_driveway
        - image_processing.tensorflow_backyard
   action:
-    - service: notify.ios_alokiosiphone
+    - service: notify.mobile_app_alok_s_iphone
       data_template:
         message: >
           {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join(', ')|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
@@ -1035,7 +1037,7 @@
 
 - id: plexspy_notification
   alias: "Plex Spy notification"
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     platform: state
     entity_id: sensor.plex
@@ -1046,7 +1048,7 @@
           {%- if states.sensor.plex.attributes -%}
             {% set space = joiner(' ') %}
             {%- for attr in states.sensor.plex.attributes -%}
-             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden" and not attr=="icon"-%}
               {{space()}}{{attr}} is watching {{states.sensor.plex.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
@@ -1060,7 +1062,7 @@
           {%- if states.sensor.plex.attributes -%}
             {% set space = joiner(' ') %}
             {%- for attr in states.sensor.plex.attributes -%}
-             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden"-%}
+             {%- if not attr=="friendly_name" and not attr=="unit_of_measurement" and not attr=="homebridge_hidden" and not attr=="icon"-%}
               {{space()}}{{attr}} is watching {{states.sensor.plex.attributes[attr]}}.
              {%- endif -%}
             {%- endfor -%}
@@ -1129,6 +1131,8 @@
                  {%- set state  = 0 -%}
               {%- endif %}
               {{ state }}
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.sleeping
 
 - id: micube_scenes_reset
   alias: "MiCube scene reset"
@@ -1307,7 +1311,7 @@
       above: 20
       for: '00:05:00'
   action:
-    - service: notify.ios_alokiosiphone
+    - service: notify.mobile_app_alok_s_iphone
       data_template:
         message: >
           Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
@@ -1363,6 +1367,9 @@
           - condition: numeric_state
             entity_id: sensor.illumination_158d00016c53bf
             below: 20
+          - condition: state
+            entity_id: input_boolean.sleeping
+            state: 'off'
       - condition: and
         conditions:
           - condition: time
@@ -1374,6 +1381,9 @@
           - condition: state
             entity_id: input_select.abodestatus
             state: 'disarmed'
+          - condition: state
+            entity_id: input_boolean.sleeping
+            state: 'off'
       - condition: and
         conditions:
           - condition: time
@@ -1389,6 +1399,9 @@
               {%- else -%}
                 false
               {%- endif -%}
+          - condition: state
+            entity_id: input_boolean.sleeping
+            state: 'off'
   action:
     - service: light.turn_on
       data:
@@ -1471,7 +1484,7 @@
   initial_state: 'on'
   trigger:
    - platform: state
-     entity_id: light.kitchen
+     entity_id: light.kitchen_light
      from: 'off'
      to: 'on'
   condition:
@@ -1480,7 +1493,7 @@
   action:
      service: light.turn_on
      data:
-       entity_id: light.kitchen
+       entity_id: light.kitchen_light
        brightness: 200
 
 - id: turn_off_xiaomi
@@ -2282,6 +2295,9 @@
         - sensor.yahoo_irm
         - sensor.yahoo_doc
         - sensor.yahoo_cvs
+  condition:
+    - condition: template
+      value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
   action:
     - service: logbook.log
       data_template:

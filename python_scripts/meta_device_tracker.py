@@ -7,7 +7,7 @@
 # OPTIONS
 # List the trackers for each individual
 RashmiTrackers = ['device_tracker.rashmiphone', 'device_tracker.rashmiphone_rashmiphone_2',
-                  'device_tracker.rashmiappiphone', 'device_tracker.life360_sonu',
+                  'device_tracker.rashmiappiphone_2', 'device_tracker.life360_sonu',
                   'device_tracker.e1594e53_21df_414c_82da_f655d5282fca']
 AlokTrackers = ['device_tracker.aloks_iphone', 'device_tracker.alokphone_alokphone_2',
                 'device_tracker.alok_s_iphone_2', 'device_tracker.life360_alok_saboo',

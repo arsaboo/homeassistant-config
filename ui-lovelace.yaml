@@ -45,6 +45,10 @@ resources:
     type: module
   - url: /local/community/lovelace-card-tools/card-tools.js
     type: module
+  - url: /local/community/lovelace-template-entity-row/template-entity-row.js
+    type: module
+  - url: /local/community/custom-header/custom-header.js
+    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -103,7 +107,7 @@ views:
               width: 7%
             # Kitchen
           - type: image
-            entity: light.kitchen
+            entity: light.kitchen_light
             tap_action:
               action: toggle
             image: /local/icons/light_bulb_off.png
@@ -294,7 +298,7 @@ views:
               width: 7%
               padding: 10px
           - type: state-icon
-            entity: binary_sensor.ring_front_door_motion
+            entity: binary_sensor.front_door_motion_2
             style:
               top: 95%
               left: 32%
@@ -414,7 +418,6 @@ views:
               text-align: center
               font-size: 12px
               color: black
-            # Living Room
           - type: image
             entity: light.master_lights
             tap_action:
@@ -432,6 +435,23 @@ views:
               left: 80%
               width: 7%
               padding: 10px
+          - type: image
+            entity: media_player.panasonic_viera_tv
+            tap_action:
+              action: toggle
+            image: /local/icons/tv_off2.png
+            state_image:
+              'on': /local/icons/tv_on2.png
+            state_filter:
+              'on': drop-shadow(-5px 0 10px gold)
+              'off': brightness(80%) saturate(0.8)
+            style:
+              top: 54%
+              left: 64.25%
+              width: 2%
+              transform: rotate(180deg)
+              padding: 10px 0 10px 30px
+
             # Laundry
           - type: state-icon
             entity: binary_sensor.water_leak_sensor_158d0001d77800
@@ -560,7 +580,7 @@ views:
           - entity: light.gateway_light_34ce00813670
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.kitchen
+          - entity: light.kitchen_light
             type: custom:slider-entity-row
             toggle: true
           - entity: light.lifx3
@@ -596,6 +616,7 @@ views:
           - entity: switch.03783133807d3a7d0403
             type: "custom:secondaryinfo-entity-row"
             secondary_info: '[[ sensor.rpi_cpu_temp ]] °F'
+          - entity: switch.41034600cc50e359a4f8
       - type: vertical-stack
         cards:
           - type: alarm-panel
@@ -624,10 +645,10 @@ views:
         title: Ring Doorbell
         show_header_toggle: false
         entities:
-          - binary_sensor.ring_front_door_ding
-          - binary_sensor.ring_front_door_motion
-          - sensor.ring_front_door_last_ding
-          - sensor.ring_front_door_last_motion
+          - binary_sensor.front_door_ding
+          - binary_sensor.front_door_motion_2
+          - sensor.front_door_last_ding
+          - sensor.front_door_last_motion
       - type: horizontal-stack
         cards:
           - type: entity-button
@@ -970,6 +991,7 @@ views:
           - input_number.harmonyvolume
           - sensor.total_tv_time
           - sensor.sonos_audio_in
+          - sensor.master_audio_in
           - script.tv_off
       - type: custom:auto-entities
         card:
@@ -1159,7 +1181,7 @@ views:
                   'home': /local/icons/rashmi_owntracks_home.png
                   'not_home': /local/icons/rashmi_owntracks_not_home.png
               - type: picture-entity
-                entity: device_tracker.rashmiappiphone
+                entity: device_tracker.rashmiappiphone_2
                 show_name: false
                 show_state: false
                 state_image:
@@ -2181,6 +2203,38 @@ views:
       - type: custom:list-card
         entity: sensor.yahoo_well
         title: Analyst Estimates - WELL
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_vtr
+        title: Analyst Estimates - VTR
+        feed_attribute: history
+        row_limit: 10
+        columns:
+          - title: 'Date'
+            field: epochGradeDate
+          - title: Firm
+            field: firm
+          - title: Action
+            field: action
+          - title: From
+            field: fromGrade
+          - title: To
+            field: toGrade
+      - type: custom:list-card
+        entity: sensor.yahoo_cci
+        title: Analyst Estimates - CCI
         feed_attribute: history
         row_limit: 10
         columns:

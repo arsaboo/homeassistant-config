@@ -18,6 +18,12 @@
     ticker: CVS
     name: Yahoo CVS
   - platform: yahoo_earnings
+    ticker: CCI
+    name: Yahoo CCI
+  - platform: yahoo_earnings
+    ticker: VTR
+    name: Yahoo VTR
+  - platform: yahoo_earnings
     ticker: DOC
     name: Yahoo DOC
   - platform: yahoo_earnings
@@ -273,6 +279,16 @@
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
     value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
+  - platform: rest
+    method: POST
+    resource: http://192.168.2.160:1400/DeviceProperties/Control
+    name: Sonos Master
+    headers:
+      SOAPACTION: "urn:schemas-upnp-org:service:DeviceProperties:1#GetZoneInfo"
+      Content-Type: text/xml; charset="utf-8"
+    payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
+    value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
+
     # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
   # - platform: rest
   #   resource: !secret here_weather
@@ -309,6 +325,14 @@
         icon_template: >-
           {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
           {{ audio_in[states.sensor.sonos_stereo.state] | default('mdi:volume-high', true) }}
+      master_audio_in:
+        friendly_name: "Master Audio-in"
+        value_template: >-
+          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence'} -%}
+          {{ audio_in[states.sensor.sonos_master.state] | default('NA', true)}}
+        icon_template: >-
+          {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
+          {{ audio_in[states.sensor.sonos_master.state] | default('mdi:volume-high', true) }}
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -511,6 +535,10 @@
         value_template: >-
           {{ (state_attr('media_player.family_room_2', 'volume_level')|default(0) * 100) |int }}
         friendly_name: 'Sonos Volume'
+      master_sonos_volume:
+        value_template: >-
+          {{ (state_attr('media_player.master', 'volume_level')|default(0) * 100) |int }}
+        friendly_name: 'Master Volume'
       leeoalarmstatus:
         friendly_name: "Leeo Alarm"
         value_template: >-

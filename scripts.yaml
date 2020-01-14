@@ -147,7 +147,7 @@
   notificationalarm:
     alias: 'Notify that sensors changed when nobody is home'
     sequence:
-      - service: media_player.sonos_snapshot
+      - service: sonos.snapshot
         entity_id: media_player.livingroomsonos
       - service: media_player.volume_set
         entity_id: media_player.livingroomsonos
@@ -159,7 +159,7 @@
           media_content_id: 'https://dl.dropboxusercontent.com/u/7457/HASS/Burglar_Alarm.mp3'
           media_content_type: 'music'
       - delay: '00:01:28'
-      - service: media_player.sonos_restore
+      - service: sonos.restore
         entity_id: media_player.livingroomsonos
 
   arm_security:
@@ -215,7 +215,7 @@
   lifxeffects:
     alias: 'LIFX effects'
     sequence:
-      - service: light.lifx_effect_colorloop
+      - service: lifx.effect_colorloop
         data_template:
           entity_id:
             - light.lifx3
@@ -229,7 +229,7 @@
   colorloop_start:
     alias: 'Start LIFX colorloop'
     sequence:
-      - service: light.lifx_effect_colorloop
+      - service: lifx.effect_colorloop
         data:
           entity_id:
             - light.lifx3
@@ -278,7 +278,7 @@
   lifx_stop_effects:
     alias: 'Stop LIFX effects'
     sequence:
-      - service: light.lifx_effect_stop
+      - service: lifx.effect_stop
         data:
           entity_id:
             - light.lifxnrkitchen
@@ -370,11 +370,11 @@
         data_template:
           entity_id: input_select.abodestatus
           option: "{{states.alarm_control_panel.abode_alarm.state}}"
-      # - service: alarm_control_panel.ifttt_push_alarm_state
+      # - service: ifttt.push_alarm_state
       #   data_template:
       #     entity_id: alarm_control_panel.abode
       #     state: "{{states.alarm_control_panel.abode_alarm.state}}"
-      - service: alarm_control_panel.ifttt_push_alarm_state
+      - service: ifttt.push_alarm_state
         data_template:
           entity_id: alarm_control_panel.aarlo_arlohome
           state: "{{states.alarm_control_panel.abode_alarm.state}}"
@@ -537,7 +537,7 @@
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv
-          command: "am start -a android.intent.action.VIEW -d -n livetvstream.thoptv.com.thoptv/.Splash"
+          command: "am start -a android.intent.action.VIEW -d -n live.aiplex.software/.Splash"
   shieldtv_windscribe:
     alias: 'Launch Windscribe on Shield'
     sequence:
