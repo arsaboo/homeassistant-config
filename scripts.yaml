@@ -426,26 +426,11 @@
       #     camera: "backyard"
       - service: image_processing.scan
         entity_id:
-          - image_processing.opencv_porch
-          - image_processing.opencv_patio
-          - image_processing.opencv_driveway
-          - image_processing.opencv_backyard
           - image_processing.tensorflow_porch
           - image_processing.tensorflow_patio
           - image_processing.tensorflow_driveway
           - image_processing.tensorflow_backyard
-          - image_processing.deepstack_porch
-          - image_processing.deepstack_patio
-          - image_processing.deepstack_driveway
-          - image_processing.deepstack_backyard
-          - image_processing.facebox_backyard
-          - image_processing.facebox_patio
-          - image_processing.facebox_driveway
-          - image_processing.facebox_porch
-          - image_processing.tagbox_backyard
-          - image_processing.tagbox_patio
-          - image_processing.tagbox_driveway
-          - image_processing.tagbox_porch
+
   discovery:
     alias: 'Play Discovery'
     sequence:
