@@ -16,6 +16,7 @@ from .adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from custom_components.androidtv.androidtv.ppadb.client import Client
 
 from .constants import DEFAULT_AUTH_TIMEOUT_S
+from .exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,9 +41,16 @@ def _acquire(lock):
     acquired : bool
         Whether or not the lock was acquired
 
+    Raises
+    ------
+    LockNotAcquiredException
+        Raised if the lock was not acquired
+
     """
     try:
         acquired = lock.acquire(**LOCK_KWARGS)
+        if not acquired:
+            raise LockNotAcquiredException
         yield acquired
 
     finally:
@@ -109,8 +117,8 @@ class ADBPython(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
+        try:
+            with _acquire(self._adb_lock):
                 # Catch exceptions
                 try:
                     # Connect with authentication
@@ -159,11 +167,11 @@ class ADBPython(object):
                     self._available = False
                     return False
 
-        # Lock could not be acquired
-        _LOGGER.warning("Couldn't connect to %s:%d because adb-shell lock not acquired.", self.host, self.port)
-        self.close()
-        self._available = False
-        return False
+        except LockNotAcquiredException:
+            _LOGGER.warning("Couldn't connect to %s:%d because adb-shell lock not acquired.", self.host, self.port)
+            self.close()
+            self._available = False
+            return False
 
     def pull(self, local_path, device_path):
         """Pull a file from the device using the Python ADB implementation.
@@ -180,15 +188,10 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: pull(%s, %s)", self.host, self.port, local_path, device_path)
             return
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path)
-                self._adb.pull(device_path, local_path)
-                return
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: pull(%s, %s)", self.host, self.port, local_path, device_path)
-        return
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path)
+            self._adb.pull(device_path, local_path)
+            return
 
     def push(self, local_path, device_path):
         """Push a file to the device using the Python ADB implementation.
@@ -205,15 +208,10 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: push(%s, %s)", self.host, self.port, local_path, device_path)
             return
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path)
-                self._adb.push(local_path, device_path)
-                return
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: push(%s, %s)", self.host, self.port, local_path, device_path)
-        return
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path)
+            self._adb.push(local_path, device_path)
+            return
 
     def shell(self, cmd):
         """Send an ADB command using the Python ADB implementation.
@@ -233,14 +231,9 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: %s", self.host, self.port, cmd)
             return None
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
-                return self._adb.shell(cmd)
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: %s", self.host, self.port, cmd)
-        return None
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
+            return self._adb.shell(cmd)
 
 
 class ADBServer(object):
@@ -343,8 +336,8 @@ class ADBServer(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
+        try:
+            with _acquire(self._adb_lock):
                 # Catch exceptions
                 try:
                     self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
@@ -373,11 +366,11 @@ class ADBServer(object):
                     self._available = False
                     return False
 
-        # Lock could not be acquired
-        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
-        self.close()
-        self._available = False
-        return False
+        except LockNotAcquiredException:
+            _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            self.close()
+            self._available = False
+            return False
 
     def pull(self, local_path, device_path):
         """Pull a file from the device using an ADB server.
@@ -394,15 +387,10 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-                self._adb_device.pull(device_path, local_path)
-                return
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-        return
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            self._adb_device.pull(device_path, local_path)
+            return
 
     def push(self, local_path, device_path):
         """Push a file to the device using an ADB server.
@@ -419,15 +407,10 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-                self._adb_device.push(local_path, device_path)
-                return
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-        return
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            self._adb_device.push(local_path, device_path)
+            return
 
     def shell(self, cmd):
         """Send an ADB command using an ADB server.
@@ -447,11 +430,6 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
             return None
 
-        with _acquire(self._adb_lock) as acquired:
-            if acquired:
-                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
-                return self._adb_device.shell(cmd)
-
-        # Lock could not be acquired
-        _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
-        return None
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
+            return self._adb_device.shell(cmd)

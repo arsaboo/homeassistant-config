@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Jeff Irion and contributors
+# Copyright (c) 2020 Jeff Irion and contributors
 #
 # This file is part of the adb-shell package.  It was originally written by
 # @joeleong, and it was obtained from: https://github.com/google/python-adb/pull/144

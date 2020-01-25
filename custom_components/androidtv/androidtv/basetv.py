@@ -343,6 +343,20 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @property
+    def audio_output_device(self):
+        """Get the current audio playback device.
+
+        Returns
+        -------
+        str, None
+            The current audio playback device, or ``None`` if it could not be determined
+
+        """
+        stream_music = self._get_stream_music()
+
+        return self._audio_output_device(stream_music)
+
+    @property
     def audio_state(self):
         """Check if audio is playing, paused, or idle.
 
@@ -392,20 +406,6 @@ class BaseTV(object):
         current_app_response = self._adb.shell(constants.CMD_CURRENT_APP)
 
         return self._current_app(current_app_response)
-
-    @property
-    def audio_output_device(self):
-        """Get the current audio playback device.
-
-        Returns
-        -------
-        str, None
-            The current audio playback device, or ``None`` if it could not be determined
-
-        """
-        stream_music = self._get_stream_music()
-
-        return self._audio_output_device(stream_music)
 
     @property
     def is_volume_muted(self):
@@ -498,6 +498,30 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @staticmethod
+    def _audio_output_device(stream_music):
+        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        stream_music : str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        str, None
+            The current audio playback device, or ``None`` if it could not be determined
+
+        """
+        if not stream_music:
+            return None
+
+        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0]
+
+        return None
+
+    @staticmethod
     def _audio_state(audio_state_response):
         """Parse the :attr:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
 
@@ -569,30 +593,6 @@ class BaseTV(object):
             media_session_state = None
 
         return current_app, media_session_state
-
-    @staticmethod
-    def _audio_output_device(stream_music):
-        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
-
-        Parameters
-        ----------
-        stream_music : str, None
-            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
-
-        Returns
-        -------
-        str, None
-            The current audio playback device, or ``None`` if it could not be determined
-
-        """
-        if not stream_music:
-            return None
-
-        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
-        if matches:
-            return matches[0]
-
-        return None
 
     def _get_stream_music(self, stream_music_raw=None):
         """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
@@ -813,13 +813,8 @@ class BaseTV(object):
         app : str
             The ID of the app that will be launched
 
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
         """
-        return self._send_intent(app, constants.INTENT_LAUNCH)
+        self._adb.shell(constants.CMD_LAUNCH_APP.format(app))
 
     def stop_app(self, app):
         """Stop an app.
@@ -1095,21 +1090,13 @@ class BaseTV(object):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
-    def set_volume_level(self, volume_level, current_volume_level=None):
+    def set_volume_level(self, volume_level):
         """Set the volume to the desired level.
-
-        .. note::
-
-           This method works by sending volume up/down commands with a 1 second pause in between.  Without this pause,
-           the device will do a quick power cycle.  This is the most robust solution I've found so far.
-
 
         Parameters
         ----------
         volume_level : float
             The new volume level (between 0 and 1)
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
 
         Returns
         -------
@@ -1117,32 +1104,15 @@ class BaseTV(object):
             The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
-        # if necessary, determine the current volume and/or the max volume
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
-        else:
-            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
+        # if necessary, determine the max volume
+        if not self.max_volume:
+            _ = self.volume
+            if not self.max_volume:
+                return None
 
-        # if `self.max_volume` or `current_volume` could not be determined, do not proceed
-        if not self.max_volume or current_volume is None:
-            return None
+        new_volume = int(min(max(round(self.max_volume * volume_level), 0.), self.max_volume))
 
-        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
-
-        # Case 1: the new volume is the same as the current volume
-        if new_volume == current_volume:
-            return new_volume / self.max_volume
-
-        # Case 2: the new volume is less than the current volume
-        if new_volume < current_volume:
-            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume)) + ") &"
-
-        # Case 3: the new volume is greater than the current volume
-        else:
-            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume)) + ") &"
-
-        # send the volume down/up commands
-        self._adb.shell(cmd)
+        self._adb.shell("media volume --show --stream 3 --set {}".format(new_volume))
 
         # return the new volume level
         return new_volume / self.max_volume

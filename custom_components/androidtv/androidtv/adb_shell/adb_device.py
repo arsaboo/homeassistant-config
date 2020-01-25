@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Jeff Irion and contributors
+# Copyright (c) 2020 Jeff Irion and contributors
 #
 # This file is part of the adb-shell package.  It incorporates work
 # covered by the following license notice:
@@ -54,6 +54,8 @@
     * :meth:`AdbDevice.push`
     * :meth:`AdbDevice.shell`
     * :meth:`AdbDevice.stat`
+
+* :class:`AdbDeviceTcp`
 
 """
 
@@ -361,7 +363,7 @@ class AdbDevice(object):
         self._available = True
         return True  # return banner
 
-    def shell(self, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S):
+    def shell(self, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, decode=True):
         """Send an ADB shell command to the device.
 
         Parameters
@@ -373,15 +375,19 @@ class AdbDevice(object):
             and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
         total_timeout_s : float
             The total time in seconds to wait for a ``b'CLSE'`` or ``b'OKAY'`` command in :meth:`AdbDevice._read`
+        decode : bool
+            Whether to decode the output to utf8 before returning
 
         Returns
         -------
-        str
-            The output of the ADB shell command
+        bytes, str
+            The output of the ADB shell command as string if decode is True, otherwise as bytes.
 
         """
         adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
-        return b''.join(self._streaming_command(b'shell', command.encode('utf8'), adb_info)).decode('utf8')
+        if decode:
+            return b''.join(self._streaming_command(b'shell', command.encode('utf8'), adb_info)).decode('utf8')
+        return b''.join(self._streaming_command(b'shell', command.encode('utf8'), adb_info))
 
     # ======================================================================= #
     #                                                                         #

@@ -11,6 +11,11 @@
 import re
 
 
+# Intents
+INTENT_LAUNCH = "android.intent.category.LAUNCHER"
+INTENT_HOME = "android.intent.category.HOME"
+
+
 # echo '1' if the previous shell command was successful
 CMD_SUCCESS1 = r" && echo -e '1\c'"
 
@@ -25,6 +30,9 @@ CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
 #: Get the current app
 CMD_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP"
+
+#: Launch an app if it is not already the current app
+CMD_LAUNCH_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + " 1; fi"
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
@@ -80,11 +88,6 @@ CMD_VERSION = "getprop ro.build.version.release"
 # Commands for getting the MAC address
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
 CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
-
-
-# Intents
-INTENT_LAUNCH = "android.intent.category.LAUNCHER"
-INTENT_HOME = "android.intent.category.HOME"
 
 
 # ADB key event codes
@@ -267,6 +270,8 @@ APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
 APP_FIRETV_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
 APP_FIRETV_PACKAGE_SETTINGS = "com.amazon.tv.settings"
+APP_GOOGLE_CAST = 'com.google.android.apps.mediashell'
+APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
@@ -284,6 +289,8 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_FIREFOX: 'Firefox',
+        APP_GOOGLE_CAST: 'Google Cast',
+        APP_HBO_GO: 'HBO GO',
         APP_HULU: 'Hulu',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',

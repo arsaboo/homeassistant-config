@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Jeff Irion and contributors
+# Copyright (c) 2020 Jeff Irion and contributors
 #
 # This file is part of the adb-shell package.  It incorporates work
 # covered by the following license notice:
@@ -22,9 +22,8 @@
 
 * :class:`TcpHandle`
 
-    * :attr:`TcpHandle.available`
-    * :attr:`TcpHandle.bulk_read`
-    * :attr:`TcpHandle.bulk_write`
+    * :meth:`TcpHandle.bulk_read`
+    * :meth:`TcpHandle.bulk_write`
     * :meth:`TcpHandle.close`
     * :meth:`TcpHandle.connect`
 

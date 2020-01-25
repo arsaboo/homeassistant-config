@@ -61,3 +61,12 @@ oxfordblue:
   # Google colors
   google-red-500: '#db3236'
   google-green-500: '#39E949'
+
+  # CUSTOM STYLES NOT PART OF CORE HOME ASSISTANT
+  # HACS https://hacs.xyz/docs/basic/theming
+  hacs-badge-color: 'var(--paper-item-icon-color)' # Used for icon colors and new items in the store
+  hacs-status-installed: 'var(--light-primary-color)' # Controls the icon color for installed, up-to-date repositories
+  hacs-status-pending-restart: 'var(--accent-color)' # Controls the icon color for installed repositories that are awaiting a Home Assistant restart
+  hacs-status-pending-update: 'var(--accent-color)' # Controls the icon color for installed repositories that have an update available
+  hacs-status-not-loaded: 'var(--disabled-text-color)' # Controls the icon color for repositories that is not loaded
+  link-text-color: 'var(--accent-color)' # Used for href links in HACS

@@ -77,3 +77,18 @@ class Host(Command):
                 device_forward_map[serial][local] = remote
 
         return device_forward_map
+
+    def remote_connect(self, host, port):
+        cmd = "host:connect:%s:%d" % (host, port)
+        result = self._execute_cmd(cmd)
+
+        return "connected" in result
+
+    def remote_disconnect(self, host=None, port=None):
+        cmd = "host:disconnect:"
+        if host:
+            cmd = "host:disconnect:{}".format(host)
+            if port:
+                cmd = "{}:{}".format(cmd, port)
+
+        return self._execute_cmd(cmd)

@@ -28,7 +28,6 @@ class Sync:
 
         stat = os.stat(src)
 
-        stream = open(src, 'rb')
         timestamp = int(stat.st_mtime)
 
         # SEND
@@ -40,37 +39,38 @@ class Sync:
         self._send_str(Protocol.SEND, args)
 
         # DATA
-        while True:
-            chunk = stream.read(self.DATA_MAX_LENGTH)
-            if not chunk:
-                break
+        with open(src, 'rb') as stream:
+            while True:
+                chunk = stream.read(self.DATA_MAX_LENGTH)
+                if not chunk:
+                    break
 
-            self._send_length(Protocol.DATA, len(chunk))
-            self.connection.write(chunk)
+                self._send_length(Protocol.DATA, len(chunk))
+                self.connection.write(chunk)
 
         # DONE
         self._send_length(Protocol.DONE, timestamp)
         self.connection._check_status()
 
     def pull(self, src, dest):
-        stream = open(dest, 'wb')
         error = None
 
         # RECV
         self._send_str(Protocol.RECV, src)
 
         # DATA
-        while True:
-            flag = self.connection.read(4).decode('utf-8')
+        with open(dest, 'wb') as stream:
+            while True:
+                flag = self.connection.read(4).decode('utf-8')
 
-            if flag == Protocol.DATA:
-                data = self._read_data()
-                stream.write(data)
-            elif flag == Protocol.DONE:
-                self.connection.read(4)
-                return
-            elif flag == Protocol.FAIL:
-                return self._read_data().decode('utf-8')
+                if flag == Protocol.DATA:
+                    data = self._read_data()
+                    stream.write(data)
+                elif flag == Protocol.DONE:
+                    self.connection.read(4)
+                    return
+                elif flag == Protocol.FAIL:
+                    return self._read_data().decode('utf-8')
 
     def _integer(self, little_endian):
         return struct.unpack("<I", little_endian)

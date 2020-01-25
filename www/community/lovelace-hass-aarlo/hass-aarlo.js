@@ -495,12 +495,12 @@ class AarloGlance extends LitElement {
         // has happened.
         if ( camera.state !== this._s.cameraState ) {
             if ( this._s.cameraState === 'taking snapshot' ) {
-                console.log( 'updating1 ' + this._s.cameraName + ':' + this._s.cameraState + '-->' + camera.state );
+                //console.log( 'updating1 ' + this._s.cameraName + ':' + this._s.cameraState + '-->' + camera.state );
                 this.wsUpdateCameraImageSrc();
                 this.updateCameraImageSourceLater(5);
                 this.updateCameraImageSourceLater(10)
             } else {
-                console.log( 'updating2 ' + this._s.cameraName + ':' + this._s.cameraState + '-->' + camera.state );
+                //console.log( 'updating2 ' + this._s.cameraName + ':' + this._s.cameraState + '-->' + camera.state );
                 this.wsUpdateCameraImageSrc()
             }
         }
@@ -509,7 +509,7 @@ class AarloGlance extends LitElement {
         this._s.cameraState = camera.state;
 
         if ( this._s.imageSource !== camera.attributes.image_source ) {
-            console.log( 'updating3 ' + this._s.cameraName + ':' + this._s.imageSource + '-->' + camera.attributes.image_source );
+            //console.log( 'updating3 ' + this._s.cameraName + ':' + this._s.imageSource + '-->' + camera.attributes.image_source );
             this._s.imageSource = camera.attributes.image_source
         }
 
@@ -729,7 +729,7 @@ class AarloGlance extends LitElement {
                     break;
 
                 case '_change':
-                    console.log( 'change is updated' );
+                    //console.log( 'change is updated' );
                     break;
             }
         });

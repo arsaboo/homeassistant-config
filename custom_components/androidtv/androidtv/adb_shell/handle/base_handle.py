@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Jeff Irion and contributors
+# Copyright (c) 2020 Jeff Irion and contributors
 #
 # This file is part of the adb-shell package.
 
@@ -6,8 +6,8 @@
 
 * :class:`BaseHandle`
 
-    * :attr:`BaseHandle.bulk_read`
-    * :attr:`BaseHandle.bulk_write`
+    * :meth:`BaseHandle.bulk_read`
+    * :meth:`BaseHandle.bulk_write`
     * :meth:`BaseHandle.close`
     * :meth:`BaseHandle.connect`
 
