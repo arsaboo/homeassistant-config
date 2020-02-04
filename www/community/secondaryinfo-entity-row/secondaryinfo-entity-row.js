@@ -1,7 +1,7 @@
 customElements.whenDefined('card-tools').then(() => {
 
     class SecondaryInfoEntityRow extends cardTools.LitElement {
-        version() { return "0.3.1"; }
+        version() { return "0.4"; }
 
         render() {
             return cardTools.LitHtml`
@@ -10,7 +10,7 @@ customElements.whenDefined('card-tools').then(() => {
         }
 
         setConfig(config) {
-            cardTools.checkVersion(0.4);
+            cardTools.checkVersion(2.0);
             this._config = config;
             this._wrappedElement = this._createElement(config);
             this.requestUpdate();
@@ -24,7 +24,8 @@ customElements.whenDefined('card-tools').then(() => {
 
         _createElement(config) {
             // Override the custom row type in order to create the 'standard' row for this entity
-            let defaultRowConfig = Object.assign(config, {type: "default"});
+            let defaultRowConfig = Object.assign({}, config);
+            delete defaultRowConfig.type;
             const element = cardTools.createEntityRow(defaultRowConfig);
             return element;
         }
