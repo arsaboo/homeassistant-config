@@ -1,5 +1,5 @@
-  # - platform: wyzesense
-  #   device: auto
+  - platform: wyzesense
+    device: auto
   - platform: 'bayesian'
     prior: 0.75
     name: 'Rashmi Home'

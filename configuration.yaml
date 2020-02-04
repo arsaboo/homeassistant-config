@@ -70,25 +70,21 @@ weather:
     mode: daily
 # enable_debug:
 zone:
-  name: Home
-  latitude: !secret latitude_home
-  longitude: !secret longitude_home
-  radius: 200
-  icon: mdi:home
-
-zone 2:
-  name: Buckhead
-  latitude: !secret latitude_buckhead
-  longitude: !secret longitude_buckhead
-  radius: 200
-  icon: mdi:school
-
-zone 3:
-  name: Downtown
-  latitude: !secret latitude_downtown
-  longitude: !secret longitude_downtown
-  radius: 200
-  icon: mdi:school
+  - name: Home
+    latitude: !secret latitude_home
+    longitude: !secret longitude_home
+    radius: 200
+    icon: mdi:home
+  - name: Buckhead
+    latitude: !secret latitude_buckhead
+    longitude: !secret longitude_buckhead
+    radius: 200
+    icon: mdi:school
+  - name: Downtown
+    latitude: !secret latitude_downtown
+    longitude: !secret longitude_downtown
+    radius: 200
+    icon: mdi:school
 zwave:
   usb_path: /dev/ttyACM0
   network_key: !secret zwave_network_key
@@ -100,6 +96,7 @@ hue:
   bridges:
     - host: 192.168.2.229
       allow_hue_groups: false
+      allow_unreachable: true
 life360:
   accounts:
     - username: !secret life360_username
@@ -222,6 +219,7 @@ alexa:
         - switch.garage_relay_switch
         - switch.wemoporch
         - script.tv_youtube_on
+        - switch.sammytv
       include_domains:
         - cover
     entity_config:
@@ -296,7 +294,7 @@ alexa:
 mobile_app:
 google_assistant:
   project_id: !secret google_project_id
-  service_account: !include SERVICE_ACCOUNT.json
+  service_account: !include HASSGoogAssist.json
   expose_by_default: false
   entity_config:
     light.living_room_lights:
@@ -341,6 +339,10 @@ google_assistant:
     cover.garagedoor:
       expose: true
       room: garage
+    switch.sammytv:
+      expose: true
+      name: TV
+      room: living room
 homekit:
   auto_start: false
   filter:
@@ -399,7 +401,7 @@ camera:
   #   verify_ssl: false
   - platform: aarlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
-  - platform: ring
+  # - platform: ring
   - platform: local_file
     name: Driveway TF
     file_path: /home/homeassistant/.homeassistant/downloads/camera/driveway_latest.jpg
@@ -415,6 +417,9 @@ camera:
   - platform: generic
     still_image_url: !secret meteogram_png_url
     name: Meteogram
+  - platform: ffmpeg
+    input: !secret wyzecam_rtsp_url
+    name: Garage
   # Generate your link - https://www.wunderground.com/weather-radar/united-states/
   # - platform: generic
   #   still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
@@ -640,11 +645,11 @@ media_player:
   #   port: 8002
   #   mac: !secret samsung_tv_mac
   #   name: Living Room TV
-  - platform: samsungtv_custom2
-    host: 192.168.2.252
-    port: 8002
-    mac: !secret samsung_tv_mac
-    name: Living Room test
+  # - platform: samsungtv_custom2
+  #   host: 192.168.2.252
+  #   port: 8002
+  #   mac: !secret samsung_tv_mac
+  #   name: Living Room test
   - platform: panasonic_viera
     host: 192.168.2.242
     name: Panasonic Viera TV
@@ -809,6 +814,9 @@ notify:
   - platform: nfandroidtv
     name: Shield
     host: 192.168.2.28
+  - platform: nfandroidtv
+    name: AFTVMaster
+    host: 192.168.2.180
   - platform: command_line
     name: 'Echo Dot'
     command: "/home/homeassistant/.homeassistant/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
@@ -845,8 +853,6 @@ logger:
     homeassistant.components.ssdp: debug
     custom_components.samsungtv_upnp: debug
     custom_components.samsungtv_custom2: critical
-    custom_components.wyzesense: debug
-    wyzesense.gateway: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

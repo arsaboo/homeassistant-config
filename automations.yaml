@@ -1663,6 +1663,10 @@
   alias: 'Reset Garage Relay'
   initial_state: 'on'
   trigger:
+    - platform: state
+      entity_id: cover.garagedoor
+      to: 'closed'
+      for: '00:00:30'
     - platform: time_pattern
       seconds: '/5'
   condition:
@@ -1979,7 +1983,7 @@
   initial_state: 'on'
   trigger:
     platform: state
-    entity_id: media_player.living_room_tv
+    entity_id: switch.sammytv
   action:
     - service_template: "homeassistant.turn_{{ 'on' if trigger.to_state.state == 'on' else 'off' }}"
       data:
@@ -2176,6 +2180,18 @@
         entity_id: input_number.harmonyvolume
         value: '{{ trigger.to_state.state }}'
     - service: notify.shield
+      data_template:
+        title: "Home Assistant"
+        message: >
+            Volume changed to {{ trigger.to_state.state }}
+- id: update_master_sonos_volume
+  alias: "Update Master Sonos Volume"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: sensor.master_sonos_volume
+  action:
+    - service: notify.aftvmaster
       data_template:
         title: "Home Assistant"
         message: >

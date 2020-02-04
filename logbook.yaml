@@ -42,6 +42,7 @@
       - sensor.steps_rashmi
       - sensor.sonos_stereo
       - sensor.cube_last_action
+      - switch.garage_relay_switch
       - automation.turn_off_master_lights
       - automation.turn_on_master_lights_on_motion
       - image_processing.opencv_porch

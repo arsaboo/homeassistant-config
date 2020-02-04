@@ -26,8 +26,8 @@
           - switch.bedroom_away
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
-      # - service: ifttt.trigger
-      #   data: {"event":"AbodeAway", "value1":"Arm Abode"}
+      - service: ifttt.trigger
+        data: {"event":"wyze_cams_on"}
 
   abodehome:
     alias: 'Abode Home'
@@ -64,6 +64,8 @@
           - switch.bedroom_away
       - service: light.turn_off
         entity_id: light.living_room_lights
+      - service: ifttt.trigger
+        data: {"event":"wyze_cams_off"}
       # - service: ifttt.trigger
       #   data: {"event":"AbodeStandby", "value1":"Abode Standby"}
       # - service: homeassistant.turn_off
