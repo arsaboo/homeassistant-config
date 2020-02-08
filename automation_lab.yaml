@@ -3,7 +3,7 @@
 ################################################################
 - id: ring_camera_notification
   alias: 'Notify Ring camera'
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
     - condition: state
       entity_id: input_select.abodestatus
@@ -24,7 +24,7 @@
 
 - id: ring_download_video
   alias: 'Ring download video'
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
    - platform: state
      entity_id: sensor.ringvideourl
