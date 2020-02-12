@@ -99,3 +99,7 @@ class ArloCfg(object):
     @property
     def reconnect_every(self, default=0):
         return self._kw.get('reconnect_every', default) * 60
+
+    @property
+    def verbose(self, default=False):
+        return self._kw.get('verbose_debug', default)

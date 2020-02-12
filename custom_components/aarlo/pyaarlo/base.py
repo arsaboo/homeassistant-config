@@ -90,16 +90,16 @@ class ArloBase(ArloDevice):
     @property
     def _v1_modes(self):
         if self._arlo.cfg.mode_api.lower() == 'v1':
-            self._arlo.debug('forced v1 api')
+            self._arlo.vdebug('forced v1 api')
             return True
         if self._arlo.cfg.mode_api.lower() == 'v2':
-            self._arlo.debug('forced v2 api')
+            self._arlo.vdebug('forced v2 api')
             return False
         if self.model_id == 'ABC1000' or self.device_type == 'arloq' or self.device_type == 'arloqs':
-            self._arlo.debug('deduced v1 api')
+            self._arlo.vdebug('deduced v1 api')
             return True
         else:
-            self._arlo.debug('deduced v2 api')
+            self._arlo.vdebug('deduced v2 api')
             return False
 
     @property
@@ -145,10 +145,10 @@ class ArloBase(ArloDevice):
             else:
                 def _set_mode_v2_cb():
                     params = {'activeAutomations':
-                              [{'deviceId': self.device_id,
-                                'timestamp': time_to_arlotime(),
-                                active: [mode_id],
-                                inactive: []}]}
+                                  [{'deviceId': self.device_id,
+                                    'timestamp': time_to_arlotime(),
+                                    active: [mode_id],
+                                    inactive: []}]}
                     for i in range(1, 3):
                         body = self._arlo.be.post(AUTOMATION_PATH, params=params, raw=True)
                         if body['success']:

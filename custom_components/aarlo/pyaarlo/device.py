@@ -1,3 +1,4 @@
+import pprint
 import threading
 
 from .constant import (BATTERY_KEY, BATTERY_TECH_KEY, CHARGING_KEY, CHARGER_KEY,
@@ -29,7 +30,7 @@ class ArloDevice(object):
         return "<{0}:{1}:{2}>".format(self.__class__.__name__, self._device_type, self._name)
 
     def _event_handler(self, resource, event):
-        self._arlo.debug("*DEVICE* {}: got {} event {}".format(self.name, resource, event))
+        self._arlo.vdebug("{}: got {} event {}".format(self.name, resource, pprint.pformat(event)))
 
         # Find properties. Event either contains a item called properites or it
         # is the whole thing.
@@ -164,7 +165,7 @@ class ArloChildDevice(ArloDevice):
 
         self._parent_id = attrs.get('parentId', None)
         self._arlo.debug('parent is {}'.format(self._parent_id))
-        self._arlo.debug('resource is {}'.format(self.resource_id))
+        self._arlo.vdebug('resource is {}'.format(self.resource_id))
 
     @property
     def resource_type(self):

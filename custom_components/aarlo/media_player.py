@@ -128,6 +128,11 @@ class ArloMediaPlayerDevice(MediaPlayerDevice):
         return self._name
 
     @property
+    def unique_id(self):
+        """Return a unique ID."""
+        return self._unique_id
+
+    @property
     def state(self):
         """Return the state of the device."""
         return self._state

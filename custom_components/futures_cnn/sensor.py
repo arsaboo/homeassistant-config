@@ -132,23 +132,50 @@ class CNNFuturesSensor(Entity):
         """Update current date."""
         self.rest.update()
         if self.type == 'sp':
-            self._state = float(self.rest.data[2])
+            try:
+                self._state = float(self.rest.data[2])
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'sp_change_pct':
-            self._state = self.futures_change_pct(1)
+            try:
+                self._state = self.futures_change_pct(1)
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'sp_change':
-            self._state = self.futures_change(0)
+            try:
+                self._state = self.futures_change(0)
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'dow':
-            self._state = float(self.rest.data[8])
+            try:
+                self._state = float(self.rest.data[8])
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'dow_change_pct':
-            self._state = self.futures_change_pct(7)
+            try:
+                self._state = self.futures_change_pct(7)
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'dow_change':
-            self._state = self.futures_change(6)
+            try:
+                self._state = self.futures_change(6)
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'nasdaq':
-            self._state = float(self.rest.data[5])
+            try:
+                self._state = float(self.rest.data[5])
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'nasdaq_change_pct':
-            self._state = self.futures_change_pct(4)
+            try:
+                self._state = self.futures_change_pct(4)
+            except TypeError:
+                self._state = 'NA'
         elif self.type == 'nasdaq_change':
-            self._state = self.futures_change(3)
+            try:
+                self._state = self.futures_change(3)
+            except TypeError:
+                self._state = 'NA'
 
 class CNNFuturesData(object):
     """Get data from cnn.com."""

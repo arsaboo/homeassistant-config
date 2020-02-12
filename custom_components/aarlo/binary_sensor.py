@@ -24,7 +24,8 @@ DEPENDENCIES = ['aarlo']
 SENSOR_TYPES = {
     'sound': ['Sound', 'sound', 'audioDetected'],
     'motion': ['Motion', 'motion', 'motionDetected'],
-    'ding': ['Ding', 'occupancy', 'buttonPressed']
+    'ding': ['Ding', 'occupancy', 'buttonPressed'],
+    'cry': ['Cry', 'sound', 'babyCryDetection'],
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({

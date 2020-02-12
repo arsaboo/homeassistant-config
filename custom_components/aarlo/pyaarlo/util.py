@@ -1,7 +1,6 @@
+import requests
 import time
 from datetime import datetime, timezone
-
-import requests
 
 
 def arlotime_to_time(timestamp):

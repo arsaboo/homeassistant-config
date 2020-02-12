@@ -1,12 +1,11 @@
 import json
 import pprint
 import re
+import requests
+import requests.adapters
 import threading
 import time
 import uuid
-
-import requests
-import requests.adapters
 
 from .constant import (DEFAULT_RESOURCES, LOGIN_PATH, LOGOUT_PATH,
                        NOTIFY_PATH, SUBSCRIBE_PATH, TRANSID_PREFIX, DEVICES_PATH)
@@ -118,7 +117,7 @@ class ArloBackEnd(object):
         # Answer for async ping. Note and finish.
         # Packet number #1.
         if resource.startswith('subscriptions/'):
-            self._arlo.debug('async ping response ' + resource)
+            self._arlo.vdebug('async ping response ' + resource)
             return
 
         # These is a base station mode response. Find base station ID and

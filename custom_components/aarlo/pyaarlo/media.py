@@ -26,7 +26,7 @@ class ArloMediaLibrary(object):
 
         # grab today's images
         date_to = datetime.today().strftime('%Y%m%d')
-        data = self._arlo.be.post(LIBRARY_PATH, {'dateFrom':date_to, 'dateTo':date_to})
+        data = self._arlo.be.post(LIBRARY_PATH, {'dateFrom': date_to, 'dateTo': date_to})
 
         # get current videos
         with self._lock:
@@ -46,7 +46,7 @@ class ArloMediaLibrary(object):
 
             key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
             if key in keys:
-                self._arlo.debug( 'skipping {0}, already present'.format( key ) )
+                self._arlo.vdebug('skipping {0}, already present'.format(key))
                 continue
 
             self._arlo.debug('adding {0}'.format(key))
@@ -77,7 +77,7 @@ class ArloMediaLibrary(object):
         date_to = now.strftime('%Y%m%d')
 
         # save videos for cameras we know about
-        data = self._arlo.be.post(LIBRARY_PATH, {'dateFrom':date_from, 'dateTo':date_to})
+        data = self._arlo.be.post(LIBRARY_PATH, {'dateFrom': date_from, 'dateTo': date_to})
         videos = []
         keys = []
         for video in data:
@@ -89,12 +89,12 @@ class ArloMediaLibrary(object):
             camera = self._arlo.lookup_camera_by_id(video.get('deviceId'))
             if camera is not None:
                 key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
-                self._arlo.debug('adding {0}'.format(key))
+                self._arlo.vdebug('adding {0}'.format(key))
                 videos.append(ArloVideo(video, camera, self._arlo))
                 keys.append(key)
             else:
                 key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
-                self._arlo.debug('skipping {0}'.format(key))
+                self._arlo.vdebug('skipping {0}'.format(key))
 
         # set update count, load() never runs callbacks
         with self._lock:

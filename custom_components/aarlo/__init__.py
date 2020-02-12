@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_USERNAME, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_HOST)
 from homeassistant.helpers import config_validation as cv
 
-__version__ = '0.6.9'
+__version__ = '0.6.10'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ CONF_DEVICE_REFRESH = 'refresh_devices_every'
 CONF_HTTP_CONNECTIONS = 'http_connections'
 CONF_HTTP_MAX_SIZE = 'http_max_size'
 CONF_RECONNECT_EVERY = 'reconnect_every'
+CONF_VERBOSE_DEBUG = 'verbose_debug'
 
 SCAN_INTERVAL = timedelta(seconds=60)
 PACKET_DUMP = False
@@ -61,6 +62,7 @@ HTTP_CONNECTIONS = 5
 HTTP_MAX_SIZE = 10
 RECONNECT_EVERY = 0
 DEFAULT_HOST = 'https://my.arlo.com'
+VERBOSE_DEBUG = False
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -84,6 +86,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_HTTP_CONNECTIONS, default=HTTP_CONNECTIONS): cv.positive_int,
         vol.Optional(CONF_HTTP_MAX_SIZE, default=HTTP_MAX_SIZE): cv.positive_int,
         vol.Optional(CONF_RECONNECT_EVERY, default=RECONNECT_EVERY): cv.positive_int,
+        vol.Optional(CONF_VERBOSE_DEBUG, default=VERBOSE_DEBUG): cv.boolean,
     }),
 }, extra=vol.ALLOW_EXTRA)
 
@@ -112,6 +115,7 @@ def setup(hass, config):
     http_connections = conf.get(CONF_HTTP_CONNECTIONS)
     http_max_size = conf.get(CONF_HTTP_MAX_SIZE)
     reconnect_every = conf.get(CONF_RECONNECT_EVERY)
+    verbose_debug = conf.get(CONF_VERBOSE_DEBUG)
 
     # Fix up config
     if conf_dir == '':
@@ -128,7 +132,8 @@ def setup(hass, config):
                       no_media_upload=no_media_up,
                       user_agent=user_agent, mode_api=mode_api,
                       refresh_devices_every=device_refresh, reconnect_every=reconnect_every,
-                      http_connections=http_connections, http_max_size=http_max_size)
+                      http_connections=http_connections, http_max_size=http_max_size,
+                      verbose_debug=verbose_debug)
         if not arlo.is_connected:
             return False
 

@@ -2,6 +2,7 @@ import base64
 import datetime
 import logging
 import os
+import pprint
 import threading
 import time
 
@@ -20,10 +21,9 @@ from .media import ArloMediaLibrary
 from .storage import ArloStorage
 from .util import time_to_arlotime
 
-logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger('pyaarlo')
 
-__version__ = '0.6.9'
+__version__ = '0.6.10'
 
 
 class PyArlo(object):
@@ -255,6 +255,10 @@ class PyArlo(object):
             return doorbell[0]
         return None
 
+    def inject_response(self, response):
+        self.debug("injecting\n{}".format(pprint.pformat(response)))
+        self._be._ev_dispatcher(response)
+
     def attribute(self, attr):
         return self._st.get(['ARLO', attr], None)
 
@@ -276,3 +280,7 @@ class PyArlo(object):
 
     def debug(self, msg):
         _LOGGER.debug(msg)
+
+    def vdebug(self, msg):
+        if self._cfg.verbose:
+            _LOGGER.debug(msg)
