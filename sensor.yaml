@@ -104,12 +104,12 @@
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
-  - platform: statistics
-    name: Bed Weight Average
-    entity_id: sensor.master_bed_weight
-    sampling_size: 30
-    max_age:
-      minutes: 5
+  # - platform: statistics
+  #   name: Bed Weight Average
+  #   entity_id: sensor.master_bed_weight
+  #   sampling_size: 30
+  #   max_age:
+  #     minutes: 5
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.living_room_tv
@@ -479,10 +479,10 @@
         unit_of_measurement: "$"
         value_template: >-
            {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
-      # ringvideourl:
-      #   friendly_name: "Ring Video URL"
-      #   value_template: >-
-      #     {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
+      ringvideourl:
+        friendly_name: "Ring Video URL"
+        value_template: >-
+          {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"

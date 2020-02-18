@@ -47,6 +47,12 @@ resources:
     type: module
   - url: /local/community/lovelace-template-entity-row/template-entity-row.js
     type: module
+  - url: /local/community/harmony-card/harmony-card.js
+    type: module
+  - url: /local/community/lovelace-multiple-entity-row/multiple-entity-row.js
+    type: module
+  - url: /local/community/vertical-stack-in-card/vertical-stack-in-card.js
+    type: module
   - url: /local/community/custom-header/custom-header.js
     type: module
 title: ARS Home
@@ -250,7 +256,7 @@ views:
               top: 17%
               left: 15%
           - type: image
-            entity: input_boolean.tv
+            entity: switch.sammytv
             tap_action:
               action: toggle
             image: /local/icons/tv_off2.png
@@ -607,16 +613,22 @@ views:
         entities:
           - entity: switch.wemoswitch
             secondary_info: last-changed
+            state_color: true
           - entity: switch.wemoinsight
             secondary_info: last-changed
+            state_color: true
           - entity: switch.aeon_switch
             secondary_info: last-changed
+            state_color: true
           - entity: switch.0220013568c63aa78156
             secondary_info: last-changed
+            state_color: true
           - entity: switch.03783133807d3a7d0403
             type: "custom:secondaryinfo-entity-row"
             secondary_info: '[[ sensor.rpi_cpu_temp ]] °F'
+            state_color: true
           - entity: switch.41034600cc50e359a4f8
+            state_color: true
       - type: vertical-stack
         cards:
           - type: alarm-panel
@@ -645,10 +657,10 @@ views:
         title: Ring Doorbell
         show_header_toggle: false
         entities:
-          - binary_sensor.front_door_ding
-          - binary_sensor.front_door_motion_2
-          - sensor.front_door_last_ding
-          - sensor.front_door_last_motion
+          - entity: binary_sensor.front_door_ding
+            secondary_info: last-changed
+          - entity: binary_sensor.front_door_motion_2
+            secondary_info: last-changed
       - type: horizontal-stack
         cards:
           - type: entity-button
@@ -715,30 +727,118 @@ views:
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
           - sensor.dark_sky_daily_summary
-      - type: entities
-        title: Room Sensors
-        show_header_toggle: false
-        entities:
-          - sensor.illumination_158d00016612af
-          - sensor.humidity_158d0001ab7d20
-          - sensor.pressure_158d0001ab7d20
-          - sensor.temperature_158d0001ab7d20
-          - type: divider
-          - sensor.humidity_158d0001ab3c88
-          - sensor.pressure_158d0001ab3c88
-          - sensor.temperature_158d0001ab3c88
-          - type: divider
-          - sensor.humidity_158d0001ab3b2b
-          - sensor.pressure_158d0001ab3b2b
-          - sensor.temperature_158d0001ab3b2b
-          - type: divider
-          - sensor.illumination_34ce00813670
-          - sensor.illumination_158d0001a1f2ab
-          - binary_sensor.water_leak_sensor_158d0001d77800
-          - binary_sensor.water_leak_sensor_158d00027b0db6
-          - binary_sensor.water_leak_sensor_158d00024bfa97
-          - binary_sensor.water_leak_sensor_158d0001bb788c
-          - sensor.leeoalarmstatus
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: entities
+            title: Room Sensors
+            show_header_toggle: false
+            entities:
+              - entity: sensor.illumination_158d00016612af
+                type: custom:multiple-entity-row
+                name: Brightness
+                hide_state: true
+                primary:
+                  entity: sensor.illumination_158d00016612af
+                  name: Upstairs
+                secondary:
+                  entity: sensor.illumination_34ce00813670
+                  name: Living Room
+                tertiary:
+                  entity: sensor.illumination_158d0001a1f2ab
+                  name: Guest Room
+              - type: divider
+              - entity: sensor.temperature_158d0001ab7d20
+                type: custom:multiple-entity-row
+                name: Attic
+                secondary_info: last-changed
+                hide_state: true
+                primary:
+                  entity: sensor.humidity_158d0001ab7d20
+                  name: Humidity
+                secondary:
+                  entity: sensor.pressure_158d0001ab7d20
+                  name: Pressure
+                tertiary:
+                  entity: sensor.temperature_158d0001ab7d20
+                  name: Temp
+              - entity: sensor.temperature_158d0001ab3c88
+                type: custom:multiple-entity-row
+                name: Living Room
+                secondary_info: last-changed
+                hide_state: true
+                primary:
+                  entity: sensor.humidity_158d0001ab3c88
+                  name: Humidity
+                secondary:
+                  entity: sensor.pressure_158d0001ab3c88
+                  name: Pressure
+                tertiary:
+                  entity: sensor.temperature_158d0001ab3c88
+                  name: Temp
+              - entity: sensor.temperature_158d0001ab3b2b
+                type: custom:multiple-entity-row
+                name: Study
+                secondary_info: last-changed
+                hide_state: true
+                primary:
+                  entity: sensor.humidity_158d0001ab3b2b
+                  name: Humidity
+                secondary:
+                  entity: sensor.pressure_158d0001ab3b2b
+                  name: Pressure
+                tertiary:
+                  entity: sensor.temperature_158d0001ab3b2b
+                  name: Temp
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                name: Laundry
+                entity: binary_sensor.water_leak_sensor_158d0001d77800
+                styles:
+                  card:
+                    - font-size: 12px
+                state:
+                  - value: 'on'
+                    icon: mdi:water
+                    color: 'red'
+                  - value: 'off'
+                    icon: mdi:water-off
+              - type: custom:button-card
+                name: Kitchen Sink
+                entity: binary_sensor.water_leak_sensor_158d00027b0db6
+                styles:
+                  card:
+                    - font-size: 12px
+                state:
+                  - value: 'on'
+                    icon: mdi:water
+                    color: 'red'
+                  - value: 'off'
+                    icon: mdi:water-off
+              - type: custom:button-card
+                name: Powder Room
+                entity: binary_sensor.water_leak_sensor_158d00024bfa97
+                styles:
+                  card:
+                    - font-size: 12px
+                state:
+                  - value: 'on'
+                    icon: mdi:water
+                    color: 'red'
+                  - value: 'off'
+                    icon: mdi:water-off
+              - type: custom:button-card
+                name: Guest Bath
+                entity: binary_sensor.water_leak_sensor_158d0001bb788c
+                styles:
+                  card:
+                    - font-size: 12px
+                state:
+                  - value: 'on'
+                    icon: mdi:water
+                    color: 'red'
+                  - value: 'off'
+                    icon: mdi:water-off
       - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
@@ -948,6 +1048,17 @@ views:
         entity: camera.ars_bloom
         show_name: false
         show_state: false
+      # - type: picture-entity
+      #   entity: camera.garage
+      #   show_name: false
+      #   show_state: false
+      - type: picture-glance
+        camera_image: camera.garage
+        camera_view: live
+        title: Garage
+        entities:
+          - cover.garagedoor
+          - light.lifx5
 
   - icon: mdi:play-circle-outline
     id: media
@@ -993,6 +1104,7 @@ views:
           - sensor.sonos_audio_in
           - sensor.master_audio_in
           - script.tv_off
+          - switch.sammytv
       - type: custom:auto-entities
         card:
           type: entities
@@ -1267,6 +1379,9 @@ views:
           - device_tracker.test_alok
           - person.rashmi
           - device_tracker.test_rashmi
+          - switch.garage_relay_switch
+          - automation.reset_garage_relay
+          - input_boolean.sleeping
 
       - type: entities
         title: Network Details
@@ -1470,6 +1585,10 @@ views:
         name: Speedtest
         points: true
         animate: true
+      - type: sensor
+        entity: sensor.speedtest_download
+        name: Speedtest
+        graph: line
       - type: map
         entities:
           - zone.home
@@ -2100,6 +2219,14 @@ views:
             state: "on"
         card:
           type: custom:unused-card
+      - type: 'custom:harmony-card'
+        entity: remote.livingroom
+        volume_entity: media_player.family_room_2
+        activities:
+          - name: SATV
+            device: Shield
+          - name: Watch Apple TV
+            device: AppleTV
   - icon: mdi:coin-outline
     id: stocks
     title: Stocks

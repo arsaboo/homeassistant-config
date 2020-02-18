@@ -850,6 +850,7 @@ logger:
     # custom_components.alexa_media: debug
     homeassistant.components.samsungtv: debug
     custom_components.samsungtv: debug
+    samsungtvws: debug
     homeassistant.components.ssdp: debug
     custom_components.samsungtv_upnp: debug
     custom_components.samsungtv_custom2: critical
