@@ -25,6 +25,8 @@ from homeassistant.const import (
     CONF_METHOD,
     CONF_NAME,
     CONF_PORT,
+    CONF_TIMEOUT,
+    CONF_TOKEN,
     STATE_OFF,
     STATE_ON,
 )
@@ -34,12 +36,14 @@ from homeassistant.util import dt as dt_util
 
 from .bridge import SamsungTVBridge
 from .const import (
+    CONF_DESCRIPTION,
     CONF_MANUFACTURER,
     CONF_MODEL,
     CONF_ON_ACTION,
-    CONF_TOKEN,
     DOMAIN,
     LOGGER,
+    VALUE_CONF_ID,
+    VALUE_CONF_NAME,
 )
 
 KEY_PRESS_TIMEOUT = 1.2
@@ -101,14 +105,14 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._end_of_power_off = None
         # Generate a configuration for the Samsung library
         config = {
-            "name": "HomeAssistant",
-            "description": "HomeAssistant",
-            "id": "ha.component.samsung",
-            "method": config_entry.data[CONF_METHOD],
-            "port": config_entry.data.get(CONF_PORT),
-            "host": config_entry.data[CONF_HOST],
-            "timeout": 1,
-            "token": config_entry.data[CONF_TOKEN],
+            CONF_NAME: VALUE_CONF_NAME,
+            CONF_DESCRIPTION: VALUE_CONF_NAME,
+            CONF_ID: VALUE_CONF_ID,
+            CONF_METHOD: config_entry.data[CONF_METHOD],
+            CONF_PORT: config_entry.data.get(CONF_PORT),
+            CONF_HOST: config_entry.data[CONF_HOST],
+            CONF_TIMEOUT: 1,
+            CONF_TOKEN: config_entry.data[CONF_TOKEN],
         }
         self._bridge = SamsungTVBridge.get_bridge(config)
         self._bridge.register_reauth_callback(self.access_denied)
@@ -195,10 +199,7 @@ class SamsungTVDevice(MediaPlayerDevice):
 
         self.send_key("KEY_POWEROFF")
         # Force closing of remote session to provide instant UI feedback
-        try:
-            self._bridge.close_remote()
-        except OSError:
-            LOGGER.debug("Could not establish connection.")
+        self._bridge.close_remote()
 
     def volume_up(self):
         """Volume up the media player."""
