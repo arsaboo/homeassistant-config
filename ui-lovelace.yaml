@@ -256,7 +256,7 @@ views:
               top: 17%
               left: 15%
           - type: image
-            entity: switch.sammytv
+            entity: media_player.sammytv
             tap_action:
               action: toggle
             image: /local/icons/tv_off2.png
@@ -625,7 +625,7 @@ views:
             state_color: true
           - entity: switch.03783133807d3a7d0403
             type: "custom:secondaryinfo-entity-row"
-            secondary_info: '[[ sensor.rpi_cpu_temp ]] °F'
+            secondary_info: '[[ sensor.rpi_cpu_thermal_1_temp ]] °F'
             state_color: true
           - entity: switch.41034600cc50e359a4f8
             state_color: true
@@ -1104,7 +1104,6 @@ views:
           - sensor.sonos_audio_in
           - sensor.master_audio_in
           - script.tv_off
-          - switch.sammytv
       - type: custom:auto-entities
         card:
           type: entities
@@ -1389,7 +1388,6 @@ views:
         entities:
           - switch.pihole
           - sensor.nuc_cpu_load
-          - sensor.nuc_disk_used_percent
           - sensor.nuc_ram_used_percent
           - sensor.nuc_containers_active
       - type: horizontal-stack
@@ -1579,12 +1577,6 @@ views:
                     red: -6
                     yellow: -2
                     green: 0
-      - type: custom:mini-graph-card
-        entities:
-          - sensor.speedtest_download
-        name: Speedtest
-        points: true
-        animate: true
       - type: sensor
         entity: sensor.speedtest_download
         name: Speedtest

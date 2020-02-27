@@ -50,7 +50,9 @@ CONF_COMMAND_TEMPLATE = "command_template"
 
 DEFAULT_COMMAND_TEMPLATE = "{{action}}"
 DEFAULT_TRIGGER_TIME = timedelta(seconds=60)
-ALARM_VOLUME = '8'
+DEFAULT_HOME = 'home'
+DEFAULT_NIGHT = 'night'
+DEFAULT_ALARM_VOLUME = '8'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_CODE): cv.string,
@@ -59,10 +61,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(
         CONF_COMMAND_TEMPLATE, default=DEFAULT_COMMAND_TEMPLATE
     ): cv.template,
-    vol.Optional(CONF_HOME_MODE_NAME, default=ARMED): cv.string,
+    vol.Optional(CONF_HOME_MODE_NAME, default=DEFAULT_HOME): cv.string,
     vol.Optional(CONF_AWAY_MODE_NAME, default=ARMED): cv.string,
-    vol.Optional(CONF_NIGHT_MODE_NAME, default=ARMED): cv.string,
-    vol.Optional(CONF_ALARM_VOLUME, default=ALARM_VOLUME): cv.string,
+    vol.Optional(CONF_NIGHT_MODE_NAME, default=DEFAULT_NIGHT): cv.string,
+    vol.Optional(CONF_ALARM_VOLUME, default=DEFAULT_ALARM_VOLUME): cv.string,
     vol.Optional(CONF_TRIGGER_TIME, default=DEFAULT_TRIGGER_TIME): vol.All(cv.time_period, cv.positive_timedelta),
 })
 
@@ -281,16 +283,16 @@ class ArloBaseStation(AlarmControlPanel):
     def _get_state_from_ha(self, mode):
         """Convert Arlo mode to Home Assistant state."""
         lmode = mode.lower()
-        if lmode == ARMED:
-            return STATE_ALARM_ARMED_AWAY
-        if lmode == DISARMED:
-            return STATE_ALARM_DISARMED
         if lmode == self._home_mode_name:
             return STATE_ALARM_ARMED_HOME
         if lmode == self._away_mode_name:
             return STATE_ALARM_ARMED_AWAY
         if lmode == self._night_mode_name:
             return STATE_ALARM_ARMED_NIGHT
+        if lmode == ARMED:
+            return STATE_ALARM_ARMED_AWAY
+        if lmode == DISARMED:
+            return STATE_ALARM_DISARMED
         return mode
 
     def set_mode_in_ha(self, mode):

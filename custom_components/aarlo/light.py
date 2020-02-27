@@ -6,6 +6,7 @@ https://home-assistant.io/components/sensor.arlo/
 """
 
 import logging
+import pprint
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
@@ -18,11 +19,15 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     Light,
 )
-from homeassistant.const import (ATTR_ATTRIBUTION)
+from homeassistant.const import (ATTR_ATTRIBUTION,
+                                 ATTR_BATTERY_CHARGING,
+                                 ATTR_BATTERY_LEVEL)
 from homeassistant.core import callback
 import homeassistant.util.color as color_util
 from . import CONF_ATTRIBUTION, DATA_ARLO, DEFAULT_BRAND
 from .pyaarlo.constant import (
+    BRIGHTNESS_KEY,
+    LAMP_STATE_KEY,
     LIGHT_BRIGHTNESS_KEY,
     LIGHT_MODE_KEY
 )
@@ -30,6 +35,9 @@ from .pyaarlo.constant import (
 _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ['aarlo']
+
+ATTR_BATTERY_TECH = 'battery_tech'
+ATTR_CHARGER_TYPE = 'charger_type'
 
 LIGHT_EFFECT_RAINBOW = "rainbow"
 LIGHT_EFFECT_NONE = "none"
@@ -58,6 +66,7 @@ class ArloLight(Light):
         self._name = light.name
         self._unique_id = self._name.lower().replace(' ', '_')
         self._state = "off"
+        self._brightness = None
         self._light = light
         _LOGGER.info('ArloLight: %s created', self._name)
 
@@ -67,12 +76,18 @@ class ArloLight(Light):
         @callback
         def update_state(_light, attr, value):
             _LOGGER.debug('callback:' + attr + ':' + str(value)[:80])
-            self._state = value
+            if attr == LAMP_STATE_KEY:
+                self._state = value
+            if attr == BRIGHTNESS_KEY:
+                self._brightness = value
             self.async_schedule_update_ha_state()
 
         _LOGGER.info('ArloLight: %s registering callbacks', self._name)
-        self._state = self._light.attribute("lampState", default="off")
-        self._light.add_attr_callback("lampState", update_state)
+        self._state = self._light.attribute(LAMP_STATE_KEY, default="off")
+        self._brightness = self._light.attribute(BRIGHTNESS_KEY, default=255)
+
+        self._light.add_attr_callback(LAMP_STATE_KEY, update_state)
+        self._light.add_attr_callback(BRIGHTNESS_KEY, update_state)
 
     @property
     def unique_id(self):
@@ -84,18 +99,48 @@ class ArloLight(Light):
         """Return True if light is on."""
         return self._state.lower() == "on"
 
+    @property
+    def supported_features(self):
+        """Flag features that are supported."""
+        #return SUPPORT_BRIGHTNESS | SUPPORT_COLOR 
+        return SUPPORT_BRIGHTNESS 
+
     def turn_on(self, **kwargs):
         """Turn the light on."""
-        self._light.turn_on()
+        _LOGGER.info("turn_on: {}".format(pprint.pformat(kwargs)))
+
+        rgb = kwargs.get(ATTR_HS_COLOR,None)
+        if rgb is not None:
+            rgb = color_util.color_hs_to_RGB(*rgb)
+        brightness = kwargs.get(ATTR_BRIGHTNESS,None)
+
+        self._light.turn_on(brightness=brightness,rgb=rgb)
+        self._state = "on"
 
     def turn_off(self, **kwargs):
         """Turn the light off."""
+        _LOGGER.info("turn_off: {}".format(pprint.pformat(kwargs)))
         self._light.turn_off()
+        self._state = "off"
+
+    @property
+    def brightness(self):
+        """Return the brightness of the light."""
+        return self._brightness
 
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        attrs = {}
+
+        attrs = {
+            name: value for name, value in (
+                (ATTR_BATTERY_LEVEL, self._light.battery_level),
+                (ATTR_BATTERY_TECH, self._light.battery_tech),
+                (ATTR_BATTERY_CHARGING, self._light.charging),
+                (ATTR_CHARGER_TYPE, self._light.charger_type),
+                (BRIGHTNESS_KEY, self._brightness),
+            ) if value is not None
+        }
 
         attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
         attrs['brand'] = DEFAULT_BRAND

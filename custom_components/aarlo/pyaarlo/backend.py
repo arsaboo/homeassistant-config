@@ -110,7 +110,8 @@ class ArloBackEnd(object):
 
         #
         # I'm trying to keep this as generic as possible... but it needs some
-        # smarts to figure out where to send responses.
+        # smarts to figure out where to send responses - the packets from Arlo
+        # are anything but consistent...
         # See docs/packets for and idea of what we're parsing.
         #
 
@@ -159,15 +160,21 @@ class ArloBackEnd(object):
             if device_id is not None and properties is not None:
                 responses.append((device_id, resource, properties))
 
-        # These are generic responses, we look for device IDs and forward
-        # hoping the device can handle it.
+        # This a list ditch effort to funnel the answer the correct place...
+        #  Check for device_id
+        #  Check for unique_id
+        # If none of those then is unhandled
         # Packet number #?.
         else:
             device_id = response.get('deviceId', None)
             if device_id is not None:
                 responses.append((device_id, resource, response))
             else:
-                self._arlo.debug('unhandled response {} - {}'.format(resource, response))
+                device_id = response.get('uniqueId', None)
+                if device_id is not None:
+                    responses.append((device_id, resource, response))
+                else:
+                    self._arlo.debug('unhandled response {} - {}'.format(resource, response))
 
         # Now find something waiting for this/these.
         for device_id, resource, response in responses:
@@ -398,6 +405,9 @@ class ArloBackEnd(object):
             if device.device_id not in self._callbacks:
                 self._callbacks[device.device_id] = []
             self._callbacks[device.device_id].append(callback)
+            if device.unique_id not in self._callbacks:
+                self._callbacks[device.unique_id] = []
+            self._callbacks[device.unique_id].append(callback)
 
     def add_any_listener(self, callback):
         with self._lock:

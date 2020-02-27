@@ -91,3 +91,10 @@ def http_stream(url, chunk=4096):
     ret.raise_for_status()
     for data in ret.iter_content(chunk):
         yield data
+
+def rgb_to_hex(rgb):
+    return "#{:02x}{:02x}{:02x}".format(rgb[0],rgb[1],rgb[2])
+
+def hex_to_rgb(h):
+    return { 'red':int(h[1:3],16), 'green':int(h[3:5],16), 'blue':int(h[5:7],16) }
+

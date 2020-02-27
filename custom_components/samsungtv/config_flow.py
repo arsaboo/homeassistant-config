@@ -63,7 +63,6 @@ class SamsungTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._title = None
         self._id = None
         self._bridge = None
-        self._port = None
 
     def _get_entry(self):
         return self.async_create_entry(
@@ -84,20 +83,16 @@ class SamsungTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def _try_connect(self):
         """Try to connect and check auth."""
         for method in SUPPORTED_METHODS:
-            config = {
-                CONF_METHOD: method,
-                CONF_HOST: self._host,
-            }
-            self._bridge = SamsungTVBridge.get_bridge(config)
-            result = self._bridge.try_connect(self._port)
-            if result == RESULT_SUCCESS:
+            self._bridge = SamsungTVBridge.get_bridge(method, self._host)
+            result = self._bridge.try_connect()
+            if result != RESULT_NOT_SUCCESSFUL:
                 return result
         LOGGER.debug("No working config found")
         return RESULT_NOT_SUCCESSFUL
 
     async def async_step_import(self, user_input=None):
         """Handle configuration by yaml file."""
-        self._port = user_input.get(CONF_PORT)
+        # self._port = user_input.get(CONF_PORT)
 
         return await self.async_step_user(user_input)
 
@@ -175,7 +170,7 @@ class SamsungTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._manufacturer = user_input.get(CONF_MANUFACTURER)
         self._model = user_input.get(CONF_MODEL)
         self._name = user_input.get(CONF_NAME)
-        self._port = user_input.get(CONF_PORT)
+        # self._port = user_input.get(CONF_PORT)
         self._title = self._model or self._name
 
         await self.async_set_unique_id(self._ip)
