@@ -1890,7 +1890,7 @@
       state: 'off'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.rpi_cpu_temp
+      entity_id: sensor.rpi_cpu_thermal_1_temp
       above: 135
   action:
     service: homeassistant.turn_on
@@ -1905,7 +1905,7 @@
       state: 'on'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.rpi_cpu_temp
+      entity_id: sensor.rpi_cpu_thermal_1_temp
       below: 125
   action:
     service: homeassistant.turn_off
@@ -2282,9 +2282,8 @@
         message: >
           {{trigger.event.data}}
 
-- alias: 'Arlo snapshop'
+- alias: 'Arlo snapshot'
   initial_state: True
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.movement
