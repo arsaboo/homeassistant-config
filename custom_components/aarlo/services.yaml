@@ -1,29 +1,43 @@
+# Describes the format for available virtual services
+
+aarlo_request_snapshot:
+  description: Request a camera takes a snapshot
+  fields:
+    entity_id:
+      description: Name(s) of entities to turn on
+      example: 'camera.aarlo_front_camera'
 
 camera.aarlo_request_snapshot:
   description: Request a camera takes a snapshot
   fields:
     entity_id:
-      description: string (required) camera to get snapshot from
+      description: Name(s) of entities to turn on
+      example: 'camera.aarlo_front_camera'
 
 camera.aarlo_request_snapshot_to_file:
   description: Request a camera takes a snapshot and write it to a file
   fields:
     entity_id:
-      description: string (required) camera to get snapshot from
+      description: Name(s) of entities to turn on
+      example: 'camera.aarlo_front_camera'
     filename:
       description: string (required) where to save the snapshot
+      example: '/tmp/snapshot.jpg'
 
 camera.aarlo_stop_activity:
   description: Stop all stream activity on a camera
   fields:
     entity_id:
-      description: string (required) camera to stop activity
+      description: Name(s) of entities to turn on
+      example: 'camera.aarlo_front_camera'
 
 alarm_control_panel.aarlo_set_mode:
   description: Set the mode of a base station.
   fields:
     entity_id:
-      description: string (required) base station to change
+      description: Name(s) of entities to turn on
+      example: 'camera.aarlo_front_camera'
     mode:
       description: string (required) mode or schedule to change to
+      example: 'home'
 

@@ -110,9 +110,9 @@ class CNNFuturesSensor(Entity):
     def futures_change(self, position):
         fut_ch = self.rest.data[position]
         if "+" in fut_ch:
-            value = float(fut_ch.split("+")[1])
+            value = float(fut_ch.replace(',','').split("+")[1])
         elif "-" in fut_ch:
-            value = -1 * float(fut_ch.split("-")[1])
+            value = -1 * float(fut_ch.replace(',','').split("-")[1])
         else:
             value = 0
         return value

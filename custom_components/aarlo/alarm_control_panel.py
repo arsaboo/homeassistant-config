@@ -283,16 +283,16 @@ class ArloBaseStation(AlarmControlPanel):
     def _get_state_from_ha(self, mode):
         """Convert Arlo mode to Home Assistant state."""
         lmode = mode.lower()
-        if lmode == self._home_mode_name:
-            return STATE_ALARM_ARMED_HOME
+        if lmode == DISARMED:
+            return STATE_ALARM_DISARMED
         if lmode == self._away_mode_name:
             return STATE_ALARM_ARMED_AWAY
+        if lmode == self._home_mode_name:
+            return STATE_ALARM_ARMED_HOME
         if lmode == self._night_mode_name:
             return STATE_ALARM_ARMED_NIGHT
         if lmode == ARMED:
             return STATE_ALARM_ARMED_AWAY
-        if lmode == DISARMED:
-            return STATE_ALARM_DISARMED
         return mode
 
     def set_mode_in_ha(self, mode):
