@@ -5,8 +5,8 @@ homeassistant:
       trusted_networks:
         - 192.168.2.0/24
         - 131.96.253.0/24
-    - type: legacy_api_password
-      api_password: !secret http_password
+    # - type: legacy_api_password
+    #   api_password: !secret http_password
   # Omitted values in this section will be auto detected using freegeoip.io
 
   # Location required to calculate the time the sun rises and sets
@@ -130,11 +130,7 @@ light:
       - light.hue_color_lamp_1
       - light.hue_color_lamp_2
       - light.hue_color_lamp_3
-iqvia:
-  zip_code: !secret home_zip
-  monitored_conditions:
-    - allergy_average_forecasted
-    - disease_average_forecasted
+
 plex:
   host: 192.168.2.212
   port: 32400
@@ -639,34 +635,9 @@ media_player:
     name: Kodi NSTV
     username: !secret kodi_username
     password: !secret kodi_password
-  # - platform: samsungtv_custom
-  #   host: 192.168.2.252
-  #   protocol: ctl_beta
-  #   port: 8002
-  #   mac: !secret samsung_tv_mac
-  #   name: Living Room TV
-  # - platform: samsungtv_custom2
-  #   host: 192.168.2.252
-  #   port: 8002
-  #   mac: !secret samsung_tv_mac
-  #   name: Living Room test
   - platform: panasonic_viera
     host: 192.168.2.242
     name: Panasonic Viera TV
-  # - platform: samsungtv_custom
-  #   host: 192.168.2.252
-  #   name: Living Room TV
-  #   port: 8002
-  #   password: 14303763
-  #   mac: !secret samsung_tv_mac
-  # - platform: samsungtv_upnp
-  #   name: Living Room TV
-  #   url: http://192.168.2.252:9197/dmr
-  # - platform: samsungtv
-  #   host: 192.168.2.252
-  #   mac: !secret samsung_tv_mac
-  #   name: Living Room TV
-  #   port: 8002
   # - platform: spotify
   #   client_id: !secret spotify_client_id
   #   client_secret: !secret spotify_client_secret
@@ -848,12 +819,6 @@ logger:
     custom_components.aesop: debug
     custom_components.aesop.sensor: debug
     # custom_components.alexa_media: debug
-    homeassistant.components.samsungtv: debug
-    custom_components.samsungtv: debug
-    samsungtvws: debug
-    homeassistant.components.ssdp: debug
-    custom_components.samsungtv_upnp: debug
-    custom_components.samsungtv_custom2: critical
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug
     # adb.adb_protocol: debug

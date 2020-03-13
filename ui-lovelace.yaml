@@ -1,5 +1,5 @@
 resources:
-  - url: /local/custom_ui/weather-card.js?v=0.24
+  - url: /local/community/weather-card/weather-card.js?v=0.25
     type: module
   - url: /local/community/pc-card/pc-card.js?v=0.2
     type: module
@@ -721,8 +721,6 @@ views:
         show_header_toggle: false
         entities:
           - sensor.dark_sky_summary
-          # - sensor.pws_weather
-          # - sensor.pws_wind_string
           - sensor.pollen_level
           - sensor.cold_flu_risk
           - sensor.dark_sky_hourly_summary
@@ -736,59 +734,51 @@ views:
               - entity: sensor.illumination_158d00016612af
                 type: custom:multiple-entity-row
                 name: Brightness
-                hide_state: true
-                primary:
-                  entity: sensor.illumination_158d00016612af
-                  name: Upstairs
-                secondary:
-                  entity: sensor.illumination_34ce00813670
-                  name: Living Room
-                tertiary:
-                  entity: sensor.illumination_158d0001a1f2ab
-                  name: Guest Room
+                show_state: false
+                entities:
+                  - entity: sensor.illumination_158d00016612af
+                    name: Upstairs
+                  - entity: sensor.illumination_34ce00813670
+                    name: Living Room
+                  - entity: sensor.illumination_158d0001a1f2ab
+                    name: Guest Room
               - type: divider
               - entity: sensor.temperature_158d0001ab7d20
                 type: custom:multiple-entity-row
                 name: Attic
                 secondary_info: last-changed
-                hide_state: true
-                primary:
-                  entity: sensor.humidity_158d0001ab7d20
-                  name: Humidity
-                secondary:
-                  entity: sensor.pressure_158d0001ab7d20
-                  name: Pressure
-                tertiary:
-                  entity: sensor.temperature_158d0001ab7d20
-                  name: Temp
+                show_state: false
+                entities:
+                  - entity: sensor.humidity_158d0001ab7d20
+                    name: Humidity
+                  - entity: sensor.pressure_158d0001ab7d20
+                    name: Pressure
+                  - entity: sensor.temperature_158d0001ab7d20
+                    name: Temp
               - entity: sensor.temperature_158d0001ab3c88
                 type: custom:multiple-entity-row
                 name: Living Room
                 secondary_info: last-changed
-                hide_state: true
-                primary:
-                  entity: sensor.humidity_158d0001ab3c88
-                  name: Humidity
-                secondary:
-                  entity: sensor.pressure_158d0001ab3c88
-                  name: Pressure
-                tertiary:
-                  entity: sensor.temperature_158d0001ab3c88
-                  name: Temp
+                show_state: false
+                entities:
+                  - entity: sensor.humidity_158d0001ab3c88
+                    name: Humidity
+                  - entity: sensor.pressure_158d0001ab3c88
+                    name: Pressure
+                  - entity: sensor.temperature_158d0001ab3c88
+                    name: Temp
               - entity: sensor.temperature_158d0001ab3b2b
                 type: custom:multiple-entity-row
                 name: Study
                 secondary_info: last-changed
-                hide_state: true
-                primary:
-                  entity: sensor.humidity_158d0001ab3b2b
-                  name: Humidity
-                secondary:
-                  entity: sensor.pressure_158d0001ab3b2b
-                  name: Pressure
-                tertiary:
-                  entity: sensor.temperature_158d0001ab3b2b
-                  name: Temp
+                show_state: false
+                entities:
+                  - entity: sensor.humidity_158d0001ab3b2b
+                    name: Humidity
+                  - entity: sensor.pressure_158d0001ab3b2b
+                    name: Pressure
+                  - entity: sensor.temperature_158d0001ab3b2b
+                    name: Temp
           - type: horizontal-stack
             cards:
               - type: custom:button-card
@@ -839,6 +829,48 @@ views:
                     color: 'red'
                   - value: 'off'
                     icon: mdi:water-off
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: entities
+            title: Coronavirus
+            show_header_toggle: false
+            entities:
+              - entity: sensor.us_coronavirus_confirmed
+                type: custom:multiple-entity-row
+                name: USA
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.us_coronavirus_confirmed
+                    name: Confirmed
+                  - entity: sensor.us_coronavirus_deaths
+                    name: Deaths
+                  - entity: sensor.us_coronavirus_current
+                    name: Current
+              - entity: sensor.italy_coronavirus_confirmed
+                type: custom:multiple-entity-row
+                name: Italy
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.italy_coronavirus_confirmed
+                    name: Confirmed
+                  - entity: sensor.italy_coronavirus_deaths
+                    name: Deaths
+                  - entity: sensor.italy_coronavirus_current
+                    name: Current
+              - entity: sensor.india_coronavirus_confirmed
+                type: custom:multiple-entity-row
+                name: India
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.india_coronavirus_confirmed
+                    name: Confirmed
+                  - entity: sensor.india_coronavirus_deaths
+                    name: Deaths
+                  - entity: sensor.india_coronavirus_current
+                    name: Current
       - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
@@ -847,6 +879,8 @@ views:
       - type: iframe
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?lat=34.072&lon=-84.051&zoom=5&level=surface&overlay=rain&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=34.072&detailLon=-84.051&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
+
+
   - icon: mdi:chart-line
     id: grafana
     title: Grafana

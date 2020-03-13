@@ -278,7 +278,7 @@
       SOAPACTION: "urn:schemas-upnp-org:service:DeviceProperties:1#GetZoneInfo"
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
-    value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
+    value_template: '{{ value_json["s:Envelope"]["s:Body"]["u:GetZoneInfoResponse"]["HTAudioIn"] }}'
   - platform: rest
     method: POST
     resource: http://192.168.2.160:1400/DeviceProperties/Control
@@ -287,7 +287,7 @@
       SOAPACTION: "urn:schemas-upnp-org:service:DeviceProperties:1#GetZoneInfo"
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
-    value_template: '{{ value | regex_replace(".*<HTAudioIn>([0-9]+)</HTAudioIn>.*", "\\1") }}'
+    value_template: '{{ value_json["s:Envelope"]["s:Body"]["u:GetZoneInfoResponse"]["HTAudioIn"] }}'
 
     # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
   # - platform: rest

@@ -21,7 +21,7 @@
       - automation.update_dark_sky_friendly_names
       - automation.update_friendly_names_at_night
       - group.ring_doorbell
-      - sensor.rpi_cpu_temp
+      - sensor.rpi_cpu_thermal_1_temp
       - sensor.cold_flu_risk
       - sensor.curr_future
       - sensor.pollen_level
@@ -41,6 +41,7 @@
       - sensor.dark_sky_daily_summary
       - sensor.pws_wind_string
       - sensor.emulated_hue_names
+      - sensor.usdinr
       - automation.populate_owntracks_data_from_life360
       - automation.update_device_meta_tracker
       - image_processing.opencv_backyard
