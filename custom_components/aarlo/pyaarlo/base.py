@@ -17,13 +17,13 @@ class ArloBase(ArloDevice):
         self._schedules = None
 
     def _id_to_name(self, mode_id):
-        return self._arlo.st.get([self.device_id, MODE_ID_TO_NAME_KEY, mode_id], None)
+        return self._load([MODE_ID_TO_NAME_KEY, mode_id], None)
 
     def _id_is_schedule(self, mode_id):
-        return self._arlo.st.get([self.device_id, MODE_IS_SCHEDULE_KEY, mode_id], False)
+        return self._load([MODE_IS_SCHEDULE_KEY, mode_id], False)
 
     def _name_to_id(self, mode_name):
-        return self._arlo.st.get([self.device_id, MODE_NAME_TO_ID_KEY, mode_name.lower()], None)
+        return self._load([MODE_NAME_TO_ID_KEY, mode_name.lower()], None)
 
     def _parse_modes(self, modes):
         for mode in modes:
@@ -35,9 +35,9 @@ class ArloBase(ArloDevice):
                     mode_name = mode_id
             if mode_id and mode_name != '':
                 self._arlo.debug(mode_id + '<=M=>' + mode_name)
-                self._arlo.st.set([self.device_id, MODE_ID_TO_NAME_KEY, mode_id], mode_name)
-                self._arlo.st.set([self.device_id, MODE_NAME_TO_ID_KEY, mode_name.lower()], mode_id)
-                self._arlo.st.set([self.device_id, MODE_IS_SCHEDULE_KEY, mode_name.lower()], False)
+                self._save([MODE_ID_TO_NAME_KEY, mode_id], mode_name)
+                self._save([MODE_NAME_TO_ID_KEY, mode_name.lower()], mode_id)
+                self._save([MODE_IS_SCHEDULE_KEY, mode_name.lower()], False)
 
     def schedule_to_modes(self):
         if self._schedules is None:
@@ -68,9 +68,9 @@ class ArloBase(ArloDevice):
                 schedule_name = schedule_id
             if schedule_id and schedule_name != '':
                 self._arlo.debug(schedule_id + '<=S=>' + schedule_name)
-                self._arlo.st.set([self.device_id, MODE_ID_TO_NAME_KEY, schedule_id], schedule_name)
-                self._arlo.st.set([self.device_id, MODE_NAME_TO_ID_KEY, schedule_name.lower()], schedule_id)
-                self._arlo.st.set([self.device_id, MODE_IS_SCHEDULE_KEY, schedule_name.lower()], True)
+                self._save([MODE_ID_TO_NAME_KEY, schedule_id], schedule_name)
+                self._save([MODE_NAME_TO_ID_KEY, schedule_name.lower()], schedule_id)
+                self._save([MODE_IS_SCHEDULE_KEY, schedule_name.lower()], True)
 
     def _event_handler(self, resource, event):
         self._arlo.debug(self.name + ' BASE got ' + resource)
@@ -141,7 +141,7 @@ class ArloBase(ArloDevice):
     @property
     def available_modes_with_ids(self):
         modes = {}
-        for key, mode_id in self._arlo.st.get_matching([self._device_id, MODE_NAME_TO_ID_KEY, '*']):
+        for key, mode_id in self._load_matching([MODE_NAME_TO_ID_KEY, '*']):
             modes[key.split('/')[-1]] = mode_id
         if not modes:
             modes = DEFAULT_MODES
@@ -149,7 +149,7 @@ class ArloBase(ArloDevice):
 
     @property
     def mode(self):
-        return self._arlo.st.get([self.device_id, MODE_KEY], 'unknown')
+        return self._load(MODE_KEY, 'unknown')
 
     @mode.setter
     def mode(self, mode_name):
@@ -221,7 +221,7 @@ class ArloBase(ArloDevice):
 
     @property
     def schedule(self):
-        return self._arlo.st.get([self.device_id, SCHEDULE_KEY], None)
+        return self._load(SCHEDULE_KEY, None)
 
     @property
     def on_schedule(self):
@@ -249,7 +249,7 @@ class ArloBase(ArloDevice):
 
     @property
     def siren_state(self):
-        return self._arlo.st.get([self._device_id, SIREN_STATE_KEY], "off")
+        return self._load(SIREN_STATE_KEY, "off")
 
     def siren_on(self, duration=300, volume=8):
         body = {

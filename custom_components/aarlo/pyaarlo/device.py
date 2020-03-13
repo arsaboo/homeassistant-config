@@ -2,7 +2,7 @@ import pprint
 import threading
 
 from .constant import (BATTERY_KEY, BATTERY_TECH_KEY, CHARGING_KEY, CHARGER_KEY,
-                       CONNECTION_KEY, RESOURCE_KEYS,
+                       CONNECTION_KEY, DEVICE_KEYS, RESOURCE_KEYS,
                        RESOURCE_UPDATE_KEYS, SIGNAL_STR_KEY,
                        XCLOUD_ID_KEY)
 
@@ -19,8 +19,14 @@ class ArloDevice(object):
 
         # stuff we use a lot
         self._device_id = attrs.get('deviceId', None)
-        self._device_type = attrs.get('deviceType', None)
+        self._device_type = attrs.get('deviceType', 'unknown')
         self._unique_id = attrs.get('uniqueId', None)
+
+        # Build initial values... attrs is device state
+        for key in DEVICE_KEYS:
+            value = attrs.get(key, None)
+            if value is not None:
+                self._save(key, value)
 
         # add a listener
         self._arlo.be.add_listener(self, self._event_handler)
@@ -28,6 +34,13 @@ class ArloDevice(object):
     def __repr__(self):
         # Representation string of object.
         return "<{0}:{1}:{2}>".format(self.__class__.__name__, self._device_type, self._name)
+
+    def _to_storage_key(self, attr):
+        # Build a key incorporating the type!
+        if isinstance(attr,list):
+            return [self.__class__.__name__, self._device_id] + attr
+        else:
+            return [self.__class__.__name__, self._device_id, attr]
 
     def _event_handler(self, resource, event):
         self._arlo.vdebug("{}: got {} event {}".format(self.name, resource, pprint.pformat(event)))
@@ -54,12 +67,17 @@ class ArloDevice(object):
 
     def _save(self, attr, value):
         # TODO only care if it changes?
-        key = [self.device_id, attr]
-        self._arlo.st.set(key, value)
+        self._arlo.st.set(self._to_storage_key(attr), value)
 
     def _save_and_do_callbacks(self, attr, value):
         self._save(attr, value)
         self._do_callbacks(attr, value)
+
+    def _load(self, attr, default=None):
+        return self._arlo.st.get(self._to_storage_key(attr), default)
+
+    def _load_matching(self, attr, default=None):
+        return self._arlo.st.get_matching(self._to_storage_key(attr), default)
 
     @property
     def name(self):
@@ -116,7 +134,7 @@ class ArloDevice(object):
 
     @property
     def xcloud_id(self):
-        return self._arlo.st.get([self._device_id, XCLOUD_ID_KEY], 'UNKNOWN')
+        return self._load(XCLOUD_ID_KEY, 'UNKNOWN')
 
     @property
     def web_id(self):
@@ -127,7 +145,7 @@ class ArloDevice(object):
         return self._unique_id
 
     def attribute(self, attr, default=None):
-        value = self._arlo.st.get([self._device_id, attr], None)
+        value = self._load(attr, None)
         if value is None:
             value = self._attrs.get(attr, None)
         if value is None:
@@ -202,19 +220,19 @@ class ArloChildDevice(ArloDevice):
 
     @property
     def battery_level(self):
-        return self._arlo.st.get([self._device_id, BATTERY_KEY], 100)
+        return self._load(BATTERY_KEY, 100)
 
     @property
     def battery_tech(self):
-        return self._arlo.st.get([self._device_id, BATTERY_TECH_KEY], 'None')
+        return self._load(BATTERY_TECH_KEY, 'None')
 
     @property
     def charging(self):
-        return self._arlo.st.get([self._device_id, CHARGING_KEY], 'off').lower() == 'on'
+        return self._load(CHARGING_KEY, 'off').lower() == 'on'
 
     @property
     def charger_type(self):
-        return self._arlo.st.get([self._device_id, CHARGER_KEY], 'None')
+        return self._load(CHARGER_KEY, 'None')
 
     @property
     def wired(self):
@@ -226,15 +244,15 @@ class ArloChildDevice(ArloDevice):
 
     @property
     def signal_strength(self):
-        return self._arlo.st.get([self._device_id, SIGNAL_STR_KEY], 3)
+        return self._load(SIGNAL_STR_KEY, 3)
 
     @property
     def is_unavailable(self):
-        return self._arlo.st.get([self._device_id, CONNECTION_KEY], 'unknown') == 'unavailable'
+        return self._load(CONNECTION_KEY, 'unknown') == 'unavailable'
 
     @property
     def too_cold(self):
-        return self._arlo.st.get([self._device_id, CONNECTION_KEY], 'unknown') == 'thermalShutdownCold'
+        return self._load(CONNECTION_KEY, 'unknown') == 'thermalShutdownCold'
 
     @property
     def state(self):

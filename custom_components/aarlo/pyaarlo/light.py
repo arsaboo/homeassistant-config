@@ -22,7 +22,7 @@ class ArloLight(ArloChildDevice):
 
     @property
     def is_on(self):
-        return self._arlo.st.get([self._device_id, LAMP_STATE_KEY], "off") == "on"
+        return self._load(LAMP_STATE_KEY, "off") == "on"
 
     def turn_on(self, brightness=None, rgb=None):
 

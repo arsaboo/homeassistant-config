@@ -60,9 +60,9 @@ class ArloBackEnd(object):
         try:
             with self._req_lock:
                 url = self._arlo.cfg.host + path
-                # self._arlo.debug('starting request=' + str(url))
-                # self._arlo.debug('starting request=' + str(params))
-                # self._arlo.debug('starting request=' + str(headers))
+                #self._arlo.vdebug('starting request=' + str(url))
+                #self._arlo.vdebug('starting request=' + str(params))
+                #self._arlo.vdebug('starting request=' + str(headers))
                 if method == 'GET':
                     r = self._session.get(url, params=params, headers=headers, stream=stream, timeout=timeout)
                     if stream is True:

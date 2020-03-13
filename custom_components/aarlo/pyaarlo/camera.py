@@ -78,8 +78,7 @@ class ArloCamera(ArloChildDevice):
                 self._lock.notify_all()
 
         # signal real mode, safe to call multiple times
-        self._save_and_do_callbacks(ACTIVITY_STATE_KEY,
-                                    self._arlo.st.get([self._device_id, ACTIVITY_STATE_KEY], 'unknown'))
+        self._save_and_do_callbacks(ACTIVITY_STATE_KEY, self._load(ACTIVITY_STATE_KEY, 'unknown'))
 
     def _update_media_and_thumbnail(self):
         self._arlo.debug('getting media image for ' + self.name)
@@ -96,7 +95,7 @@ class ArloCamera(ArloChildDevice):
         self._arlo.debug('getting image for ' + self.name)
 
         # Get image and date, if fails set to blank.
-        img, date = http_get_img(self._arlo.st.get([self.device_id, LAST_IMAGE_KEY], None))
+        img, date = http_get_img(self._load(LAST_IMAGE_KEY, None))
         if img is None:
             self._arlo.debug('using blank image for ' + self.name)
             img = self._arlo.blank_image
@@ -114,7 +113,7 @@ class ArloCamera(ArloChildDevice):
         self._arlo.debug('getting image for ' + self.name)
 
         # Get image and date, if fails ignore.
-        img, date = http_get_img(self._arlo.st.get([self.device_id, SNAPSHOT_KEY], None))
+        img, date = http_get_img(self._load(SNAPSHOT_KEY, None))
         if img is not None:
             date = date.strftime(self._arlo.cfg.last_format)
             self._save(LAST_IMAGE_SRC_KEY, 'snapshot/' + date)
@@ -264,16 +263,16 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def last_image(self):
-        return self._arlo.st.get([self._device_id, LAST_IMAGE_KEY], None)
+        return self._load(LAST_IMAGE_KEY, None)
 
     # fill this out...
     @property
     def last_image_from_cache(self):
-        return self._arlo.st.get([self._device_id, LAST_IMAGE_DATA_KEY], self._arlo.blank_image)
+        return self._load(LAST_IMAGE_DATA_KEY, self._arlo.blank_image)
 
     @property
     def last_image_source(self):
-        return self._arlo.st.get([self._device_id, LAST_IMAGE_SRC_KEY], '')
+        return self._load(LAST_IMAGE_SRC_KEY, '')
 
     @property
     def last_video(self):
@@ -290,7 +289,7 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def last_capture(self):
-        return self._arlo.st.get([self._device_id, LAST_CAPTURE_KEY], None)
+        return self._load(LAST_CAPTURE_KEY, None)
 
     @property
     def last_capture_date_format(self):
@@ -298,31 +297,31 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def brightness(self):
-        return self._arlo.st.get([self._device_id, BRIGHTNESS_KEY], None)
+        return self._load(BRIGHTNESS_KEY, None)
 
     @property
     def flip_state(self):
-        return self._arlo.st.get([self._device_id, FLIP_KEY], None)
+        return self._load(FLIP_KEY, None)
 
     @property
     def mirror_state(self):
-        return self._arlo.st.get([self._device_id, MIRROR_KEY], None)
+        return self._load(MIRROR_KEY, None)
 
     @property
     def motion_detection_sensitivity(self):
-        return self._arlo.st.get([self._device_id, MOTION_SENS_KEY], None)
+        return self._load(MOTION_SENS_KEY, None)
 
     @property
     def powersave_mode(self):
-        return self._arlo.st.get([self._device_id, POWER_SAVE_KEY], None)
+        return self._load(POWER_SAVE_KEY, None)
 
     @property
     def unseen_videos(self):
-        return self._arlo.st.get([self._device_id, MEDIA_COUNT_KEY], 0)
+        return self._load(MEDIA_COUNT_KEY, 0)
 
     @property
     def captured_today(self):
-        return self._arlo.st.get([self._device_id, CAPTURED_TODAY_KEY], 0)
+        return self._load(CAPTURED_TODAY_KEY, 0)
 
     @property
     def min_days_vdo_cache(self):
@@ -433,15 +432,15 @@ class ArloCamera(ArloChildDevice):
     def is_taking_snapshot(self):
         if self._snapshot_state != 'idle':
             return True
-        return self._arlo.st.get([self._device_id, ACTIVITY_STATE_KEY], 'unknown') == 'fullFrameSnapshot'
+        return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'fullFrameSnapshot'
 
     @property
     def is_recording(self):
-        return self._arlo.st.get([self._device_id, ACTIVITY_STATE_KEY], 'unknown') == 'alertStreamActive'
+        return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'alertStreamActive'
 
     @property
     def is_streaming(self):
-        return self._arlo.st.get([self._device_id, ACTIVITY_STATE_KEY], 'unknown') == 'userStreamActive'
+        return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'userStreamActive'
 
     @property
     def was_recently_active(self):
@@ -523,7 +522,7 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def siren_state(self):
-        return self._arlo.st.get([self._device_id, SIREN_STATE_KEY], "off")
+        return self._load(SIREN_STATE_KEY, "off")
 
     def siren_on(self, duration=300, volume=8):
         body = {
@@ -545,7 +544,7 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def is_on(self):
-        return not self._arlo.st.get([self._device_id, PRIVACY_KEY], False)
+        return not self._load(PRIVACY_KEY, False)
 
     def turn_on(self):
         self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=False)

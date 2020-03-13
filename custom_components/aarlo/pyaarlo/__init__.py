@@ -11,7 +11,7 @@ from .background import ArloBackground
 from .base import ArloBase
 from .camera import ArloCamera
 from .cfg import ArloCfg
-from .constant import (BLANK_IMAGE, DEVICE_KEYS, DEVICES_PATH,
+from .constant import (BLANK_IMAGE, DEVICES_PATH,
                        FAST_REFRESH_INTERVAL, SLOW_REFRESH_INTERVAL,
                        TOTAL_BELLS_KEY, TOTAL_CAMERAS_KEY, TOTAL_LIGHTS_KEY, MEDIA_LIBRARY_DELAY,
                        REFRESH_CAMERA_DELAY, INITIAL_REFRESH_DELAY)
@@ -64,7 +64,6 @@ class PyArlo(object):
         # Get devices, fill local db, and create device instance.
         self.info('pyaarlo starting')
         self._refresh_devices()
-        self._parse_devices()
         for device in self._devices:
             dname = device.get('deviceName')
             dtype = device.get('deviceType')
@@ -111,15 +110,7 @@ class PyArlo(object):
 
     def _refresh_devices(self):
         self._devices = self._be.get(DEVICES_PATH + "?t={}".format(time_to_arlotime()))
-
-    def _parse_devices(self):
-        for device in self._devices:
-            device_id = device.get('deviceId', None)
-            if device_id is not None:
-                for key in DEVICE_KEYS:
-                    value = device.get(key, None)
-                    if value is not None:
-                        self._st.set([device_id, key], value)
+        self.vdebug("devices={}".format(pprint.pformat(self._devices)))
 
     def _refresh_camera_thumbnails(self):
         """ Request latest camera thumbnails, called at start up. """
