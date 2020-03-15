@@ -249,10 +249,8 @@ class ArloCamera(ArloChildDevice):
         # audio analytics
         audioanalytics = event.get("properties", {}).get("audioAnalytics", None)
         if audioanalytics is not None:
-            if audioanalytics.get(CRY_DETECTION_KEY, {}).get("triggered") is True:
-                self._save_and_do_callbacks(CRY_DETECTION_KEY, "on")
-            else:
-                self._save_and_do_callbacks(CRY_DETECTION_KEY, "off")
+            triggered = audioanalytics.get(CRY_DETECTION_KEY, {}).get("triggered",False)
+            self._save_and_do_callbacks(CRY_DETECTION_KEY, triggered)
 
         # pass on to lower layer
         super()._event_handler(resource, event)
@@ -262,8 +260,21 @@ class ArloCamera(ArloChildDevice):
         return "cameras"
 
     @property
-    def last_image(self):
+    def last_thumbnail(self):
         return self._load(LAST_IMAGE_KEY, None)
+
+    @property
+    def last_snapshot(self):
+        return self._load(SNAPSHOT_KEY, None)
+
+    @property
+    def last_image(self):
+        image = None
+        if self.last_image_source.startswith('snapshot/'):
+            image = self.last_snapshot
+        if image is None:
+            image = self.last_thumbnail
+        return image
 
     # fill this out...
     @property

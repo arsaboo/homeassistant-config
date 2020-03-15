@@ -103,3 +103,7 @@ class ArloCfg(object):
     @property
     def verbose(self, default=False):
         return self._kw.get('verbose_debug', default)
+
+    @property
+    def hide_deprecated_services(self, default=False):
+        return self._kw.get('hide_deprecated_services', default)

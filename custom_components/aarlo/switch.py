@@ -15,7 +15,7 @@ from homeassistant.components.switch import SwitchDevice
 from homeassistant.core import callback
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import track_point_in_time
-from . import DATA_ARLO
+from . import COMPONENT_DATA
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 async def async_setup_platform(hass, config, async_add_entities, _discovery_info=None):
-    arlo = hass.data.get(DATA_ARLO)
+    arlo = hass.data.get(COMPONENT_DATA)
     if not arlo:
         return
 

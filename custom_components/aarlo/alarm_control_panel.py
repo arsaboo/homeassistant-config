@@ -31,11 +31,12 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import track_point_in_time
-from . import CONF_ATTRIBUTION, DATA_ARLO, DEFAULT_BRAND
+from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN, COMPONENT_SERVICES, get_entity_from_domain
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['aarlo']
+DEPENDENCIES = [COMPONENT_DOMAIN]
+
 ARMED = 'armed'
 DISARMED = 'disarmed'
 ICON = 'mdi:security'
@@ -73,19 +74,20 @@ ATTR_VOLUME = 'volume'
 ATTR_DURATION = 'duration'
 ATTR_TIME_ZONE = 'time_zone'
 
-SERVICE_MODE = 'aarlo_set_mode'
-SERVICE_SIREN_ON = 'aarlo_siren_on'
-SERVICE_SIREN_OFF = 'aarlo_siren_off'
+SERVICE_MODE = 'alarm_set_mode'
+OLD_SERVICE_MODE = 'aarlo_set_mode'
+OLD_SERVICE_SIREN_ON = 'aarlo_siren_on'
+OLD_SERVICE_SIREN_OFF = 'aarlo_siren_off'
 SERVICE_MODE_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
     vol.Required(ATTR_MODE): cv.string,
 })
-SIREN_ON_SCHEMA = vol.Schema({
+SERVICE_SIREN_ON_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
     vol.Required(ATTR_DURATION): cv.positive_int,
     vol.Required(ATTR_VOLUME): cv.positive_int,
 })
-SIREN_OFF_SCHEMA = vol.Schema({
+SERVICE_SIREN_OFF_SCHEMA = vol.Schema({
     vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
 })
 
@@ -105,9 +107,7 @@ SCHEMA_WS_SIREN_OFF = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
 
 async def async_setup_platform(hass, config, async_add_entities, _discovery_info=None):
     """Set up the Arlo Alarm Control Panels."""
-    arlo = hass.data[DATA_ARLO]
-    component = hass.data[DOMAIN]
-
+    arlo = hass.data[COMPONENT_DATA]
     if not arlo.base_stations:
         return
 
@@ -120,20 +120,37 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
 
     async_add_entities(base_stations, True)
 
-    # Services.
-    component.async_register_entity_service(
-        SERVICE_MODE, SERVICE_MODE_SCHEMA,
-        aarlo_mode_service_handler
-    )
-    if base_stations_with_sirens:
-        component.async_register_entity_service(
-            SERVICE_SIREN_ON, SIREN_ON_SCHEMA,
-            aarlo_siren_on_service_handler
+    # Component Services
+    async def async_alarm_service(call):
+        """Call aarlo service handler."""
+        _LOGGER.info("{} service called".format(call.service))
+        if call.service == SERVICE_MODE:
+            await async_alarm_mode_service(hass, call)
+
+    if not hasattr(hass.data[COMPONENT_SERVICES], DOMAIN):
+        _LOGGER.info("installing handlers")
+        hass.data[COMPONENT_SERVICES][DOMAIN] = 'installed'
+
+        hass.services.async_register(
+            COMPONENT_DOMAIN, SERVICE_MODE, async_alarm_service, schema=SERVICE_MODE_SCHEMA,
         )
+
+    # Deprecated Services.
+    if not arlo.cfg.hide_deprecated_services:
+        component = hass.data[DOMAIN]
         component.async_register_entity_service(
-            SERVICE_SIREN_OFF, SIREN_OFF_SCHEMA,
-            aarlo_siren_off_service_handler
+            OLD_SERVICE_MODE, SERVICE_MODE_SCHEMA,
+            aarlo_mode_service_handler
         )
+        if base_stations_with_sirens:
+            component.async_register_entity_service(
+                OLD_SERVICE_SIREN_ON, SERVICE_SIREN_ON_SCHEMA,
+                aarlo_siren_on_service_handler
+            )
+            component.async_register_entity_service(
+                OLD_SERVICE_SIREN_OFF, SERVICE_SIREN_OFF_SCHEMA,
+                aarlo_siren_off_service_handler
+            )
 
     # Websockets.
     if base_stations_with_sirens:
@@ -269,9 +286,9 @@ class ArloBaseStation(AlarmControlPanel):
         """Return the state attributes."""
         attrs = {}
 
-        attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
+        attrs[ATTR_ATTRIBUTION] = COMPONENT_ATTRIBUTION
         attrs[ATTR_TIME_ZONE] = self._base.timezone
-        attrs['brand'] = DEFAULT_BRAND
+        attrs['brand'] = COMPONENT_BRAND
         attrs['device_id'] = self._base.device_id
         attrs['model_id'] = self._base.model_id
         attrs['friendly_name'] = self._name
@@ -384,3 +401,24 @@ async def aarlo_siren_on_service_handler(base, service):
 
 async def aarlo_siren_off_service_handler(base, _service):
     base.siren_off()
+
+
+async def async_alarm_mode_service(hass, call):
+    for entity_id in call.data['entity_id']:
+        mode = call.data['mode']
+        _LOGGER.info("{0} setting mode to {}".format(entity_id,mode))
+        get_entity_from_domain(hass,DOMAIN,entity_id).set_mode_in_ha(mode)
+
+
+async def async_alarm_siren_on_service(hass, call):
+    for entity_id in call.data['entity_id']:
+        volume = call.data['volume']
+        duration = call.data['duration']
+        _LOGGER.info("{0} siren on {}/{}".format(entity_id,volume,duration))
+        get_entity_from_domain(hass,DOMAIN,entity_id).siren_on(duration=duration, volume=volume)
+
+
+async def async_alarm_siren_off_service(hass, call):
+    for entity_id in call.data['entity_id']:
+        _LOGGER.info("{0} siren off".format(entity_id))
+        get_entity_from_domain(hass,DOMAIN,entity_id).siren_off()

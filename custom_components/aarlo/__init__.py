@@ -6,23 +6,30 @@ https://home-assistant.io/components/arlo/
 """
 import os.path
 import logging
+import json
+import pprint
 from datetime import timedelta
 
 import voluptuous as vol
 from requests.exceptions import HTTPError, ConnectTimeout
 
 from homeassistant.const import (
+    ATTR_ENTITY_ID,
     CONF_USERNAME, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_HOST)
 from homeassistant.helpers import config_validation as cv
+from homeassistant.components.camera import DOMAIN as CAMERA_DOMAIN
+from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_DOMAIN
 
-__version__ = '0.6.13'
+__version__ = '0.6.16'
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_ATTRIBUTION = "Data provided by my.arlo.com"
-DATA_ARLO = 'data_aarlo'
-DEFAULT_BRAND = 'Netgear Arlo'
-DOMAIN = 'aarlo'
+
+COMPONENT_DOMAIN = 'aarlo'
+COMPONENT_DATA = 'aarlo-data'
+COMPONENT_SERVICES = 'aarlo-services'
+COMPONENT_ATTRIBUTION = "Data provided by my.arlo.com"
+COMPONENT_BRAND = 'Netgear Arlo'
 
 NOTIFICATION_ID = 'aarlo_notification'
 NOTIFICATION_TITLE = 'aarlo Component Setup'
@@ -44,6 +51,8 @@ CONF_HTTP_CONNECTIONS = 'http_connections'
 CONF_HTTP_MAX_SIZE = 'http_max_size'
 CONF_RECONNECT_EVERY = 'reconnect_every'
 CONF_VERBOSE_DEBUG = 'verbose_debug'
+CONF_HIDE_DEPRECATED_SERVICES = 'hide_deprecated_services'
+CONF_INJECTION_SERVICE = 'injection_service'
 
 SCAN_INTERVAL = timedelta(seconds=60)
 PACKET_DUMP = False
@@ -64,9 +73,11 @@ HTTP_MAX_SIZE = 10
 RECONNECT_EVERY = 0
 DEFAULT_HOST = 'https://my.arlo.com'
 VERBOSE_DEBUG = False
+HIDE_DEPRECATED_SERVICES = False
+DEFAULT_INJECTION_SERVICE = False
 
 CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.Schema({
+    COMPONENT_DOMAIN: vol.Schema({
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
         vol.Optional(CONF_HOST, default=DEFAULT_HOST): cv.url,
@@ -88,15 +99,42 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_HTTP_MAX_SIZE, default=HTTP_MAX_SIZE): cv.positive_int,
         vol.Optional(CONF_RECONNECT_EVERY, default=RECONNECT_EVERY): cv.positive_int,
         vol.Optional(CONF_VERBOSE_DEBUG, default=VERBOSE_DEBUG): cv.boolean,
+        vol.Optional(CONF_HIDE_DEPRECATED_SERVICES, default=HIDE_DEPRECATED_SERVICES): cv.boolean,
+        vol.Optional(CONF_INJECTION_SERVICE, default=DEFAULT_INJECTION_SERVICE): cv.boolean,
     }),
 }, extra=vol.ALLOW_EXTRA)
 
+ATTR_VOLUME = 'volume'
+ATTR_DURATION = 'duration'
+
+SERVICE_SIREN_ON = 'siren_on'
+SERVICE_SIRENS_ON = 'sirens_on'
+SERVICE_SIREN_OFF = 'siren_off'
+SERVICE_SIRENS_OFF = 'sirens_off'
+SERVICE_INJECT_RESPONSE = 'inject_response'
+SIREN_ON_SCHEMA = vol.Schema({
+    vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+    vol.Required(ATTR_DURATION): cv.positive_int,
+    vol.Required(ATTR_VOLUME): cv.positive_int,
+})
+SIRENS_ON_SCHEMA = vol.Schema({
+    vol.Required(ATTR_DURATION): cv.positive_int,
+    vol.Required(ATTR_VOLUME): cv.positive_int,
+})
+SIREN_OFF_SCHEMA = vol.Schema({
+    vol.Required(ATTR_ENTITY_ID): cv.comp_entity_ids,
+})
+SIRENS_OFF_SCHEMA = vol.Schema({
+})
+INJECT_RESPONSE_SCHEMA = vol.Schema({
+    vol.Required('filename'): cv.string,
+})
 
 def setup(hass, config):
     """Set up an Arlo component."""
 
     # Read config
-    conf = config[DOMAIN]
+    conf = config[COMPONENT_DOMAIN]
     username = conf.get(CONF_USERNAME)
     password = conf.get(CONF_PASSWORD)
     host = conf.get(CONF_HOST)
@@ -117,6 +155,8 @@ def setup(hass, config):
     http_max_size = conf.get(CONF_HTTP_MAX_SIZE)
     reconnect_every = conf.get(CONF_RECONNECT_EVERY)
     verbose_debug = conf.get(CONF_VERBOSE_DEBUG)
+    hide_deprecated_services = conf.get(CONF_HIDE_DEPRECATED_SERVICES)
+    injection_service = conf.get(CONF_INJECTION_SERVICE)
 
     # Fix up config
     if conf_dir == '':
@@ -140,11 +180,12 @@ def setup(hass, config):
                       user_agent=user_agent, mode_api=mode_api,
                       refresh_devices_every=device_refresh, reconnect_every=reconnect_every,
                       http_connections=http_connections, http_max_size=http_max_size,
-                      verbose_debug=verbose_debug)
+                      hide_deprecated_services=hide_deprecated_services,verbose_debug=verbose_debug)
         if not arlo.is_connected:
             return False
 
-        hass.data[DATA_ARLO] = arlo
+        hass.data[COMPONENT_DATA] = arlo
+        hass.data[COMPONENT_SERVICES] = {}
 
     except (ConnectTimeout, HTTPError) as ex:
         _LOGGER.error("Unable to connect to Netgear Arlo: %s", str(ex))
@@ -154,4 +195,113 @@ def setup(hass, config):
             notification_id=NOTIFICATION_ID)
         return False
 
+    # Component Services
+    has_sirens = False
+    for device in arlo.cameras + arlo.base_stations:
+        if device.has_capability('siren'):
+            has_sirens = True
+
+    async def async_aarlo_service(call):
+        """Call aarlo service handler."""
+        _LOGGER.info("{} service called".format(call.service))
+        if has_sirens:
+            if call.service == SERVICE_SIREN_ON:
+                await async_aarlo_siren_on(hass, call)
+            if call.service == SERVICE_SIRENS_ON:
+                await async_aarlo_sirens_on(hass, call)
+            if call.service == SERVICE_SIREN_OFF:
+                await async_aarlo_siren_off(hass, call)
+            if call.service == SERVICE_SIRENS_OFF:
+                await async_aarlo_sirens_off(hass, call)
+        if call.service == SERVICE_INJECT_RESPONSE:
+            await async_aarlo_inject_response(hass, call)
+
+    hass.services.async_register(
+        COMPONENT_DOMAIN, SERVICE_SIREN_ON, async_aarlo_service, schema=SIREN_ON_SCHEMA,
+    )
+    hass.services.async_register(
+        COMPONENT_DOMAIN, SERVICE_SIRENS_ON, async_aarlo_service, schema=SIRENS_ON_SCHEMA,
+    )
+    hass.services.async_register(
+        COMPONENT_DOMAIN, SERVICE_SIREN_OFF, async_aarlo_service, schema=SIREN_OFF_SCHEMA,
+    )
+    hass.services.async_register(
+        COMPONENT_DOMAIN, SERVICE_SIRENS_OFF, async_aarlo_service, schema=SIRENS_OFF_SCHEMA,
+    )
+    if injection_service:
+        hass.services.async_register(
+            COMPONENT_DOMAIN, SERVICE_INJECT_RESPONSE, async_aarlo_service, schema=INJECT_RESPONSE_SCHEMA,
+        )
+
     return True
+
+
+def get_entity_from_domain(hass, domain, entity_id):
+    component = hass.data.get(domain)
+    if component is None:
+        raise HomeAssistantError("{} component not set up".format(domain))
+
+    entity = component.get_entity(entity_id)
+    if entity is None:
+        raise HomeAssistantError("{} not found".format(entity_id))
+
+    return entity
+
+
+async def async_aarlo_siren_on(hass, call):
+    for entity_id in call.data['entity_id']:
+        device = get_entity_from_domain(hass,ALARM_DOMAIN,entity_id)
+        if device is None:
+            device = get_entity_from_domain(hass,CAMERA_DOMAIN,entity_id)
+        if device is not None:
+            volume = call.data['volume']
+            duration = call.data['duration']
+            _LOGGER.info("{} siren on {}/{}".format(entity_id,volume,duration))
+            device.siren_on(duration=duration, volume=volume)
+        else:
+            _LOGGER.info("{} siren not found".format(entity_id))
+
+
+async def async_aarlo_sirens_on(hass, call):
+    arlo = hass.data[COMPONENT_DATA]
+    volume = call.data['volume']
+    duration = call.data['duration']
+    for device in arlo.cameras + arlo.base_stations:
+        if device.has_capability('siren'):
+            _LOGGER.info("{} siren on {}/{}".format(device.unique_id,volume,duration))
+            device.siren_on(duration=duration, volume=volume)
+
+
+async def async_aarlo_siren_off(hass, call):
+    for entity_id in call.data['entity_id']:
+        device = get_entity_from_domain(hass,ALARM_DOMAIN,entity_id)
+        if device is None:
+            device = get_entity_from_domain(hass,CAMERA_DOMAIN,entity_id)
+        if device is not None:
+            volume = call.data['volume']
+            duration = call.data['duration']
+            _LOGGER.info("{} siren off".format(entity_id))
+            device.siren_off()
+        else:
+            _LOGGER.info("{} siren not found".format(entity_id))
+
+
+async def async_aarlo_sirens_off(hass, call):
+    arlo = hass.data[COMPONENT_DATA]
+    for device in arlo.cameras + arlo.base_stations:
+        if device.has_capability('siren'):
+            _LOGGER.info("{} siren off".format(device.unique_id))
+            device.siren_off()
+
+
+async def async_aarlo_inject_response(hass, call):
+
+    patch_file = hass.config.config_dir + '/' + call.data['filename']
+    packet = None
+    with open(patch_file) as file:
+        packet = json.load(file)
+
+    if packet is not None:
+        _LOGGER.debug("injecting->{}".format(pprint.pformat(packet)))
+        hass.data[COMPONENT_DATA].inject_response(packet)
+

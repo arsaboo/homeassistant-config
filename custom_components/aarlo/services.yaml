@@ -1,43 +1,100 @@
 # Describes the format for available virtual services
 
-aarlo_request_snapshot:
+camera_request_snapshot:
   description: Request a camera takes a snapshot
   fields:
     entity_id:
-      description: Name(s) of entities to turn on
+      description: Name(s) of entities to use
       example: 'camera.aarlo_front_camera'
 
-camera.aarlo_request_snapshot:
-  description: Request a camera takes a snapshot
-  fields:
-    entity_id:
-      description: Name(s) of entities to turn on
-      example: 'camera.aarlo_front_camera'
-
-camera.aarlo_request_snapshot_to_file:
+camera_request_snapshot_to_file:
   description: Request a camera takes a snapshot and write it to a file
   fields:
     entity_id:
-      description: Name(s) of entities to turn on
+      description: Name(s) of entities to use
       example: 'camera.aarlo_front_camera'
     filename:
       description: string (required) where to save the snapshot
-      example: '/tmp/snapshot.jpg'
+      example: 'snapshot.jpg'
 
-camera.aarlo_stop_activity:
+camera_request_video_to_file:
+  description: Request a camera records a video and write it to a file
+  fields:
+    entity_id:
+      description: Name(s) of entities to use
+      example: 'camera.aarlo_front_camera'
+    filename:
+      description: string (required) where to save the video
+      example: 'snapshot.mp4'
+
+camera_stop_activity:
   description: Stop all stream activity on a camera
   fields:
     entity_id:
-      description: Name(s) of entities to turn on
+      description: Name(s) of entities to use
       example: 'camera.aarlo_front_camera'
 
-alarm_control_panel.aarlo_set_mode:
+camera_start_recording:
+  description: Request a camera start recording to cloud
+  fields:
+    entity_id:
+      description: Name(s) of entities to use
+      example: 'camera.aarlo_front_camera'
+
+camera_stop_recording:
+  description: Request a camera stop recording to cloud
+  fields:
+    entity_id:
+      description: Name(s) of entities to use
+      example: 'camera.aarlo_front_camera'
+
+alarm_set_mode:
   description: Set the mode of a base station.
   fields:
     entity_id:
-      description: Name(s) of entities to turn on
-      example: 'camera.aarlo_front_camera'
+      description: Name(s) of entities to use
+      example: 'alarm_control_panel.aarlo_front'
     mode:
-      description: string (required) mode or schedule to change to
+      description: mode or schedule to change to
       example: 'home'
+
+siren_on:
+  description: Turn on a siren.
+  fields:
+    entity_id:
+      description: name(s) of entities to use
+      example: 'alarm_control_panel.aarlo_front'
+    volume:
+      description: volume to use
+      example: 6
+    duration:
+      description: duration to turn on for in seconds
+      example: 30
+
+sirens_on:
+  description: Turn on all sirens.
+  fields:
+    volume:
+      description: volume to use
+      example: 6
+    duration:
+      description: duration to turn on for in seconds
+      example: 30
+
+siren_off:
+  description: Turn off a siren.
+  fields:
+    entity_id:
+      description: Name(s) of entities to turn off
+      example: 'alarm_control_panel.aarlo_front'
+
+sirens_off:
+  description: Turn off all sirens.
+
+inject_response:
+  description: Inject a json packet into the Arlo event stream
+  fields:
+    filename:
+      description: File in /config containing json packet.
+      example: cry-off.json
 

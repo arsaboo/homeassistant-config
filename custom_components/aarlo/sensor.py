@@ -18,13 +18,13 @@ from homeassistant.core import callback
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.entity import (Entity)
 from homeassistant.helpers.icon import icon_for_battery_level
-from . import CONF_ATTRIBUTION, DATA_ARLO, DEFAULT_BRAND
+from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['aarlo']
+DEPENDENCIES = [COMPONENT_DOMAIN]
 
-# sensor_type [ description, unit, icon ]
+# sensor_type [ description, unit, icon, attribute ]
 SENSOR_TYPES = {
     'last_capture': ['Last', None, 'run-fast', 'lastCapture'],
     'total_cameras': ['Arlo Cameras', None, 'video', 'totalCameras'],
@@ -45,7 +45,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 async def async_setup_platform(hass, config, async_add_entities, _discovery_info=None):
     """Set up an Arlo IP sensor."""
-    arlo = hass.data.get(DATA_ARLO)
+    arlo = hass.data.get(COMPONENT_DATA)
     if not arlo:
         return
 
@@ -133,8 +133,8 @@ class ArloSensor(Entity):
         """Return the device state attributes."""
         attrs = {}
 
-        attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
-        attrs['brand'] = DEFAULT_BRAND
+        attrs[ATTR_ATTRIBUTION] = COMPONENT_ATTRIBUTION
+        attrs['brand'] = COMPONENT_BRAND
         attrs['friendly_name'] = self._name
 
         if self._sensor_type != 'total_cameras':
