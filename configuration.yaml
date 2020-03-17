@@ -27,8 +27,6 @@ homeassistant:
     - '/home/homeassistant/.homeassistant/downloads'
     - '/tmp'
     - '/home/homeassistant/.homeassistant/downloads/camera/'
-lovelace:
-  mode: yaml
 updater:
   include_used_components: true
 system_health:
@@ -849,6 +847,7 @@ google:
 mqtt:
   broker: 127.0.0.1
   port: 1883
+  discovery: true
   client_id: home-assistant-1
   username: !secret mqtt_username
   password: !secret mqtt_password
@@ -874,3 +873,4 @@ frontend: !include frontend.yaml
 recorder: !include recorder.yaml
 logbook: !include logbook.yaml
 history: !include history.yaml
+lovelace: !include lovelace.yaml

@@ -266,3 +266,9 @@ sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
   icon: mdi:coin-outline
+sensor.alok_s_iphone_room_presence:
+  friendly_name: Alok Room
+  entity_picture: /local/icons/Alok.png
+sensor.iphone_room_presence:
+  friendly_name: Rashmi Room
+  entity_picture: /local/icons/Rashmi.png

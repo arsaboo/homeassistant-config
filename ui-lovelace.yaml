@@ -1,60 +1,3 @@
-resources:
-  - url: /local/community/weather-card/weather-card.js?v=0.25
-    type: module
-  - url: /local/community/pc-card/pc-card.js?v=0.2
-    type: module
-  - url: /local/custom_ui/circle-sensor-card.js
-    type: module
-  - url: /local/custom_ui/thermostat-card.js?v=1.3
-    type: module
-  - url: /local/community/calendar-card/calendar-card.js
-    type: module
-  - url: /local/community/button-card/button-card.js
-    type: module
-  - url: /local/community/restriction-card/restriction-card.js
-    type: module
-  - url: https://unpkg.com/moment@2.22.2/moment.js
-    type: js
-  - url: /local/community/lovelace-slider-entity-row/slider-entity-row.js?v=0.3
-    type: js
-  - url: /local/community/mini-media-player/mini-media-player-bundle.js?v=0.0.3
-    type: module
-  - url: /local/community/mini-graph-card/mini-graph-card-bundle.js?v=0.0.1
-    type: module
-  - url: /local/community/lovelace-gap-card/gap-card.js?v=0.1
-    type: module
-  - url: /local/community/lovelace-layout-card/layout-card.js?v=0.2
-    type: module
-  - url: /local/custom_ui/card-modder.js?v=0.1
-    type: js
-  - url: /local/community/lovelace-card-mod/card-mod.js?v=0.1
-    type: module
-  - url: /local/community/lovelace-auto-entities/auto-entities.js?v=0.2
-    type: module
-  - url: /local/community/config-template-card/config-template-card.js?v=0.1
-    type: module
-  - url: /local/community/secondaryinfo-entity-row/secondaryinfo-entity-row.js
-    type: module
-  - url: /local/community/simple-thermostat/simple-thermostat.js
-    type: module
-  - url: /local/community/lovelace-hass-aarlo/hass-aarlo.js
-    type: module
-  - url: /local/community/list-card/list-card.js
-    type: js
-  - url: /local/community/unused-card/unused-card.js
-    type: module
-  - url: /local/community/lovelace-card-tools/card-tools.js
-    type: module
-  - url: /local/community/lovelace-template-entity-row/template-entity-row.js
-    type: module
-  - url: /local/community/harmony-card/harmony-card.js
-    type: module
-  - url: /local/community/lovelace-multiple-entity-row/multiple-entity-row.js
-    type: module
-  - url: /local/community/vertical-stack-in-card/vertical-stack-in-card.js
-    type: module
-  - url: /local/community/custom-header/custom-header.js
-    type: module
 title: ARS Home
 views:
   - icon: mdi:home-assistant
@@ -391,6 +334,16 @@ views:
             style:
               top: 89%
               left: 32%
+          - type: conditional
+            conditions:
+              - entity: sensor.alok_s_iphone_room_presence
+                state: 'livingroom'
+            elements:
+              - type: state-icon
+                entity: sensor.alok_s_iphone_room_presence
+                style:
+                  top: 30%
+                  left: 30%
       - type: picture-elements
         # title: Second Level
         image: /local/floorplans/second.jpg
@@ -566,6 +519,10 @@ views:
         title: Information
         show_header_toggle: false
         entities:
+          - entity: sensor.alok_s_iphone_room_presence
+            name: Alok Room
+          - entity: sensor.iphone_room_presence
+            name: Rashmi Room
           - entity: sensor.morning_commute
             tap_action:
               action: url
@@ -615,8 +572,15 @@ views:
             secondary_info: last-changed
             state_color: true
           - entity: switch.wemoinsight
-            secondary_info: last-changed
+            type: custom:multiple-entity-row
+            name: Wemo Insight
+            toggle: True
             state_color: true
+            secondary_info: last-changed
+            entities:
+              - attribute: current_power_w
+                unit: w
+                name: Power
           - entity: switch.aeon_switch
             secondary_info: last-changed
             state_color: true
@@ -843,10 +807,13 @@ views:
                 entities:
                   - entity: sensor.us_coronavirus_confirmed
                     name: Confirmed
+                    unit: " "
                   - entity: sensor.us_coronavirus_deaths
                     name: Deaths
+                    unit: " "
                   - entity: sensor.us_coronavirus_current
                     name: Current
+                    unit: " "
               - entity: sensor.italy_coronavirus_confirmed
                 type: custom:multiple-entity-row
                 name: Italy
@@ -855,10 +822,13 @@ views:
                 entities:
                   - entity: sensor.italy_coronavirus_confirmed
                     name: Confirmed
+                    unit: " "
                   - entity: sensor.italy_coronavirus_deaths
                     name: Deaths
+                    unit: " "
                   - entity: sensor.italy_coronavirus_current
                     name: Current
+                    unit: " "
               - entity: sensor.india_coronavirus_confirmed
                 type: custom:multiple-entity-row
                 name: India
@@ -867,10 +837,13 @@ views:
                 entities:
                   - entity: sensor.india_coronavirus_confirmed
                     name: Confirmed
+                    unit: " "
                   - entity: sensor.india_coronavirus_deaths
                     name: Deaths
+                    unit: " "
                   - entity: sensor.india_coronavirus_current
                     name: Current
+                    unit: " "
       - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
@@ -1241,7 +1214,8 @@ views:
                   service: rest_command.netflix
               - type: custom:button-card
                 color_type: blank-card
-
+          - type: media-control
+            entity: media_player.family_room_2
       - type: entities
         title: Light Operations
         show_header_toggle: false
@@ -1255,11 +1229,8 @@ views:
           - script.sonoslinein
           - script.master_colorloop
           - script.master_random
-      - type: custom:mini-media-player
+      - type: media-control
         entity: media_player.livingroomsonos
-        artwork: cover
-      - type: custom:mini-media-player
-        entity: media_player.family_room_2
         artwork: cover
       - type: media-control
         entity: media_player.kodi_nstv
