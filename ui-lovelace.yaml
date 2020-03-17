@@ -334,6 +334,7 @@ views:
             style:
               top: 89%
               left: 32%
+          # Room Detection Alok
           - type: conditional
             conditions:
               - entity: sensor.alok_s_iphone_room_presence
@@ -342,8 +343,40 @@ views:
               - type: state-icon
                 entity: sensor.alok_s_iphone_room_presence
                 style:
-                  top: 30%
-                  left: 30%
+                  top: 23%
+                  left: 35%
+          - type: conditional
+            conditions:
+              - entity: sensor.alok_s_iphone_room_presence
+                state: 'study'
+            elements:
+              - type: state-icon
+                entity: sensor.alok_s_iphone_room_presence
+                style:
+                  top: 73%
+                  left: 49%
+          # Room Detection Rashmi
+          - type: conditional
+            conditions:
+              - entity: sensor.iphone_room_presence
+                state: 'livingroom'
+            elements:
+              - type: state-icon
+                entity: sensor.iphone_room_presence
+                style:
+                  top: 23%
+                  left: 44%
+          - type: conditional
+            conditions:
+              - entity: sensor.iphone_room_presence
+                state: 'study'
+            elements:
+              - type: state-icon
+                entity: sensor.iphone_room_presence
+                style:
+                  top: 87%
+                  left: 49%
+
       - type: picture-elements
         # title: Second Level
         image: /local/floorplans/second.jpg
@@ -428,6 +461,29 @@ views:
               left: 15%
               width: 50px
               height: 50px
+          # Room Detection Alok
+          - type: conditional
+            conditions:
+              - entity: sensor.alok_s_iphone_room_presence
+                state: 'master'
+            elements:
+              - type: state-icon
+                entity: sensor.alok_s_iphone_room_presence
+                style:
+                  top: 66%
+                  left: 73%
+          # Room Detection Rashmi
+          - type: conditional
+            conditions:
+              - entity: sensor.iphone_room_presence
+                state: 'master'
+            elements:
+              - type: state-icon
+                entity: sensor.iphone_room_presence
+                style:
+                  top: 66%
+                  left: 86%
+
       - type: 'custom:config-template-card'
         entities:
           - sensor.nasdaq_futures_change
