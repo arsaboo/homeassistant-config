@@ -91,7 +91,7 @@ class ArloMediaPlayerDevice(MediaPlayerDevice):
 
         @callback
         def update_state(_device, attr, props):
-            _LOGGER.info('media_player callback:' + attr + ':' + str(props)[:80])
+            _LOGGER.info('callback:' + self._name + ':' + attr + ':' + str(props)[:80])
             if attr == "status":
                 status = props.get('status')
                 if status == 'playing':

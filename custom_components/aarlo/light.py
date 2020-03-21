@@ -75,7 +75,7 @@ class ArloLight(Light):
 
         @callback
         def update_state(_light, attr, value):
-            _LOGGER.debug('callback:' + attr + ':' + str(value)[:80])
+            _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value)[:80])
             if attr == LAMP_STATE_KEY:
                 self._state = value
             if attr == BRIGHTNESS_KEY:
@@ -190,7 +190,7 @@ class ArloNightLight(ArloLight):
 
         @callback
         def update_attr(_light, attr, value):
-            _LOGGER.debug('callback:' + attr + ':' + str(value)[:80])
+            _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value)[:80])
             if attr == LIGHT_BRIGHTNESS_KEY:
                 self._brightness = value
             if attr == LIGHT_MODE_KEY:

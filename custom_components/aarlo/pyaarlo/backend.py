@@ -6,8 +6,10 @@ import requests.adapters
 import threading
 import time
 import uuid
+import base64
 
-from .constant import (DEFAULT_RESOURCES, LOGIN_PATH, LOGOUT_PATH,
+from .constant import (AUTH_HOST, AUTH_PATH, AUTH_VALIDATE_PATH,
+                       DEFAULT_RESOURCES, LOGIN_PATH, LOGOUT_PATH,
                        NOTIFY_PATH, SUBSCRIBE_PATH, TRANSID_PREFIX, DEVICES_PATH)
 from .sseclient import SSEClient
 from .util import time_to_arlotime, now_strftime
@@ -50,7 +52,7 @@ class ArloBackEnd(object):
             self._arlo.debug('automatically reconnecting')
             self._arlo.bg.run_every(self.logout, self._arlo.cfg.reconnect_every)
 
-    def _request(self, path, method='GET', params=None, headers=None, stream=False, raw=False, timeout=None):
+    def _request(self, path, method='GET', params=None, headers=None, stream=False, raw=False, timeout=None, host=None):
         if params is None:
             params = {}
         if headers is None:
@@ -59,7 +61,9 @@ class ArloBackEnd(object):
             timeout = self._arlo.cfg.request_timeout
         try:
             with self._req_lock:
-                url = self._arlo.cfg.host + path
+                if host is None:
+                    host = self._arlo.cfg.host
+                url = host + path
                 #self._arlo.vdebug('starting request=' + str(url))
                 #self._arlo.vdebug('starting request=' + str(params))
                 #self._arlo.vdebug('starting request=' + str(headers))
@@ -75,20 +79,27 @@ class ArloBackEnd(object):
             self._arlo.warning('request-error={}'.format(type(e).__name__))
             return None
 
-        # self._arlo.debug('finish request=' + str(r.status_code))
+        #self._arlo.vdebug('finish request=' + str(r.status_code))
         if r.status_code != 200:
             return None
 
         body = r.json()
-        # self._arlo.debug(pprint.pformat(body, indent=2))
+        #self._arlo.vdebug(pprint.pformat(body, indent=2))
 
         if raw:
             return body
-        if body['success']:
-            if 'data' in body:
+
+        # New auth style
+        if 'meta' in body:
+            if body['meta']['code'] == 200:
                 return body['data']
-        else:
-            self._arlo.warning('error in response=' + str(body))
+
+        if 'success' in body:
+            if body['success']:
+                if 'data' in body:
+                    return body['data']
+            else:
+                self._arlo.warning('error in response=' + str(body))
         return None
 
     def gen_trans_id(self, trans_type=TRANSID_PREFIX):
@@ -249,7 +260,7 @@ class ArloBackEnd(object):
                 if self._arlo.cfg.stream_timeout == 0:
                     self._arlo.debug('starting stream with no timeout')
                     # self._ev_stream = SSEClient( self.get( SUBSCRIBE_PATH + self._token,stream=True,raw=True ) )
-                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH + self._token,
+                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH,
                                                 session=self._session,
                                                 reconnect_cb=self._ev_reconnected)
                 else:
@@ -257,7 +268,7 @@ class ArloBackEnd(object):
                     # self._ev_stream = SSEClient(
                     #     self.get(SUBSCRIBE_PATH + self._token, stream=True, raw=True,
                     #              timeout=self._arlo.cfg.stream_timeout))
-                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH + self._token,
+                    self._ev_stream = SSEClient(self._arlo, self._arlo.cfg.host + SUBSCRIBE_PATH,
                                                 session=self._session,
                                                 reconnect_cb=self._ev_reconnected,
                                                 timeout=self._arlo.cfg.stream_timeout)
@@ -346,22 +357,51 @@ class ArloBackEnd(object):
                                 requests.adapters.HTTPAdapter(
                                     pool_connections=self._arlo.cfg.http_connections,
                                     pool_maxsize=self._arlo.cfg.http_max_size))
-        body = self.post(LOGIN_PATH, {'email': self._arlo.cfg.username, 'password': self._arlo.cfg.password})
+
+        # New login....
+        body = self.auth_post(AUTH_PATH, {'email': self._arlo.cfg.username,
+                                          'password': base64.b64encode(self._arlo.cfg.password.encode()).decode(),
+                                          'language': "en",
+                                          'EnvSource': 'prod' },
+                                         {'Auth-Version':'2',
+                                          'Accept': 'application/json, text/plain, */*',
+                                          'Referer': self._arlo.cfg.host,
+                                          'User-Agent': ('Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) '
+                                                            'AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202 NETGEAR/v1 '
+                                                            '(iOS Vuezone)'),
+                                          'Source': 'arloCamWeb' } )
+
         if body is None:
             self._arlo.debug('login failed')
             return False
 
         # save new login information
         self._token = body['token']
+        self._token64 = base64.b64encode(body['token'].encode()).decode()
         self._user_id = body['userId']
         self._web_id = self._user_id + '_web'
         self._sub_id = 'subscriptions/' + self._web_id
+
+        # Validate it!
+        validated = self.auth_get( AUTH_VALIDATE_PATH + "?data = {}".format(int(time.time())), {},
+                                         {'Auth-Version':'2',
+                                          'Accept': 'application/json, text/plain, */*',
+                                          'Authorization': self._token64,
+                                          'Referer': self._arlo.cfg.host,
+                                          'User-Agent': ('Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) '
+                                                            'AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202 NETGEAR/v1 '
+                                                            '(iOS Vuezone)'),
+                                          'Source': 'arloCamWeb' } )
+        if validated is None:
+            self._arlo.debug('login failed')
+            return False
 
         # update sessions headers
         # XXX allow different user agent
         headers = {
             # 'DNT': '1',
             'Accept': 'application/json, text/plain, */*',
+            'Auth-Version': '2',
             'schemaVersion': '1',
             'Host': re.sub('https?://', '', self._arlo.cfg.host),
             'Content-Type': 'application/json; charset=utf-8;',
@@ -377,6 +417,7 @@ class ArloBackEnd(object):
                                      'Chrome/72.0.3626.81 Safari/537.36')
 
         self._session.headers.update(headers)
+
         return True
 
     def is_connected(self):
@@ -396,6 +437,12 @@ class ArloBackEnd(object):
 
     def post(self, path, params=None, headers=None, raw=False, timeout=None):
         return self._request(path, 'POST', params, headers, False, raw, timeout)
+
+    def auth_post(self, path, params=None, headers=None, raw=False, timeout=None):
+        return self._request(path, 'POST', params, headers, False, raw, timeout, AUTH_HOST)
+
+    def auth_get(self, path, params=None, headers=None, stream=False, raw=False, timeout=None):
+        return self._request(path, 'GET', params, headers, stream, raw, timeout, AUTH_HOST)
 
     @property
     def session(self):

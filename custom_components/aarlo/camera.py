@@ -104,6 +104,7 @@ WS_TYPE_VIDEO_URL = 'aarlo_video_url'
 WS_TYPE_LIBRARY = 'aarlo_library'
 WS_TYPE_STREAM_URL = 'aarlo_stream_url'
 WS_TYPE_SNAPSHOT_IMAGE = 'aarlo_snapshot_image'
+WS_TYPE_REQUEST_SNAPSHOT = 'aarlo_request_snapshot'
 WS_TYPE_VIDEO_DATA = 'aarlo_video_data'
 WS_TYPE_STOP_ACTIVITY = 'aarlo_stop_activity'
 WS_TYPE_SIREN_ON = 'aarlo_camera_siren_on'
@@ -124,6 +125,10 @@ SCHEMA_WS_STREAM_URL = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
 })
 SCHEMA_WS_SNAPSHOT_IMAGE = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
     vol.Required('type'): WS_TYPE_SNAPSHOT_IMAGE,
+    vol.Required('entity_id'): cv.entity_id
+})
+SCHEMA_WS_REQUEST_SNAPSHOT = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
+    vol.Required('type'): WS_TYPE_REQUEST_SNAPSHOT,
     vol.Required('entity_id'): cv.entity_id
 })
 SCHEMA_WS_VIDEO_DATA = websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend({
@@ -252,6 +257,10 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     hass.components.websocket_api.async_register_command(
         WS_TYPE_SNAPSHOT_IMAGE, websocket_snapshot_image,
         SCHEMA_WS_SNAPSHOT_IMAGE
+    )
+    hass.components.websocket_api.async_register_command(
+        WS_TYPE_REQUEST_SNAPSHOT, websocket_request_snapshot,
+        SCHEMA_WS_REQUEST_SNAPSHOT
     )
     hass.components.websocket_api.async_register_command(
         WS_TYPE_VIDEO_DATA, websocket_video_data,
@@ -608,6 +617,23 @@ async def websocket_snapshot_image(hass, connection, msg):
             msg['id'], {
                 'content_type': camera.content_type,
                 'content': base64.b64encode(image).decode('utf-8')
+            }
+        ))
+
+    except HomeAssistantError:
+        connection.send_message(websocket_api.error_message(
+            msg['id'], 'image_fetch_failed', 'Unable to fetch image'))
+
+@websocket_api.async_response
+async def websocket_request_snapshot(hass, connection, msg):
+    camera = get_entity_from_domain(hass, DOMAIN, msg['entity_id'])
+    _LOGGER.debug('request_snapshot_image for ' + str(camera.unique_id))
+
+    try:
+        await camera.async_request_snapshot()
+        connection.send_message(websocket_api.result_message(
+            msg['id'], {
+                'snapshot requested'
             }
         ))
 

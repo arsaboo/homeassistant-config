@@ -936,13 +936,12 @@ class AarloGlance extends LitElement {
 
     async wsUpdateSnapshot() {
         try {
-            const {content_type: contentType, content} = await this._hass.callWS({
-                type: "aarlo_snapshot_image",
-                entity_id: this._s.cameraId,
-            });
-            // no longer wait for return...
-            // add aarlo_take_snapshot
+            return await this._hass.callWS({
+                type: "aarlo_request_snapshot",
+                entity_id: this._s.cameraId
+            })
         } catch (err) {
+            return null
         }
     }
 
