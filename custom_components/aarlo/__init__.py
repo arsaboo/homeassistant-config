@@ -19,8 +19,9 @@ from homeassistant.const import (
 from homeassistant.helpers import config_validation as cv
 from homeassistant.components.camera import DOMAIN as CAMERA_DOMAIN
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_DOMAIN
+from .pyaarlo.constant import (SIREN_STATE_KEY)
 
-__version__ = '0.6.17'
+__version__ = '0.6.89'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,6 +54,10 @@ CONF_RECONNECT_EVERY = 'reconnect_every'
 CONF_VERBOSE_DEBUG = 'verbose_debug'
 CONF_HIDE_DEPRECATED_SERVICES = 'hide_deprecated_services'
 CONF_INJECTION_SERVICE = 'injection_service'
+CONF_SNAPSHOT_TIMEOUT = 'snapshot_timeout'
+CONF_IMAP_HOST = 'imap_host'
+CONF_IMAP_USERNAME = 'imap_username'
+CONF_IMAP_PASSWORD = 'imap_password'
 
 SCAN_INTERVAL = timedelta(seconds=60)
 PACKET_DUMP = False
@@ -75,6 +80,10 @@ DEFAULT_HOST = 'https://my.arlo.com'
 VERBOSE_DEBUG = False
 HIDE_DEPRECATED_SERVICES = False
 DEFAULT_INJECTION_SERVICE = False
+SNAPSHOT_TIMEOUT = timedelta(seconds=45)
+DEFAULT_IMAP_HOST = 'unknown.imap.com'
+DEFAULT_IMAP_USERNAME = 'unknown@unknown.com'
+DEFAULT_IMAP_PASSWORD = 'unknown'
 
 CONFIG_SCHEMA = vol.Schema({
     COMPONENT_DOMAIN: vol.Schema({
@@ -101,6 +110,10 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_VERBOSE_DEBUG, default=VERBOSE_DEBUG): cv.boolean,
         vol.Optional(CONF_HIDE_DEPRECATED_SERVICES, default=HIDE_DEPRECATED_SERVICES): cv.boolean,
         vol.Optional(CONF_INJECTION_SERVICE, default=DEFAULT_INJECTION_SERVICE): cv.boolean,
+        vol.Optional(CONF_SNAPSHOT_TIMEOUT, default=SNAPSHOT_TIMEOUT): cv.time_period,
+        vol.Optional(CONF_IMAP_HOST, default=DEFAULT_IMAP_HOST): cv.string,
+        vol.Optional(CONF_IMAP_USERNAME, default=DEFAULT_IMAP_USERNAME): cv.string,
+        vol.Optional(CONF_IMAP_PASSWORD, default=DEFAULT_IMAP_PASSWORD): cv.string,
     }),
 }, extra=vol.ALLOW_EXTRA)
 
@@ -157,6 +170,10 @@ def setup(hass, config):
     verbose_debug = conf.get(CONF_VERBOSE_DEBUG)
     hide_deprecated_services = conf.get(CONF_HIDE_DEPRECATED_SERVICES)
     injection_service = conf.get(CONF_INJECTION_SERVICE)
+    snapshot_timeout = conf.get(CONF_SNAPSHOT_TIMEOUT).total_seconds()
+    imap_host = conf.get(CONF_IMAP_HOST)
+    imap_username = conf.get(CONF_IMAP_USERNAME)
+    imap_password = conf.get(CONF_IMAP_PASSWORD)
 
     # Fix up config
     if conf_dir == '':
@@ -180,7 +197,11 @@ def setup(hass, config):
                       user_agent=user_agent, mode_api=mode_api,
                       refresh_devices_every=device_refresh, reconnect_every=reconnect_every,
                       http_connections=http_connections, http_max_size=http_max_size,
-                      hide_deprecated_services=hide_deprecated_services,verbose_debug=verbose_debug)
+                      hide_deprecated_services=hide_deprecated_services,verbose_debug=verbose_debug,
+                      snapshot_timeout=snapshot_timeout,
+                      tfa_source='imap', tfa_type='EMAIL',
+                      wait_for_initial_setup=False,
+                      imap_host=imap_host, imap_username=imap_username, imap_password=imap_password)
         if not arlo.is_connected:
             return False
 
@@ -198,7 +219,7 @@ def setup(hass, config):
     # Component Services
     has_sirens = False
     for device in arlo.cameras + arlo.base_stations:
-        if device.has_capability('siren'):
+        if device.has_capability(SIREN_STATE_KEY):
             has_sirens = True
 
     async def async_aarlo_service(call):
@@ -267,7 +288,7 @@ async def async_aarlo_sirens_on(hass, call):
     volume = call.data['volume']
     duration = call.data['duration']
     for device in arlo.cameras + arlo.base_stations:
-        if device.has_capability('siren'):
+        if device.has_capability(SIREN_STATE_KEY):
             _LOGGER.info("{} siren on {}/{}".format(device.unique_id,volume,duration))
             device.siren_on(duration=duration, volume=volume)
 
@@ -289,7 +310,7 @@ async def async_aarlo_siren_off(hass, call):
 async def async_aarlo_sirens_off(hass, call):
     arlo = hass.data[COMPONENT_DATA]
     for device in arlo.cameras + arlo.base_stations:
-        if device.has_capability('siren'):
+        if device.has_capability(SIREN_STATE_KEY):
             _LOGGER.info("{} siren off".format(device.unique_id))
             device.siren_off()
 

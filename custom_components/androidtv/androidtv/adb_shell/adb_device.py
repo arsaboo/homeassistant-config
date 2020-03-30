@@ -44,7 +44,9 @@
     * :meth:`AdbDevice._read_until`
     * :meth:`AdbDevice._read_until_close`
     * :meth:`AdbDevice._send`
+    * :meth:`AdbDevice._service`
     * :meth:`AdbDevice._streaming_command`
+    * :meth:`AdbDevice._streaming_service`
     * :meth:`AdbDevice._write`
     * :attr:`AdbDevice.available`
     * :meth:`AdbDevice.close`
@@ -54,6 +56,7 @@
     * :meth:`AdbDevice.push`
     * :meth:`AdbDevice.shell`
     * :meth:`AdbDevice.stat`
+    * :meth:`AdbDevice.streaming_shell`
 
 * :class:`AdbDeviceTcp`
 
@@ -264,7 +267,7 @@ class AdbDevice(object):
         self._available = False
         self._handle.close()
 
-    def connect(self, rsa_keys=None, timeout_s=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S):
+    def connect(self, rsa_keys=None, timeout_s=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, auth_callback=None):
         """Establish an ADB connection to the device.
 
         1. Use the handle to establish a connection
@@ -294,6 +297,8 @@ class AdbDevice(object):
             The time in seconds to wait for a ``b'CNXN'`` authentication response
         total_timeout_s : float
             The total time in seconds to wait for expected commands in :meth:`AdbDevice._read`
+        auth_callback : function, None
+            Function callback invoked when the connection needs to be accepted on the device
 
         Returns
         -------
@@ -355,6 +360,9 @@ class AdbDevice(object):
         if not isinstance(pubkey, (bytes, bytearray)):
             pubkey = bytearray(pubkey, 'utf-8')
 
+        if auth_callback is not None:
+            auth_callback(self)
+
         msg = AdbMessage(constants.AUTH, constants.AUTH_RSAPUBLICKEY, 0, pubkey + b'\0')
         self._send(msg, adb_info)
 
@@ -362,6 +370,71 @@ class AdbDevice(object):
         cmd, arg0, _, banner = self._read([constants.CNXN], adb_info)
         self._available = True
         return True  # return banner
+
+    # ======================================================================= #
+    #                                                                         #
+    #                                 Services                                #
+    #                                                                         #
+    # ======================================================================= #
+    def _service(self, service, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, decode=True):
+        """Send an ADB command to the device.
+
+        Parameters
+        ----------
+        service : bytes
+            The ADB service to talk to (e.g., ``b'shell'``)
+        command : bytes
+            The command that will be sent
+        timeout_s : float, None
+            Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+            and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
+        total_timeout_s : float
+            The total time in seconds to wait for a ``b'CLSE'`` or ``b'OKAY'`` command in :meth:`AdbDevice._read`
+        decode : bool
+            Whether to decode the output to utf8 before returning
+
+        Returns
+        -------
+        bytes, str
+            The output of the ADB command as a string if ``decode`` is True, otherwise as bytes.
+
+        """
+        adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
+        if decode:
+            return b''.join(self._streaming_command(service, command, adb_info)).decode('utf8')
+        return b''.join(self._streaming_command(service, command, adb_info))
+
+    def _streaming_service(self, service, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, decode=True):
+        """Send an ADB command to the device, yielding each line of output.
+
+        Parameters
+        ----------
+        service : bytes
+            The ADB service to talk to (e.g., ``b'shell'``)
+        command : bytes
+            The command that will be sent
+        timeout_s : float, None
+            Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+            and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
+        total_timeout_s : float
+            The total time in seconds to wait for a ``b'CLSE'`` or ``b'OKAY'`` command in :meth:`AdbDevice._read`
+        decode : bool
+            Whether to decode the output to utf8 before returning
+
+        Yields
+        -------
+        bytes, str
+            The line-by-line output of the ADB command as a string if ``decode`` is True, otherwise as bytes.
+
+        """
+        adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
+        stream = self._streaming_command(service, command, adb_info)
+        if decode:
+            for line in (stream_line.decode('utf8') for stream_line in stream):
+                yield line
+        else:
+            for line in stream:
+                yield line
 
     def shell(self, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, decode=True):
         """Send an ADB shell command to the device.
@@ -381,13 +454,34 @@ class AdbDevice(object):
         Returns
         -------
         bytes, str
-            The output of the ADB shell command as string if decode is True, otherwise as bytes.
+            The output of the ADB shell command as a string if ``decode`` is True, otherwise as bytes.
 
         """
-        adb_info = _AdbTransactionInfo(None, None, timeout_s, total_timeout_s)
-        if decode:
-            return b''.join(self._streaming_command(b'shell', command.encode('utf8'), adb_info)).decode('utf8')
-        return b''.join(self._streaming_command(b'shell', command.encode('utf8'), adb_info))
+        return self._service(b'shell', command.encode('utf8'), timeout_s, total_timeout_s, decode)
+
+    def streaming_shell(self, command, timeout_s=None, total_timeout_s=constants.DEFAULT_TOTAL_TIMEOUT_S, decode=True):
+        """Send an ADB shell command to the device, yielding each line of output.
+
+        Parameters
+        ----------
+        command : str
+            The shell command that will be sent
+        timeout_s : float, None
+            Timeout in seconds for sending and receiving packets, or ``None``; see :meth:`BaseHandle.bulk_read() <adb_shell.handle.base_handle.BaseHandle.bulk_read>`
+            and :meth:`BaseHandle.bulk_write() <adb_shell.handle.base_handle.BaseHandle.bulk_write>`
+        total_timeout_s : float
+            The total time in seconds to wait for a ``b'CLSE'`` or ``b'OKAY'`` command in :meth:`AdbDevice._read`
+        decode : bool
+            Whether to decode the output to utf8 before returning
+
+        Yields
+        -------
+        bytes, str
+            The line-by-line output of the ADB shell command as a string if ``decode`` is True, otherwise as bytes.
+
+        """
+        for line in self._streaming_service(b'shell', command.encode('utf8'), timeout_s, total_timeout_s, decode):
+            yield line
 
     # ======================================================================= #
     #                                                                         #

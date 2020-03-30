@@ -31,6 +31,16 @@ from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_stream
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import async_track_point_in_time
 from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN, COMPONENT_SERVICES, get_entity_from_domain
+from .pyaarlo.constant import (ACTIVITY_STATE_KEY,
+                               CHARGER_KEY,
+                               CHARGING_KEY,
+                               CONNECTION_KEY,
+                               LAST_IMAGE_KEY,
+                               LAST_IMAGE_DATA_KEY,
+                               MEDIA_UPLOAD_KEYS,
+                               PRIVACY_KEY,
+                               RECENT_ACTIVITY_KEY,
+                               SIREN_STATE_KEY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -159,7 +169,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     cameras_with_siren = False
     for camera in arlo.cameras:
         cameras.append(ArloCam(camera, config))
-        if camera.has_capability('siren'):
+        if camera.has_capability(SIREN_STATE_KEY):
             cameras_with_siren = True
 
     async_add_entities(cameras)
@@ -315,7 +325,7 @@ class ArloCam(Camera):
             _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value)[:80])
 
             # set state 
-            if attr == 'activityState' or attr == 'connectionState':
+            if attr == ACTIVITY_STATE_KEY or attr == CONNECTION_KEY:
                 if value == 'thermalShutdownCold':
                     self._state = 'Offline, Too Cold'
                 elif value == 'userStreamActive':
@@ -326,20 +336,20 @@ class ArloCam(Camera):
                     self._state = 'Unavailable'
                 else:
                     self._state = STATE_IDLE
-            if attr == 'recentActivity':
+            if attr == RECENT_ACTIVITY_KEY:
                 self._recent = value
 
             self.async_schedule_update_ha_state()
 
-        self._camera.add_attr_callback('privacyActive', update_state)
-        self._camera.add_attr_callback('recentActivity', update_state)
-        self._camera.add_attr_callback('activityState', update_state)
-        self._camera.add_attr_callback('connectionState', update_state)
-        self._camera.add_attr_callback('presignedLastImageUrl', update_state)
-        self._camera.add_attr_callback('presignedLastImageData', update_state)
-        self._camera.add_attr_callback('mediaUploadNotification', update_state)
-        self._camera.add_attr_callback('chargingState', update_state)
-        self._camera.add_attr_callback('chargingTech', update_state)
+        self._camera.add_attr_callback(ACTIVITY_STATE_KEY, update_state)
+        self._camera.add_attr_callback(CHARGER_KEY, update_state)
+        self._camera.add_attr_callback(CHARGING_KEY, update_state)
+        self._camera.add_attr_callback(CONNECTION_KEY, update_state)
+        self._camera.add_attr_callback(LAST_IMAGE_KEY, update_state)
+        self._camera.add_attr_callback(LAST_IMAGE_DATA_KEY, update_state)
+        self._camera.add_attr_callback(MEDIA_UPLOAD_KEYS, update_state)
+        self._camera.add_attr_callback(PRIVACY_KEY, update_state)
+        self._camera.add_attr_callback(RECENT_ACTIVITY_KEY, update_state)
 
     async def handle_async_mjpeg_stream(self, request):
         """Generate an HTTP MJPEG stream from the camera."""
@@ -405,7 +415,7 @@ class ArloCam(Camera):
                 (ATTR_POWERSAVE, POWERSAVE_MODE_MAPPING.get(self._camera.powersave_mode)),
                 (ATTR_SIGNAL_STRENGTH, self._camera.signal_strength),
                 (ATTR_UNSEEN_VIDEOS, self._camera.unseen_videos),
-                (ATTR_RECENT_ACTIVITY, self._camera.recent),
+                (ATTR_RECENT_ACTIVITY, self._camera.was_recently_active),
                 (ATTR_IMAGE_SRC, self._camera.last_image_source),
                 (ATTR_CHARGING, self._camera.charging),
                 (ATTR_CHARGER_TYPE, self._camera.charger_type),
@@ -423,7 +433,7 @@ class ArloCam(Camera):
         attrs['model_id'] = self._camera.model_id
         attrs['parent_id'] = self._camera.parent_id
         attrs['friendly_name'] = self._name
-        attrs['siren'] = self._camera.has_capability('siren')
+        attrs['siren'] = self._camera.has_capability(SIREN_STATE_KEY)
 
         return attrs
 
@@ -508,14 +518,14 @@ class ArloCam(Camera):
         return self.hass.async_add_job(self.stop_activity)
 
     def siren_on(self, duration=30, volume=10):
-        if self._camera.has_capability('siren'):
+        if self._camera.has_capability(SIREN_STATE_KEY):
             _LOGGER.debug("{0} siren on {1}/{2}".format(self.unique_id, volume, duration))
             self._camera.siren_on(duration=duration, volume=volume)
             return True
         return False
 
     def siren_off(self):
-        if self._camera.has_capability('siren'):
+        if self._camera.has_capability(SIREN_STATE_KEY):
             _LOGGER.debug("{0} siren off".format(self.unique_id))
             self._camera.siren_off()
             return True

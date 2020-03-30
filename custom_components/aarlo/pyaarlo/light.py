@@ -1,7 +1,6 @@
 import pprint
 
-from .constant import ( LAMP_STATE_KEY, BRIGHTNESS_KEY )
-from .util import ( rgb_to_hex )
+from .constant import (LAMP_STATE_KEY, BRIGHTNESS_KEY, BATTERY_KEY, MOTION_DETECTED_KEY)
 from .device import ArloChildDevice
 
 
@@ -12,6 +11,7 @@ class ArloLight(ArloChildDevice):
 
     @property
     def resource_type(self):
+        """ Return the resource type this object describes. """
         return "lights"
 
     def _event_handler(self, resource, event):
@@ -22,18 +22,19 @@ class ArloLight(ArloChildDevice):
 
     @property
     def is_on(self):
+        """ Is the light on? """
         return self._load(LAMP_STATE_KEY, "off") == "on"
 
     def turn_on(self, brightness=None, rgb=None):
-
+        """ Turn the light on. """
         properties = {LAMP_STATE_KEY: 'on'}
         if brightness is not None:
             properties[BRIGHTNESS_KEY] = brightness
         if rgb is not None:
-            #properties["single"] = rgb_to_hex(rgb)
+            # properties["single"] = rgb_to_hex(rgb)
             pass
 
-        self._arlo.debug("{} sending {}".format(self._name,pprint.pformat(properties)))
+        self._arlo.debug("{} sending {}".format(self._name, pprint.pformat(properties)))
         self._arlo.bg.run(self._arlo.be.notify,
                           base=self.base_station,
                           body={
@@ -45,6 +46,7 @@ class ArloLight(ArloChildDevice):
         return True
 
     def turn_off(self):
+        """ Turn the light off. """
         self._arlo.bg.run(self._arlo.be.notify,
                           base=self.base_station,
                           body={
@@ -55,7 +57,8 @@ class ArloLight(ArloChildDevice):
                           })
         return True
 
-    def set_brightness(self,brightness):
+    def set_brightness(self, brightness):
+        """ Set the light brightness. """
         self._arlo.bg.run(self._arlo.be.notify,
                           base=self.base_station,
                           body={
@@ -67,8 +70,7 @@ class ArloLight(ArloChildDevice):
         return True
 
     def has_capability(self, cap):
-        if cap in 'battery_level':
-            return True
-        if cap in 'motionDetected':
+        """ Is the camera capabale of performing an activity. """
+        if cap in (MOTION_DETECTED_KEY, BATTERY_KEY):
             return True
         return super().has_capability(cap)

@@ -35,8 +35,6 @@ from cryptography.hazmat.primitives.asymmetric import utils
 class CryptographySigner(object):
     """AuthSigner using cryptography.io.
 
-    .. warning:: This is currently broken!
-
     Parameters
     ----------
     rsa_key_path : str
@@ -53,19 +51,9 @@ class CryptographySigner(object):
     def __init__(self, rsa_key_path):
         with open(rsa_key_path + '.pub', 'rb') as rsa_pub_file:
             self.public_key = rsa_pub_file.read()
-            # rsa_data = rsa_pub_file.read()
-            # if isinstance(rsa_data, str):
-            #     self.public_key = rsa_data
-            # else:
-            #     self.public_key = rsa_data.encode('ascii')
 
         with open(rsa_key_path, 'rb') as rsa_prv_file:
             self.rsa_key = serialization.load_pem_private_key(rsa_prv_file.read(), None, default_backend())
-            # rsa_data = rsa_prv_file.read()
-            # if isinstance(rsa_data, str):
-            #     self.rsa_key = serialization.load_pem_private_key(rsa_data.encode('ascii'), None, default_backend())
-            # else:
-            #     self.rsa_key = serialization.load_pem_private_key(rsa_data.encode('ascii'), None, default_backend())
 
     def Sign(self, data):
         """Signs given data using a private key.

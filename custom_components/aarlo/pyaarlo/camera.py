@@ -13,7 +13,9 @@ from .constant import (ACTIVITY_STATE_KEY, BRIGHTNESS_KEY,
                        RECORD_START_PATH, RECORD_STOP_PATH,
                        SNAPSHOT_KEY, SIREN_STATE_KEY, STREAM_SNAPSHOT_KEY,
                        STREAM_SNAPSHOT_PATH, STREAM_START_PATH, CAMERA_MEDIA_DELAY,
-                       AUDIO_POSITION_KEY, AUDIO_TRACK_KEY, DEFAULT_TRACK_ID, MEDIA_PLAYER_RESOURCE_ID)
+                       AUDIO_POSITION_KEY, AUDIO_TRACK_KEY, DEFAULT_TRACK_ID, MEDIA_PLAYER_RESOURCE_ID,
+                       MOTION_DETECTED_KEY, BATTERY_KEY, SIGNAL_STR_KEY, RECENT_ACTIVITY_KEY, AUDIO_DETECTED_KEY,
+                       TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY, MEDIA_PLAYER_KEY, NIGHTLIGHT_KEY)
 from .device import ArloChildDevice
 from .util import http_get, http_get_img
 
@@ -73,12 +75,19 @@ class ArloCamera(ArloChildDevice):
         # signal to anybody waiting
         with self._lock:
             if self._snapshot_state != 'idle':
-                self._arlo.debug('our snapshot finished, signal real state')
+                self._arlo.debug('snapshot finished, signal real state')
                 self._snapshot_state = 'idle'
+                self._save(ACTIVITY_STATE_KEY, 'idle')
                 self._lock.notify_all()
 
         # signal real mode, safe to call multiple times
         self._save_and_do_callbacks(ACTIVITY_STATE_KEY, self._load(ACTIVITY_STATE_KEY, 'unknown'))
+
+    def _stop_and_clear_snapshot(self):
+        self._arlo.debug('stopping snapshot ' + self.name)
+        if self._snapshot_state != 'idle':
+            self.stop_activity()
+        self._clear_snapshot()
 
     def _update_media_and_thumbnail(self):
         self._arlo.debug('getting media image for ' + self.name)
@@ -249,7 +258,7 @@ class ArloCamera(ArloChildDevice):
         # audio analytics
         audioanalytics = event.get("properties", {}).get("audioAnalytics", None)
         if audioanalytics is not None:
-            triggered = audioanalytics.get(CRY_DETECTION_KEY, {}).get("triggered",False)
+            triggered = audioanalytics.get(CRY_DETECTION_KEY, {}).get("triggered", False)
             self._save_and_do_callbacks(CRY_DETECTION_KEY, triggered)
 
         # pass on to lower layer
@@ -257,18 +266,22 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def resource_type(self):
+        """ Return the resource type this object describes. """
         return "cameras"
 
     @property
     def last_thumbnail(self):
+        """ Return the url of the last image as reported by Arlo. """
         return self._load(LAST_IMAGE_KEY, None)
 
     @property
     def last_snapshot(self):
+        """ Return the url of the last snapshot taken as reported by Arlo. """
         return self._load(SNAPSHOT_KEY, None)
 
     @property
     def last_image(self):
+        """ Return the url of the last snapshot or image taken. """
         image = None
         if self.last_image_source.startswith('snapshot/'):
             image = self.last_snapshot
@@ -276,23 +289,26 @@ class ArloCamera(ArloChildDevice):
             image = self.last_thumbnail
         return image
 
-    # fill this out...
     @property
     def last_image_from_cache(self):
+        """ Return the last image or snapshot in binary format. """
         return self._load(LAST_IMAGE_DATA_KEY, self._arlo.blank_image)
 
     @property
     def last_image_source(self):
+        """ Return a string what triggered the last image capture. """
         return self._load(LAST_IMAGE_SRC_KEY, '')
 
     @property
     def last_video(self):
+        """ Return an ArloVideo object describing the last captured video. """
         with self._lock:
             if self._cached_videos:
                 return self._cached_videos[0]
         return None
 
     def last_n_videos(self, count):
+        """ Return the last count ArloVideo objects describing the last captured videos. """
         with self._lock:
             if self._cached_videos:
                 return self._cached_videos[:count]
@@ -300,47 +316,52 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def last_capture(self):
+        """ Return a date string showing when the last video was captured. """
         return self._load(LAST_CAPTURE_KEY, None)
 
     @property
     def last_capture_date_format(self):
+        """ Return a date format string used by the last_capture function. """
         return self._arlo.cfg.last_format
 
     @property
     def brightness(self):
+        """ Return the camera brightness setting. """
         return self._load(BRIGHTNESS_KEY, None)
 
     @property
     def flip_state(self):
+        """ Return the camera flip state setting. """
         return self._load(FLIP_KEY, None)
 
     @property
     def mirror_state(self):
+        """ Return the camera mirror state setting. """
         return self._load(MIRROR_KEY, None)
 
     @property
     def motion_detection_sensitivity(self):
+        """ Return the camera motion sensitivity setting. """
         return self._load(MOTION_SENS_KEY, None)
 
     @property
     def powersave_mode(self):
+        """ Return the camera powersave mode. """
         return self._load(POWER_SAVE_KEY, None)
 
     @property
     def unseen_videos(self):
+        """ Return the camera unseen video count. """
         return self._load(MEDIA_COUNT_KEY, 0)
 
     @property
     def captured_today(self):
+        """ Return the number of videos captured today. """
         return self._load(CAPTURED_TODAY_KEY, 0)
 
     @property
     def min_days_vdo_cache(self):
         return self._min_days_vdo_cache
-
-    @property
-    def recent(self):
-        return self._recent
 
     @min_days_vdo_cache.setter
     def min_days_vdo_cache(self, value):
@@ -357,6 +378,7 @@ class ArloCamera(ArloChildDevice):
         self._arlo.bg.run_low(self._update_last_image)
 
     def update_ambient_sensors(self):
+        """ Get the latest temperature, humidity and air quality settings. """
         if self.model_id == 'ABC1000':
             self._arlo.bg.run(self._arlo.be.notify,
                               base=self.base_station,
@@ -364,31 +386,7 @@ class ArloCamera(ArloChildDevice):
                                     "resource": 'cameras/{}/ambientSensors/history'.format(self.device_id),
                                     "publishResponse": False})
 
-    def has_capability(self, cap):
-        if cap in 'motionDetected':
-            return True
-        if cap in ('last_capture', 'captured_today', 'recent_activity', 'battery_level', 'signal_strength'):
-            return True
-        if cap in ('temperature', 'humidity', 'air_quality', 'airQuality') and self.model_id == 'ABC1000':
-            return True
-        if cap in ('audio', 'audioDetected', 'sound'):
-            if self.model_id.startswith('VMC4030') or self.model_id.startswith('VMC5040') or self.model_id.startswith(
-                    'VMC4040') or self.model_id == 'ABC1000':
-                return True
-            if self.device_type.startswith('arloq'):
-                return True
-        if cap in 'siren':
-            if self.model_id.startswith('VMC5040') or self.model_id.startswith('VMC4040'):
-                return True
-        if cap in 'mediaPlayer' and self.model_id == 'ABC1000':
-            return True
-        if cap in 'nightLight' and self.model_id.startswith("ABC1000"):
-            return True
-        if cap in 'babyCryDetection' and self.model_id.startswith("ABC1000"):
-            return True
-        return super().has_capability(cap)
-
-    def take_streaming_snapshot(self):
+    def _take_streaming_snapshot(self):
         body = {
             'xcloudId': self.xcloud_id,
             'parentId': self.parent_id,
@@ -399,7 +397,7 @@ class ArloCamera(ArloChildDevice):
         self._arlo.bg.run(self._arlo.be.post, path=STREAM_SNAPSHOT_PATH, params=body,
                           headers={"xcloudId": self.xcloud_id})
 
-    def take_idle_snapshot(self):
+    def _take_idle_snapshot(self):
         body = {
             'action': 'set',
             'from': self.web_id,
@@ -416,20 +414,22 @@ class ArloCamera(ArloChildDevice):
         if self._snapshot_state == 'idle':
             if self.is_streaming or self.is_recording:
                 self._arlo.debug('streaming snapshot')
-                self.take_streaming_snapshot()
+                self._take_streaming_snapshot()
                 self._snapshot_state = 'streaming-snapshot'
             elif not self.is_taking_snapshot:
-                self.take_idle_snapshot()
+                self._take_idle_snapshot()
                 self._arlo.debug('idle snapshot')
                 self._snapshot_state = 'snapshot'
             self._arlo.debug('handle dodgy cameras')
-            self._arlo.bg.run_in(self._clear_snapshot, 45)
+            self._arlo.bg.run_in(self._stop_and_clear_snapshot, self._arlo.cfg.snapshot_timeout)
 
     def request_snapshot(self):
+        """ Request the camera gets a snapshot. """
         with self._lock:
             self._request_snapshot()
 
     def get_snapshot(self, timeout=30):
+        """ Request the camera gets a snapshot and return it. """
         with self._lock:
             self._request_snapshot()
             mnow = time.monotonic()
@@ -441,24 +441,29 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def is_taking_snapshot(self):
+        """ True if camera is taking a snapshot. """
         if self._snapshot_state != 'idle':
             return True
         return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'fullFrameSnapshot'
 
     @property
     def is_recording(self):
+        """ True if camera is recording a video. """
         return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'alertStreamActive'
 
     @property
     def is_streaming(self):
+        """ True if camera is streaming a video. """
         return self._load(ACTIVITY_STATE_KEY, 'unknown') == 'userStreamActive'
 
     @property
     def was_recently_active(self):
+        """ Return if camera was recently active. """
         return self._recent
 
     @property
     def state(self):
+        """ Return the camera current state. """
         if self.is_taking_snapshot:
             return 'taking snapshot'
         if self.is_recording:
@@ -470,6 +475,10 @@ class ArloCamera(ArloChildDevice):
         return super().state
 
     def get_stream(self):
+        """ Start a stream and return the url for it. 
+
+        Code does nothing with the url, it's up to you to pass the url to something.
+        """
         body = {
             'action': 'set',
             'from': self.web_id,
@@ -488,12 +497,17 @@ class ArloCamera(ArloChildDevice):
         return url
 
     def get_video(self):
+        """ Download and return the last recorded video.
+
+        Prefer getting the url and downloading it yourself.
+        """
         video = self.last_video
         if video is not None:
             return http_get(video.video_url)
         return None
 
     def stop_activity(self):
+        """ Stop whatever the camera is doing and return it to the idle state. """
         self._arlo.bg.run(self._arlo.be.notify,
                           base=self.base_station,
                           body={
@@ -505,6 +519,7 @@ class ArloCamera(ArloChildDevice):
         return True
 
     def start_recording(self, duration=None):
+        """ Start the camera recording. """
         body = {
             'parentId': self.parent_id,
             'deviceId': self.device_id,
@@ -519,6 +534,7 @@ class ArloCamera(ArloChildDevice):
             self._arlo.bg.run_in(self.stop_recording)
 
     def stop_recording(self):
+        """ Stop the camera recording. """
         body = {
             'parentId': self.parent_id,
             'deviceId': self.device_id,
@@ -528,7 +544,7 @@ class ArloCamera(ArloChildDevice):
                           headers={"xcloudId": self.xcloud_id})
 
     @property
-    def siren_resource_id(self):
+    def _siren_resource_id(self):
         return "siren/{}".format(self.device_id)
 
     @property
@@ -536,18 +552,26 @@ class ArloCamera(ArloChildDevice):
         return self._load(SIREN_STATE_KEY, "off")
 
     def siren_on(self, duration=300, volume=8):
+        """ Turn camera siren on.
+
+        Does nothing if camera doesn't support sirens.
+        """
         body = {
             'action': 'set',
-            'resource': self.siren_resource_id,
+            'resource': self._siren_resource_id,
             'publishResponse': True,
             'properties': {'sirenState': 'on', 'duration': int(duration), 'volume': int(volume), 'pattern': 'alarm'}
         }
         self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
 
     def siren_off(self):
+        """ Turn camera siren off.
+
+        Does nothing if camera doesn't support sirens.
+        """
         body = {
             'action': 'set',
-            'resource': self.siren_resource_id,
+            'resource': self._siren_resource_id,
             'publishResponse': True,
             'properties': {'sirenState': 'off'}
         }
@@ -555,13 +579,28 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def is_on(self):
+        """ Is the camera turned on? """
         return not self._load(PRIVACY_KEY, False)
 
     def turn_on(self):
-        self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=False)
+        """ Turn the camera on. """
+        body = {
+            'action': 'set',
+            'resource': self.resource_id,
+            'publishResponse': True,
+            'properties': {'privacyActive': False}
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self.base_station, body=body)
 
     def turn_off(self):
-        self._arlo.bg.run(self._arlo.be.async_on_off, base=self.base_station, device=self, privacy_on=True)
+        """ Turn the camera off. """
+        body = {
+            'action': 'set',
+            'resource': self.resource_id,
+            'publishResponse': True,
+            'properties': {'privacyActive': True}
+        }
+        self._arlo.bg.run(self._arlo.be.notify, base=self.base_station, body=body)
 
     def get_audio_playback_status(self):
         """Gets the current playback status and available track list"""
@@ -718,3 +757,23 @@ class ArloCamera(ArloChildDevice):
         return self._set_nightlight_properties({
             'mode': mode
         })
+
+    def has_capability(self, cap):
+        """ Is the camera capabale of performing an activity. """
+        if cap in (MOTION_DETECTED_KEY, BATTERY_KEY, SIGNAL_STR_KEY):
+            return True
+        if cap in (LAST_CAPTURE_KEY, CAPTURED_TODAY_KEY, RECENT_ACTIVITY_KEY):
+            return True
+        if cap in (AUDIO_DETECTED_KEY,):
+            if self.model_id.startswith(('arloq', 'VMC4030', 'VMC4040', 'VMC5040', 'ABC1000')):
+                return True
+        if cap in (SIREN_STATE_KEY,):
+            if self.model_id.startswith(('VMC4040', 'VMC5040')):
+                return True
+        if cap in (TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY):
+            if self.model_id.startswith('ABC1000'):
+                return True
+        if cap in (MEDIA_PLAYER_KEY, NIGHTLIGHT_KEY, CRY_DETECTION_KEY):
+            if self.model_id.startswith('ABC1000'):
+                return True
+        return super().has_capability(cap)

@@ -54,7 +54,6 @@ class ArloMediaLibrary(object):
             keys.append(key)
 
         # note changes and run callbacks
-        cbs = []
         with self._lock:
             self._count += 1
             self._videos = videos + self._videos

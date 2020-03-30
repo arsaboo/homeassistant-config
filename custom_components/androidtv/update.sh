@@ -20,6 +20,7 @@ wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androi
 wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androidtv/basetv.py -O androidtv/basetv.py
 wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androidtv/constants.py -O androidtv/constants.py
 wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androidtv/firetv.py -O androidtv/firetv.py
+wget https://raw.githubusercontent.com/JeffLIrion/python-androidtv/master/androidtv/exceptions.py -O androidtv/exceptions.py
 
 # 4. Download `adb-shell` package
 mkdir -p androidtv/adb_shell/auth

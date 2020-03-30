@@ -8,29 +8,27 @@ https://home-assistant.io/components/sensor.arlo/
 import logging
 import pprint
 
-from homeassistant.components.light import (
-    ATTR_BRIGHTNESS,
-    ATTR_COLOR_TEMP,
-    ATTR_EFFECT,
-    ATTR_HS_COLOR,
-    SUPPORT_BRIGHTNESS,
-    SUPPORT_COLOR,
-    SUPPORT_COLOR_TEMP,
-    SUPPORT_EFFECT,
-    Light,
-)
+import homeassistant.util.color as color_util
+from homeassistant.components.light import (ATTR_BRIGHTNESS,
+                                            ATTR_COLOR_TEMP,
+                                            ATTR_EFFECT,
+                                            ATTR_HS_COLOR,
+                                            SUPPORT_BRIGHTNESS,
+                                            SUPPORT_COLOR,
+                                            SUPPORT_COLOR_TEMP,
+                                            SUPPORT_EFFECT,
+                                            Light)
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  ATTR_BATTERY_CHARGING,
                                  ATTR_BATTERY_LEVEL)
 from homeassistant.core import callback
 import homeassistant.util.color as color_util
 from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND
-from .pyaarlo.constant import (
-    BRIGHTNESS_KEY,
-    LAMP_STATE_KEY,
-    LIGHT_BRIGHTNESS_KEY,
-    LIGHT_MODE_KEY
-)
+from .pyaarlo.constant import (BRIGHTNESS_KEY,
+                               LAMP_STATE_KEY,
+                               LIGHT_BRIGHTNESS_KEY,
+                               LIGHT_MODE_KEY,
+                               NIGHTLIGHT_KEY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +51,7 @@ async def async_setup_platform(hass, _config, async_add_entities, _discovery_inf
     for light in arlo.lights:
         lights.append(ArloLight(light))
     for camera in arlo.cameras:
-        if camera.has_capability('nightLight'):
+        if camera.has_capability(NIGHTLIGHT_KEY):
             lights.append(ArloNightLight(camera))
 
     async_add_entities(lights, True)
@@ -102,19 +100,19 @@ class ArloLight(Light):
     @property
     def supported_features(self):
         """Flag features that are supported."""
-        #return SUPPORT_BRIGHTNESS | SUPPORT_COLOR 
-        return SUPPORT_BRIGHTNESS 
+        # return SUPPORT_BRIGHTNESS | SUPPORT_COLOR
+        return SUPPORT_BRIGHTNESS
 
     def turn_on(self, **kwargs):
         """Turn the light on."""
         _LOGGER.info("turn_on: {}".format(pprint.pformat(kwargs)))
 
-        rgb = kwargs.get(ATTR_HS_COLOR,None)
+        rgb = kwargs.get(ATTR_HS_COLOR, None)
         if rgb is not None:
             rgb = color_util.color_hs_to_RGB(*rgb)
-        brightness = kwargs.get(ATTR_BRIGHTNESS,None)
+        brightness = kwargs.get(ATTR_BRIGHTNESS, None)
 
-        self._light.turn_on(brightness=brightness,rgb=rgb)
+        self._light.turn_on(brightness=brightness, rgb=rgb)
         self._state = "on"
 
     def turn_off(self, **kwargs):
@@ -198,7 +196,7 @@ class ArloNightLight(ArloLight):
             self.async_schedule_update_ha_state()
 
         _LOGGER.info('ArloNightLight: %s registering callbacks', self._name)
-        
+
         self._brightness = self._light.attribute(LIGHT_BRIGHTNESS_KEY, default=255)
         self._set_light_mode(self._light.attribute(LIGHT_MODE_KEY))
 

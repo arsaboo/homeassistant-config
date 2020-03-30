@@ -16,6 +16,8 @@ from homeassistant.core import callback
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import track_point_in_time
 from . import COMPONENT_DATA
+from .pyaarlo.constant import (ACTIVITY_STATE_KEY,
+                               SIREN_STATE_KEY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,10 +61,10 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
 
     # See what cameras and bases have sirens.
     for base in arlo.base_stations:
-        if base.has_capability('siren'):
+        if base.has_capability(SIREN_STATE_KEY):
             adevices.append(base)
     for camera in arlo.cameras:
-        if camera.has_capability('siren'):
+        if camera.has_capability(SIREN_STATE_KEY):
             adevices.append(camera)
 
     # Create individual switches if asked for
@@ -191,7 +193,7 @@ class AarloSirenSwitch(AarloSirenBaseSwitch):
             self.async_schedule_update_ha_state()
 
         _LOGGER.debug("register siren callbacks for {}".format(self._device.name))
-        self._device.add_attr_callback('sirenState', update_state)
+        self._device.add_attr_callback(SIREN_STATE_KEY, update_state)
 
     def get_state(self):
         _LOGGER.debug("get state {} form".format(self._name))
@@ -235,7 +237,7 @@ class AarloAllSirensSwitch(AarloSirenBaseSwitch):
 
         for device in self._devices:
             _LOGGER.debug("register all siren callbacks for {}".format(device.name))
-            device.add_attr_callback('sirenState', update_state)
+            device.add_attr_callback(SIREN_STATE_KEY, update_state)
 
     def get_state(self):
         _LOGGER.debug("get state for {}".format(self._name))
@@ -271,7 +273,7 @@ class AarloSnapshotSwitch(AarloSwitch):
             _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value)[:80])
             self.async_schedule_update_ha_state()
 
-        self._camera.add_attr_callback('activityState', update_state)
+        self._camera.add_attr_callback(ACTIVITY_STATE_KEY, update_state)
 
     @property
     def state(self):

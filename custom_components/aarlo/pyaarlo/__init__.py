@@ -34,10 +34,11 @@ class PyArlo(object):
         self._cfg = ArloCfg(self, **kwargs)
 
         # Create storage/scratch directory.
-        try:
-            os.mkdir(self._cfg.storage_dir)
-        except Exception:
-            pass
+        if self._cfg.state_file is not None or self._cfg.dump_file is not None:
+            try:
+                os.mkdir(self._cfg.storage_dir)
+            except Exception:
+                pass
 
         # Create remaining components.
         self._bg = ArloBackground(self)
@@ -45,7 +46,7 @@ class PyArlo(object):
         self._be = ArloBackEnd(self)
         self._ml = ArloMediaLibrary(self)
 
-        self._lock = threading.Lock()
+        self._lock = threading.Condition()
         self._bases = []
         self._cameras = []
         self._lights = []
@@ -63,6 +64,7 @@ class PyArlo(object):
         # Slow piece.
         # Get devices, fill local db, and create device instance.
         self.info('pyaarlo starting')
+        self._started = False
         self._refresh_devices()
         for device in self._devices:
             dname = device.get('deviceName')
@@ -104,6 +106,14 @@ class PyArlo(object):
         self._bg.run_every(self._fast_refresh, FAST_REFRESH_INTERVAL)
         self._bg.run_every(self._slow_refresh, SLOW_REFRESH_INTERVAL)
 
+        # Wait for initial refresh
+        if self._cfg.wait_for_initial_setup:
+            with self._lock:
+                while not self._started:
+                    self.debug('waiting for initial setup...')
+                    self._lock.wait(5)
+            self.debug('finished...')
+
     def __repr__(self):
         # Representation string of object.
         return "<{0}: {1}>".format(self.__class__.__name__, self._cfg.name)
@@ -128,7 +138,7 @@ class PyArlo(object):
 
     def _ping_bases(self):
         for base in self._bases:
-            self._bg.run(self._be.async_ping, base=base)
+            base.ping()
 
     def _refresh_bases(self, initial):
         for base in self._bases:
@@ -173,6 +183,13 @@ class PyArlo(object):
         self.debug('initial refresh')
         self._bg.run(self._refresh_bases, initial=True)
         self._bg.run(self._refresh_ambient_sensors)
+        self._bg.run(self._initial_refresh_done)
+
+    def _initial_refresh_done(self):
+        self.debug('initial refresh done')
+        with self._lock:
+            self._started = True
+            self._lock.notify_all()
 
     def stop(self):
         self._st.save()

@@ -15,6 +15,10 @@ from homeassistant.const import (ATTR_ATTRIBUTION,
 from homeassistant.core import callback
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN
+from .pyaarlo.constant import (AUDIO_DETECTED_KEY,
+                               BUTTON_PRESSED_KEY,
+                               MOTION_DETECTED_KEY,
+                               CRY_DETECTION_KEY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +26,10 @@ DEPENDENCIES = [COMPONENT_DOMAIN]
 
 # sensor_type [ description, class, attribute ]
 SENSOR_TYPES = {
-    'sound': ['Sound', 'sound', 'audioDetected'],
-    'motion': ['Motion', 'motion', 'motionDetected'],
-    'ding': ['Ding', 'occupancy', 'buttonPressed'],
-    'cry': ['Cry', 'sound', 'babyCryDetection'],
+    'sound': ['Sound', 'sound', AUDIO_DETECTED_KEY],
+    'motion': ['Motion', 'motion', MOTION_DETECTED_KEY],
+    'ding': ['Ding', 'occupancy', BUTTON_PRESSED_KEY],
+    'cry': ['Cry', 'sound', CRY_DETECTION_KEY],
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
