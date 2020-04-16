@@ -34,11 +34,10 @@ class PyArlo(object):
         self._cfg = ArloCfg(self, **kwargs)
 
         # Create storage/scratch directory.
-        if self._cfg.state_file is not None or self._cfg.dump_file is not None:
-            try:
-                os.mkdir(self._cfg.storage_dir)
-            except Exception:
-                pass
+        try:
+            os.mkdir(self._cfg.storage_dir)
+        except Exception:
+            pass
 
         # Create remaining components.
         self._bg = ArloBackground(self)
@@ -46,7 +45,7 @@ class PyArlo(object):
         self._be = ArloBackEnd(self)
         self._ml = ArloMediaLibrary(self)
 
-        self._lock = threading.Condition()
+        self._lock = threading.Lock()
         self._bases = []
         self._cameras = []
         self._lights = []
@@ -64,7 +63,6 @@ class PyArlo(object):
         # Slow piece.
         # Get devices, fill local db, and create device instance.
         self.info('pyaarlo starting')
-        self._started = False
         self._refresh_devices()
         for device in self._devices:
             dname = device.get('deviceName')
@@ -73,13 +71,19 @@ class PyArlo(object):
                 self.info('skipping ' + dname + ': state unknown')
                 continue
 
+            # This needs it's own code now... Does no parent indicate a base station???
             if dtype == 'basestation' or \
-                    device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs' or \
-                    device.get('modelId') == 'AVD1001A':
+                    device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs':
                 self._bases.append(ArloBase(dname, self, device))
+            # video doorbell can be its own base station, it can also be assigned to a real base station
+            if device.get('modelId').startswith('AVD1001'):
+                parent_id = device.get('parentId', None)
+                if parent_id is None or parent_id == device.get('deviceId', None):
+                    self._bases.append(ArloBase(dname, self, device))
             if dtype == 'arlobridge':
                 self._bases.append(ArloBase(dname, self, device))
-            if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs' or device.get('modelId') == 'AVD1001A':
+            if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs' or \
+                    device.get('modelId').startswith('AVD1001'):
                 self._cameras.append(ArloCamera(dname, self, device))
             if dtype == 'doorbell':
                 self._doorbells.append(ArloDoorBell(dname, self, device))
@@ -106,14 +110,6 @@ class PyArlo(object):
         self._bg.run_every(self._fast_refresh, FAST_REFRESH_INTERVAL)
         self._bg.run_every(self._slow_refresh, SLOW_REFRESH_INTERVAL)
 
-        # Wait for initial refresh
-        if self._cfg.wait_for_initial_setup:
-            with self._lock:
-                while not self._started:
-                    self.debug('waiting for initial setup...')
-                    self._lock.wait(5)
-            self.debug('finished...')
-
     def __repr__(self):
         # Representation string of object.
         return "<{0}: {1}>".format(self.__class__.__name__, self._cfg.name)
@@ -138,7 +134,7 @@ class PyArlo(object):
 
     def _ping_bases(self):
         for base in self._bases:
-            base.ping()
+            self._bg.run(self._be.async_ping, base=base)
 
     def _refresh_bases(self, initial):
         for base in self._bases:
@@ -183,13 +179,6 @@ class PyArlo(object):
         self.debug('initial refresh')
         self._bg.run(self._refresh_bases, initial=True)
         self._bg.run(self._refresh_ambient_sensors)
-        self._bg.run(self._initial_refresh_done)
-
-    def _initial_refresh_done(self):
-        self.debug('initial refresh done')
-        with self._lock:
-            self._started = True
-            self._lock.notify_all()
 
     def stop(self):
         self._st.save()

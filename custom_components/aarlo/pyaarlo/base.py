@@ -1,14 +1,13 @@
 import time
 
-from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH, CONNECTION_KEY,
+from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH,
                        MODE_ID_TO_NAME_KEY, MODE_KEY,
                        MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY,
-                       SCHEDULE_KEY, SIREN_STATE_KEY, TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY)
+                       SCHEDULE_KEY, SIREN_STATE_KEY)
 from .device import ArloDevice
 from .util import time_to_arlotime
 
-day_of_week = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo']
-
+day_of_week = [ 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo'];
 
 class ArloBase(ArloDevice):
 
@@ -47,14 +46,14 @@ class ArloBase(ArloDevice):
         day = day_of_week[now.tm_wday]
         minute = (now.tm_hour * 60) + now.tm_min
         for schedule in self._schedules:
-            if not schedule.get('enabled', False):
+            if not schedule.get('enabled',False):
                 continue
-            for action in schedule.get('schedule', []):
-                if day in action.get('days', []):
-                    start = action.get('startTime', 65535)
-                    duration = action.get('duration', 65536)
-                    if start <= minute < (start + duration):
-                        modes = action.get('startActions', {}).get('enableModes', None)
+            for schedule in schedule.get('schedule',[]):
+                if day in schedule.get('days',[]):
+                    start = schedule.get('startTime',65535)
+                    duration = schedule.get('duration',65536)
+                    if minute >= start and minute < (start + duration):
+                        modes = schedule.get('startActions',{}).get('enableModes',None)
                         if modes:
                             self._arlo.debug("schdule={}".format(modes[0]))
                             return modes
@@ -72,27 +71,6 @@ class ArloBase(ArloDevice):
                 self._save([MODE_ID_TO_NAME_KEY, schedule_id], schedule_name)
                 self._save([MODE_NAME_TO_ID_KEY, schedule_name.lower()], schedule_id)
                 self._save([MODE_IS_SCHEDULE_KEY, schedule_name.lower()], True)
-
-    def _set_mode_or_schedule(self, event):
-        # schedule on or off?
-        schedule_ids = event.get('activeSchedules', [])
-        if schedule_ids:
-            self._arlo.debug(self.name + ' schedule change ' + schedule_ids[0])
-            schedule_name = self._id_to_name(schedule_ids[0])
-            self._save_and_do_callbacks(SCHEDULE_KEY, schedule_name)
-        else:
-            self._arlo.debug(self.name + ' schedule cleared ')
-            self._save_and_do_callbacks(SCHEDULE_KEY, None)
-
-        # mode present? we just set to that one... If no mode but schedule then
-        # try to parse that out
-        mode_ids = event.get('activeModes', [])
-        if not mode_ids and schedule_ids:
-            mode_ids = self.schedule_to_modes()
-        if mode_ids:
-            self._arlo.debug(self.name + ' mode change ' + mode_ids[0])
-            mode_name = self._id_to_name(mode_ids[0])
-            self._save_and_do_callbacks(MODE_KEY, mode_name)
 
     def _event_handler(self, resource, event):
         self._arlo.debug(self.name + ' BASE got ' + resource)
@@ -112,9 +90,28 @@ class ArloBase(ArloDevice):
 
         # mode change?
         elif resource == 'activeAutomations':
-            self._set_mode_or_schedule(event)
 
-        # schedule has changed, so reload
+            # schedule on or off?
+            schedule_ids = event.get('activeSchedules', [])
+            if schedule_ids:
+                self._arlo.debug(self.name + ' schedule change ' + schedule_ids[0])
+                schedule_name = self._id_to_name(schedule_ids[0])
+                self._save_and_do_callbacks(SCHEDULE_KEY, schedule_name)
+            else:
+                self._arlo.debug(self.name + ' schedule cleared ')
+                self._save_and_do_callbacks(SCHEDULE_KEY, None)
+
+            # mode present? we just set to new one... If no mode but schedule
+            # then try to parse that out
+            mode_ids = event.get('activeModes', [])
+            if not mode_ids and schedule_ids:
+                mode_ids = self.schedule_to_modes()
+            if mode_ids:
+                self._arlo.debug(self.name + ' mode change ' + mode_ids[0])
+                mode_name = self._id_to_name(mode_ids[0])
+                self._save_and_do_callbacks(MODE_KEY, mode_name)
+
+        # schdule has changed, so reload
         elif resource == 'automationRevisionUpdate':
             self.update_modes()
 
@@ -203,7 +200,12 @@ class ArloBase(ArloDevice):
         data = self._arlo.be.get(AUTOMATION_PATH)
         for mode in data:
             if mode.get('uniqueId', '') == self.unique_id:
-                self._set_mode_or_schedule(mode)
+                active_modes = mode.get('activeModes', [])
+                if active_modes:
+                    self._save_and_do_callbacks(MODE_KEY, self._id_to_name(active_modes[0]))
+                active_schedules = mode.get('activeSchedules', [])
+                if active_schedules:
+                    self._save_and_do_callbacks(SCHEDULE_KEY, self._id_to_name(active_schedules[0]))
 
     def update_modes(self):
         if self._v1_modes:
@@ -234,6 +236,17 @@ class ArloBase(ArloDevice):
         if isinstance(value, (int, float)):
             self._refresh_rate = value
 
+    def has_capability(self, cap):
+        if cap in ('temperature', 'humidity', 'air_quality'):
+            if self.model_id == 'ABC1000':
+                return True
+        if cap in 'siren':
+            if self.model_id.startswith('VMB400'):
+                return True
+            if self.model_id.startswith('VMB450'):
+                return True
+        return super().has_capability(cap)
+
     @property
     def siren_state(self):
         return self._load(SIREN_STATE_KEY, "off")
@@ -257,34 +270,3 @@ class ArloBase(ArloDevice):
         }
         self._arlo.debug(str(body))
         self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
-
-    def _ping_and_check_reply(self):
-        body = {
-            'action': 'set',
-            'resource': self._arlo.be.sub_id,
-            'publishResponse': False,
-            'properties': {'devices': [self.device_id]}
-        }
-        self._arlo.debug(str(body))
-        if self._arlo.be.notify(base=self, body=body) is None:
-            self._save_and_do_callbacks(CONNECTION_KEY, 'unavailable')
-        else:
-            self._save_and_do_callbacks(CONNECTION_KEY, 'available')
-
-    def ping(self):
-        self._arlo.bg.run(self._ping_and_check_reply)
-
-    @property
-    def state(self):
-        if self.is_unavailable:
-            return 'unavailable'
-        return 'available'
-
-    def has_capability(self, cap):
-        if cap in (TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY):
-            if self.model_id.startswith('ABC1000'):
-                return True
-        if cap in (SIREN_STATE_KEY,):
-            if self.model_id.startswith(('VMB400', 'VMB450')):
-                return True
-        return super().has_capability(cap)

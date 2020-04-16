@@ -1,7 +1,4 @@
-from .constant import (
-    DEFAULT_HOST,
-    TFA_CONSOLE_SOURCE,
-    TFA_EMAIL_TYPE)
+from .constant import DEFAULT_HOST
 
 
 class ArloCfg(object):
@@ -104,67 +101,9 @@ class ArloCfg(object):
         return self._kw.get('reconnect_every', default) * 60
 
     @property
-    def snapshot_timeout(self, default=45):
-        return self._kw.get('snapshot_timeout', default)
-
-    @property
     def verbose(self, default=False):
         return self._kw.get('verbose_debug', default)
 
     @property
     def hide_deprecated_services(self, default=False):
         return self._kw.get('hide_deprecated_services', default)
-
-    @property
-    def tfa_source(self, default=TFA_CONSOLE_SOURCE):
-        return self._kw.get('tfa_source', default)
-
-    @property
-    def tfa_type(self, default=TFA_EMAIL_TYPE):
-        return self._kw.get('tfa_type', default).lower()
-
-    @property
-    def tfa_timeout(self, default=3):
-        return self._kw.get('tfa_timeout', default)
-
-    @property
-    def tfa_total_timeout(self, default=60):
-        return self._kw.get('tfa_total_timeout', default)
-
-    @property
-    def imap_host(self, default='unknown'):
-        return self._kw.get('imap_host', default)
-
-    @property
-    def imap_username(self, default=None):
-        u = self._kw.get('imap_username', default)
-        if u is None:
-            u = self.username
-        return u
-
-    @property
-    def imap_password(self, default=None):
-        p = self._kw.get('imap_password', default)
-        if p is None:
-            p = self.password
-        return p
-
-    @property
-    def wait_for_initial_setup(self, default=True):
-        return self._kw.get('wait_for_initial_setup', default)
-
-    @property
-    def save_state(self, default=True):
-        return self._kw.get('save_state', default)
-
-    @property
-    def state_file(self):
-        if self.save_state:
-            return self.storage_dir + '/' + self.name + '.pickle'
-        return None
-
-    @property
-    def dump_file(self):
-        if self.dump:
-            return self.storage_dir + '/' + 'packets.dump'
-        return None

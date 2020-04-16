@@ -270,6 +270,10 @@ class AlexaClient(MediaPlayerDevice):
                 if event.data["queue_state"]
                 else None
             )
+        elif "push_activity" in event.data:
+            event_serial = (
+                event.data.get("push_activity", {}).get("key", {}).get("serialNumber")
+            )
         if not event_serial:
             return
         self.available = True
@@ -346,6 +350,17 @@ class AlexaClient(MediaPlayerDevice):
                     if self.hass and self.async_schedule_update_ha_state:
                         self.async_schedule_update_ha_state()
                 await _refresh_if_no_audiopush(already_refreshed)
+        elif "push_activity" in event.data:
+            if self.state in {STATE_IDLE, STATE_PAUSED, STATE_PLAYING}:
+                _LOGGER.debug(
+                    "%s checking for potential state update due to push activity on %s",
+                    self.name,
+                    hide_serial(event_serial),
+                )
+                # allow delay before trying to refresh to avoid http 400 errors
+                await asyncio.sleep(2)
+                await self.async_update()
+                already_refreshed = True
         if "queue_state" in event.data:
             queue_state = event.data["queue_state"]
             if event_serial == self.device_serial_number:
@@ -1036,7 +1051,7 @@ class AlexaClient(MediaPlayerDevice):
                 "Sorry, text to speech can only be called"
                 " with the notify.alexa_media service."
                 " Please see the alexa_media wiki for details."
-                "https://github.com/custom-components/alexa_media_player/wiki/Notification-Component#use-the-notifyalexa_media-service"
+                "https://github.com/custom-components/alexa_media_player/wiki/Configuration%3A-Notification-Component#use-the-notifyalexa_media-service"
             )
         elif media_type == "sequence":
             await self.alexa_api.send_sequence(

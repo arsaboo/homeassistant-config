@@ -1,11 +1,10 @@
 import codecs
 import re
-import time
-import warnings
-
 import requests
 import six
 import six.moves.http_client
+import time
+import warnings
 
 # Technically, we should support streams that mix line endings.  This regex,
 # however, assumes that a system will provide consistent line endings.

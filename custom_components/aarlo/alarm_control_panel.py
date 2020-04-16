@@ -37,8 +37,6 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import track_point_in_time
 from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN, COMPONENT_SERVICES, get_entity_from_domain
-from .pyaarlo.constant import (MODE_KEY,
-                               SIREN_STATE_KEY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -122,7 +120,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     base_stations_with_sirens = False
     for base_station in arlo.base_stations:
         base_stations.append(ArloBaseStation(base_station, config))
-        if base_station.has_capability(SIREN_STATE_KEY):
+        if base_station.has_capability('siren'):
             base_stations_with_sirens = True
 
     async_add_entities(base_stations, True)
@@ -200,11 +198,11 @@ class ArloBaseStation(AlarmControlPanel):
         @callback
         def update_state(_device, attr, value):
             _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value))
-            self._state = self._get_state_from_ha(self._base.attribute(MODE_KEY))
+            self._state = self._get_state_from_ha(self._base.attribute('activeMode'))
             self.async_schedule_update_ha_state()
 
-        self._state = self._get_state_from_ha(self._base.attribute(MODE_KEY, ARMED))
-        self._base.add_attr_callback(MODE_KEY, update_state)
+        self._state = self._get_state_from_ha(self._base.attribute('activeMode', ARMED))
+        self._base.add_attr_callback('activeMode', update_state)
 
     @property
     def state(self):
@@ -293,7 +291,7 @@ class ArloBaseStation(AlarmControlPanel):
         attrs['model_id'] = self._base.model_id
         attrs['friendly_name'] = self._name
         attrs['on_schedule'] = self._base.on_schedule
-        attrs['siren'] = self._base.has_capability(SIREN_STATE_KEY)
+        attrs['siren'] = self._base.has_capability('siren')
 
         return attrs
 
@@ -323,14 +321,14 @@ class ArloBaseStation(AlarmControlPanel):
         self._base.mode = lmode
 
     def siren_on(self, duration=30, volume=10):
-        if self._base.has_capability(SIREN_STATE_KEY):
+        if self._base.has_capability('siren'):
             _LOGGER.debug("{0} siren on {1}/{2}".format(self.unique_id, volume, duration))
             self._base.siren_on(duration=duration, volume=volume)
             return True
         return False
 
     def siren_off(self):
-        if self._base.has_capability(SIREN_STATE_KEY):
+        if self._base.has_capability('siren'):
             _LOGGER.debug("{0} siren off".format(self.unique_id))
             self._base.siren_off()
             return True
@@ -349,7 +347,6 @@ class ArloBaseStation(AlarmControlPanel):
         if not check:
             _LOGGER.warning("Wrong code entered for %s", state)
         return check
-
 
 def _get_base_from_entity_id(hass, entity_id):
     component = hass.data.get(DOMAIN)

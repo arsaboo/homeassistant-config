@@ -1,4 +1,3 @@
-from .constant import MOTION_DETECTED_KEY, BUTTON_PRESSED_KEY, CONNECTION_KEY, BATTERY_KEY, SIGNAL_STR_KEY
 from .device import ArloChildDevice
 
 
@@ -10,12 +9,12 @@ class ArloDoorBell(ArloChildDevice):
         self._ding_time_job = None
 
     def _motion_stopped(self):
-        self._save_and_do_callbacks(MOTION_DETECTED_KEY, False)
+        self._save_and_do_callbacks('motionDetected', False)
         with self._lock:
             self._motion_time_job = None
 
     def _button_unpressed(self):
-        self._save_and_do_callbacks(BUTTON_PRESSED_KEY, False)
+        self._save_and_do_callbacks('buttonPressed', False)
         with self._lock:
             self._ding_time_job = None
 
@@ -24,37 +23,37 @@ class ArloDoorBell(ArloChildDevice):
 
         # create fake motion/button press event...
         if resource == self.resource_id:
-            cons = event.get('properties', {}).get(CONNECTION_KEY, False)
-            butp = event.get('properties', {}).get(BUTTON_PRESSED_KEY, False)
+            cons = event.get('properties', {}).get('connectionState', False)
+            butp = event.get('properties', {}).get('buttonPressed', False)
             # acts = event.get('properties',{}).get('activityState',False)
             if cons and cons == 'available':
-                self._save_and_do_callbacks(MOTION_DETECTED_KEY, True)
+                self._save_and_do_callbacks('motionDetected', True)
                 with self._lock:
                     self._arlo.bg.cancel(self._motion_time_job)
                     self._motion_time_job = self._arlo.bg.run_in(self._motion_stopped, self._arlo.cfg.db_motion_time)
             if butp:
-                self._save_and_do_callbacks(BUTTON_PRESSED_KEY, True)
+                self._save_and_do_callbacks('buttonPressed', True)
                 with self._lock:
                     self._arlo.bg.cancel(self._ding_time_job)
                     self._ding_time_job = self._arlo.bg.run_in(self._button_unpressed, self._arlo.cfg.db_ding_time)
             #  if acts and acts == 'idle':
-            #  self._save_and_do_callbacks( MOTION_DETECTED_KEY,False )
-            #  self._save_and_do_callbacks( BUTTON_PRESSED_KEY,False )
+            #  self._save_and_do_callbacks( 'motionDetected',False )
+            #  self._save_and_do_callbacks( 'buttonPressed',False )
 
         # pass on to lower layer
         super()._event_handler(resource, event)
 
     @property
     def resource_type(self):
-        """ Return the resource type this object describes. """
         return "doorbells"
 
     def has_capability(self, cap):
-        """ Is the camera capabale of performing an activity. """
-        if cap in (BUTTON_PRESSED_KEY,):
+        if cap.startswith('button'):
             return True
-        if cap in (MOTION_DETECTED_KEY, BATTERY_KEY, SIGNAL_STR_KEY):
-            # video doorbell provides these as a camera type
-            if self.model_id != 'AVD1001A':
+        # video doorbell provides these as a camera type
+        if not self.model_id.startswith('AVD1001'):
+            if cap in 'motionDetected':
+                return True
+            if cap in ('battery_level', 'signal_strength'):
                 return True
         return super().has_capability(cap)
