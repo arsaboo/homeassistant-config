@@ -11,7 +11,8 @@ import logging
 from typing import List  # noqa pylint: disable=unused-import
 
 from homeassistant.components.switch import SwitchDevice
-from homeassistant.exceptions import NoEntitySpecifiedError
+from homeassistant.exceptions import ConfigEntryNotReady, NoEntitySpecifiedError
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from . import (
     CONF_EMAIL,
@@ -27,7 +28,6 @@ from .helpers import _catch_login_errors, add_devices, retry_async
 _LOGGER = logging.getLogger(__name__)
 
 
-@retry_async(limit=5, delay=5, catch_exceptions=True)
 async def async_setup_platform(hass, config, add_devices_callback, discovery_info=None):
     """Set up the Alexa switch platform."""
     devices = []  # type: List[DNDSwitch]
@@ -50,33 +50,23 @@ async def async_setup_platform(hass, config, add_devices_callback, discovery_inf
                 hide_email(account),
                 hide_serial(key),
             )
-            if devices:
-                await add_devices(
-                    hide_email(account),
-                    devices,
-                    add_devices_callback,
-                    include_filter,
-                    exclude_filter,
-                )
-            return False
+            raise ConfigEntryNotReady
         if key not in (
             hass.data[DATA_ALEXAMEDIA]["accounts"][account]["entities"]["switch"]
         ):
-            (
-                hass.data[DATA_ALEXAMEDIA]["accounts"][account]["entities"]["switch"][
-                    key
-                ]
-            ) = {}
+            hass.data[DATA_ALEXAMEDIA]["accounts"][account]["entities"]["switch"][
+                key
+            ] = {}
             for (switch_key, class_) in SWITCH_TYPES:
                 if (
                     switch_key == "dnd"
-                    and not account_dict["devices"]["switch"][key].get("dnd")
+                    and not account_dict["devices"]["switch"].get(key, {}).get("dnd")
                 ) or (
                     switch_key in ["shuffle", "repeat"]
                     and "MUSIC_SKILL"
-                    not in account_dict["devices"]["media_player"][key].get(
-                        "capabilities"
-                    )
+                    not in account_dict["devices"]["media_player"]
+                    .get(key, {})
+                    .get("capabilities", {})
                 ):
                     _LOGGER.debug(
                         "%s: Skipping %s for %s",
@@ -158,8 +148,10 @@ class AlexaMediaSwitch(SwitchDevice):
         except AttributeError:
             pass
         # Register event handler on bus
-        self._listener = self.hass.bus.async_listen(
-            f"{ALEXA_DOMAIN}_{hide_email(self._login.email)}"[0:32], self._handle_event
+        self._listener = async_dispatcher_connect(
+            self.hass,
+            f"{ALEXA_DOMAIN}_{hide_email(self._login.email)}"[0:32],
+            self._handle_event,
         )
 
     async def async_will_remove_from_hass(self):
@@ -178,8 +170,8 @@ class AlexaMediaSwitch(SwitchDevice):
                 return
         except AttributeError:
             pass
-        if "queue_state" in event.data:
-            queue_state = event.data["queue_state"]
+        if "queue_state" in event:
+            queue_state = event["queue_state"]
             if queue_state["dopplerId"]["deviceSerialNumber"] == self._client.unique_id:
                 self._state = getattr(self._client, self._switch_property)
                 self.async_schedule_update_ha_state()
@@ -316,8 +308,8 @@ class DNDSwitch(AlexaMediaSwitch):
                 return
         except AttributeError:
             pass
-        if "player_state" in event.data:
-            queue_state = event.data["player_state"]
+        if "player_state" in event:
+            queue_state = event["player_state"]
             if queue_state["dopplerId"]["deviceSerialNumber"] == self._client.unique_id:
                 self._state = getattr(self._client, self._switch_property)
                 self.async_schedule_update_ha_state()

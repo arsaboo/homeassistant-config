@@ -4,6 +4,7 @@
         "appdaemon": "AppDaemon",
         "appdaemon_apps": "Aplicații AppDaemon",
         "background_task": "Activitatea de fundal se execută, această pagină se va reîncărca atunci când este gata.",
+        "check_log_file": "Verificați log-ul pentru mai multe detalii.",
         "continue": "Continua",
         "disabled": "Dezactivat",
         "documentation": "Documentație",
