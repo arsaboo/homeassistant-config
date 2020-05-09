@@ -1,7 +1,7 @@
 import logging
 
 from bs4 import BeautifulSoup
-from ..const import EMAIL_ATTR_FROM, EMAIL_ATTR_BODY
+from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)

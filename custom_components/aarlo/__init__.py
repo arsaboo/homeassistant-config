@@ -21,7 +21,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.components.camera import DOMAIN as CAMERA_DOMAIN
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_DOMAIN
 
-__version__ = '0.6.17'
+__version__ = '0.6.18'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -242,11 +242,7 @@ def get_entity_from_domain(hass, domain, entity_id):
     if component is None:
         raise HomeAssistantError("{} component not set up".format(domain))
 
-    entity = component.get_entity(entity_id)
-    if entity is None:
-        raise HomeAssistantError("{} not found".format(entity_id))
-
-    return entity
+    return component.get_entity(entity_id)
 
 
 async def async_aarlo_siren_on(hass, call):
@@ -260,7 +256,7 @@ async def async_aarlo_siren_on(hass, call):
             _LOGGER.info("{} siren on {}/{}".format(entity_id,volume,duration))
             device.siren_on(duration=duration, volume=volume)
         else:
-            _LOGGER.info("{} siren not found".format(entity_id))
+            raise HomeAssistantError("{} not found".format(entity_id))
 
 
 async def async_aarlo_sirens_on(hass, call):

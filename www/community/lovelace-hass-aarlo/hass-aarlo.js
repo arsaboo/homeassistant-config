@@ -334,6 +334,7 @@ class AarloGlance extends LitElement {
             </div>
             <div class="box box-bottom ${this._v.videoControls}">
                 <div >
+                    <ha-icon @click="${() => { this.toggleLock(this._s.doorLockId); }}" class="${this._s.doorLockOn} ${this._v.doorLock}" icon="${this._s.doorLockIcon}" title="${this._s.doorLockText}"></ha-icon>
                     <ha-icon @click="${() => { this.toggleLight(this._s.lightId); }}" class="${this._s.lightOn} ${this._v.light}" icon="${this._s.lightIcon}" title="${this._s.lightText}"></ha-icon>
                     <ha-icon @click="${() => { this.controlStopVideoOrStream(); }}" class="${this._v.videoStop}" icon="mdi:stop" title="Click to stop"></ha-icon>
                     <ha-icon @click="${() => { this.controlPlayVideo(); }}" class="${this._v.videoPlay}" icon="mdi:play" title="Click to play"></ha-icon>
@@ -814,13 +815,13 @@ class AarloGlance extends LitElement {
         this.resetStatuses();
 
         // camera and sensors
-        this._s.cameraId  = 'camera.aarlo_' + camera;
-        this._s.motionId  = 'binary_sensor.aarlo_motion_' + camera;
-        this._s.soundId   = 'binary_sensor.aarlo_sound_' + camera;
-        this._s.batteryId = 'sensor.aarlo_battery_level_' + camera;
-        this._s.signalId  = 'sensor.aarlo_signal_strength_' + camera;
-        this._s.captureId = 'sensor.aarlo_captured_today_' + camera;
-        this._s.lastId    = 'sensor.aarlo_last_' + camera;
+        this._s.cameraId  = config.camera_id ? config.camera_id : 'camera.aarlo_' + camera;
+        this._s.motionId  = config.motion_id ? config.motion_id : 'binary_sensor.aarlo_motion_' + camera;
+        this._s.soundId   = config.sound_id ? config.sound_id : 'binary_sensor.aarlo_sound_' + camera;
+        this._s.batteryId = config.battery_id ? config.battery_id : 'sensor.aarlo_battery_level_' + camera;
+        this._s.signalId  = config.signal_id ? config.signal_id : 'sensor.aarlo_signal_strength_' + camera;
+        this._s.captureId = config.capture_id ? config.capture_id : 'sensor.aarlo_captured_today_' + camera;
+        this._s.lastId    = config.last_id ? config.last_id : 'sensor.aarlo_last_' + camera;
 
         // door definition
         this._s.doorId     = config.door ? config.door: null;

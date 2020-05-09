@@ -4,8 +4,8 @@ DOMAIN = 'email'
 
 CONF_EMAIL = 'email'
 CONF_PASSWORD = 'password'
-CONF_IMAP_SERVER = 'smtp_server'
-CONF_IMAP_PORT = 'smpt_port'
+CONF_IMAP_SERVER = 'imap_server'
+CONF_IMAP_PORT = 'imap_port'
 CONF_EMAIL_FOLDER = 'folder'
 CONF_SHOW_ALL = 'show_all'
 

@@ -3210,40 +3210,42 @@ fecha.parse = function (dateStr, format, i18nSettings) {
   return date;
 };
 
-function t(e){var t=e.split(":").map(Number);return 3600*t[0]+60*t[1]+t[2]}var a=function(){try{(new Date).toLocaleDateString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleDateString(t,{year:"numeric",month:"long",day:"numeric"})}:function(t){return fecha.format(t,"mediumDate")},n=function(){try{(new Date).toLocaleString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleString(t,{year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"haDateTime")},r=function(){try{(new Date).toLocaleTimeString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleTimeString(t,{hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"shortTime")},i=[60,60,24,7],o=["second","minute","hour","day"];function s(e,t,a){void 0===a&&(a={});var n,r=((a.compareTime||new Date).getTime()-e.getTime())/1e3,s=r>=0?"past":"future";r=Math.abs(r);for(var c=0;c<i.length;c++){if(r<i[c]){r=Math.floor(r),n=t("ui.components.relative_time.duration."+o[c],"count",r);break}r/=i[c];}return void 0===n&&(n=t("ui.components.relative_time.duration.week","count",r=Math.floor(r))),!1===a.includeTense?n:t("ui.components.relative_time."+s,"time",n)}var c=function(e){return e<10?"0"+e:e};function u(e){var t=Math.floor(e/3600),a=Math.floor(e%3600/60),n=Math.floor(e%3600%60);return t>0?t+":"+c(a)+":"+c(n):a>0?a+":"+c(n):n>0?""+n:null}function l(e){var a=t(e.attributes.remaining);if("active"===e.state){var n=(new Date).getTime(),r=new Date(e.last_changed).getTime();a=Math.max(a-(n-r)/1e3,0);}return a}var m=function(e,t,a,n){void 0===n&&(n=!1),e._themes||(e._themes={});var r=t.default_theme;("default"===a||a&&t.themes[a])&&(r=a);var i=Object.assign({},e._themes);if("default"!==r){var o=t.themes[r];Object.keys(o).forEach(function(t){var a="--"+t;e._themes[a]="",i[a]=o[t];});}if(e.updateStyles?e.updateStyles(i):window.ShadyCSS&&window.ShadyCSS.styleSubtree(e,i),n){var s=document.querySelector("meta[name=theme-color]");if(s){s.hasAttribute("default-content")||s.setAttribute("default-content",s.getAttribute("content"));var c=i["--primary-color"]||s.getAttribute("default-content");s.setAttribute("content",c);}}},h=function(e){return "function"==typeof e.getCardSize?e.getCardSize():1};function f(e){return e.substr(0,e.indexOf("."))}function d(e){return e.substr(e.indexOf(".")+1)}var p=function(e){return e.substr(e.indexOf(".")+1)};function v(e){var t=e.language||"en";return e.translationMetadata.translations[t]&&e.translationMetadata.translations[t].isRTL||!1}function _(e){return v(e)?"rtl":"ltr"}function g(e){return f(e.entity_id)}function b(e,t,i){var o,s=g(t);if("binary_sensor"===s)t.attributes.device_class&&(o=e("state."+s+"."+t.attributes.device_class+"."+t.state)),o||(o=e("state."+s+".default."+t.state));else if(t.attributes.unit_of_measurement&&!["unknown","unavailable"].includes(t.state))o=t.state+" "+t.attributes.unit_of_measurement;else if("input_datetime"===s){var c;if(t.attributes.has_time)if(t.attributes.has_date)c=new Date(t.attributes.year,t.attributes.month-1,t.attributes.day,t.attributes.hour,t.attributes.minute),o=n(c,i);else{var u=new Date;c=new Date(u.getFullYear(),u.getMonth(),u.getDay(),t.attributes.hour,t.attributes.minute),o=r(c,i);}else c=new Date(t.attributes.year,t.attributes.month-1,t.attributes.day),o=a(c,i);}else o="zwave"===s?["initializing","dead"].includes(t.state)?e("state.zwave.query_stage."+t.state,"query_stage",t.attributes.query_stage):e("state.zwave.default."+t.state):e("state."+s+"."+t.state);return o||(o=e("state.default."+t.state)||e("component."+s+".state."+t.state)||t.state),o}var y=function(e){return void 0===e.attributes.friendly_name?p(e.entity_id).replace(/_/g," "):e.attributes.friendly_name||""},w="hass:bookmark",k="lovelace",S=["climate","cover","configurator","input_select","input_number","input_text","lock","media_player","scene","script","timer","vacuum","water_heater","weblink"],x=["alarm_control_panel","automation","camera","climate","configurator","cover","fan","group","history_graph","input_datetime","light","lock","media_player","script","sun","updater","vacuum","water_heater","weather"],D=["input_number","input_select","input_text","scene","weblink"],T=["camera","configurator","history_graph","scene"],E=["closed","locked","off"],M=new Set(["fan","input_boolean","light","switch","group","automation"]),q="°C",z="°F",R="group.default_view",A=function(e,t,a,n){n=n||{},a=null==a?{}:a;var r=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return r.detail=a,e.dispatchEvent(r),r},C=new Set(["call-service","divider","section","weblink","cast","select"]),L={alert:"toggle",automation:"toggle",climate:"climate",cover:"cover",fan:"toggle",group:"group",input_boolean:"toggle",input_number:"input-number",input_select:"input-select",input_text:"input-text",light:"toggle",lock:"lock",media_player:"media-player",remote:"toggle",scene:"scene",script:"script",sensor:"sensor",timer:"timer",switch:"toggle",vacuum:"toggle",water_heater:"climate",input_datetime:"input-datetime"},O=function(e,t){void 0===t&&(t=!1);var a=function(e,t){return n("hui-error-card",{type:"error",error:e,config:t})},n=function(e,t){var n=window.document.createElement(e);try{n.setConfig(t);}catch(n){return console.error(e,n),a(n.message,t)}return n};if(!e||"object"!=typeof e||!t&&!e.type)return a("No type defined",e);var r=e.type;if(r&&r.startsWith("custom:"))r=r.substr("custom:".length);else if(t)if(C.has(r))r="hui-"+r+"-row";else{if(!e.entity)return a("Invalid config given.",e);var i=e.entity.split(".",1)[0];r="hui-"+(L[i]||"text")+"-entity-row";}else r="hui-"+r+"-card";if(customElements.get(r))return n(r,e);var o=a("Custom element doesn't exist: "+e.type+".",e);o.style.display="None";var s=setTimeout(function(){o.style.display="";},2e3);return customElements.whenDefined(e.type).then(function(){clearTimeout(s),A(o,"ll-rebuild",{},o);}),o},j={alert:"hass:alert",automation:"hass:playlist-play",calendar:"hass:calendar",camera:"hass:video",climate:"hass:thermostat",configurator:"hass:settings",conversation:"hass:text-to-speech",device_tracker:"hass:account",fan:"hass:fan",group:"hass:google-circles-communities",history_graph:"hass:chart-line",homeassistant:"hass:home-assistant",homekit:"hass:home-automation",image_processing:"hass:image-filter-frames",input_boolean:"hass:drawing",input_datetime:"hass:calendar-clock",input_number:"hass:ray-vertex",input_select:"hass:format-list-bulleted",input_text:"hass:textbox",light:"hass:lightbulb",mailbox:"hass:mailbox",notify:"hass:comment-alert",person:"hass:account",plant:"hass:flower",proximity:"hass:apple-safari",remote:"hass:remote",scene:"hass:google-pages",script:"hass:file-document",sensor:"hass:eye",simple_alarm:"hass:bell",sun:"hass:white-balance-sunny",switch:"hass:flash",timer:"hass:timer",updater:"hass:cloud-upload",vacuum:"hass:robot-vacuum",water_heater:"hass:thermometer",weblink:"hass:open-in-new"};function I(e,t){if(e in j)return j[e];switch(e){case"alarm_control_panel":switch(t){case"armed_home":return "hass:bell-plus";case"armed_night":return "hass:bell-sleep";case"disarmed":return "hass:bell-outline";case"triggered":return "hass:bell-ring";default:return "hass:bell"}case"binary_sensor":return t&&"off"===t?"hass:radiobox-blank":"hass:checkbox-marked-circle";case"cover":return "closed"===t?"hass:window-closed":"hass:window-open";case"lock":return t&&"unlocked"===t?"hass:lock-open":"hass:lock";case"media_player":return t&&"off"!==t&&"idle"!==t?"hass:cast-connected":"hass:cast";case"zwave":switch(t){case"dead":return "hass:emoticon-dead";case"sleeping":return "hass:sleep";case"initializing":return "hass:timer-sand";default:return "hass:z-wave"}default:return console.warn("Unable to find icon for domain "+e+" ("+t+")"),w}}var N=function(e,t){var a=t.value||t,n=t.attribute?e.attributes[t.attribute]:e.state;switch(t.operator||"=="){case"==":return n===a;case"<=":return n<=a;case"<":return n<a;case">=":return n>=a;case">":return n>a;case"!=":return n!==a;case"regex":return n.match(a);default:return !1}},F=function(e){A(window,"haptic",e);},B=function(e,t,a){void 0===a&&(a=!1),a?history.replaceState(null,"",t):history.pushState(null,"",t),A(window,"location-changed",{replace:a});},U=function(e,t,a){void 0===a&&(a=!0);var n,r=f(t),i="group"===r?"homeassistant":r;switch(r){case"lock":n=a?"unlock":"lock";break;case"cover":n=a?"open_cover":"close_cover";break;default:n=a?"turn_on":"turn_off";}return e.callService(i,n,{entity_id:t})},V=function(e,t){var a=E.includes(e.states[t].state);return U(e,t,a)},W=function(e,t,a,n){var r;if("double_tap"===n&&a.double_tap_action?r=a.double_tap_action:"hold"===n&&a.hold_action?r=a.hold_action:"tap"===n&&a.tap_action&&(r=a.tap_action),r||(r={action:"more-info"}),!r.confirmation||r.confirmation.exemptions&&r.confirmation.exemptions.some(function(e){return e.user===t.user.id})||(F("warning"),confirm(r.confirmation.text||"Are you sure you want to "+r.action+"?")))switch(r.action){case"more-info":(a.entity||a.camera_image)&&A(e,"hass-more-info",{entityId:a.entity?a.entity:a.camera_image});break;case"navigate":r.navigation_path&&B(0,r.navigation_path);break;case"url":r.url_path&&window.open(r.url_path);break;case"toggle":a.entity&&(V(t,a.entity),F("success"));break;case"call-service":if(!r.service)return void F("failure");var i=r.service.split(".",2);t.callService(i[0],i[1],r.service_data),F("success");}},Y=function(e,t,a,n,r){var i;if(r&&a.double_tap_action?i=a.double_tap_action:n&&a.hold_action?i=a.hold_action:!n&&a.tap_action&&(i=a.tap_action),i||(i={action:"more-info"}),!i.confirmation||i.confirmation.exemptions&&i.confirmation.exemptions.some(function(e){return e.user===t.user.id})||confirm(i.confirmation.text||"Are you sure you want to "+i.action+"?"))switch(i.action){case"more-info":(a.entity||a.camera_image)&&(A(e,"hass-more-info",{entityId:i.entity?i.entity:a.entity?a.entity:a.camera_image}),i.haptic&&F(i.haptic));break;case"navigate":i.navigation_path&&(B(0,i.navigation_path),i.haptic&&F(i.haptic));break;case"url":i.url_path&&window.open(i.url_path),i.haptic&&F(i.haptic);break;case"toggle":a.entity&&(V(t,a.entity),i.haptic&&F(i.haptic));break;case"call-service":if(!i.service)return;var o=i.service.split(".",2),s=o[0],c=o[1],u=Object.assign({},i.service_data);"entity"===u.entity_id&&(u.entity_id=a.entity),t.callService(s,c,u),i.haptic&&F(i.haptic);}};function G(e){return void 0!==e&&"none"!==e.action}function H(e,t,a){if(t.has("config")||a)return !0;if(e._config.entity){var n=t.get("hass");return !n||n.states[e._config.entity]!==e.hass.states[e._config.entity]}return !1}function J(e){return void 0!==e&&"none"!==e.action}var K=function(e,t,a){void 0===a&&(a=!0);var n={};t.forEach(function(t){if(E.includes(e.states[t].state)===a){var r=f(t),i=["cover","lock"].includes(r)?r:"homeassistant";i in n||(n[i]=[]),n[i].push(t);}}),Object.keys(n).forEach(function(t){var r;switch(t){case"lock":r=a?"unlock":"lock";break;case"cover":r=a?"open_cover":"close_cover";break;default:r=a?"turn_on":"turn_off";}e.callService(t,r,{entity_id:n[t]});});},P=function(){var e=document.querySelector("home-assistant");if(e=(e=(e=(e=(e=(e=(e=(e=e&&e.shadowRoot)&&e.querySelector("home-assistant-main"))&&e.shadowRoot)&&e.querySelector("app-drawer-layout partial-panel-resolver"))&&e.shadowRoot||e)&&e.querySelector("ha-panel-lovelace"))&&e.shadowRoot)&&e.querySelector("hui-root")){var t=e.lovelace;return t.current_view=e.___curView,t}return null};
+function t(e){var t=e.split(":").map(Number);return 3600*t[0]+60*t[1]+t[2]}var a=function(){try{(new Date).toLocaleDateString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleDateString(t,{year:"numeric",month:"long",day:"numeric"})}:function(t){return fecha.format(t,"mediumDate")},n=function(){try{(new Date).toLocaleString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleString(t,{year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"haDateTime")},r=function(){try{(new Date).toLocaleTimeString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleTimeString(t,{hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"shortTime")},i=[60,60,24,7],o=["second","minute","hour","day"];function s(e,t,a){void 0===a&&(a={});var n,r=((a.compareTime||new Date).getTime()-e.getTime())/1e3,s=r>=0?"past":"future";r=Math.abs(r);for(var c=0;c<i.length;c++){if(r<i[c]){r=Math.floor(r),n=t("ui.components.relative_time.duration."+o[c],"count",r);break}r/=i[c];}return void 0===n&&(n=t("ui.components.relative_time.duration.week","count",r=Math.floor(r))),!1===a.includeTense?n:t("ui.components.relative_time."+s,"time",n)}var c=function(e){return e<10?"0"+e:e};function u(e){var t=Math.floor(e/3600),a=Math.floor(e%3600/60),n=Math.floor(e%3600%60);return t>0?t+":"+c(a)+":"+c(n):a>0?a+":"+c(n):n>0?""+n:null}function l(e){var a=t(e.attributes.remaining);if("active"===e.state){var n=(new Date).getTime(),r=new Date(e.last_changed).getTime();a=Math.max(a-(n-r)/1e3,0);}return a}var h=function(e,t,a,n){void 0===n&&(n=!1),e._themes||(e._themes={});var r=t.default_theme;("default"===a||a&&t.themes[a])&&(r=a);var i=Object.assign({},e._themes);if("default"!==r){var o=t.themes[r];Object.keys(o).forEach(function(t){var a="--"+t;e._themes[a]="",i[a]=o[t];});}if(e.updateStyles?e.updateStyles(i):window.ShadyCSS&&window.ShadyCSS.styleSubtree(e,i),n){var s=document.querySelector("meta[name=theme-color]");if(s){s.hasAttribute("default-content")||s.setAttribute("default-content",s.getAttribute("content"));var c=i["--primary-color"]||s.getAttribute("default-content");s.setAttribute("content",c);}}},m=function(e){return "function"==typeof e.getCardSize?e.getCardSize():1};function d(e){return e.substr(0,e.indexOf("."))}function f(e){return e.substr(e.indexOf(".")+1)}var p=function(e){return e.substr(e.indexOf(".")+1)};function v(e){var t=e.language||"en";return e.translationMetadata.translations[t]&&e.translationMetadata.translations[t].isRTL||!1}function _(e){return v(e)?"rtl":"ltr"}function g(e){return d(e.entity_id)}function b(e,t,i){var o,s=g(t);if("binary_sensor"===s)t.attributes.device_class&&(o=e("state."+s+"."+t.attributes.device_class+"."+t.state)),o||(o=e("state."+s+".default."+t.state));else if(t.attributes.unit_of_measurement&&!["unknown","unavailable"].includes(t.state))o=t.state+" "+t.attributes.unit_of_measurement;else if("input_datetime"===s){var c;if(t.attributes.has_time)if(t.attributes.has_date)c=new Date(t.attributes.year,t.attributes.month-1,t.attributes.day,t.attributes.hour,t.attributes.minute),o=n(c,i);else{var u=new Date;c=new Date(u.getFullYear(),u.getMonth(),u.getDay(),t.attributes.hour,t.attributes.minute),o=r(c,i);}else c=new Date(t.attributes.year,t.attributes.month-1,t.attributes.day),o=a(c,i);}else o="zwave"===s?["initializing","dead"].includes(t.state)?e("state.zwave.query_stage."+t.state,"query_stage",t.attributes.query_stage):e("state.zwave.default."+t.state):e("state."+s+"."+t.state);return o||(o=e("state.default."+t.state)||e("component."+s+".state."+t.state)||t.state),o}var y=function(e){return void 0===e.attributes.friendly_name?p(e.entity_id).replace(/_/g," "):e.attributes.friendly_name||""},w="hass:bookmark",k="lovelace",S=["climate","cover","configurator","input_select","input_number","input_text","lock","media_player","scene","script","timer","vacuum","water_heater","weblink"],x=["alarm_control_panel","automation","camera","climate","configurator","cover","fan","group","history_graph","input_datetime","light","lock","media_player","script","sun","updater","vacuum","water_heater","weather"],D=["input_number","input_select","input_text","scene","weblink"],q=["camera","configurator","history_graph","scene"],R=["closed","locked","off"],T=new Set(["fan","input_boolean","light","switch","group","automation"]),E="°C",M="°F",z="group.default_view",A=function(e,t,a,n){n=n||{},a=null==a?{}:a;var r=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return r.detail=a,e.dispatchEvent(r),r},C=new Set(["call-service","divider","section","weblink","cast","select"]),L={alert:"toggle",automation:"toggle",climate:"climate",cover:"cover",fan:"toggle",group:"group",input_boolean:"toggle",input_number:"input-number",input_select:"input-select",input_text:"input-text",light:"toggle",lock:"lock",media_player:"media-player",remote:"toggle",scene:"scene",script:"script",sensor:"sensor",timer:"timer",switch:"toggle",vacuum:"toggle",water_heater:"climate",input_datetime:"input-datetime"},O=function(e,t){void 0===t&&(t=!1);var a=function(e,t){return n("hui-error-card",{type:"error",error:e,config:t})},n=function(e,t){var n=window.document.createElement(e);try{n.setConfig(t);}catch(n){return console.error(e,n),a(n.message,t)}return n};if(!e||"object"!=typeof e||!t&&!e.type)return a("No type defined",e);var r=e.type;if(r&&r.startsWith("custom:"))r=r.substr("custom:".length);else if(t)if(C.has(r))r="hui-"+r+"-row";else{if(!e.entity)return a("Invalid config given.",e);var i=e.entity.split(".",1)[0];r="hui-"+(L[i]||"text")+"-entity-row";}else r="hui-"+r+"-card";if(customElements.get(r))return n(r,e);var o=a("Custom element doesn't exist: "+e.type+".",e);o.style.display="None";var s=setTimeout(function(){o.style.display="";},2e3);return customElements.whenDefined(e.type).then(function(){clearTimeout(s),A(o,"ll-rebuild",{},o);}),o},j={alert:"hass:alert",automation:"hass:playlist-play",calendar:"hass:calendar",camera:"hass:video",climate:"hass:thermostat",configurator:"hass:settings",conversation:"hass:text-to-speech",device_tracker:"hass:account",fan:"hass:fan",group:"hass:google-circles-communities",history_graph:"hass:chart-line",homeassistant:"hass:home-assistant",homekit:"hass:home-automation",image_processing:"hass:image-filter-frames",input_boolean:"hass:drawing",input_datetime:"hass:calendar-clock",input_number:"hass:ray-vertex",input_select:"hass:format-list-bulleted",input_text:"hass:textbox",light:"hass:lightbulb",mailbox:"hass:mailbox",notify:"hass:comment-alert",person:"hass:account",plant:"hass:flower",proximity:"hass:apple-safari",remote:"hass:remote",scene:"hass:google-pages",script:"hass:file-document",sensor:"hass:eye",simple_alarm:"hass:bell",sun:"hass:white-balance-sunny",switch:"hass:flash",timer:"hass:timer",updater:"hass:cloud-upload",vacuum:"hass:robot-vacuum",water_heater:"hass:thermometer",weblink:"hass:open-in-new"};function I(e,t){if(e in j)return j[e];switch(e){case"alarm_control_panel":switch(t){case"armed_home":return "hass:bell-plus";case"armed_night":return "hass:bell-sleep";case"disarmed":return "hass:bell-outline";case"triggered":return "hass:bell-ring";default:return "hass:bell"}case"binary_sensor":return t&&"off"===t?"hass:radiobox-blank":"hass:checkbox-marked-circle";case"cover":return "closed"===t?"hass:window-closed":"hass:window-open";case"lock":return t&&"unlocked"===t?"hass:lock-open":"hass:lock";case"media_player":return t&&"off"!==t&&"idle"!==t?"hass:cast-connected":"hass:cast";case"zwave":switch(t){case"dead":return "hass:emoticon-dead";case"sleeping":return "hass:sleep";case"initializing":return "hass:timer-sand";default:return "hass:z-wave"}default:return console.warn("Unable to find icon for domain "+e+" ("+t+")"),w}}var N=function(e,t){var a=t.value||t,n=t.attribute?e.attributes[t.attribute]:e.state;switch(t.operator||"=="){case"==":return n===a;case"<=":return n<=a;case"<":return n<a;case">=":return n>=a;case">":return n>a;case"!=":return n!==a;case"regex":return n.match(a);default:return !1}},F=function(){var e=document.querySelector("home-assistant");if(e=(e=(e=(e=(e=(e=(e=(e=e&&e.shadowRoot)&&e.querySelector("home-assistant-main"))&&e.shadowRoot)&&e.querySelector("app-drawer-layout partial-panel-resolver"))&&e.shadowRoot||e)&&e.querySelector("ha-panel-lovelace"))&&e.shadowRoot)&&e.querySelector("hui-root")){var t=e.lovelace;return t.current_view=e.___curView,t}return null},B=function(){var e=document.querySelector("home-assistant");if(e=(e=(e=(e=(e=(e=(e=(e=e&&e.shadowRoot)&&e.querySelector("home-assistant-main"))&&e.shadowRoot)&&e.querySelector("app-drawer-layout partial-panel-resolver"))&&e.shadowRoot||e)&&e.querySelector("ha-panel-lovelace"))&&e.shadowRoot)&&e.querySelector("hui-root"))return e.shadowRoot},U=function(e){A(window,"haptic",e);},V=function(e,t,a){void 0===a&&(a=!1),a?history.replaceState(null,"",t):history.pushState(null,"",t),A(window,"location-changed",{replace:a});},W=function(e,t,a){void 0===a&&(a=!0);var n,r=d(t),i="group"===r?"homeassistant":r;switch(r){case"lock":n=a?"unlock":"lock";break;case"cover":n=a?"open_cover":"close_cover";break;default:n=a?"turn_on":"turn_off";}return e.callService(i,n,{entity_id:t})},Y=function(e,t){var a=R.includes(e.states[t].state);return W(e,t,a)},G=function(e,t,a,n){var r;if("double_tap"===n&&a.double_tap_action?r=a.double_tap_action:"hold"===n&&a.hold_action?r=a.hold_action:"tap"===n&&a.tap_action&&(r=a.tap_action),r||(r={action:"more-info"}),!r.confirmation||r.confirmation.exemptions&&r.confirmation.exemptions.some(function(e){return e.user===t.user.id})||(U("warning"),confirm(r.confirmation.text||"Are you sure you want to "+r.action+"?")))switch(r.action){case"more-info":(a.entity||a.camera_image)&&A(e,"hass-more-info",{entityId:a.entity?a.entity:a.camera_image});break;case"navigate":r.navigation_path&&V(0,r.navigation_path);break;case"url":r.url_path&&window.open(r.url_path);break;case"toggle":a.entity&&(Y(t,a.entity),U("success"));break;case"call-service":if(!r.service)return void U("failure");var i=r.service.split(".",2);t.callService(i[0],i[1],r.service_data),U("success");}},H=function(e,t,a,n,r){var i;if(r&&a.double_tap_action?i=a.double_tap_action:n&&a.hold_action?i=a.hold_action:!n&&a.tap_action&&(i=a.tap_action),i||(i={action:"more-info"}),!i.confirmation||i.confirmation.exemptions&&i.confirmation.exemptions.some(function(e){return e.user===t.user.id})||confirm(i.confirmation.text||"Are you sure you want to "+i.action+"?"))switch(i.action){case"more-info":(a.entity||a.camera_image)&&(A(e,"hass-more-info",{entityId:i.entity?i.entity:a.entity?a.entity:a.camera_image}),i.haptic&&U(i.haptic));break;case"navigate":i.navigation_path&&(V(0,i.navigation_path),i.haptic&&U(i.haptic));break;case"url":i.url_path&&window.open(i.url_path),i.haptic&&U(i.haptic);break;case"toggle":a.entity&&(Y(t,a.entity),i.haptic&&U(i.haptic));break;case"call-service":if(!i.service)return;var o=i.service.split(".",2),s=o[0],c=o[1],u=Object.assign({},i.service_data);"entity"===u.entity_id&&(u.entity_id=a.entity),t.callService(s,c,u),i.haptic&&U(i.haptic);}};function J(e){return void 0!==e&&"none"!==e.action}function K(e,t,a){if(t.has("config")||a)return !0;if(e._config.entity){var n=t.get("hass");return !n||n.states[e._config.entity]!==e.hass.states[e._config.entity]}return !1}function P(e){return void 0!==e&&"none"!==e.action}var Q=function(e,t,a){void 0===a&&(a=!0);var n={};t.forEach(function(t){if(R.includes(e.states[t].state)===a){var r=d(t),i=["cover","lock"].includes(r)?r:"homeassistant";i in n||(n[i]=[]),n[i].push(t);}}),Object.keys(n).forEach(function(t){var r;switch(t){case"lock":r=a?"unlock":"lock";break;case"cover":r=a?"open_cover":"close_cover";break;default:r=a?"turn_on":"turn_off";}e.callService(t,r,{entity_id:n[t]});});};
 
-const CARD_VERSION = '1.0.7';
+const CARD_VERSION = '1.1.2';
 
 /* eslint no-console: 0 */
-console.info(`%c  CONFIG_TEMPLATE-CARD  \n%c  Version ${CARD_VERSION}         `, "color: orange; font-weight: bold; background: black", "color: white; font-weight: bold; background: dimgray");
+console.info(`%c  CONFIG-TEMPLATE-CARD  \n%c  Version ${CARD_VERSION}         `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
     setConfig(config) {
         if (!config) {
-            throw new Error("Invalid configuration");
+            throw new Error('Invalid configuration');
         }
         if (!config.card) {
-            throw new Error("No card defined");
+            throw new Error('No card defined');
         }
         if (!config.card.type) {
-            throw new Error("No card type defined");
+            throw new Error('No card type defined');
         }
         if (!config.entities) {
-            throw new Error("No entities defined");
+            throw new Error('No entities defined');
         }
         this._config = config;
+        this.loadCardHelpers();
     }
     shouldUpdate(changedProps) {
-        if (changedProps.has("_config")) {
+        if (changedProps.has('_config')) {
             return true;
         }
-        const oldHass = changedProps.get("hass");
-        if (oldHass) {
-            let changed = false;
-            this._config.entities.forEach(entity => {
-                changed =
-                    changed || oldHass.states[entity] !== this.hass.states[entity];
-            });
-            return changed;
+        if (this._config) {
+            const oldHass = changedProps.get('hass');
+            if (oldHass) {
+                let changed = false;
+                this._config.entities.forEach(entity => {
+                    changed = changed || Boolean(this.hass && oldHass.states[entity] !== this.hass.states[entity]);
+                });
+                return changed;
+            }
         }
         return true;
     }
@@ -3253,12 +3255,16 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         }
         let cardConfig = deepcopy(this._config.card);
         cardConfig = this._evaluateConfig(cardConfig);
-        const element = this.createThing(cardConfig);
+        const element = this._helpers ? this._helpers.createCardElement(cardConfig) : O(cardConfig);
         element.hass = this.hass;
         return html `
       ${element}
     `;
     }
+    async loadCardHelpers() {
+        this._helpers = await window.loadCardHelpers();
+    }
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     _evaluateConfig(config) {
         Object.entries(config).forEach(entry => {
             const key = entry[0];
@@ -3267,80 +3273,44 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
                 if (value instanceof Array) {
                     config[key] = this._evaluateArray(value);
                 }
-                else if (typeof value === "object") {
+                else if (typeof value === 'object') {
                     config[key] = this._evaluateConfig(value);
                 }
-                else if (typeof value === "string" && value.includes("${")) {
+                else if (typeof value === 'string' && value.includes('${')) {
                     config[key] = this._evaluateTemplate(value);
                 }
             }
         });
         return config;
     }
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     _evaluateArray(array) {
         for (let i = 0; i < array.length; ++i) {
-            let value = array[i];
+            const value = array[i];
             if (value instanceof Array) {
                 array[i] = this._evaluateArray(value);
             }
-            else if (typeof value === "object") {
+            else if (typeof value === 'object') {
                 array[i] = this._evaluateConfig(value);
             }
-            else if (typeof value === "string" && value.includes("${")) {
+            else if (typeof value === 'string' && value.includes('${')) {
                 array[i] = this._evaluateTemplate(value);
             }
         }
         return array;
     }
     _evaluateTemplate(template) {
-        const user = this.hass.user;
-        const states = this.hass.states;
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        const user = this.hass ? this.hass.user : undefined;
+        const states = this.hass ? this.hass.states : undefined;
         const vars = [];
-        for (const v in this._config.variables) {
-            const newV = eval(this._config.variables[v]);
-            vars.push(newV);
+        if (this._config) {
+            for (const v in this._config.variables) {
+                const newV = eval(this._config.variables[v]);
+                vars.push(newV);
+            }
         }
         return eval(template.substring(2, template.length - 1));
-    }
-    createThing(cardConfig) {
-        const _createError = (error, config) => {
-            return _createThing("hui-error-card", {
-                type: "error",
-                error,
-                config
-            });
-        };
-        const _createThing = (tag, config) => {
-            const element = window.document.createElement(tag);
-            try {
-                element.setConfig(config);
-            }
-            catch (err) {
-                console.error(tag, err);
-                return _createError(err.message, config);
-            }
-            return element;
-        };
-        if (!cardConfig ||
-            typeof cardConfig !== "object" ||
-            !cardConfig.type ||
-            !cardConfig.type.startsWith("custom:"))
-            return _createError("No type configured", cardConfig);
-        const tag = cardConfig.type.substr("custom:".length);
-        if (customElements.get(tag))
-            return _createThing(tag, cardConfig);
-        // If element doesn't exist (yet) create an error
-        const element = _createError(`Custom element doesn't exist: ${cardConfig.type}.`, cardConfig);
-        element.style.display = "None";
-        const timer = setTimeout(() => {
-            element.style.display = "";
-        }, 2000);
-        // Remove error if element is defined later
-        customElements.whenDefined(tag).then(() => {
-            clearTimeout(timer);
-            A(this, "ll-rebuild", {}, element);
-        });
-        return element;
     }
 };
 __decorate([
@@ -3349,6 +3319,11 @@ __decorate([
 __decorate([
     property()
 ], ConfigTemplateCard.prototype, "_config", void 0);
+__decorate([
+    property()
+], ConfigTemplateCard.prototype, "_helpers", void 0);
 ConfigTemplateCard = __decorate([
-    customElement("config-template-card")
+    customElement('config-template-card')
 ], ConfigTemplateCard);
+
+export { ConfigTemplateCard };

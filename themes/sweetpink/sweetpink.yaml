@@ -28,9 +28,9 @@ sweetpink:
   secondary-text-color: "var(--cyan)"
 
   disabled-text-color: "var(--gray)"
-  
+
   divider-color: "rgba(255, 255, 255, 0.12)"
-  
+
   paper-card-background-color: "var(--gray-dark)"
   paper-card-header-color: "#var(--paper-item-icon-color)"
   card-background-color: "var(--paper-card-background-color)"
@@ -42,13 +42,13 @@ sweetpink:
   paper-grey-50: "var(--primary-text-color)"
   paper-grey-200: "var(-gray)"
   google-red-500: "var(--orange)"
-  
+
   label-badge-background-color: "var(--secondary-background-color)"
   label-badge-text-color: "var(--text-primary-color)"
-  
+
   paper-item-icon-active-color: "var(--cyan)"
   paper-item-icon_-_color: "var(--primary-text-color)"
-  
+
   sidebar-icon-color: "var(--light)"
   sidebar-text-color: "var(--light)"
   sidebar-selected-background-color: "var(--cyan)"
@@ -63,10 +63,16 @@ sweetpink:
 
   switch-unchecked-color: "var(--teal)"
   switch-unchecked-button-color: "var(--teal)"
-    
+
   # Themable CCS vars in HACS (https://hacs.xyz/docs/basic/theming)
   link-text-color: "var(--cyan)"
   hacs-status-installed: "var(--teal)"
   hacs-status-pending-restart: "var(--indigo)"
   hacs-status-pending-update: "var(--purple)"
   hacs-status-not-loaded: "var(--indigo)"
+
+  paper-dialog-button-color: "var(--light)"
+  switch-unchecked-button-color: "var(--light)"
+  switch-unchecked-button-color: "var(--light)"
+  iron-icon-fill-color: "var(--light)"
+  update-heading: "var(--light)"
