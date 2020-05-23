@@ -15,7 +15,7 @@ import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
 from homeassistant.components import websocket_api
 from homeassistant.components.alarm_control_panel import (DOMAIN,
-                                                          AlarmControlPanel,
+                                                          AlarmControlPanelEntity,
                                                           FORMAT_NUMBER,
                                                           FORMAT_TEXT)
 from homeassistant.components.alarm_control_panel.const import (
@@ -169,7 +169,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         )
 
 
-class ArloBaseStation(AlarmControlPanel):
+class ArloBaseStation(AlarmControlPanelEntity):
     """Representation of an Arlo Alarm Control Panel."""
 
     def __init__(self, device, config):

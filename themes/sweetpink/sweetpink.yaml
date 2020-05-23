@@ -72,7 +72,5 @@ sweetpink:
   hacs-status-not-loaded: "var(--indigo)"
 
   paper-dialog-button-color: "var(--light)"
-  switch-unchecked-button-color: "var(--light)"
-  switch-unchecked-button-color: "var(--light)"
   iron-icon-fill-color: "var(--light)"
   update-heading: "var(--light)"

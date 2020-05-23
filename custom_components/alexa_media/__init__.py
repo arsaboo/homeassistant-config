@@ -247,7 +247,11 @@ async def setup_alexa(hass, config_entry, login_obj):
         from alexapy import AlexaAPI
 
         email: Text = login_obj.email
-        if email not in hass.data[DATA_ALEXAMEDIA]["accounts"]:
+        if (
+            email not in hass.data[DATA_ALEXAMEDIA]["accounts"]
+            or "login_successful" not in login_obj.status
+            or login_obj.session.closed
+        ):
             return
         existing_serials = _existing_serials(hass, login_obj)
         existing_entities = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["entities"][
@@ -303,12 +307,17 @@ async def setup_alexa(hass, config_entry, login_obj):
                     hass.data[DATA_ALEXAMEDIA]["accounts"][email]["configurator"]
                 ):
                     raise AlexapyLoginError()
-        except (AlexapyLoginError, RuntimeError, JSONDecodeError):
+        except (AlexapyLoginError, JSONDecodeError):
             _LOGGER.debug(
-                "%s: Alexa API disconnected; attempting to relogin", hide_email(email)
+                "%s: Alexa API disconnected; attempting to relogin : status %s",
+                hide_email(email),
+                login_obj.status,
             )
-            await login_obj.login_with_cookie()
-            await test_login_status(hass, config_entry, login_obj, setup_alexa)
+            if login_obj.status and not await test_login_status(
+                hass, config_entry, login_obj, setup_alexa
+            ):
+                login_obj.status = {}
+                await login_obj.login()
             return
         except BaseException as err:
             raise UpdateFailed(f"Error communicating with API: {err}")
@@ -569,6 +578,12 @@ async def setup_alexa(hass, config_entry, login_obj):
         """
         websocket: Optional[WebsocketEchoClient] = None
         try:
+            if login_obj.session.closed:
+                _LOGGER.debug(
+                    "%s: Websocket creation aborted. Session is closed.",
+                    hide_email(email),
+                )
+                return
             websocket = WebsocketEchoClient(
                 login_obj,
                 ws_handler,
@@ -845,7 +860,7 @@ async def setup_alexa(hass, config_entry, login_obj):
             type(message),
         )
         hass.data[DATA_ALEXAMEDIA]["accounts"][email]["websocket"] = None
-        if message == "<class 'aiohttp.streams.EofStream'>":
+        if login_obj.session.closed or message == "<class 'aiohttp.streams.EofStream'>":
             hass.data[DATA_ALEXAMEDIA]["accounts"][email]["websocketerror"] = 5
             _LOGGER.debug("%s: Immediate abort on EoFstream", hide_email(email))
             return
@@ -929,7 +944,7 @@ async def close_connections(hass, email: Text) -> None:
     login_obj = account_dict["login_obj"]
     await login_obj.close()
     _LOGGER.debug(
-        "%s: Connection closed: %s", hide_email(email), login_obj._session.closed
+        "%s: Connection closed: %s", hide_email(email), login_obj.session.closed
     )
     await clear_configurator(hass, email)
 

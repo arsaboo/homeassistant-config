@@ -17,7 +17,7 @@ from homeassistant.components.light import (
     SUPPORT_COLOR,
     SUPPORT_COLOR_TEMP,
     SUPPORT_EFFECT,
-    Light,
+    LightEntity,
 )
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  ATTR_BATTERY_CHARGING,
@@ -63,7 +63,7 @@ async def async_setup_platform(hass, _config, async_add_entities, _discovery_inf
     async_add_entities(lights, True)
 
 
-class ArloLight(Light):
+class ArloLight(LightEntity):
 
     def __init__(self, light):
         """Initialize an Arlo light."""

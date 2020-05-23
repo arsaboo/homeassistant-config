@@ -9,7 +9,7 @@ import logging
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.binary_sensor import (BinarySensorDevice)
+from homeassistant.components.binary_sensor import (BinarySensorEntity)
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  CONF_MONITORED_CONDITIONS)
 from homeassistant.core import callback
@@ -55,7 +55,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     async_add_entities(sensors, True)
 
 
-class ArloBinarySensor(BinarySensorDevice):
+class ArloBinarySensor(BinarySensorEntity):
     """An implementation of a Netgear Arlo IP sensor."""
 
     def __init__(self, device, sensor_type):

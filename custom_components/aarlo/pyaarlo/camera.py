@@ -198,11 +198,12 @@ class ArloCamera(ArloChildDevice):
 
         # no media uploads and stream stopped?
         if self._arlo.cfg.no_media_upload:
-            if event.get('properties', {}).get('activityState', 'unknown') == 'idle' and self.is_recording:
+            if event.get('properties', {}).get('activityState', 'unknown') == 'idle' and \
+                    (self.is_recording or self.is_streaming):
                 self._arlo.debug('got a stream stop, queueing update')
+                self._arlo.bg.run_in(self._arlo.ml.queue_update, 1, cb=self._update_media_and_thumbnail)
                 self._arlo.bg.run_in(self._arlo.ml.queue_update, 5, cb=self._update_media_and_thumbnail)
                 self._arlo.bg.run_in(self._arlo.ml.queue_update, 10, cb=self._update_media_and_thumbnail)
-                self._arlo.bg.run_in(self._arlo.ml.queue_update, 15, cb=self._update_media_and_thumbnail)
 
         # get it an update last image
         if event.get('action', '') == 'fullFrameSnapshotAvailable':
@@ -522,7 +523,7 @@ class ArloCamera(ArloChildDevice):
                           })
         return True
 
-    def start_recording(self, duration=None):
+    def start_recording(self, duration=30):
         body = {
             'parentId': self.parent_id,
             'deviceId': self.device_id,
@@ -534,7 +535,7 @@ class ArloCamera(ArloChildDevice):
                           headers={"xcloudId": self.xcloud_id})
         if duration is not None:
             self._arlo.debug('queueing stop')
-            self._arlo.bg.run_in(self.stop_recording)
+            self._arlo.bg.run_in(self.stop_recording,duration)
 
     def stop_recording(self):
         body = {

@@ -40,6 +40,9 @@ camera_start_recording:
     entity_id:
       description: Name(s) of entities to use
       example: 'camera.aarlo_front_camera'
+    duration:
+      description: duration to record for in seconds
+      example: 30
 
 camera_stop_recording:
   description: Request a camera stop recording to cloud

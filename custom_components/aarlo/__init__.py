@@ -9,6 +9,7 @@ import logging
 import json
 import pprint
 from datetime import timedelta
+from traceback import extract_stack
 
 import voluptuous as vol
 from requests.exceptions import HTTPError, ConnectTimeout
@@ -21,7 +22,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.components.camera import DOMAIN as CAMERA_DOMAIN
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_DOMAIN
 
-__version__ = '0.6.18'
+__version__ = '0.6.19'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -243,6 +244,17 @@ def get_entity_from_domain(hass, domain, entity_id):
         raise HomeAssistantError("{} component not set up".format(domain))
 
     return component.get_entity(entity_id)
+
+def is_homekit():
+    for frame in reversed(extract_stack()):
+        try:
+            frame.filename.index("homeassistant/components/homekit")
+            _LOGGER.debug("homekit detected")
+            return True
+        except ValueError:
+            continue
+    _LOGGER.debug("not homekit detected")
+    return False
 
 
 async def async_aarlo_siren_on(hass, call):

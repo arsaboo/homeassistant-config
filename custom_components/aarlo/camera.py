@@ -21,16 +21,25 @@ from homeassistant.components.camera import (ATTR_FILENAME,
                                              STATE_RECORDING,
                                              STATE_STREAMING,
                                              Camera)
+from homeassistant.components.stream.const import (
+    CONF_DURATION,
+    CONF_LOOKBACK,
+    CONF_STREAM_SOURCE,
+    DOMAIN as DOMAIN_STREAM,
+    SERVICE_RECORD,
+)
 from homeassistant.components.ffmpeg import DATA_FFMPEG
 from homeassistant.const import (ATTR_ATTRIBUTION,
                                  ATTR_BATTERY_LEVEL,
-                                 ATTR_ENTITY_ID)
+                                 ATTR_ENTITY_ID,
+                                 CONF_FILENAME)
 from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_stream
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import async_track_point_in_time
-from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN, COMPONENT_SERVICES, get_entity_from_domain
+from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND, COMPONENT_DOMAIN, COMPONENT_SERVICES, \
+    get_entity_from_domain, is_homekit
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -303,7 +312,10 @@ class ArloCam(Camera):
 
     async def stream_source(self):
         """Return the source of the stream."""
-        return self._camera.get_stream()
+        if is_homekit():
+            return self._camera.get_stream()
+        else:
+            return await self.hass.async_add_executor_job(self._camera.get_stream)
 
     def async_stream_source(self):
         return self.hass.async_add_job(self.stream_source)
@@ -532,21 +544,20 @@ class ArloCam(Camera):
     def async_siren_off(self):
         return self.hass.async_add_job(self.siren_off)
 
-    def start_recording(self, duration):
-
-        def _stop_recording(_now):
-            self.stop_recording()
-
-        if self._camera.get_stream() is not None:
-            self._camera.start_recording()
-            async_track_point_in_time(self.hass, _stop_recording, dt_util.utcnow() + timedelta(seconds=duration))
+    def start_recording(self, duration=30):
+        source = self._camera.get_stream()
+        if source is not None:
+            self._camera.start_recording(duration=duration)
+        else:
+            _LOGGER.warning("failed to start recording for {}".self._camera.name)
+        return source
 
     def stop_recording(self):
         self._camera.stop_recording()
         self._camera.stop_activity()
 
     def async_start_recording(self, duration):
-        return self.hass.async_add_job(self.start_recording, duration=duration)
+        return self.hass.async_add_job(self.start_recording, duration)
 
     def async_stop_recording(self):
         return self.hass.async_add_job(self.stop_recording)
@@ -895,7 +906,28 @@ async def async_camera_start_recording_service(hass, call):
     for entity_id in call.data['entity_id']:
         duration = call.data[ATTR_DURATION]
         _LOGGER.info("{} start recording(duration={})".format(entity_id,duration))
-        get_entity_from_domain(hass,DOMAIN,entity_id).start_recording(duration=duration)
+        camera = get_entity_from_domain(hass, DOMAIN, entity_id)
+        source = await camera.async_start_recording(duration=duration)
+
+        # Longer than 25 seconds means we need to attach a stream and record to disk to keep
+        # Arlo recording.
+        if source is not None and duration > 25:
+            _LOGGER.info("{} attaching hidden stream for duration {}".format(entity_id, duration))
+
+            #  filename = "/tmp/scratch-{}.mp4".format(entity_id)
+            #  filename.hass = hass
+            #  video_path = filename.async_render(variables={ATTR_ENTITY_ID: camera})
+            video_path = "/tmp/scratch-{}.mp4".format(entity_id)
+
+            data = {
+                CONF_STREAM_SOURCE: source,
+                CONF_FILENAME: video_path,
+                CONF_DURATION: duration,
+                CONF_LOOKBACK: 0,
+            }
+            await hass.services.async_call(
+                DOMAIN_STREAM, SERVICE_RECORD, data, blocking=True, context=call.context
+            )
 
 
 async def async_camera_stop_recording_service(hass, call):

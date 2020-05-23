@@ -11,7 +11,7 @@ import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
-from homeassistant.components.switch import SwitchDevice
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import callback
 from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
 from homeassistant.helpers.event import track_point_in_time
@@ -83,7 +83,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     async_add_entities(devices, True)
 
 
-class AarloSwitch(SwitchDevice):
+class AarloSwitch(SwitchEntity):
     """Representation of a Aarlo switch."""
 
     def __init__(self, name, icon):

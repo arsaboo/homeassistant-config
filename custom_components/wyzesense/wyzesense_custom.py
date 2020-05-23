@@ -372,6 +372,8 @@ class Dongle(object):
             except OSError as e:
                 log.error(e)
                 break
+            except:
+                log.exception("Ignoring non-OSError in worker thread. Please share the error logs with the developers.")
 
     def _DoCommand(self, pkt, handler, timeout=_CMD_TIMEOUT):
         e = threading.Event()
