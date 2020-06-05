@@ -6,8 +6,8 @@
       type: module
     - url: /local/custom_ui/circle-sensor-card.js
       type: module
-    - url: /local/custom_ui/thermostat-card.js?v=1.3
-      type: module
+    - url: /www/community/lovelace-thermostat-card/main.js
+      type: module      
     - url: /local/community/calendar-card/calendar-card.js
       type: module
     - url: /local/community/button-card/button-card.js
@@ -55,4 +55,8 @@
     - url: /local/community/vertical-stack-in-card/vertical-stack-in-card.js
       type: module
     - url: /local/community/custom-header/custom-header.js
+      type: module
+    - url: /local/community/banner-card/banner-card.js
+      type: module
+    - url: /local/community/bar-card/bar-card.js
       type: module

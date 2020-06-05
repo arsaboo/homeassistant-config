@@ -779,6 +779,19 @@
             url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[1]].attributes.entity_picture }}"
             content-type: jpg
 
+- id: update_wordltime_path
+  alias: 'Camera - Update worldtime Path'
+  initial_state: 'on'
+  trigger:
+    - platform: time_pattern
+      minutes: '/10'
+  action:
+    - service: local_file.update_file_path
+      data_template:
+        entity_id: camera.worldtime
+        file_path: '/home/homeassistant/.homeassistant/downloads/worldtime/worldtime__{{ now().strftime("%H%M") }}.png'
+
+
 - id: save_camera_images
   alias: 'Camera - Save images on motion'
   initial_state: 'off'
@@ -913,7 +926,7 @@
 
 - id: update_morning_commute_sensor
   alias: "Commute - Update morning commute sensor"
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     - platform: time_pattern
       minutes: '/2'
@@ -938,7 +951,7 @@
 
 - id: update_evening_commute_sensor
   alias: "Commute - Update evening commute sensor"
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     - platform: time_pattern
       minutes: '/2'
@@ -967,7 +980,7 @@
 
 - id: morning_commute
   alias: "Morning Commute"
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
     condition: and
     conditions:
@@ -999,7 +1012,7 @@
 
 - id: evening_commute
   alias: "Evening Commute"
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
     condition: and
     conditions:
@@ -1195,9 +1208,9 @@
   trigger:
     - platform: state
       entity_id:
-        - light.hue_color_lamp_1
-        - light.hue_color_lamp_2
-        - light.hue_color_lamp_3
+        - light.master_1
+        - light.master_2
+        - light.master_3
       to: 'on'
   condition:
     - condition: state
@@ -1319,6 +1332,25 @@
           subtitle: "{{ trigger.entity_id.split('.')[1].split('_')[0] }} ran for over 20 minutes without any temperature change"
           push:
             badge: 0
+- id: prevent_master_hvac_failure_2
+  alias: 'Turn off master HVAC if it runs forever'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - climate.master_homekit
+      to: 'cooling'
+      for: '00:30:00'
+  action:
+    - service: climate.set_hvac_mode
+      data:
+        entity_id: climate.master_homekit
+        hvac_mode: off
+    - delay: '00:05:00'
+    - service: climate.set_fan_mode
+      data:
+        entity_id: climate.master_homekit
+        fan_mode: on
 
 - id: ensure_smart_devices_on
   alias: 'Ensure smart-devices are on'
@@ -1431,6 +1463,9 @@
     - condition: state
       entity_id: input_boolean.sleeping
       state: 'off'
+    - condition: template
+      value_template: >
+        {{states('sensor.alok_s_iphone_room_presence') != 'master' and states('sensor.iphone_room_presence') != 'master'}}
   action:
     - service: light.turn_off
       data:
@@ -2181,7 +2216,7 @@
         value: '{{ trigger.to_state.state }}'
     - service: notify.shield
       data_template:
-        title: "Home Assistant"
+        title: "\U0001F50A Home Assistant"
         message: >
             Volume changed to {{ trigger.to_state.state }}
 - id: update_master_sonos_volume
@@ -2193,7 +2228,7 @@
   action:
     - service: notify.aftvmaster
       data_template:
-        title: "Home Assistant"
+        title: "\U0001F50A Home Assistant"
         message: >
             Volume changed to {{ trigger.to_state.state }}
 - id: notify_sonos_audio_in

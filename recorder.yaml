@@ -1,5 +1,4 @@
   purge_keep_days: 5
-  purge_interval: 1
   db_url: !secret recorder_db_url
   exclude:
     domains:
@@ -60,3 +59,6 @@
       - input_text.porch
       - input_text.driveway
       - input_text.backyard
+      - sensor.new_cases_us
+      - sensor.new_cases_india
+      - sensor.new_cases_georgia

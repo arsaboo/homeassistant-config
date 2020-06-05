@@ -524,6 +524,7 @@ class AarloGlance extends LitElement {
         if ( this._s.imageSource !== camera.attributes.image_source ) {
             //console.log( 'updating3 ' + this._s.cameraName + ':' + this._s.imageSource + '-->' + camera.attributes.image_source );
             this._s.imageSource = camera.attributes.image_source
+            this.updateCameraImageSrc()
         }
 
         // FUNCTIONS

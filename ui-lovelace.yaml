@@ -319,16 +319,16 @@ views:
               overflow: hidden
 
             # Dining
-          - type: custom:thermostat-card
-            entity: climate.downstairs
-            no_card: true
-            hvac:
-              attribute: operation
-            style:
-              top: 78%
-              left: 15%
-              width: 50px
-              height: 50px
+          # - type: custom:thermostat-card
+          #   entity: climate.downstairs
+          #   no_card: true
+          #   hvac:
+          #     attribute: operation
+          #   style:
+          #     top: 78%
+          #     left: 15%
+          #     width: 50px
+          #     height: 50px
           - type: state-icon
             entity: binary_sensor.front_door
             style:
@@ -387,16 +387,16 @@ views:
               top: 40%
               left: 35%
             # Master
-          - type: custom:thermostat-card
-            entity: climate.bedroom
-            no_card: true
-            hvac:
-              attribute: operation
-            style:
-              top: 79%
-              left: 92%
-              width: 50px
-              height: 50px
+          # - type: custom:thermostat-card
+          #   entity: climate.bedroom
+          #   no_card: true
+          #   hvac:
+          #     attribute: operation
+          #   style:
+          #     top: 79%
+          #     left: 92%
+          #     width: 50px
+          #     height: 50px
           - type: state-icon
             entity: binary_sensor.motion_sensor_158d00016c53bf
             style:
@@ -451,16 +451,16 @@ views:
               top: 25%
               left: 66%
             # Kids room
-          - type: custom:thermostat-card
-            entity: climate.upstairs
-            no_card: true
-            hvac:
-              attribute: operation
-            style:
-              top: 18%
-              left: 15%
-              width: 50px
-              height: 50px
+          # - type: custom:thermostat-card
+          #   entity: climate.upstairs
+          #   no_card: true
+          #   hvac:
+          #     attribute: operation
+          #   style:
+          #     top: 18%
+          #     left: 15%
+          #     width: 50px
+          #     height: 50px
           # Room Detection Alok
           - type: conditional
             conditions:
@@ -575,10 +575,6 @@ views:
         title: Information
         show_header_toggle: false
         entities:
-          - entity: sensor.alok_s_iphone_room_presence
-            name: Alok Room
-          - entity: sensor.iphone_room_presence
-            name: Rashmi Room
           - entity: sensor.morning_commute
             tap_action:
               action: url
@@ -612,13 +608,13 @@ views:
             type: custom:slider-entity-row
             toggle: true
           - type: divider
-          - entity: light.hue_color_lamp_1
+          - entity: light.master_1
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.hue_color_lamp_2
+          - entity: light.master_2
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.hue_color_lamp_3
+          - entity: light.master_3
             type: custom:slider-entity-row
             toggle: true
       - type: entities
@@ -867,23 +863,23 @@ views:
                   - entity: sensor.us_coronavirus_deaths
                     name: Deaths
                     unit: " "
-                  - entity: sensor.us_coronavirus_current
-                    name: Current
+                  - entity: sensor.new_cases_us
+                    name: Change
                     unit: " "
-              - entity: sensor.italy_coronavirus_confirmed
+              - entity:  sensor.corona_virus_georgia
                 type: custom:multiple-entity-row
-                name: Italy
+                name: Georgia
                 secondary_info: last-changed
                 show_state: false
                 entities:
-                  - entity: sensor.italy_coronavirus_confirmed
+                  - attribute: Confirmed
                     name: Confirmed
                     unit: " "
-                  - entity: sensor.italy_coronavirus_deaths
+                  - attribute: Deaths
                     name: Deaths
                     unit: " "
-                  - entity: sensor.italy_coronavirus_current
-                    name: Current
+                  - entity: sensor.new_cases_georgia
+                    name: Change
                     unit: " "
               - entity: sensor.india_coronavirus_confirmed
                 type: custom:multiple-entity-row
@@ -897,8 +893,8 @@ views:
                   - entity: sensor.india_coronavirus_deaths
                     name: Deaths
                     unit: " "
-                  - entity: sensor.india_coronavirus_current
-                    name: Current
+                  - entity: sensor.new_cases_india
+                    name: Change
                     unit: " "
       - type: picture-entity
         entity: camera.meteogram
@@ -908,7 +904,6 @@ views:
       - type: iframe
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?lat=34.072&lon=-84.051&zoom=5&level=surface&overlay=rain&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=34.072&detailLon=-84.051&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
-
 
   - icon: mdi:chart-line
     id: grafana
@@ -993,7 +988,7 @@ views:
       - type: vertical-stack
         cards:
           - type: custom:simple-thermostat
-            entity: climate.master
+            entity: climate.master_homekit
             control:
               hvac: true
               _names: false
@@ -1111,11 +1106,14 @@ views:
         entity: camera.ars_bloom
         show_name: false
         show_state: false
+      - type: picture-entity
+        entity: camera.general_profile001
       # - type: picture-entity
       #   entity: camera.garage
       #   show_name: false
       #   show_state: false
       - type: picture-glance
+        aspect_ratio: 0%
         camera_image: camera.garage
         camera_view: live
         title: Garage
@@ -1446,11 +1444,17 @@ views:
       - type: entities
         title: Network Details
         show_header_toggle: false
+        footer:
+          type: graph
+          entity: sensor.speedtest_download
+          hours_to_show: 24
+          detail: 1
         entities:
           - switch.pihole
           - sensor.nuc_cpu_load
           - sensor.nuc_ram_used_percent
           - sensor.nuc_containers_active
+          - sensor.speedtest_download
       - type: horizontal-stack
         cards:
           - type: custom:button-card
@@ -2284,150 +2288,247 @@ views:
     id: stocks
     title: Stocks
     cards:
-      - type: custom:list-card
-        entity: sensor.yahoo_wpc
-        title: Analyst Estimates - WPC
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_cop
-        title: Analyst Estimates - COP
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_cvs
-        title: Analyst Estimates - CVS
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_doc
-        title: Analyst Estimates - DOC
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_irm
-        title: Analyst Estimates - IRM
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_pm
-        title: Analyst Estimates - PM
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_well
-        title: Analyst Estimates - WELL
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_vtr
-        title: Analyst Estimates - VTR
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
-      - type: custom:list-card
-        entity: sensor.yahoo_cci
-        title: Analyst Estimates - CCI
-        feed_attribute: history
-        row_limit: 10
-        columns:
-          - title: 'Date'
-            field: epochGradeDate
-          - title: Firm
-            field: firm
-          - title: Action
-            field: action
-          - title: From
-            field: fromGrade
-          - title: To
-            field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_pm
+        variables:
+          - states['sensor.yahoo_pm'].attributes["Ticker"]
+          - states['sensor.yahoo_pm'].state
+          - states['sensor.yahoo_pm'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_pm
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_wpc
+        variables:
+          - states['sensor.yahoo_wpc'].attributes["Ticker"]
+          - states['sensor.yahoo_wpc'].state
+          - states['sensor.yahoo_wpc'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_wpc
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_cop
+        variables:
+          - states['sensor.yahoo_cop'].attributes["Ticker"]
+          - states['sensor.yahoo_cop'].state
+          - states['sensor.yahoo_cop'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_cop
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_cvs
+        variables:
+          - states['sensor.yahoo_cvs'].attributes["Ticker"]
+          - states['sensor.yahoo_cvs'].state
+          - states['sensor.yahoo_cvs'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_cvs
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_doc
+        variables:
+          - states['sensor.yahoo_doc'].attributes["Ticker"]
+          - states['sensor.yahoo_doc'].state
+          - states['sensor.yahoo_doc'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_doc
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_irm
+        variables:
+          - states['sensor.yahoo_irm'].attributes["Ticker"]
+          - states['sensor.yahoo_irm'].state
+          - states['sensor.yahoo_irm'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_irm
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_well
+        variables:
+          - states['sensor.yahoo_well'].attributes["Ticker"]
+          - states['sensor.yahoo_well'].state
+          - states['sensor.yahoo_well'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_well
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_vtr
+        variables:
+          - states['sensor.yahoo_vtr'].attributes["Ticker"]
+          - states['sensor.yahoo_vtr'].state
+          - states['sensor.yahoo_vtr'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_vtr
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_cci
+        variables:
+          - states['sensor.yahoo_cci'].attributes["Ticker"]
+          - states['sensor.yahoo_cci'].state
+          - states['sensor.yahoo_cci'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_cci
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+      - type: 'custom:config-template-card'
+        entities:
+          - sensor.yahoo_brk_b
+        variables:
+          - states['sensor.yahoo_brk_b'].attributes["Ticker"]
+          - states['sensor.yahoo_brk_b'].state
+          - states['sensor.yahoo_brk_b'].attributes["Mean Target"]
+        card:
+          type: "custom:list-card"
+          entity: sensor.yahoo_brk_b
+          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
+          feed_attribute: history
+          row_limit: 10
+          columns:
+            - title: 'Date'
+              field: epochGradeDate
+            - title: Firm
+              field: firm
+            - title: Action
+              field: action
+            - title: From
+              field: fromGrade
+            - title: To
+              field: toGrade
+
   - icon: mdi:cctv
     id: cameras_panel
     title: Cameras
@@ -2459,3 +2560,209 @@ views:
                 show_name: false
                 show_state: false
                 camera_view: live
+  - icon: mdi:bug
+    id: grafana
+    title: Corona - World Data
+    panel: true
+    cards:
+      - type: iframe
+        aspect_ratio: 90%
+        url: https://ourworldindata.org/grapher/covid-confirmed-cases-since-100th-case?country=IND+USA+ITA
+
+  - icon: mdi:bug
+    id: grafana
+    title: Corona - JHU
+    panel: true
+    cards:
+      - type: iframe
+        aspect_ratio: 90%
+        url: https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
+  - icon: mdi:home-floor-1
+    id: room_cards
+    title: Rooms
+    cards:
+      - type: 'custom:banner-card'
+        background: '#9494b8'
+        heading: "\U0001F6CC Master"
+        row_size: 3
+        entities:
+          - entity: binary_sensor.motion_sensor_158d00016c53bf
+            map_state:
+              'on':
+                value: 'mdi:motion-sensor'
+            name: Motion
+            value: 'mdi:walk'
+          - entity: sensor.master_remote_temperature
+            name: Temperature
+          - entity: sensor.bedroom_humidity
+            name: Humidity
+          - entity: light.master_lights
+            name: Light
+          - entity: climate.master_homekit
+            name: Thermostat
+            map_state:
+              cool: mdi:snowflake
+          - entity: media_player.panasonic_viera_tv
+          - entity: media_player.master
+          - entity: media_player.ftv_master
+      - type: 'custom:banner-card'
+        background: '#EDE7B0'
+        heading: "\U0001F4BB Study"
+        row_size: 4
+        entities:
+          - entity: sensor.humidity_158d0001ab3b2b
+            name: Humidity
+          - entity: sensor.temperature_158d0001ab3b2b
+            name: Temp
+          - entity: switch.03783133807d3a7d0403
+            name: Closet Fan
+          - entity: sensor.canon_ts6300_series
+            name: Printer
+            map_state:
+              idle:
+                value: "mdi:printer"
+              printing:
+                value: "mdi:printer-wireless"
+          - entity: sensor.canon_ts6300_series_black_bk
+            name: Black(BK)
+            when:
+              state: [">", 0]
+          - entity: sensor.canon_ts6300_series_black_pgbk
+            name: Black(PGBK)
+            when:
+              state: [">", 0]
+          - entity: sensor.canon_ts6300_series_cyan
+            name: Cyan
+            when:
+              state: [">", 0]
+          - entity: sensor.canon_ts6300_series_magenta
+            name: Magenta
+            when:
+              state: [">", 0]
+          - entity: sensor.canon_ts6300_series_yellow
+            name: Yellow
+            when:
+              state: [">", 0]
+      - type: 'custom:hui-entities-card'
+        show_header_toggle: off
+        entities:
+          # - type: section
+          #   label: 'Synology DS1515+'
+          - type: 'custom:hui-vertical-stack-card'
+            cards:
+              - type: 'custom:config-template-card'
+                variables:
+                  - states['sensor.synology_total_size_volume_1'].state
+                  - states['sensor.synology_used_space_volume_1'].state
+                entities:
+                  - sensor.synology_total_size_volume_1
+                  - sensor.synology_used_space_volume_1
+                card:
+                  type: 'custom:bar-card'
+                  title_position: inside
+                  show_icon: true
+                  align: split
+                  columns: 1
+                  max: 100
+                  unit_of_measurement: "%"
+                  severity:
+                      - from: 0
+                        to: 50
+                        color: "#3498db"
+                      - from: 51
+                        to: 75
+                        color: "#f39c12"
+                      - from: 76
+                        to: 100
+                        color: "#e45e65"
+                  positions:
+                    icon: 'off'
+                    indicator: 'off'
+                  style: |
+                        ha-card {
+                          --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                          --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                          --ha-card-box-shadow: 'none';
+                          --primary-text-color:white;
+                        }
+                  entity: sensor.synology_volume_used_volume_1
+                  name: "${ 'Space (' + vars[1] + '/' + vars[0] + ')' }"
+              - type: horizontal-stack
+                cards:
+                  - type: custom:bar-card
+                    title_position: inside
+                    show_icon: true
+                    align: split
+                    columns: 1
+                    max: 100
+                    unit_of_measurement: "%"
+                    severity:
+                      - from: 0
+                        to: 50
+                        color: "#3498db"
+                      - from: 51
+                        to: 75
+                        color: "#f39c12"
+                      - from: 76
+                        to: 100
+                        color: "#e45e65"
+                    style: |
+                          ha-card {
+                            --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                            --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                            --ha-card-box-shadow: 'none';
+                            --primary-text-color: white;
+                          }
+                    entity: sensor.synology_memory_usage_real
+                    name: RAM
+                  - type: custom:bar-card
+                    title_position: inside
+                    show_icon: true
+                    align: split
+                    columns: 1
+                    max: 100
+                    unit_of_measurement: "%"
+                    severity:
+                      - from: 0
+                        to: 50
+                        color: "#3498db"
+                      - from: 51
+                        to: 75
+                        color: "#f39c12"
+                      - from: 76
+                        to: 100
+                        color: "#e45e65"
+                    style: |
+                          ha-card {
+                            --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                            --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                            --ha-card-box-shadow: 'none';
+                            --primary-text-color: white;
+                          }
+                    entity: sensor.synology_cpu_load_total
+                    name: CPU
+              - type: custom:mini-graph-card
+                height: 30
+                line_width: 2
+                font_size: 70
+                hours_to_show: 48
+                points_per_hour: 1
+                show:
+                  extrema: true
+                  fill: true
+                style: |
+                  ha-card {
+                    --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                    --ha-card-box-shadow: 'none';
+                    border-radius: 2px;
+                  }
+                entities:
+                  - sensor.synology_average_disk_temp_volume_1
+                name: Disk Temperature
+                color_thresholds:
+                  - value: 90
+                    color: "#3498db"
+                  - value: 95
+                    color: "#f39c12"
+                  - value: 100
+                    color: "#E45E65"

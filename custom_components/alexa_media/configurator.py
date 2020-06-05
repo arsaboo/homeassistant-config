@@ -33,6 +33,7 @@ async def test_login_status(hass, config_entry, login, alexa_setup_callback) -> 
         email = login.email
         # links = ""
         footer = ""
+        config_id = None
         if "error_message" in status and status["error_message"]:
             footer = (
                 "\n<b>NOTE: Actual Amazon error message in red below. "
@@ -140,7 +141,10 @@ async def test_login_status(hass, config_entry, login, alexa_setup_callback) -> 
                 submit_caption="Confirm",
                 fields=[],
             )
-        hass.data[DATA_ALEXAMEDIA]["accounts"][email]["configurator"].append(config_id)
+        if config_id:
+            hass.data[DATA_ALEXAMEDIA]["accounts"][email]["configurator"].append(
+                config_id
+            )
         if "error_message" in status and status["error_message"]:
             configurator.async_notify_errors(config_id, status["error_message"])
         if len(hass.data[DATA_ALEXAMEDIA]["accounts"][email]["configurator"]) > 1:

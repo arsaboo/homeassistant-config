@@ -9,7 +9,7 @@ https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers
 """
 from datetime import timedelta
 
-__version__ = "2.8.0"
+__version__ = "2.8.3"
 PROJECT_URL = "https://github.com/custom-components/alexa_media_player/"
 ISSUE_URL = "{}issues".format(PROJECT_URL)
 
@@ -37,6 +37,35 @@ DATA_LISTENER = "listener"
 DEFAULT_QUEUE_DELAY = 1.5
 SERVICE_CLEAR_HISTORY = "clear_history"
 SERVICE_UPDATE_LAST_CALLED = "update_last_called"
+
+RECURRING_PATTERN = {
+    None: "Never Repeat",
+    "P1D": "Every day",
+    "XXXX-WE": "Weekends",
+    "XXXX-WD": "Weekdays",
+    "XXXX-WXX-1": "Every Monday",
+    "XXXX-WXX-2": "Every Tuesday",
+    "XXXX-WXX-3": "Every Wednesday",
+    "XXXX-WXX-4": "Every Thursday",
+    "XXXX-WXX-5": "Every Friday",
+    "XXXX-WXX-6": "Every Saturday",
+    "XXXX-WXX-7": "Every Sunday",
+}
+
+RECURRING_PATTERN_ISO_SET = {
+    None: {},
+    "P1D": {1, 2, 3, 4, 5, 6, 7},
+    "XXXX-WE": {6, 7},
+    "XXXX-WD": {1, 2, 3, 4, 5},
+    "XXXX-WXX-1": {1},
+    "XXXX-WXX-2": {2},
+    "XXXX-WXX-3": {3},
+    "XXXX-WXX-4": {4},
+    "XXXX-WXX-5": {5},
+    "XXXX-WXX-6": {6},
+    "XXXX-WXX-7": {7},
+}
+
 ATTR_MESSAGE = "message"
 ATTR_EMAIL = "email"
 ATTR_NUM_ENTRIES = "entries"

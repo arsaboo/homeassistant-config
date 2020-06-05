@@ -246,17 +246,17 @@
     sequence:
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_1
+          entity_id: light.master_1
           brightness: 255
           effect: colorloop
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_2
+          entity_id: light.master_2
           brightness: 255
           effect: colorloop
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_3
+          entity_id: light.master_3
           brightness: 255
           effect: colorloop
   master_random:
@@ -264,17 +264,17 @@
     sequence:
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_1
+          entity_id: light.master_1
           brightness: 255
           effect: random
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_2
+          entity_id: light.master_2
           brightness: 255
           effect: random
       - service: light.turn_on
         data:
-          entity_id: light.hue_color_lamp_3
+          entity_id: light.master_3
           brightness: 255
           effect: random
   lifx_stop_effects:
@@ -376,10 +376,10 @@
       #   data_template:
       #     entity_id: alarm_control_panel.abode
       #     state: "{{states.alarm_control_panel.abode_alarm.state}}"
-      - service: ifttt.push_alarm_state
-        data_template:
-          entity_id: alarm_control_panel.aarlo_arlohome
-          state: "{{states.alarm_control_panel.abode_alarm.state}}"
+      # - service: ifttt.push_alarm_state
+      #   data_template:
+      #     entity_id: alarm_control_panel.aarlo_arlohome
+      #     state: "{{states.alarm_control_panel.abode_alarm.state}}"
       - service: input_select.select_option
         data_template:
           entity_id: input_select.livingroomharmony

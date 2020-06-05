@@ -77,6 +77,27 @@
         query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: New Cases US
+        query: "SELECT (select state from states WHERE entity_id='sensor.us_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.us_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
+        column: 'NewCases'
+        unit_of_measurement: people
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: New Cases Georgia
+        query: "SELECT (select state from states WHERE entity_id='sensor.corona_virus_georgia' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.corona_virus_georgia' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
+        column: 'NewCases'
+        unit_of_measurement: people
+  - platform: sql
+    db_url: !secret recorder_db_url
+    queries:
+      - name: New Cases India
+        query: "SELECT (select state from states WHERE entity_id='sensor.india_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.india_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
+        column: 'NewCases'
+        unit_of_measurement: people
   - platform: personalcapital
     email: !secret pc_username
     password: !secret pc_password
@@ -288,7 +309,16 @@
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
     value_template: '{{ value_json["s:Envelope"]["s:Body"]["u:GetZoneInfoResponse"]["HTAudioIn"] }}'
-
+  - platform: rest
+    resource: "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=(Country_Region%3D%27US%27)%20AND%20(Province_State%20LIKE%20%27%25Georgia%27)&outStatistics=%5B%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Confirmed%22%2C%22outStatisticFieldName%22%3A%22Confirmed%22%7D%2C%20%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Deaths%22%2C%22outStatisticFieldName%22%3A%22Deaths%22%7D%2C%20%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Recovered%22%2C%22outStatisticFieldName%22%3A%22Recovered%22%7D%5D"
+    name: Corona Virus Georgia
+    value_template: "{{ value_json.features[0].attributes.Confirmed }}"
+    json_attributes_path: "$.features[0].attributes"
+    unit_of_measurement: "Confirmed"
+    json_attributes:
+      - Confirmed
+      - Deaths
+      - Recovered
     # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
   # - platform: rest
   #   resource: !secret here_weather
@@ -328,7 +358,7 @@
       master_audio_in:
         friendly_name: "Master Audio-in"
         value_template: >-
-          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence'} -%}
+          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence', '33554434': 'Stereo 2.0'} -%}
           {{ audio_in[states.sensor.sonos_master.state] | default('NA', true)}}
         icon_template: >-
           {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
