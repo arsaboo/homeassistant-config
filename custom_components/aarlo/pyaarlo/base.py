@@ -1,13 +1,15 @@
+import pprint
 import time
 
-from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH,
+from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH, CONNECTION_KEY,
                        MODE_ID_TO_NAME_KEY, MODE_KEY,
                        MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY,
-                       SCHEDULE_KEY, SIREN_STATE_KEY)
+                       SCHEDULE_KEY, SIREN_STATE_KEY, TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY)
 from .device import ArloDevice
 from .util import time_to_arlotime
 
-day_of_week = [ 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo'];
+day_of_week = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo']
+
 
 class ArloBase(ArloDevice):
 
@@ -46,14 +48,14 @@ class ArloBase(ArloDevice):
         day = day_of_week[now.tm_wday]
         minute = (now.tm_hour * 60) + now.tm_min
         for schedule in self._schedules:
-            if not schedule.get('enabled',False):
+            if not schedule.get('enabled', False):
                 continue
-            for schedule in schedule.get('schedule',[]):
-                if day in schedule.get('days',[]):
-                    start = schedule.get('startTime',65535)
-                    duration = schedule.get('duration',65536)
-                    if minute >= start and minute < (start + duration):
-                        modes = schedule.get('startActions',{}).get('enableModes',None)
+            for action in schedule.get('schedule', []):
+                if day in action.get('days', []):
+                    start = action.get('startTime', 65535)
+                    duration = action.get('duration', 65536)
+                    if start <= minute < (start + duration):
+                        modes = action.get('startActions', {}).get('enableModes', None)
                         if modes:
                             self._arlo.debug("schdule={}".format(modes[0]))
                             return modes
@@ -71,6 +73,27 @@ class ArloBase(ArloDevice):
                 self._save([MODE_ID_TO_NAME_KEY, schedule_id], schedule_name)
                 self._save([MODE_NAME_TO_ID_KEY, schedule_name.lower()], schedule_id)
                 self._save([MODE_IS_SCHEDULE_KEY, schedule_name.lower()], True)
+
+    def _set_mode_or_schedule(self, event):
+        # schedule on or off?
+        schedule_ids = event.get('activeSchedules', [])
+        if schedule_ids:
+            self._arlo.debug(self.name + ' schedule change ' + schedule_ids[0])
+            schedule_name = self._id_to_name(schedule_ids[0])
+            self._save_and_do_callbacks(SCHEDULE_KEY, schedule_name)
+        else:
+            self._arlo.debug(self.name + ' schedule cleared ')
+            self._save_and_do_callbacks(SCHEDULE_KEY, None)
+
+        # mode present? we just set to that one... If no mode but schedule then
+        # try to parse that out
+        mode_ids = event.get('activeModes', [])
+        if not mode_ids and schedule_ids:
+            mode_ids = self.schedule_to_modes()
+        if mode_ids:
+            self._arlo.debug(self.name + ' mode change ' + mode_ids[0])
+            mode_name = self._id_to_name(mode_ids[0])
+            self._save_and_do_callbacks(MODE_KEY, mode_name)
 
     def _event_handler(self, resource, event):
         self._arlo.debug(self.name + ' BASE got ' + resource)
@@ -90,28 +113,9 @@ class ArloBase(ArloDevice):
 
         # mode change?
         elif resource == 'activeAutomations':
+            self._set_mode_or_schedule(event)
 
-            # schedule on or off?
-            schedule_ids = event.get('activeSchedules', [])
-            if schedule_ids:
-                self._arlo.debug(self.name + ' schedule change ' + schedule_ids[0])
-                schedule_name = self._id_to_name(schedule_ids[0])
-                self._save_and_do_callbacks(SCHEDULE_KEY, schedule_name)
-            else:
-                self._arlo.debug(self.name + ' schedule cleared ')
-                self._save_and_do_callbacks(SCHEDULE_KEY, None)
-
-            # mode present? we just set to new one... If no mode but schedule
-            # then try to parse that out
-            mode_ids = event.get('activeModes', [])
-            if not mode_ids and schedule_ids:
-                mode_ids = self.schedule_to_modes()
-            if mode_ids:
-                self._arlo.debug(self.name + ' mode change ' + mode_ids[0])
-                mode_name = self._id_to_name(mode_ids[0])
-                self._save_and_do_callbacks(MODE_KEY, mode_name)
-
-        # schdule has changed, so reload
+        # schedule has changed, so reload
         elif resource == 'automationRevisionUpdate':
             self.update_modes()
 
@@ -136,10 +140,18 @@ class ArloBase(ArloDevice):
 
     @property
     def available_modes(self):
+        """Returns string list of available modes.
+
+        For example:: ``['disarmed', 'armed', 'home']``
+        """
         return list(self.available_modes_with_ids.keys())
 
     @property
     def available_modes_with_ids(self):
+        """Returns dictionary of available modes mapped to Arlo ids.
+
+        For example:: ``{'armed': 'mode1','disarmed': 'mode0','home': 'mode2'}``
+        """
         modes = {}
         for key, mode_id in self._load_matching([MODE_NAME_TO_ID_KEY, '*']):
             modes[key.split('/')[-1]] = mode_id
@@ -149,10 +161,18 @@ class ArloBase(ArloDevice):
 
     @property
     def mode(self):
+        """Returns the current mode.
+        """
         return self._load(MODE_KEY, 'unknown')
 
     @mode.setter
     def mode(self, mode_name):
+        """Set the base station mode.
+
+        **Note:** Setting mode has been known to hang, method includes code to keep retrying.
+
+        :param mode_name: mode to use, as returned by available_modes:
+        """
         mode_id = self._name_to_id(mode_name)
         if mode_id:
 
@@ -169,48 +189,58 @@ class ArloBase(ArloDevice):
             # Post change.
             self._arlo.debug(self.name + ':new-mode=' + mode_name + ',id=' + mode_id)
             if self._v1_modes:
-                self._arlo.bg.run(self._arlo.be.notify, base=self,
-                                  body={"action": "set",
-                                        "resource": "modes",
-                                        "publishResponse": True,
-                                        "properties": {"active": mode_id}})
+                self._arlo.be.notify(base=self,
+                                     body={"action": "set",
+                                           "resource": "modes",
+                                           "publishResponse": True,
+                                           "properties": {"active": mode_id}})
             else:
-                def _set_mode_v2_cb():
+                # This is complicated... Setting a mode can fail and setting a mode can be sync or async.
+                # This code tried 3 times to set the mode with attempts to reload the devices between
+                # attempts to try and kick Arlo. In async mode the first set works in the current thread,
+                # subsequent ones run in the background. In sync mode it the same. Sorry.
+                def _set_mode_v2_cb(attempt):
+                    self._arlo.debug('v2 arming')
                     params = {'activeAutomations':
-                                  [{'deviceId': self.device_id,
-                                    'timestamp': time_to_arlotime(),
-                                    active: [mode_id],
-                                    inactive: []}]}
-                    for i in range(1, 3):
-                        body = self._arlo.be.post(AUTOMATION_PATH, params=params, raw=True)
-                        if body['success']:
+                              [{'deviceId': self.device_id,
+                                'timestamp': time_to_arlotime(),
+                                active: [mode_id],
+                                inactive: []}]}
+                    if attempt < 4:
+                        body = self._arlo.be.post(AUTOMATION_PATH, params=params, raw=True, wait_for=None)
+                        if body.get('success', False) is True or body.get('resource', '') == 'activeAutomations':
                             return
-                        self._arlo.warning('attempt {0}: error in response when setting mode={1}'.format(i, str(body)))
+                        self._arlo.warning(
+                            'attempt {0}: error in response when setting mode=\n{1}'.format(attempt,
+                                                                                            pprint.pformat(body)))
                         self._arlo.debug('Fetching device list (hoping this will fix arming/disarming)')
                         self._arlo.be.devices()
+                        self._arlo.bg.run(_set_mode_v2_cb, i=attempt + 1)
                     self._arlo.error('Failed to set mode.')
-                    self._arlo.debug('Giving up on setting mode! Session headers=' + self._arlo.be.session.headers)
-                    self._arlo.debug('Giving up on setting mode! Session cookies=' + self._arlo.be.session.cookies)
+                    self._arlo.debug('Giving up on setting mode! Session headers=\n{}'.format(
+                        pprint.pformat(self._arlo.be.session.headers)))
+                    self._arlo.debug('Giving up on setting mode! Session cookies=\n{}'.format(
+                        pprint.pprint(self._arlo.be.session.cookies)))
 
-                self._arlo.bg.run(_set_mode_v2_cb)
+                _set_mode_v2_cb(1)
         else:
             self._arlo.warning('{0}: mode {1} is unrecognised'.format(self.name, mode_name))
 
     def update_mode(self):
+        """Check and update the base's current mode.
+        """
         data = self._arlo.be.get(AUTOMATION_PATH)
         for mode in data:
             if mode.get('uniqueId', '') == self.unique_id:
-                active_modes = mode.get('activeModes', [])
-                if active_modes:
-                    self._save_and_do_callbacks(MODE_KEY, self._id_to_name(active_modes[0]))
-                active_schedules = mode.get('activeSchedules', [])
-                if active_schedules:
-                    self._save_and_do_callbacks(SCHEDULE_KEY, self._id_to_name(active_schedules[0]))
+                self._set_mode_or_schedule(mode)
 
     def update_modes(self):
+        """Get and update the available modes for the base.
+        """
         if self._v1_modes:
-            resp = self._arlo.be.notify_and_get_response(base=self, body={"action": "get", "resource": "modes",
-                                                                          "publishResponse": False})
+            resp = self._arlo.be.notify(base=self, body={"action": "get", "resource": "modes",
+                                                         "publishResponse": False},
+                                        wait_for="event")
             props = resp.get('properties', {})
             self._parse_modes(props.get('modes', []))
         else:
@@ -221,10 +251,14 @@ class ArloBase(ArloDevice):
 
     @property
     def schedule(self):
+        """Returns current schedule name or `None` if no schedule active.
+        """
         return self._load(SCHEDULE_KEY, None)
 
     @property
     def on_schedule(self):
+        """Returns `True` is base station is running a schedule.
+        """
         return self.schedule is not None
 
     @property
@@ -236,22 +270,20 @@ class ArloBase(ArloDevice):
         if isinstance(value, (int, float)):
             self._refresh_rate = value
 
-    def has_capability(self, cap):
-        if cap in ('temperature', 'humidity', 'air_quality'):
-            if self.model_id == 'ABC1000':
-                return True
-        if cap in 'siren':
-            if self.model_id.startswith('VMB400'):
-                return True
-            if self.model_id.startswith('VMB450'):
-                return True
-        return super().has_capability(cap)
-
     @property
     def siren_state(self):
+        """Returns the current siren state (`on` or `off`).
+        """
         return self._load(SIREN_STATE_KEY, "off")
 
     def siren_on(self, duration=300, volume=8):
+        """Turn base siren on.
+
+        Does nothing if base doesn't support sirens.
+
+        :param duration: how long, in seconds, to sound for
+        :param volume: how long, from 1 to 8, to sound
+        """
         body = {
             'action': 'set',
             'resource': 'siren',
@@ -259,9 +291,13 @@ class ArloBase(ArloDevice):
             'properties': {'sirenState': 'on', 'duration': int(duration), 'volume': int(volume), 'pattern': 'alarm'}
         }
         self._arlo.debug(str(body))
-        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+        self._arlo.be.notify(base=self, body=body)
 
     def siren_off(self):
+        """Turn base siren off.
+
+        Does nothing if base doesn't support sirens.
+        """
         body = {
             'action': 'set',
             'resource': 'siren',
@@ -269,4 +305,35 @@ class ArloBase(ArloDevice):
             'properties': {'sirenState': 'off'}
         }
         self._arlo.debug(str(body))
-        self._arlo.bg.run(self._arlo.be.notify, base=self, body=body)
+        self._arlo.be.notify(base=self, body=body)
+
+    def _ping_and_check_reply(self):
+        body = {
+            'action': 'set',
+            'resource': self._arlo.be.sub_id,
+            'publishResponse': False,
+            'properties': {'devices': [self.device_id]}
+        }
+        self._arlo.debug("pinging {}".format(self.name))
+        if self._arlo.be.notify(base=self, body=body, wait_for="response") is None:
+            self._save_and_do_callbacks(CONNECTION_KEY, 'unavailable')
+        else:
+            self._save_and_do_callbacks(CONNECTION_KEY, 'available')
+
+    def ping(self):
+        self._arlo.bg.run(self._ping_and_check_reply)
+
+    @property
+    def state(self):
+        if self.is_unavailable:
+            return 'unavailable'
+        return 'available'
+
+    def has_capability(self, cap):
+        if cap in (TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY):
+            if self.model_id.startswith('ABC1000'):
+                return True
+        if cap in (SIREN_STATE_KEY,):
+            if self.model_id.startswith(('VMB400', 'VMB450')):
+                return True
+        return super().has_capability(cap)

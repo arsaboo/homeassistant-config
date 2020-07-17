@@ -37,6 +37,30 @@ class AarloGlance extends LitElement {
         }
     }
 
+    parseURL(url) {
+        var parser = document.createElement('a'),
+            searchObject = {},
+            queries, split, i;
+        // Let the browser do the work
+        parser.href = url;
+        // Convert query string to object
+        queries = parser.search.replace(/^\?/, '').split('&');
+        for( i = 0; i < queries.length; i++ ) {
+            split = queries[i].split('=');
+            searchObject[split[0]] = split[1];
+        }
+        return {
+            protocol: parser.protocol,
+            host: parser.host,
+            hostname: parser.hostname,
+            port: parser.port,
+            pathname: parser.pathname,
+            search: parser.search,
+            searchObject: searchObject,
+            hash: parser.hash
+        };
+    }
+
     constructor() {
         super();
 
@@ -44,6 +68,7 @@ class AarloGlance extends LitElement {
         this._config = null;
         this._change = 0;
         this._hls = null;
+        this._dash = null;
 
         this.resetStatuses();
         this.resetVisiblity();
@@ -660,23 +685,44 @@ class AarloGlance extends LitElement {
             this._v.videoFull = '';
             this.showVideoControls(2);
 
-            // Start HLS to handle video streaming.
-            if (this._hls === null) {
-                const video = this.shadowRoot.getElementById('stream-' + this._s.cameraId);
-                if (Hls.isSupported()) {
-                    this._hls = new Hls();
-                    this._hls.attachMedia(video);
-                    this._hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-                        this._hls.loadSource(this._stream);
-                        this._hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            const video = this.shadowRoot.getElementById('stream-' + this._s.cameraId);
+
+            if ( this._v.playDirect ) {
+                // mpeg-dash support
+                if (this._dash === null) {
+
+                    const parser = this.parseURL(this._stream);
+                    const et = parser.searchObject.egressToken;
+
+                    this._dash = dashjs.MediaPlayer().create();
+                    this._dash.extend("RequestModifier", function () {
+                        return {
+                            modifyRequestHeader: function (xhr) {
+                                xhr.setRequestHeader('Egress-Token',et);
+                                return xhr;
+                            }
+                        };
+                    }, true);
+                    this._dash.initialize(video, this._stream, true);
+                }
+            } else {
+                // Start HLS to handle video streaming.
+                if (this._hls === null) {
+                    if (Hls.isSupported()) {
+                        this._hls = new Hls();
+                        this._hls.attachMedia(video);
+                        this._hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+                            this._hls.loadSource(this._stream);
+                            this._hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                                video.play();
+                            });
+                        })
+                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        video.src = this._stream;
+                        video.addEventListener('loadedmetadata', function () {
                             video.play();
                         });
-                    })
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = this._stream;
-                    video.addEventListener('loadedmetadata', function () {
-                        video.play();
-                    });
+                    }
                 }
             }
 
@@ -850,6 +896,9 @@ class AarloGlance extends LitElement {
         // on click
         this._v.imageClick = config.image_click ? config.image_click : false;
 
+        // stream directly from Arlo
+        this._v.playDirect = config.play_direct ? config.play_direct : false;
+
         // ui configuration
         this._v.topTitle     = config.top_title ? hide_title:'hidden';
         this._v.topDate      = config.top_date ? hide_date:'hidden';
@@ -917,7 +966,7 @@ class AarloGlance extends LitElement {
     async wsStartStream() {
         try {
             return await this._hass.callWS({
-                type: "camera/stream",
+                type: this._v.playDirect ? "aarlo_stream_url" : "camera/stream",
                 entity_id: this._s.cameraId,
             })
         } catch (err) {
@@ -999,6 +1048,10 @@ class AarloGlance extends LitElement {
             this._hls.stopLoad();
             this._hls.destroy();
             this._hls = null
+        }
+        if (this._dash) {
+            this._dash.reset();
+            this._dash = null;
         }
     }
 
@@ -1172,9 +1225,14 @@ const s = document.createElement("script");
 s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
 s.onload = function() {
     const s2 = document.createElement("script");
-    s2.src = 'https://cdn.jsdelivr.net/npm/mobile-detect@1.4.3/mobile-detect.min.js';
+    s2.src = 'https://cdn.dashjs.org/latest/dash.all.min.js';
     s2.onload = function() {
         customElements.define('aarlo-glance', AarloGlance);
+        // const s3 = document.createElement("script");
+        // s3.src = 'https://cdn.jsdelivr.net/npm/mobile-detect@1.4.3/mobile-detect.min.js';
+        // s3.onload = function() {
+            // customElements.define('aarlo-glance', AarloGlance);
+        // }
     };
     document.head.appendChild(s2);
 };

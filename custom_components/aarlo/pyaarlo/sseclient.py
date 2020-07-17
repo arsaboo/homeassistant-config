@@ -1,10 +1,10 @@
 import codecs
+import http.client
 import re
-import requests
-import six
-import six.moves.http_client
 import time
 import warnings
+
+import requests
 
 # Technically, we should support streams that mix line endings.  This regex,
 # however, assumes that a system will provide consistent line endings.
@@ -72,7 +72,7 @@ class SSEClient(object):
                     raise EOFError()
                 self.buf += decoder.decode(next_chunk)
 
-            except (StopIteration, requests.RequestException, EOFError, six.moves.http_client.IncompleteRead) as e:
+            except (StopIteration, requests.RequestException, EOFError, http.client.IncompleteRead) as e:
                 if not self.running:
                     self.log.debug('stopping')
                     return None
@@ -107,9 +107,6 @@ class SSEClient(object):
             self.last_id = msg.id
 
         return msg
-
-    if six.PY2:
-        next = __next__
 
 
 class Event(object):
