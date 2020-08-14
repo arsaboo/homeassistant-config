@@ -69,7 +69,7 @@ class ArloMediaPlayer(MediaPlayerEntity):
     def __init__(self, name, device):
         """Initialize an Arlo media player."""
         self._name = name
-        self._unique_id = self._name.lower().replace(' ', '_')
+        self._unique_id = device.entity_id
 
         self._device = device
         self._name = name

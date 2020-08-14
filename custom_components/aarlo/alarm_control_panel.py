@@ -179,7 +179,7 @@ class ArloBaseStation(AlarmControlPanelEntity):
         """Initialize the alarm control panel."""
         self._config = config
         self._name = device.name
-        self._unique_id = self._name.lower().replace(' ', '_')
+        self._unique_id = device.entity_id
         self._base = device
         self._home_mode_name = config.get(CONF_HOME_MODE_NAME).lower()
         self._away_mode_name = config.get(CONF_AWAY_MODE_NAME).lower()

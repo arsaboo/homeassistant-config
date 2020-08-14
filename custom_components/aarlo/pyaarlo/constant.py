@@ -44,6 +44,7 @@ CAMERA_MEDIA_DELAY = MEDIA_LIBRARY_DELAY + 10
 FAST_REFRESH_INTERVAL = 60
 SLOW_REFRESH_INTERVAL = (10 * 60)
 EVENT_STREAM_TIMEOUT = ((FAST_REFRESH_INTERVAL * 2) + 5)
+MODE_UPDATE_INTERVAL = 5
 
 # update keys
 ACTIVITY_STATE_KEY = 'activityState'
@@ -70,6 +71,7 @@ PRIVACY_KEY = 'privacyActive'
 LIGHT_BRIGHTNESS_KEY = 'lightBrightness'
 LIGHT_MODE_KEY = 'lightMode'
 RECORDING_STOPPED_KEY = 'recordingStopped'
+SILENT_MODE_KEY = 'silentMode'
 SPOTLIGHT_KEY = 'spotlight'
 SPOTLIGHT_BRIGHTNESS_KEY = 'spotlightBrightness'
 SIGNAL_STR_KEY = 'signalStrength'
@@ -142,6 +144,8 @@ SCHEDULE_KEY = 'activeSchedule'
 TOTAL_BELLS_KEY = 'totalDoorBells'
 TOTAL_CAMERAS_KEY = 'totalCameras'
 TOTAL_LIGHTS_KEY = 'totalLights'
+SILENT_MODE_CALL_KEY = 'call'
+SILENT_MODE_ACTIVE_KEY = 'active'
 
 # Media player
 MEDIA_PLAYER_RESOURCE_ID = "audioPlayback/player"
@@ -154,4 +158,4 @@ BLANK_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAKAAAABaCAQAAACVz5XZAAAAh0lEQVR42u3QMQ0AA
 
 # DEFAULT_MODES = [ { u'id':u'mode0',u'type':u'disarmed' }, { u'id':u'mode1',u'type':u'armed' } ]
 DEFAULT_MODES = {'disarmed': 'mode0', 'armed': 'mode1'}
-DEFAULT_RESOURCES = {'modes', 'siren', 'doorbells', 'lights', 'cameras'}
+DEFAULT_RESOURCES = {'modes', 'siren', 'doorbells', 'lights', 'cameras', 'devices'}

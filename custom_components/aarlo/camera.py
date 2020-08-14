@@ -6,7 +6,6 @@ https://home-assistant.io/components/camera.arlo/
 """
 import base64
 import logging
-import time
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -174,7 +173,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     cameras = []
     cameras_with_siren = False
     for camera in arlo.cameras:
-        cameras.append(ArloCam(camera, config))
+        cameras.append(ArloCam(camera, config, arlo))
         if camera.has_capability(SIREN_STATE_KEY):
             cameras_with_siren = True
 
@@ -300,16 +299,18 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
 class ArloCam(Camera):
     """An implementation of a Netgear Arlo IP camera."""
 
-    def __init__(self, camera, config):
+    def __init__(self, camera, config, arlo):
         """Initialize an Arlo camera."""
         super().__init__()
         self._name = camera.name
-        self._unique_id = self._name.lower().replace(' ', '_')
+        self._unique_id = camera.entity_id
         self._camera = camera
         self._state = None
         self._recent = False
         self._last_image_source_ = None
         self._motion_status = False
+        self._stream_snapshot = arlo.cfg.stream_snapshot
+        self._save_updates_to = arlo.cfg.save_updates_to
         self._ffmpeg_arguments = config.get(CONF_FFMPEG_ARGUMENTS)
         _LOGGER.info('ArloCam: %s created', self._name)
 
@@ -352,6 +353,16 @@ class ArloCam(Camera):
                         'entity_id': 'aarlo.' + self._unique_id
                     })
                 self._last_image_source_ = value
+
+            # Save image if asked to
+            if attr == LAST_IMAGE_DATA_KEY and self._save_updates_to != '':
+                filename = "{}/{}.jpg".format(self._save_updates_to,self._unique_id)
+                _LOGGER.debug("saving to {}".format(filename))
+                if not self.hass.config.is_allowed_path(filename):
+                    _LOGGER.error("Can't write %s, no access to path!", filename)
+                else:
+                    with open(filename, 'wb') as img_file:
+                        img_file.write(value)
 
             # Signal changes.
             self.async_schedule_update_ha_state()
@@ -542,11 +553,12 @@ class ArloCam(Camera):
         return self._camera.wait_for_user_stream()
 
     def _start_snapshot_stream(self):
-        # XXX make optional
-        source = self._camera.start_snapshot_stream()
-        if source is not None:
-            self._camera.wait_for_user_stream()
-        return source
+        if self._stream_snapshot:
+            source = self._camera.start_snapshot_stream()
+            if source is not None:
+                self._camera.wait_for_user_stream()
+            return source
+        return None
 
     def request_snapshot(self):
         self._start_snapshot_stream()

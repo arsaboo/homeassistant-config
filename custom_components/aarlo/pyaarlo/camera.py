@@ -278,6 +278,9 @@ class ArloCamera(ArloChildDevice):
                     self._arlo.debug("queueing update in {}".format(retry))
                     self._arlo.bg.run_in(self._arlo.ml.queue_update, retry, cb=self._update_media_and_thumbnail)
 
+                # Something just happened.
+                self._set_recent(self._arlo.cfg.recent_time)
+
             # Reset and signal anybody waiting.
             self._arlo.debug("resetting activity state")
             with self._lock:
@@ -286,8 +289,7 @@ class ArloCamera(ArloChildDevice):
                 self._dump_activities("_event::idle")
                 self._lock.notify_all()
 
-            # Something just happened.
-            self._set_recent(self._arlo.cfg.recent_time)
+
 
         # Camera is active. If we don't know about it then update our status.
         if activity == 'fullFrameSnapshot':
@@ -675,6 +677,8 @@ class ArloCamera(ArloChildDevice):
     def state(self):
         """Returns the camera's current state.
         """
+        if not self.is_on:
+            return 'off'
         if self.is_taking_snapshot or self.has_activity("snapshot-stream"):
             if self.is_recording or self.has_activity("recording-stream"):
                 return 'recording + snapshot'
@@ -1152,8 +1156,9 @@ class ArloCamera(ArloChildDevice):
             return True
         if cap in (AUDIO_DETECTED_KEY,):
             if self.model_id.startswith(
-                ('arloq', 'VMC4030', 'VMC4040', 'VMC5040', 'ABC1000', 'FB1001')
-            ):
+                ('VMC4030', 'VMC4040', 'VMC5040', 'ABC1000', 'FB1001')):
+                return True
+            if self.device_type.startswith('arloq'):
                 return True
         if cap in (SIREN_STATE_KEY,):
             if self.model_id.startswith(('VMC4040', 'VMC5040', 'FB1001')):

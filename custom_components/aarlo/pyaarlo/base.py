@@ -3,7 +3,7 @@ import time
 
 from .constant import (AUTOMATION_PATH, DEFAULT_MODES, DEFINITIONS_PATH, CONNECTION_KEY,
                        MODE_ID_TO_NAME_KEY, MODE_KEY,
-                       MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY,
+                       MODE_NAME_TO_ID_KEY, MODE_IS_SCHEDULE_KEY, MODE_UPDATE_INTERVAL,
                        SCHEDULE_KEY, SIREN_STATE_KEY, TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY)
 from .device import ArloDevice
 from .util import time_to_arlotime
@@ -17,6 +17,7 @@ class ArloBase(ArloDevice):
         super().__init__(name, arlo, attrs)
         self._refresh_rate = 15
         self._schedules = None
+        self._last_update = 0
 
     def _id_to_name(self, mode_id):
         return self._load([MODE_ID_TO_NAME_KEY, mode_id], None)
@@ -110,7 +111,7 @@ class ArloBase(ArloDevice):
                 self._save_and_do_callbacks(MODE_KEY, self._id_to_name(props['activeMode']))
             elif 'active' in props:
                 self._save_and_do_callbacks(MODE_KEY, self._id_to_name(props['active']))
-
+        
         # mode change?
         elif resource == 'activeAutomations':
             self._set_mode_or_schedule(event)
@@ -215,7 +216,9 @@ class ArloBase(ArloDevice):
                                                                                             pprint.pformat(body)))
                         self._arlo.debug('Fetching device list (hoping this will fix arming/disarming)')
                         self._arlo.be.devices()
-                        self._arlo.bg.run(_set_mode_v2_cb, i=attempt + 1)
+                        self._arlo.bg.run(_set_mode_v2_cb, attempt=attempt + 1)
+                        return
+
                     self._arlo.error('Failed to set mode.')
                     self._arlo.debug('Giving up on setting mode! Session headers=\n{}'.format(
                         pprint.pformat(self._arlo.be.session.headers)))
@@ -229,6 +232,12 @@ class ArloBase(ArloDevice):
     def update_mode(self):
         """Check and update the base's current mode.
         """
+        now = time.monotonic()
+        with self._lock:
+            if now < self._last_update + MODE_UPDATE_INTERVAL:
+                self._arlo.debug('skipping an update')
+                return
+            self._last_update = now
         data = self._arlo.be.get(AUTOMATION_PATH)
         for mode in data:
             if mode.get('uniqueId', '') == self.unique_id:

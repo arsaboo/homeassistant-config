@@ -23,7 +23,7 @@ from .util import time_to_arlotime
 
 _LOGGER = logging.getLogger('pyaarlo')
 
-__version__ = '0.7.0.alpha.5'
+__version__ = '0.7.0.beta.2'
 
 
 class PyArlo(object):
@@ -167,6 +167,7 @@ class PyArlo(object):
         self.info('pyaarlo starting')
         self._started = False
         self._refresh_devices()
+
         for device in self._devices:
             dname = device.get('deviceName')
             dtype = device.get('deviceType')
@@ -208,6 +209,7 @@ class PyArlo(object):
             self.debug('getting initial settings')
             self._refresh_bases(initial=True)
             self._refresh_ambient_sensors()
+            self._refresh_doorbells()
             self._ml.load()
             self._refresh_camera_thumbnails(True)
             self._refresh_camera_media(True)
@@ -217,6 +219,7 @@ class PyArlo(object):
             self.debug('queueing initial settings')
             self._bg.run(self._refresh_bases, initial=True)
             self._bg.run(self._refresh_ambient_sensors)
+            self._bg.run(self._refresh_doorbells)
             self._bg.run(self._ml.load)
             self._bg.run(self._refresh_camera_thumbnails, wait=False)
             self._bg.run(self._refresh_camera_media, wait=False)
@@ -241,7 +244,11 @@ class PyArlo(object):
         return "<{0}: {1}>".format(self.__class__.__name__, self._cfg.name)
 
     def _refresh_devices(self):
-        self._devices = self._be.get(DEVICES_PATH + "?t={}".format(time_to_arlotime()))
+        url = DEVICES_PATH + "?t={}".format(time_to_arlotime())
+        self._devices = self._be.get(url)
+        if not self._devices:
+            self.warning("No devices returned from " + url)
+            self._devices = []
         self.vdebug("devices={}".format(pprint.pformat(self._devices)))
 
     def _refresh_camera_thumbnails(self, wait=False):
@@ -257,6 +264,10 @@ class PyArlo(object):
     def _refresh_ambient_sensors(self):
         for camera in self._cameras:
             camera.update_ambient_sensors()
+
+    def _refresh_doorbells(self):
+        for doorbell in self._doorbells:
+            doorbell.update_silent_mode()
 
     def _ping_bases(self):
         for base in self._bases:
@@ -320,6 +331,25 @@ class PyArlo(object):
         """Stop connection to Arlo and logout. """
         self._st.save()
         self._be.logout()
+
+    @property
+    def entity_id(self):
+        if self.cfg.serial_ids:
+            return self.device_id
+        else:
+            return self.name.lower().replace(' ', '_')
+
+    @property
+    def name(self):
+        return 'ARLO CONTROLLER'
+
+    @property
+    def device_id(self):
+        return 'ARLO'
+
+    @property
+    def model_id(self):
+        return self.name
 
     @property
     def cfg(self):

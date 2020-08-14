@@ -61,20 +61,17 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     sensors = []
     for sensor_type in config.get(CONF_MONITORED_CONDITIONS):
         if sensor_type == 'total_cameras':
-            sensors.append(ArloSensor(SENSOR_TYPES[sensor_type][0], arlo, sensor_type))
+            sensors.append(ArloSensor(arlo, None, sensor_type))
         else:
             for camera in arlo.cameras:
                 if camera.has_capability(SENSOR_TYPES[sensor_type][3]):
-                    name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], camera.name)
-                    sensors.append(ArloSensor(name, camera, sensor_type))
+                    sensors.append(ArloSensor(arlo, camera, sensor_type))
             for doorbell in arlo.doorbells:
                 if doorbell.has_capability(SENSOR_TYPES[sensor_type][3]):
-                    name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], doorbell.name)
-                    sensors.append(ArloSensor(name, doorbell, sensor_type))
+                    sensors.append(ArloSensor(arlo, doorbell, sensor_type))
             for light in arlo.lights:
                 if light.has_capability(SENSOR_TYPES[sensor_type][3]):
-                    name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], light.name)
-                    sensors.append(ArloSensor(name, light, sensor_type))
+                    sensors.append(ArloSensor(arlo, light, sensor_type))
 
     async_add_entities(sensors, True)
 
@@ -82,15 +79,24 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
 class ArloSensor(Entity):
     """An implementation of a Netgear Arlo IP sensor."""
 
-    def __init__(self, name, device, sensor_type):
+    def __init__(self, arlo, device, sensor_type):
         """Initialize an Arlo sensor."""
-        self._name = name
-        self._unique_id = self._name.lower().replace(' ', '_')
-        self._device = device
+
+        sensor_details = SENSOR_TYPES[sensor_type]
+
+        if device is None:
+            self._name = sensor_details[0]
+            self._unique_id = sensor_type
+            self._device = arlo
+        else:
+            self._name = '{0} {1}'.format(sensor_details[0], device.name)
+            self._unique_id = '{0}_{1}'.format(sensor_details[0], device.entity_id).lower().replace(" ", "_")
+            self._device = device
+
         self._sensor_type = sensor_type
-        self._icon = 'mdi:{}'.format(SENSOR_TYPES.get(self._sensor_type)[2])
+        self._icon = 'mdi:{}'.format(sensor_details[2])
         self._state = None
-        self._attr = SENSOR_TYPES.get(self._sensor_type)[3]
+        self._attr = sensor_details[3]
         _LOGGER.info('ArloSensor: %s created', self._name)
 
     async def async_added_to_hass(self):
@@ -143,12 +149,12 @@ class ArloSensor(Entity):
         attrs = {
             ATTR_ATTRIBUTION: COMPONENT_ATTRIBUTION,
             'brand': COMPONENT_BRAND,
-            'friendly_name': self._name
+            'friendly_name': self._name,
+            'camera_name': self._device.name,
+            'device_id': self._device.device_id,
+            'model': self._device.model_id,
         }
 
-        if self._sensor_type != 'total_cameras':
-            attrs['camera_name'] = self._device.name
-            attrs['model'] = self._device.model_id
         if self._sensor_type == 'last_capture':
             video = self._device.last_video
             if video is not None:

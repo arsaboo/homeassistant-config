@@ -1,3 +1,4 @@
+import traceback
 import threading
 import time
 
@@ -33,7 +34,7 @@ class ArloBackgroundWorker(threading.Thread):
                     try:
                         job['callback'](**job['args'])
                     except Exception as e:
-                        self._arlo.debug('job-error={}'.format(type(e).__name__))
+                        self._arlo.error('job-error={}\n{}'.format(type(e).__name__, traceback.format_exc()))
 
                     # reschedule?
                     self._lock.acquire()

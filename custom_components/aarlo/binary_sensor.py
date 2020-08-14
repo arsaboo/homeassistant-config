@@ -71,7 +71,7 @@ class ArloBinarySensor(BinarySensorEntity):
     def __init__(self, device, sensor_type):
         """Initialize an Arlo sensor."""
         self._name = '{0} {1}'.format(SENSOR_TYPES[sensor_type][0], device.name)
-        self._unique_id = self._name.lower().replace(' ', '_')
+        self._unique_id = '{0}_{1}'.format(SENSOR_TYPES[sensor_type][0], device.entity_id).lower()
         self._device = device
         self._sensor_type = sensor_type
         self._state = None
