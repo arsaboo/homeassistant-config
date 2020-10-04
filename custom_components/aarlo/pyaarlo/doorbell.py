@@ -59,6 +59,10 @@ class ArloDoorBell(ArloChildDevice):
             # video doorbell provides these as a camera type
             if not self.model_id.startswith('AVD1001'):
                 return True
+        if cap in (CONNECTION_KEY,):
+            # If video door bell is its own base station then don't provide connectivity here.
+            if self.model_id.startswith('AVD1001') and self.parent_id == self.device_id:
+                return False
         return super().has_capability(cap)
 
     def silent_mode(self, active, block_call):

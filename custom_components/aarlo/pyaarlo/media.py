@@ -16,6 +16,7 @@ class ArloMediaLibrary(object):
         self._count = 0
         self._videos = []
         self._video_keys = []
+        self._snapshots = {}
 
     def __repr__(self):
         return "<{0}:{1}>".format(self.__class__.__name__, self._arlo.cfg.name)
@@ -34,30 +35,37 @@ class ArloMediaLibrary(object):
 
         # add in new images
         videos = []
+        snapshots = {}
         for video in data:
 
-            # skip not video
-            if not video.get('contentType', '').startswith('video/'):
-                continue
-
+            # camera, skip if not found
             camera = self._arlo.lookup_camera_by_id(video.get('deviceId'))
             if not camera:
                 continue
 
-            key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
-            if key in keys:
-                self._arlo.vdebug('skipping {0}, already present'.format(key))
+            # snapshots, use first found
+            if video.get('reason', '') == "snapshot":
+                if camera.device_id not in snapshots:
+                    self._arlo.debug('adding snapshot for {}'.format(camera.name))
+                    snapshots[camera.device_id] = ArloSnapshot(video, camera, self._arlo)
                 continue
 
-            self._arlo.debug('adding {0}'.format(key))
-            videos.append(ArloVideo(video, camera, self._arlo))
-            keys.append(key)
+            # videos, add missing
+            if video.get('contentType', '').startswith('video/'):
+                key = '{0}:{1}'.format(camera.device_id, arlotime_strftime(video.get('localCreatedDate')))
+                if key in keys:
+                    self._arlo.vdebug('skipping {0}, already present'.format(key))
+                    continue
+                self._arlo.debug('adding {0}'.format(key))
+                videos.append(ArloVideo(video, camera, self._arlo))
+                keys.append(key)
 
         # note changes and run callbacks
         with self._lock:
             self._count += 1
             self._videos = videos + self._videos
             self._video_keys = keys
+            self._snapshots = snapshots
             self._arlo.debug('ml:update-count=' + str(self._count))
             cbs = self._load_cbs_
             self._load_cbs_ = []
@@ -79,28 +87,42 @@ class ArloMediaLibrary(object):
         data = self._arlo.be.post(LIBRARY_PATH, {'dateFrom': date_from, 'dateTo': date_to})
         videos = []
         keys = []
+        snapshots = {}
         for video in data:
 
-            # skip not video
-            if not video.get('contentType', '').startswith('video/'):
+            # Look for camera, skip if not found.
+            camera = self._arlo.lookup_camera_by_id(video.get('deviceId'))
+            if camera is None:
+                key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
+                self._arlo.vdebug('skipping {0}'.format(key))
                 continue
 
-            camera = self._arlo.lookup_camera_by_id(video.get('deviceId'))
-            if camera is not None:
+            # snapshots, use first found
+            if video.get('reason', '') == "snapshot":
+                if camera.device_id not in snapshots:
+                    self._arlo.debug('adding snapshot for {}'.format(camera.name))
+                    snapshots[camera.device_id] = ArloSnapshot(video, camera, self._arlo)
+                continue
+
+            # videos, add all
+            if video.get('contentType', '').startswith('video/'):
                 key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
                 self._arlo.vdebug('adding {0}'.format(key))
                 videos.append(ArloVideo(video, camera, self._arlo))
                 keys.append(key)
-            else:
-                key = '{0}:{1}'.format(video.get('deviceId'), arlotime_strftime(video.get('localCreatedDate')))
-                self._arlo.vdebug('skipping {0}'.format(key))
+                continue
 
         # set update count, load() never runs callbacks
         with self._lock:
             self._count += 1
             self._videos = videos
             self._video_keys = keys
+            self._snapshots = snapshots
             self._arlo.debug('ml:load-count=' + str(self._count))
+
+    def snapshot_for(self, camera):
+        with self._lock:
+            return self._snapshots.get(camera.device_id,None)
 
     @property
     def videos(self):
@@ -128,7 +150,7 @@ class ArloMediaLibrary(object):
             self._load_cbs_.append(cb)
 
 
-class ArloVideo(object):
+class ArloMediaObject(object):
     """Object for Arlo Video file."""
 
     def __init__(self, attrs, camera, arlo):
@@ -191,14 +213,32 @@ class ArloVideo(object):
         return self._camera
 
     @property
+    def triggered_by(self):
+        return self._attrs.get('reason', None)
+
+    @property
+    def thumbnail_url(self):
+        """Returns the URL of the thumbnail image.
+        """
+        return self._attrs.get('presignedThumbnailUrl', None)
+
+    def download_thumbnail(self, filename=None):
+        return http_get(self.thumbnail_url, filename)
+
+
+class ArloVideo(ArloMediaObject):
+    """Object for Arlo Video file."""
+
+    def __init__(self, attrs, camera, arlo):
+        """ Video Object.
+        """
+        super().__init__(attrs, camera, arlo)
+
+    @property
     def media_duration_seconds(self):
         """Returns how long the recording last.
         """
         return self._attrs.get('mediaDurationSecond', None)
-
-    @property
-    def triggered_by(self):
-        return self._attrs.get('reason', None)
 
     @property
     def object_type(self):
@@ -215,19 +255,10 @@ class ArloVideo(object):
         return self._attrs.get('objRegion', None)
 
     @property
-    def thumbnail_url(self):
-        """Returns the URL of the thumbnail image.
-        """
-        return self._attrs.get('presignedThumbnailUrl', None)
-
-    @property
     def video_url(self):
         """Returns the URL of the video.
         """
         return self._attrs.get('presignedContentUrl', None)
-
-    def download_thumbnail(self, filename=None):
-        return http_get(self.thumbnail_url, filename)
 
     def download_video(self, filename=None):
         return http_get(self.video_url, filename)
@@ -235,5 +266,21 @@ class ArloVideo(object):
     @property
     def stream_video(self):
         return http_stream(self.video_url)
+
+
+class ArloSnapshot(ArloMediaObject):
+    """Object for Arlo Snapshot file."""
+
+    def __init__(self, attrs, camera, arlo):
+        """ Snapshot Object.
+        """
+        super().__init__(attrs, camera, arlo)
+
+    @property
+    def image_url(self):
+        """Returns the URL of the video.
+        """
+        return self._attrs.get('presignedContentUrl', None)
+
 
 # vim:sw=4:ts=4:et:

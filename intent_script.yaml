@@ -93,7 +93,7 @@
             {%- endif -%}
 
             {%- if Room.lower() in ['kitchen', 'living room'] -%}
-              kitchen_lights
+              ge_kitchen_lights
             {%- elif Room.lower() in ['driveway'] -%}
               driveway
             {%- elif Room.lower() in ['porch'] -%}
@@ -125,13 +125,13 @@
   GarageDoorIntent:
     speech:
       text: >
-        {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "off") -%}
+        {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garage_door", "off") -%}
           OK, opening the garage door.
-        {%- elif OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "on") -%}
+        {%- elif OpenClose.lower() == "open" and is_state("binary_sensor.garage_door", "on") -%}
           The garage door is already open.
-        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "on") -%}
+        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garage_door", "on") -%}
           OK, closing the garage door.
-        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "off") -%}
+        {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garage_door", "off") -%}
           The garage door is already closed.
         {%- endif -%}
     card:
@@ -140,10 +140,10 @@
       content: Ask Home Assistant to {{ OpenClose }} garage door.
     action:
       - service_template: >
-          {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garagedoor", "off") -%}
+          {%- if OpenClose.lower() == "open" and is_state("binary_sensor.garage_door", "off") -%}
             switch.turn_on
-          {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garagedoor", "on") -%}
+          {%- elif OpenClose.lower() == "close" and is_state("binary_sensor.garage_door", "on") -%}
             switch.turn_on
           {%- endif -%}
         data_template:
-          entity_id: switch.garage_relay_switch
+          entity_id: switch.shelly_garage

@@ -2,6 +2,8 @@
 from homeassistant.loader import async_get_custom_components
 
 from custom_components.hacs.helpers.classes.exceptions import HacsException
+from custom_components.hacs.helpers.classes.repository import HacsRepository
+from custom_components.hacs.enums import HacsCategory
 from custom_components.hacs.helpers.functions.filters import (
     get_first_directory_in_directory,
 )
@@ -9,7 +11,6 @@ from custom_components.hacs.helpers.functions.information import (
     get_integration_manifest,
 )
 from custom_components.hacs.helpers.functions.logger import getLogger
-from custom_components.hacs.helpers.classes.repository import HacsRepository
 
 
 class HacsIntegration(HacsRepository):
@@ -20,7 +21,7 @@ class HacsIntegration(HacsRepository):
         super().__init__()
         self.data.full_name = full_name
         self.data.full_name_lower = full_name.lower()
-        self.data.category = "integration"
+        self.data.category = HacsCategory.INTEGRATION
         self.content.path.remote = "custom_components"
         self.content.path.local = self.localpath
         self.logger = getLogger(f"repository.{self.data.category}.{full_name}")
@@ -59,14 +60,14 @@ class HacsIntegration(HacsRepository):
         try:
             await get_integration_manifest(self)
         except HacsException as exception:
-            if self.hacs.action:
+            if self.hacs.system.action:
                 raise HacsException(f"::error:: {exception}")
             self.logger.error(exception)
 
         # Handle potential errors
         if self.validate.errors:
             for error in self.validate.errors:
-                if not self.hacs.system.status.startup:
+                if not self.hacs.status.startup:
                     self.logger.error(error)
         return self.validate.success
 

@@ -23,10 +23,11 @@ homeassistant:
   customize: !include customize.yaml
   customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
-  whitelist_external_dirs:
-    - '/home/homeassistant/.homeassistant/downloads'
-    - '/tmp'
-    - '/home/homeassistant/.homeassistant/downloads/camera/'
+  allowlist_external_dirs:
+    - /home/homeassistant/.homeassistant/downloads
+    - /tmp
+    - /home/homeassistant/.homeassistant/downloads/camera/
+default_config:
 updater:
   include_used_components: true
 system_health:
@@ -83,13 +84,13 @@ zone:
     longitude: !secret longitude_downtown
     radius: 200
     icon: mdi:school
-zwave:
-  usb_path: /dev/ttyACM0
-  network_key: !secret zwave_network_key
-  device_config:
-    light.kitchen_light:
-      refresh_value: true
-      delay: 3
+# zwave:
+#   usb_path: /dev/ttyACM0
+#   network_key: !secret zwave_network_key
+#   device_config:
+#     light.ge_kitchen_lights:
+#       refresh_value: true
+#       delay: 3
 hue:
   bridges:
     - host: 192.168.2.229
@@ -103,19 +104,19 @@ lifx:
   light:
 light:
   # z-wave dimmer switch (http://amzn.to/2j1UEli)
-  # - platform: mqtt
-  #   name: "Kitchen Lights"
-  #   state_topic: "smartthings/Kitchen/switch"
-  #   command_topic: "smartthings/Kitchen/switch"
-  #   payload_on: "on"
-  #   payload_off: "off"
-  #   brightness_state_topic: "smartthings/Kitchen/level"
-  #   brightness_command_topic: "smartthings/Kitchen/level"
-  #   brightness_scale: 99
-  #   brightness_value_template: '{{ value }}'
-  #   retain: true
-  #   optimistic: false
-  #   qos: 0
+  - platform: mqtt
+    name: "GE Kitchen Lights"
+    state_topic: "smartthings/GE Dimmer Switch/switch"
+    command_topic: "smartthings/GE Dimmer Switch/switch"
+    payload_on: "on"
+    payload_off: "off"
+    brightness_state_topic: "smartthings/GE Dimmer Switch/level"
+    brightness_command_topic: "smartthings/GE Dimmer Switch/level"
+    brightness_scale: 99
+    brightness_value_template: '{{ value }}'
+    retain: true
+    optimistic: false
+    qos: 0
   - platform: group
     name: Living Room Lights
     entities:
@@ -199,10 +200,9 @@ alexa:
         - light.master_lights
         - input_boolean.abodeupdate
         - light.gateway_light_34ce00813670
-        - light.kitchen_light
+        - light.ge_kitchen_lights
         - light.lifx5
         - switch.driveway
-        - switch.garage_relay_switch
         - switch.wemoporch
         - script.tv_youtube_on
         - switch.sammytv
@@ -296,7 +296,7 @@ google_assistant:
       expose: true
       name: Porch Lights
       room: porch
-    light.kitchen_light:
+    light.ge_kitchen_lights:
       expose: true
       room: kitchen
     light.lifx5:
@@ -338,7 +338,7 @@ homekit:
       - cover.garagedoor
       - light.living_room_lights
       - light.lifx5
-      - light.kitchen_light
+      - light.ge_kitchen_lights
       - light.master_lights
       - switch.driveway
       - binary_sensor.water_leak_sensor_158d0001d77800
@@ -530,11 +530,8 @@ image_processing:
       - entity_id: camera.patio
     file_out:
       - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      # - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     model:
-      graph: /home/homeassistant/.homeassistant/deps/frozen_inference_graph.pb
-      model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
-      labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
+      graph: /home/homeassistant/.homeassistant/tensorflow/models/efficientdet_d1_coco17_tpu-32/
       categories:
         - person
   - platform: tensorflow
@@ -548,9 +545,7 @@ image_processing:
       - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
       # - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     model:
-      graph: /home/homeassistant/.homeassistant/deps/frozen_inference_graph.pb
-      model_dir: /home/homeassistant/.homeassistant/deps/tensorflow
-      labels: /home/homeassistant/.homeassistant/deps/tensorflow/object_detection/data/mscoco_label_map.pbtxt
+      graph: /home/homeassistant/.homeassistant/tensorflow/models/efficientdet_d1_coco17_tpu-32/
       categories:
         - category: person
           area:
@@ -735,6 +730,13 @@ telegram_bot:
   api_key: !secret telegram_key
   allowed_chat_ids:
     - !secret telegram_chatID_Alok
+pi_hole:
+  - host: 192.168.2.3
+    name: Pi Hole Main
+    api_key: !secret pi_hole_main
+  - host: 192.168.2.14
+    name: Pi Hole Kids
+    api_key: !secret pi_hole_kids
 hangouts:
 notify:
   - platform: hangouts
@@ -821,6 +823,8 @@ logger:
     homeassistant.components.switch.unifi: debug
     custom_components.aesop: debug
     custom_components.aesop.sensor: debug
+    homeassistant.components.ssdp: debug
+    homeassistant.components.smartthings: debug
     # custom_components.alexa_media: debug
     # homeassistant.components.http.view: info
     # adb.adb_commands: debug

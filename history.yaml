@@ -1,7 +1,7 @@
   use_include_order: True
   include:
     entities:
-      - binary_sensor.garagedoor
+      - binary_sensor.garage_door
       - device_tracker.meta_rashmi
       - device_tracker.test_rashmi
       - person.rashmi

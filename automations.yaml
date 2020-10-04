@@ -22,12 +22,13 @@
 - id: update_meta_tracker
   alias: "Update Device Meta Tracker"
   initial_state: 'on'
+  mode: queued
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone
-        - device_tracker.rashmiphone
+        - device_tracker.aloks_iphone_3
+        - device_tracker.iphone_3
         - device_tracker.alokphone_alokphone_2
         - device_tracker.rashmiphone_rashmiphone_2
       to: 'not_home'
@@ -48,9 +49,9 @@
         - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone
+        - device_tracker.aloks_iphone_3
         - device_tracker.elantrase_2
-        - device_tracker.rashmiphone
+        - device_tracker.iphone_3
       to: 'home'
   action:
     - service: script.updatetracker
@@ -61,6 +62,7 @@
 
 - id: update_alok_test_tracker
   alias: "Update Alok Test Tracker"
+  mode: queued
   initial_state: 'on'
   trigger:
     - platform: state
@@ -117,17 +119,18 @@
             {%- endif -%}
 - id: update_alok_test_tracker_router
   alias: "Update Alok Test Tracker Router"
+  mode: queued
   initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone
+        - device_tracker.aloks_iphone_3
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone
+        - device_tracker.aloks_iphone_3
         - device_tracker.elantrase_2
       to: 'home'
   action:
@@ -141,6 +144,7 @@
 
 - id: update_rashmi_test_tracker
   alias: "Update Rashmi Test Tracker"
+  mode: queued
   initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
@@ -192,17 +196,18 @@
             {%- endif -%}
 - id: update_rashmi_test_tracker_router
   alias: "Update Rashmi Test Tracker Router"
+  mode: queued
   initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.rashmiphone
+        - device_tracker.iphone_3
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.rashmiphone
+        - device_tracker.iphone_3
       to: 'home'
   action:
     - service: device_tracker.see
@@ -533,6 +538,7 @@
 
 - id: image_processing_scan
   alias: 'Image Processing Scan'
+  mode: queued
   initial_state: 'on'
   trigger:
     - platform: state
@@ -590,6 +596,7 @@
 - id: tf_image_processing_notification
   alias: 'TF image processing'
   initial_state: 'on'
+  mode: queued
   trigger:
     - platform: state
       entity_id:
@@ -715,6 +722,7 @@
 
 - id: notify_tensorflow_bus
   alias: 'Notify Tensorflow bus'
+  mode: queued
   initial_state: 'on'
   condition:
     - condition: state
@@ -745,6 +753,7 @@
 
 - id: notify_tensorflow_detection
   alias: 'Notify Tensorflow detection'
+  mode: queued
   initial_state: 'on'
   condition:
     - condition: state
@@ -876,20 +885,6 @@
     at: '2:31:00'
   action:
     service: zwave.heal_network
-
-# {{state_attr('zwave.garage_door_tilt_sensor','query_stage')=='CacheLoad'}}
-# - id: z-wave_cacheload
-#   alias: Repair Z-Wave Network
-#   initial_state: 'on'
-#   trigger:
-#     - platform: state
-#       entity_id: zwave.garage_door_tilt_sensor
-#       to: 'initializing'
-#     - platform: state
-#       entity_id: zwave.garage_relay
-#       to: 'initializing'
-#   action:
-#     service: zwave.test_network
 
 - id: update_available_notification
   alias: "Update Available Notification"
@@ -1306,11 +1301,11 @@
           {%- endif -%}
         value: >
           {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
-            {{state_attr("climate.bedroom","current_temperature")|float}}
+            {{state_attr("climate.master_homekit","current_temperature")|float}}
           {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
-            {{state_attr("climate.upstairs","current_temperature")|float}}
+            {{state_attr("climate.upstairs_homekit","current_temperature")|float}}
           {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
-            {{state_attr("climate.downstairs","current_temperature")|float}}
+            {{state_attr("climate.downstairs_homekit","current_temperature")|float}}
           {%- endif -%}
 - id: prevent_master_hvac_failure
   alias: 'Prevent master hvac failure'
@@ -1342,6 +1337,14 @@
       to: 'cooling'
       for: '00:30:00'
   action:
+    - service: notify.mobile_app_alok_s_iphone
+      data_template:
+        message: >
+          Turning off {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
+        data:
+          subtitle: "{{ trigger.entity_id.split('.')[1].split('_')[0] }} cooled for 30 minutes"
+          push:
+            badge: 0
     - service: climate.set_hvac_mode
       data:
         entity_id: climate.master_homekit
@@ -1502,10 +1505,6 @@
       entity_id: binary_sensor.door_window_sensor_158d0001bf26df
       to: 'off'
       for: '00:00:30'
-    - platform: state
-      entity_id: light.lifx5
-      to: 'on'
-      for: '00:05:00'
   condition:
     - condition: state
       entity_id: light.lifx5
@@ -1519,7 +1518,7 @@
   initial_state: 'on'
   trigger:
    - platform: state
-     entity_id: light.kitchen_light
+     entity_id: light.ge_kitchen_lights
      from: 'off'
      to: 'on'
   condition:
@@ -1528,7 +1527,7 @@
   action:
      service: light.turn_on
      data:
-       entity_id: light.kitchen_light
+       entity_id: light.ge_kitchen_lights
        brightness: 200
 
 - id: turn_off_xiaomi
@@ -1694,30 +1693,12 @@
         - switch.driveway
         - switch.wemoporch
 
-- id: reset_garage_relay
-  alias: 'Reset Garage Relay'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: cover.garagedoor
-      to: 'closed'
-      for: '00:00:30'
-    - platform: time_pattern
-      seconds: '/5'
-  condition:
-    - condition: state
-      entity_id: switch.garage_relay_switch
-      state: "on"
-  action:
-    - service: switch.turn_off
-      entity_id: switch.garage_relay_switch
-
 - id: open_garage_door_when_someone_home
   alias: 'Open Garage door when someone home'
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: binary_sensor.garagedoor
+      entity_id: binary_sensor.garage_door
       state: 'off'
       for: '00:02:00'
     - condition: state
@@ -1753,7 +1734,7 @@
       to: 'home'
   action:
     - service: switch.turn_on
-      entity_id: switch.garage_relay_switch
+      entity_id: switch.shelly_garage
     - service: logbook.log
       data_template:
         name: "Garage door opened for: "
@@ -1763,7 +1744,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: binary_sensor.garagedoor
+      entity_id: binary_sensor.garage_door
       state: 'on'
     - condition: template
       value_template: >
@@ -1785,7 +1766,7 @@
       minutes: '/5'
   action:
     - service: switch.turn_on
-      entity_id: switch.garage_relay_switch
+      entity_id: switch.shelly_garage
 
 - id: sensors_changed_when_nobody_home
   alias: 'Sensors changed when nobody is home'
@@ -1799,7 +1780,7 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.garagedoor
+        - binary_sensor.garage_door
         - binary_sensor.back_door
         - binary_sensor.garage_entry_door
         - binary_sensor.front_door
@@ -1934,10 +1915,10 @@
 - id: turn_off_study_fan
   alias: Turn off study fan
   initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: switch.03783133807d3a7d0403
-      state: 'on'
+  # condition:
+  #   - condition: state
+  #     entity_id: switch.03783133807d3a7d0403
+  #     state: 'on'
   trigger:
     - platform: numeric_state
       entity_id: sensor.rpi_cpu_thermal_1_temp

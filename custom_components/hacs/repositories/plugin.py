@@ -2,9 +2,9 @@
 import json
 
 from custom_components.hacs.helpers.classes.exceptions import HacsException
+from custom_components.hacs.helpers.classes.repository import HacsRepository
 from custom_components.hacs.helpers.functions.information import find_file_name
 from custom_components.hacs.helpers.functions.logger import getLogger
-from custom_components.hacs.helpers.classes.repository import HacsRepository
 
 
 class HacsPlugin(HacsRepository):
@@ -45,7 +45,7 @@ class HacsPlugin(HacsRepository):
         # Handle potential errors
         if self.validate.errors:
             for error in self.validate.errors:
-                if not self.hacs.system.status.startup:
+                if not self.hacs.status.startup:
                     self.logger.error(error)
         return self.validate.success
 

@@ -5,17 +5,16 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import aiohttp_client
 
+from custom_components.hacs.const import DOMAIN
+from custom_components.hacs.helpers.functions.configuration_schema import (
+    hacs_base_config_schema,
+    hacs_config_option_schema,
+)
 from custom_components.hacs.helpers.functions.information import get_repository
 
 # pylint: disable=dangerous-default-value
 from custom_components.hacs.helpers.functions.logger import getLogger
 from custom_components.hacs.share import get_hacs
-
-from custom_components.hacs.helpers.functions.configuration_schema import (
-    hacs_base_config_schema,
-    hacs_config_option_schema,
-)
-from custom_components.hacs.const import DOMAIN
 
 _LOGGER = getLogger(__name__)
 
@@ -81,7 +80,7 @@ class HacsOptionsFlowHandler(config_entries.OptionsFlow):
         """Initialize HACS options flow."""
         self.config_entry = config_entry
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, _user_input=None):
         """Manage the options."""
         return await self.async_step_user()
 

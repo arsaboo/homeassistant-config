@@ -6,7 +6,7 @@
       type: module
     - url: /local/custom_ui/circle-sensor-card.js
       type: module
-    - url: /www/community/lovelace-thermostat-card/main.js
+    - url: /hacsfiles/lovelace-thermostat-card/main.js
       type: module
     - url: /hacsfiles/calendar-card/calendar-card.js
       type: module
@@ -29,6 +29,10 @@
     - url: /local/custom_ui/card-modder.js
       type: js
     - url: /hacsfiles/lovelace-card-mod/card-mod.js
+      type: module
+    - url: /hacsfiles/firetv-card/firetv-card.js
+      type: module
+    - url: /hacsfiles/tv-card/tv-card.js
       type: module
     - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
       type: module
@@ -53,8 +57,6 @@
     - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
       type: module
     - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
-      type: module
-    - url: /hacsfiles/custom-header/custom-header.js
       type: module
     - url: /hacsfiles/banner-card/banner-card.js
       type: module

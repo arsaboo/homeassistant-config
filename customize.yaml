@@ -7,13 +7,13 @@ climate.upstairs:
 climate.bedroom:
   friendly_name: Master
   entity_picture: /local/icons/Ecobee.png
-device_tracker.aloks_iphone:
+device_tracker.aloks_iphone_3:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone
 device_tracker.alokphone_alokphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
-device_tracker.rashmiphone:
+device_tracker.iphone_3:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
 device_tracker.rashmiphone_rashmiphone_2:
@@ -170,7 +170,7 @@ switch.wemoporch:
   emulated_hue_name: Porch Lights
   friendly_name: Porch Lights
   homebridge_hidden: false
-switch.garage_relay_switch:
+switch.shelly_garage:
   emulated_hue_hidden: false
   emulated_hue_name: Garage Door
   friendly_name: Garage Door Switch
@@ -181,7 +181,7 @@ input_boolean.tvtime:
     icon: if (state === 'on') return 'mdi:television-classic'; return 'mdi:television-classic-off';
 cover.garagedoor:
   homebridge_cover_type: garage_door
-light.kitchen_light:
+light.ge_kitchen_lights:
   emulated_hue_hidden: false
   emulated_hue_name: Kitchen lights
   homebridge_hidden: false
@@ -265,7 +265,7 @@ sensor.10_year_treasury:
 sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
-  icon: mdi:coin-outline
+  icon: mdi:currency-usd-circle-outline
 sensor.alok_s_iphone_room_presence:
   friendly_name: Alok Room
   entity_picture: /local/icons/Alok.png

@@ -10,8 +10,9 @@ https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers
 import asyncio
 import logging
 import re
-from typing import List, Text  # noqa pylint: disable=unused-import
+from typing import List, Optional, Text  # noqa pylint: disable=unused-import
 
+from alexapy import AlexaAPI
 from homeassistant import util
 from homeassistant.components.media_player.const import (
     MEDIA_TYPE_MUSIC,
@@ -29,6 +30,9 @@ from homeassistant.components.media_player.const import (
     SUPPORT_VOLUME_SET,
 )
 from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_NAME,
+    CONF_PASSWORD,
     STATE_IDLE,
     STATE_PAUSED,
     STATE_PLAYING,
@@ -36,25 +40,26 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
 )
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.discovery import async_load_platform
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.event import async_call_later
 
 from . import (
-    CONF_EMAIL,
-    CONF_NAME,
-    CONF_PASSWORD,
     CONF_QUEUE_DELAY,
     DATA_ALEXAMEDIA,
     DEFAULT_QUEUE_DELAY,
     DOMAIN as ALEXA_DOMAIN,
-    MIN_TIME_BETWEEN_FORCED_SCANS,
-    MIN_TIME_BETWEEN_SCANS,
-    async_load_platform,
     hide_email,
     hide_serial,
 )
-from .const import DEPENDENT_ALEXA_COMPONENTS, PLAY_SCAN_INTERVAL
-from .helpers import _catch_login_errors, add_devices, retry_async
+from .alexa_media import AlexaMedia
+from .const import (
+    DEPENDENT_ALEXA_COMPONENTS,
+    MIN_TIME_BETWEEN_FORCED_SCANS,
+    MIN_TIME_BETWEEN_SCANS,
+    PLAY_SCAN_INTERVAL,
+)
+from .helpers import _catch_login_errors, add_devices
 
 try:
     from homeassistant.components.media_player import (
@@ -148,21 +153,13 @@ async def async_unload_entry(hass, entry) -> bool:
     return True
 
 
-class AlexaClient(MediaPlayerDevice):
+class AlexaClient(MediaPlayerDevice, AlexaMedia):
     """Representation of a Alexa device."""
 
     def __init__(self, device, login):
         # pylint: disable=unused-argument
         """Initialize the Alexa device."""
-        from alexapy import AlexaAPI
-
-        # Class info
-        self._login = login
-        self.alexa_api = AlexaAPI(self, login)
-        self.auth = None
-        self.alexa_api_session = login.session
-        self.email = login.email
-        self.account = hide_email(login.email)
+        super().__init__(self, login)
 
         # Logged in info
         self._authenticated = None
@@ -219,21 +216,6 @@ class AlexaClient(MediaPlayerDevice):
     async def init(self, device):
         """Initialize."""
         await self.refresh(device)
-
-    def check_login_changes(self):
-        """Update Login object if it has changed."""
-        try:
-            login = self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email]["login_obj"]
-        except (AttributeError, KeyError):
-            return
-        if self._login != login:
-            from alexapy import AlexaAPI
-
-            _LOGGER.debug("Login object has changed; updating")
-            self._login = login
-            self.alexa_api = AlexaAPI(self, login)
-            self.email = login.email
-            self.account = hide_email(login.email)
 
     async def async_added_to_hass(self):
         """Perform tasks after loading."""
@@ -333,7 +315,7 @@ class AlexaClient(MediaPlayerDevice):
         if not event_serial:
             return
         self._available = True
-        self.async_schedule_update_ha_state()
+        self.async_write_ha_state()
         if "last_called_change" in event:
             if event_serial == self.device_serial_number or any(
                 item["serialNumber"] == event_serial for item in self._app_device_list
@@ -369,8 +351,8 @@ class AlexaClient(MediaPlayerDevice):
                 self._source_list = self._get_source_list()
                 self._connected_bluetooth = self._get_connected_bluetooth()
                 self._bluetooth_list = self._get_bluetooth_list()
-                if self.hass and self.async_schedule_update_ha_state:
-                    self.async_schedule_update_ha_state()
+                if self.hass and self.async_write_ha_state:
+                    self.async_write_ha_state()
         elif "player_state" in event:
             player_state = event["player_state"]
             if event_serial == self.device_serial_number:
@@ -399,12 +381,12 @@ class AlexaClient(MediaPlayerDevice):
                         player_state["volumeSetting"],
                     )
                     self._media_vol_level = player_state["volumeSetting"] / 100
-                    if self.hass and self.async_schedule_update_ha_state:
-                        self.async_schedule_update_ha_state()
+                    if self.hass and self.async_write_ha_state:
+                        self.async_write_ha_state()
                 elif "dopplerConnectionState" in player_state:
                     self.available = player_state["dopplerConnectionState"] == "ONLINE"
-                    if self.hass and self.async_schedule_update_ha_state:
-                        self.async_schedule_update_ha_state()
+                    if self.hass and self.async_write_ha_state:
+                        self.async_write_ha_state()
                 await _refresh_if_no_audiopush(already_refreshed)
         elif "push_activity" in event:
             if self.state in {STATE_IDLE, STATE_PAUSED, STATE_PLAYING}:
@@ -512,6 +494,7 @@ class AlexaClient(MediaPlayerDevice):
                     "accounts"
                 ][self._login.email]["last_called"]["timestamp"]
             if skip_api:
+                self.async_write_ha_state()
                 return
             if "MUSIC_SKILL" in self._capabilities:
                 if self._parent_clusters and self.hass:
@@ -831,8 +814,8 @@ class AlexaClient(MediaPlayerDevice):
         await self.refresh(  # pylint: disable=unexpected-keyword-arg
             device, no_throttle=True
         )
-        websocket_enabled = self.hass.data[DATA_ALEXAMEDIA]["accounts"][email].get(
-            "websocket"
+        websocket_enabled = (
+            self.hass.data[DATA_ALEXAMEDIA]["accounts"].get(email, {}).get("websocket")
         )
         if (
             self.state in [STATE_PLAYING]
@@ -881,7 +864,7 @@ class AlexaClient(MediaPlayerDevice):
             else:
                 _LOGGER.debug("Disabling polling for %s", self.name)
         self._last_update = util.utcnow()
-        self.async_schedule_update_ha_state()
+        self.async_write_ha_state()
 
     @property
     def media_content_type(self):
@@ -916,7 +899,7 @@ class AlexaClient(MediaPlayerDevice):
         return self._last_update
 
     @property
-    def media_image_url(self) -> Text:
+    def media_image_url(self) -> Optional[Text]:
         """Return the image URL of current playing media."""
         if self._media_image_url:
             return re.sub("\\(", "%28", re.sub("\\)", "%29", self._media_image_url))
@@ -963,7 +946,7 @@ class AlexaClient(MediaPlayerDevice):
     def shuffle(self, state):
         """Set the Shuffle state."""
         self._shuffle = state
-        self.async_schedule_update_ha_state()
+        self.async_write_ha_state()
 
     @property
     def repeat_state(self):
@@ -974,7 +957,7 @@ class AlexaClient(MediaPlayerDevice):
     def repeat_state(self, state):
         """Set the Repeat state."""
         self._repeat = state
-        self.async_schedule_update_ha_state()
+        self.async_write_ha_state()
 
     @property
     def supported_features(self):
@@ -1159,6 +1142,9 @@ class AlexaClient(MediaPlayerDevice):
     async def async_play_media(self, media_type, media_id, enqueue=None, **kwargs):
         # pylint: disable=unused-argument
         """Send the play_media command to the media player."""
+        queue_delay = self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
+            "options"
+        ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY)
         if media_type == "music":
             await self.async_send_tts(
                 "Sorry, text to speech can only be called"
@@ -1172,47 +1158,59 @@ class AlexaClient(MediaPlayerDevice):
                 "https://github.com/custom-components/alexa_media_player/wiki/Configuration%3A-Notification-Component#use-the-notifyalexa_media-service"
             )
         elif media_type == "sequence":
+            _LOGGER.debug(
+                "%s:Running sequence %s with queue_delay %s",
+                self,
+                media_id,
+                queue_delay,
+            )
             await self.alexa_api.send_sequence(
                 media_id,
                 customer_id=self._customer_id,
-                queue_delay=self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
-                    "options"
-                ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
+                queue_delay=queue_delay,
                 **kwargs,
             )
         elif media_type == "routine":
+            _LOGGER.debug(
+                "%s:Running routine %s with queue_delay %s", self, media_id, queue_delay
+            )
             await self.alexa_api.run_routine(
-                media_id,
-                queue_delay=self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
-                    "options"
-                ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
+                media_id, queue_delay=queue_delay,
             )
         elif media_type == "sound":
+            _LOGGER.debug(
+                "%s:Playing sound %s with queue_delay %s", self, media_id, queue_delay
+            )
             await self.alexa_api.play_sound(
                 media_id,
                 customer_id=self._customer_id,
-                queue_delay=self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
-                    "options"
-                ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
+                queue_delay=queue_delay,
                 **kwargs,
             )
         elif media_type == "skill":
+            _LOGGER.debug(
+                "%s:Running skill %s with queue_delay %s", self, media_id, queue_delay
+            )
             await self.alexa_api.run_skill(
-                media_id,
-                queue_delay=self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
-                    "options"
-                ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
+                media_id, queue_delay=queue_delay,
             )
         elif media_type == "image":
+            _LOGGER.debug("%s:Setting background to %s", self, media_id)
             await self.alexa_api.set_background(media_id)
         else:
+            _LOGGER.debug(
+                "%s:Playing music %s on %s with queue_delay %s",
+                self,
+                media_id,
+                media_type,
+                queue_delay,
+            )
             await self.alexa_api.play_music(
                 media_type,
                 media_id,
                 customer_id=self._customer_id,
-                queue_delay=self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email][
-                    "options"
-                ].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
+                queue_delay=queue_delay,
+                timer=kwargs.get("extra", {}).get("timer", None),
                 **kwargs,
             )
         if not (

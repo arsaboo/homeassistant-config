@@ -21,6 +21,15 @@
     name: DrivewayMotion
     username: !secret hikvision_username
     password: !secret hikvision_password
+  - platform: mqtt
+    name: "Shelly Garage"
+    state_topic: "shellies/shelly1-8CAAB5C511D0/relay/0"
+    command_topic: "shellies/shelly1-8CAAB5C511D0/relay/0/command"
+    qos: 1
+    payload_on: "on"
+    payload_off: "off"
+    retain: false
+    optimistic: false
   - platform: template
     switches:
       downstairs_away:
@@ -126,14 +135,14 @@
 # pihole_status: "curl -X GET 'http://ip.ad.dr.ess/admin/api.php?status&auth=PWHASH'"
 # pihole_enable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?enable=300&auth=PWHASH'
 # pihole_disable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?disable=300&auth=PWHASH'
-  - platform: command_line
-    switches:
-      pihole:
-        command_on: !secret pihole_enable
-        command_off: !secret pihole_disable
-        command_state: !secret pihole_status
-        value_template: "{{ value_json.status == 'enabled' }}"
-        friendly_name: PiHole
+  # - platform: command_line
+  #   switches:
+  #     pihole:
+  #       command_on: !secret pihole_enable
+  #       command_off: !secret pihole_disable
+  #       command_state: !secret pihole_status
+  #       value_template: "{{ value_json.status == 'enabled' }}"
+  #       friendly_name: PiHole
 
   # - platform: command_line
   #   switches:

@@ -85,8 +85,12 @@ class ArloBackEnd(object):
         if r.status_code != 200:
             return None
 
-        body = r.json()
-        self._arlo.vdebug("request-body=\n{}".format(pprint.pformat(body)))
+        try:
+            body = r.json()
+            self._arlo.vdebug("request-body=\n{}".format(pprint.pformat(body)))
+        except Exception as e:
+            self._arlo.warning('body-error={}'.format(type(e).__name__))
+            return None
 
         if raw:
             return body
@@ -347,12 +351,18 @@ class ArloBackEnd(object):
                    'User-Agent': self._user_agent,
                    'Source': 'arloCamWeb'}
 
-        # Initial attempt
-        self._arlo.debug('login attempt #1')
-        body = self.auth_post(AUTH_PATH, {'email': self._arlo.cfg.username,
-                                          'password': to_b64(self._arlo.cfg.password),
-                                          'language': "en",
-                                          'EnvSource': 'prod'}, headers)
+        # Handle 1015 error
+        attempt = 0
+        while attempt < 3:
+            attempt += 1
+            self._arlo.debug('login attempt #{}'.format(attempt))
+            body = self.auth_post(AUTH_PATH, {'email': self._arlo.cfg.username,
+                                              'password': to_b64(self._arlo.cfg.password),
+                                              'language': "en",
+                                              'EnvSource': 'prod'}, headers)
+            if body is not None:
+                break
+            time.sleep(1)
         if body is None:
             self._arlo.error('authentication failed')
             return False

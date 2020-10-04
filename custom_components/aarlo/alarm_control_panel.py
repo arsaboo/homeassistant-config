@@ -277,6 +277,9 @@ class ArloBaseStation(AlarmControlPanelEntity):
     def alarm_arm_custom_bypass(self, code=None):
         pass
 
+    def restart(self):
+        self._base.restart()
+
     @property
     def unique_id(self):
         """Return a unique ID."""

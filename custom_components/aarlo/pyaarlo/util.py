@@ -5,6 +5,14 @@ from datetime import datetime, timezone
 import requests
 
 
+def utc_to_local(utc_dt):
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
+
+def the_epoch():
+    return utc_to_local(datetime.fromtimestamp(0,tz=timezone.utc))
+
+
 def arlotime_to_time(timestamp):
     """ Convert Arlo timestamp to Unix timestamp. """
     return int(timestamp / 1000)
@@ -12,7 +20,7 @@ def arlotime_to_time(timestamp):
 
 def arlotime_to_datetime(timestamp):
     """ Convert Arlo timestamp to Python datetime. """
-    return datetime.fromtimestamp(int(timestamp / 1000))
+    return utc_to_local(datetime.fromtimestamp(int(timestamp / 1000),tz=timezone.utc))
 
 
 def arlotime_strftime(timestamp, date_format='%Y-%m-%dT%H:%M:%S'):
@@ -34,8 +42,7 @@ def now_strftime(date_format='%Y-%m-%dT%H:%M:%S'):
 
 def httptime_to_datetime(http_timestamp):
     """ Convert HTTP timestamp to Python datetime. """
-    utc_dt = datetime.strptime(http_timestamp, '%a, %d %b %Y %H:%M:%S GMT')
-    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+    return utc_to_local(datetime.strptime(http_timestamp, '%a, %d %b %Y %H:%M:%S GMT'))
 
 
 def httptime_strftime(http_timestamp, date_format='%Y-%m-%dT%H:%M:%S'):

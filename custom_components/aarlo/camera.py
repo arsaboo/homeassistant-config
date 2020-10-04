@@ -535,7 +535,7 @@ class ArloCam(Camera):
         self.set_base_station_mode(ARLO_MODE_DISARMED)
 
     def _attach_hidden_stream(self, source, duration):
-        _LOGGER.info("{} attaching hidden stream for duration {}".format(self._unique_id, 15))
+        _LOGGER.info("{} attaching hidden stream for duration {}".format(self._unique_id, duration))
 
         video_path = "/tmp/aarlo-hidden-{}.mp4".format(self._unique_id)
 

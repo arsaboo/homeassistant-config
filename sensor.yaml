@@ -6,6 +6,12 @@
     ticker: WPC
     name: Yahoo WPC
   - platform: yahoo_earnings
+    ticker: COR
+    name: Yahoo COR
+  - platform: yahoo_earnings
+    ticker: O
+    name: Yahoo O
+  - platform: yahoo_earnings
     ticker: COP
     name: Yahoo COP
   - platform: yahoo_earnings
@@ -125,12 +131,11 @@
   - platform: version
   - platform: uptime
     unit_of_measurement: minutes
-  # - platform: statistics
-  #   name: Bed Weight Average
-  #   entity_id: sensor.master_bed_weight
-  #   sampling_size: 30
-  #   max_age:
-  #     minutes: 5
+  - platform: statistics
+    name: Master Temp Statistics
+    entity_id: sensor.master_temperature
+    max_age:
+      minutes: 30
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.living_room_tv
@@ -347,6 +352,7 @@
       study_temp_rounded:
         friendly_name: "Study temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
+        # unit_of_measurement: "°F"
       sonos_audio_in:
         friendly_name: "Sonos Audio-in"
         value_template: >-
@@ -394,8 +400,8 @@
         unit_of_measurement: "min"
         value_template: >-
           {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.master_time','timestamp')|float)/60 -%}
-          {%- set temp_diff_cool = states('input_number.master_prev_temp')|float - state_attr('climate.bedroom','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.bedroom','current_temperature')|float - states('input_number.master_time')|float -%}
+          {%- set temp_diff_cool = states('input_number.master_prev_temp')|float - state_attr('climate.master_homekit','current_temperature')|float -%}
+          {%- set temp_diff_heat = state_attr('climate.master_homekit','current_temperature')|float - states('input_number.master_time')|float -%}
           {%- if states('sensor.masterthermoper') == 'cooling' and temp_diff_cool != 0 -%}
             {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
           {%- elif states('sensor.masterthermoper') == 'heating' and temp_diff_heat != 0 -%}
@@ -408,8 +414,8 @@
         unit_of_measurement: "min"
         value_template: >-
           {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.downstairs_time','timestamp')|float)/60 -%}
-          {%- set temp_diff_cool = states('input_number.downstairs_prev_temp')|float - state_attr('climate.downstairs','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.downstairs','current_temperature')|float - states('input_number.downstairs_prev_temp')|float -%}
+          {%- set temp_diff_cool = states('input_number.downstairs_prev_temp')|float - state_attr('climate.downstairs_homekit','current_temperature')|float -%}
+          {%- set temp_diff_heat = state_attr('climate.downstairs_homekit','current_temperature')|float - states('input_number.downstairs_prev_temp')|float -%}
           {%- if states('sensor.downstairsthermoper') == 'cooling' and temp_diff_cool != 0 -%}
             {{ (time_elapsed_min/temp_diff_cool )|round(2) }}
           {%- elif states('sensor.downstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
@@ -422,8 +428,8 @@
         unit_of_measurement: "min"
         value_template: >-
           {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.upstairs_time','timestamp')|float)/60 -%}
-          {%- set temp_diff_cool = states('input_number.upstairs_prev_temp')|float - state_attr('climate.upstairs','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.upstairs','current_temperature')|float - states('input_number.upstairs_prev_temp')|float -%}
+          {%- set temp_diff_cool = states('input_number.upstairs_prev_temp')|float - state_attr('climate.upstairs_homekit','current_temperature')|float -%}
+          {%- set temp_diff_heat = state_attr('climate.upstairs_homekit','current_temperature')|float - states('input_number.upstairs_prev_temp')|float -%}
           {%- if states('sensor.upstairsthermoper') == 'cooling' and temp_diff_cool != 0 -%}
             {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
           {%- elif states('sensor.upstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
@@ -525,11 +531,11 @@
       downstairsthermoper:
         friendly_name: "Downstairs Thermostat"
         value_template: >-
-           {{ state_attr('climate.downstairs', 'hvac_action') }}
+           {{ state_attr('climate.downstairs_homekit', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.downstairs', 'hvac_action') == "heating" -%}
+          {%- if state_attr('climate.downstairs_homekit', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.downstairs', 'hvac_action') == "cooling" -%}
+          {%- elif state_attr('climate.downstairs_homekit', 'hvac_action') == "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -537,11 +543,11 @@
       upstairsthermoper:
         friendly_name: "Upstairs Thermostat"
         value_template: >-
-           {{ state_attr('climate.upstairs', 'hvac_action') }}
+           {{ state_attr('climate.upstairs_homekit', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.upstairs', 'hvac_action') == "heating" -%}
+          {%- if state_attr('climate.upstairs_homekit', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.upstairs', 'hvac_action') ==  "cooling" -%}
+          {%- elif state_attr('climate.upstairs_homekit', 'hvac_action') ==  "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -549,11 +555,11 @@
       masterthermoper:
         friendly_name: "Master Thermostat"
         value_template: >-
-           {{ state_attr('climate.bedroom', 'hvac_action') }}
+           {{ state_attr('climate.master_homekit', 'hvac_action') }}
         icon_template: >-
-          {%- if state_attr('climate.bedroom', 'hvac_action') == "heating" -%}
+          {%- if state_attr('climate.master_homekit', 'hvac_action') == "heating" -%}
             mdi:fire
-          {%- elif state_attr('climate.bedroom', 'hvac_action') ==  "cooling" -%}
+          {%- elif state_attr('climate.master_homekit', 'hvac_action') ==  "cooling" -%}
             mdi:snowflake
           {%- else -%}
             mdi:fan
@@ -600,17 +606,17 @@
           {%- endfor -%}.
       alok_location_sensor:
         value_template: >-
-          {% set trackers = [states.device_tracker.aloks_iphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+          {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
           {{ trackers[0].state }}
         attribute_templates:
           latitude: >-
-            {% set trackers = [states.device_tracker.aloks_iphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.latitude }}
           longitude: >-
-            {% set trackers = [states.device_tracker.aloks_iphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.longitude }}
           source: >-
-            {% set trackers = [states.device_tracker.aloks_iphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].entity_id }}
       # porchtags:
       #   friendly_name: "Porch Tags"

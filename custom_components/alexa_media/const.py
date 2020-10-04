@@ -9,7 +9,7 @@ https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers
 """
 from datetime import timedelta
 
-__version__ = "2.10.1"
+__version__ = "3.2.1"
 PROJECT_URL = "https://github.com/custom-components/alexa_media_player/"
 ISSUE_URL = "{}issues".format(PROJECT_URL)
 
@@ -27,11 +27,12 @@ ALEXA_COMPONENTS = [
 DEPENDENT_ALEXA_COMPONENTS = ["notify", "switch", "sensor", "alarm_control_panel"]
 
 CONF_ACCOUNTS = "accounts"
+CONF_COOKIES_TXT = "cookies_txt"
 CONF_DEBUG = "debug"
 CONF_INCLUDE_DEVICES = "include_devices"
 CONF_EXCLUDE_DEVICES = "exclude_devices"
 CONF_QUEUE_DELAY = "queue_delay"
-
+CONF_SECURITYCODE = "securitycode"
 DATA_LISTENER = "listener"
 
 EXCEPTION_TEMPLATE = "An exception of type {0} occurred. Arguments:\n{1!r}"
@@ -39,6 +40,7 @@ EXCEPTION_TEMPLATE = "An exception of type {0} occurred. Arguments:\n{1!r}"
 DEFAULT_QUEUE_DELAY = 1.5
 SERVICE_CLEAR_HISTORY = "clear_history"
 SERVICE_UPDATE_LAST_CALLED = "update_last_called"
+SERVICE_FORCE_LOGOUT = "force_logout"
 
 RECURRING_PATTERN = {
     None: "Never Repeat",

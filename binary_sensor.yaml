@@ -1,3 +1,10 @@
+  - platform: trend
+    sensors:
+      master_cooling:
+        entity_id: sensor.master_temperature
+        sample_duration: 300
+        min_gradient: -0.0008
+        device_class: cold
   - platform: wyzesense
     device: auto
   - platform: 'bayesian'
@@ -15,7 +22,7 @@
         prob_given_false: 0.10
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.rashmiphone'
+      - entity_id: 'device_tracker.iphone_3'
         prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'
@@ -44,7 +51,7 @@
         prob_given_false: 0.10
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.aloks_iphone'
+      - entity_id: 'device_tracker.aloks_iphone_3'
         prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'
@@ -92,7 +99,7 @@
         friendly_name: Homekit Ready
         device_class: connectivity
         value_template: >-
-          {% if states.cover.garagedoor and states.light.living_room_lights and states.switch.driveway and states.light.master_lights and states.light.lifx5 and states.light.kitchen_light and states.alarm_control_panel.abode_alarm and states.alarm_control_panel.aarlo_arlohome and states.binary_sensor.water_leak_sensor_158d0001d77800 and states.binary_sensor.water_leak_sensor_158d00027b0db6 %}
+          {% if states.cover.garagedoor and states.light.living_room_lights and states.switch.driveway and states.light.master_lights and states.light.lifx5 and states.light.ge_kitchen_lights and states.alarm_control_panel.abode_alarm and states.alarm_control_panel.aarlo_arlohome and states.binary_sensor.water_leak_sensor_158d0001d77800 and states.binary_sensor.water_leak_sensor_158d00027b0db6 %}
             true
           {% else %}
             false

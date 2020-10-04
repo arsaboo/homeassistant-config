@@ -1,5 +1,8 @@
 """Data handler for HACS."""
+from queueman import QueueManager
+
 from custom_components.hacs.const import VERSION
+from custom_components.hacs.helpers.classes.manifest import HacsManifest
 from custom_components.hacs.helpers.functions.logger import getLogger
 from custom_components.hacs.helpers.functions.register_repository import (
     register_repository,
@@ -8,9 +11,7 @@ from custom_components.hacs.helpers.functions.store import (
     async_load_from_store,
     async_save_to_store,
 )
-from custom_components.hacs.helpers.classes.manifest import HacsManifest
 from custom_components.hacs.share import get_hacs
-from queueman import QueueManager
 
 
 class HacsData:
@@ -25,7 +26,7 @@ class HacsData:
 
     async def async_write(self):
         """Write content to the store files."""
-        if self.hacs.system.status.background_task or self.hacs.system.disabled:
+        if self.hacs.status.background_task or self.hacs.system.disabled:
             return
 
         self.logger.debug("Saving data")
@@ -93,10 +94,10 @@ class HacsData:
         try:
             if not hacs and not repositories:
                 # Assume new install
-                self.hacs.system.status.new = True
+                self.hacs.status.new = True
                 return True
             self.logger.info("Restore started")
-            self.hacs.system.status.new = False
+            self.hacs.status.new = False
 
             # Hacs
             self.hacs.configuration.frontend_mode = hacs.get("view", "Grid")

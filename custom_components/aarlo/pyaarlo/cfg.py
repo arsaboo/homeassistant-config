@@ -95,6 +95,13 @@ class ArloCfg(object):
         return retries
 
     @property
+    def snapshot_checks(self):
+        checks = self._kw.get('snapshot_checks', [])
+        if not checks:
+            checks = [ 1, 5 ]
+        return checks
+
+    @property
     def user_agent(self):
         return self._kw.get('user_agent', "apple")
 
