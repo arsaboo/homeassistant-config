@@ -1,4 +1,5 @@
 homeassistant:
+  legacy_templates: true
   auth_providers:
     - type: homeassistant
     - type: trusted_networks
@@ -88,7 +89,7 @@ zone:
 #   usb_path: /dev/ttyACM0
 #   network_key: !secret zwave_network_key
 #   device_config:
-#     light.ge_kitchen_lights:
+#     light.kitchen_lights:
 #       refresh_value: true
 #       delay: 3
 hue:
@@ -200,7 +201,7 @@ alexa:
         - light.master_lights
         - input_boolean.abodeupdate
         - light.gateway_light_34ce00813670
-        - light.ge_kitchen_lights
+        - light.kitchen_lights
         - light.lifx5
         - switch.driveway
         - switch.wemoporch
@@ -296,7 +297,7 @@ google_assistant:
       expose: true
       name: Porch Lights
       room: porch
-    light.ge_kitchen_lights:
+    light.kitchen_lights:
       expose: true
       room: kitchen
     light.lifx5:
@@ -338,7 +339,7 @@ homekit:
       - cover.garagedoor
       - light.living_room_lights
       - light.lifx5
-      - light.ge_kitchen_lights
+      - light.kitchen_lights
       - light.master_lights
       - switch.driveway
       - binary_sensor.water_leak_sensor_158d0001d77800

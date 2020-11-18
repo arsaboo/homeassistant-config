@@ -1,13 +1,21 @@
 import threading
 
-from .constant import (BATTERY_KEY, BATTERY_TECH_KEY, CHARGING_KEY, CHARGER_KEY,
-                       CONNECTION_KEY, DEVICE_KEYS, RESOURCE_KEYS,
-                       RESOURCE_UPDATE_KEYS, SIGNAL_STR_KEY,
-                       XCLOUD_ID_KEY)
+from .constant import (
+    BATTERY_KEY,
+    BATTERY_TECH_KEY,
+    CHARGER_KEY,
+    CHARGING_KEY,
+    CONNECTION_KEY,
+    DEVICE_KEYS,
+    RESOURCE_KEYS,
+    RESOURCE_UPDATE_KEYS,
+    SIGNAL_STR_KEY,
+    XCLOUD_ID_KEY,
+)
 
 
 class ArloDevice(object):
-    """ Base class for all Arlo devices.
+    """Base class for all Arlo devices.
 
     Has code to handle providing common attributes and comment event handling.
     """
@@ -21,9 +29,9 @@ class ArloDevice(object):
         self._attr_cbs_ = []
 
         # stuff we use a lot
-        self._device_id = attrs.get('deviceId', None)
-        self._device_type = attrs.get('deviceType', 'unknown')
-        self._unique_id = attrs.get('uniqueId', None)
+        self._device_id = attrs.get("deviceId", None)
+        self._device_type = attrs.get("deviceType", "unknown")
+        self._unique_id = attrs.get("uniqueId", None)
 
         # Activities. Used by camera for now but made available to all.
         self._activities = {}
@@ -39,7 +47,9 @@ class ArloDevice(object):
 
     def __repr__(self):
         # Representation string of object.
-        return "<{0}:{1}:{2}>".format(self.__class__.__name__, self._device_type, self._name)
+        return "<{0}:{1}:{2}>".format(
+            self.__class__.__name__, self._device_type, self._name
+        )
 
     def _to_storage_key(self, attr):
         # Build a key incorporating the type!
@@ -66,7 +76,7 @@ class ArloDevice(object):
         cbs = []
         with self._lock:
             for watch, cb in self._attr_cbs_:
-                if watch == attr or watch == '*':
+                if watch == attr or watch == "*":
                     cbs.append(cb)
         for cb in cbs:
             cb(self, attr, value)
@@ -90,19 +100,16 @@ class ArloDevice(object):
         if self._arlo.cfg.serial_ids:
             return self.device_id
         else:
-            return self.name.lower().replace(' ', '_')
+            return self.name.lower().replace(" ", "_")
 
     @property
     def name(self):
-        """Returns the device name.
-        """
+        """Returns the device name."""
         return self._name
 
     @property
     def device_id(self):
-        """Returns the device's id.
-
-        """
+        """Returns the device's id."""
         return self._device_id
 
     @property
@@ -124,8 +131,7 @@ class ArloDevice(object):
 
     @property
     def serial_number(self):
-        """Returns the device serial number.
-        """
+        """Returns the device serial number."""
         return self._device_id
 
     @property
@@ -137,50 +143,42 @@ class ArloDevice(object):
 
     @property
     def model_id(self):
-        """Returns the model id.
-        """
-        return self._attrs.get('modelId', None)
+        """Returns the model id."""
+        return self._attrs.get("modelId", None)
 
     @property
     def hw_version(self):
-        """Returns the hardware version.
-        """
-        return self._attrs.get('properties', {}).get('hwVersion', None)
+        """Returns the hardware version."""
+        return self._attrs.get("properties", {}).get("hwVersion", None)
 
     @property
     def timezone(self):
-        """Returns the timezone.
-        """
-        return self._attrs.get('properties', {}).get('olsonTimeZone', None)
+        """Returns the timezone."""
+        return self._attrs.get("properties", {}).get("olsonTimeZone", None)
 
     @property
     def user_id(self):
-        """Returns the user id.
-        """
-        return self._attrs.get('userId', None)
+        """Returns the user id."""
+        return self._attrs.get("userId", None)
 
     @property
     def user_role(self):
-        """Returns the user role.
-        """
-        return self._attrs.get('userRole', None)
+        """Returns the user role."""
+        return self._attrs.get("userRole", None)
 
     @property
     def xcloud_id(self):
-        """Returns the device's xcloud id.
-        """
-        return self._load(XCLOUD_ID_KEY, 'UNKNOWN')
+        """Returns the device's xcloud id."""
+        return self._load(XCLOUD_ID_KEY, "UNKNOWN")
 
     @property
     def web_id(self):
-        """Return the device's web id.
-        """
-        return self.user_id + '_web'
+        """Return the device's web id."""
+        return self.user_id + "_web"
 
     @property
     def unique_id(self):
-        """Returns the device's unique id.
-        """
+        """Returns the device's unique id."""
         return self._unique_id
 
     def attribute(self, attr, default=None):
@@ -199,7 +197,7 @@ class ArloDevice(object):
         if value is None:
             value = self._attrs.get(attr, None)
         if value is None:
-            value = self._attrs.get('properties', {}).get(attr, None)
+            value = self._attrs.get("properties", {}).get(attr, None)
         if value is None:
             value = default
         return value
@@ -235,24 +233,20 @@ class ArloDevice(object):
 
     @property
     def state(self):
-        """Returns a string describing the device's current state.
-        """
-        return 'idle'
+        """Returns a string describing the device's current state."""
+        return "idle"
 
     @property
     def is_on(self):
-        """Returns `True` if the device is on, `False` otherwise.
-        """
+        """Returns `True` if the device is on, `False` otherwise."""
         return True
 
     def turn_on(self):
-        """Turn the device on.
-        """
+        """Turn the device on."""
         pass
 
     def turn_off(self):
-        """Turn the device off.
-        """
+        """Turn the device off."""
         pass
 
     @property
@@ -261,24 +255,23 @@ class ArloDevice(object):
 
         **Note:** Sorry about the double negative.
         """
-        return self._load(CONNECTION_KEY, 'unknown') == 'unavailable'
+        return self._load(CONNECTION_KEY, "unknown") == "unavailable"
 
 
 class ArloChildDevice(ArloDevice):
-    """Base class for all Arlo devices that attach to a base station.
-    """
+    """Base class for all Arlo devices that attach to a base station."""
 
     def __init__(self, name, arlo, attrs):
         super().__init__(name, arlo, attrs)
 
-        self._parent_id = attrs.get('parentId', None)
-        self._arlo.debug('parent is {}'.format(self._parent_id))
-        self._arlo.vdebug('resource is {}'.format(self.resource_id))
+        self._parent_id = attrs.get("parentId", None)
+        self._arlo.debug("parent is {}".format(self._parent_id))
+        self._arlo.vdebug("resource is {}".format(self.resource_id))
 
     def _event_handler(self, resource, event):
         self._arlo.vdebug("{}: child got {} event **".format(self.name, resource))
 
-        if resource.endswith('/states'):
+        if resource.endswith("/states"):
             self._arlo.bg.run(self.base_station.update_mode)
             return
 
@@ -335,11 +328,9 @@ class ArloChildDevice(ArloDevice):
         self._arlo.error("Could not find any base stations for device " + self._name)
         return None
 
-        
     @property
     def battery_level(self):
-        """Returns the current battery level.
-        """
+        """Returns the current battery level."""
         return self._load(BATTERY_KEY, 100)
 
     @property
@@ -348,36 +339,31 @@ class ArloChildDevice(ArloDevice):
 
         Is it rechargable, wired...
         """
-        return self._load(BATTERY_TECH_KEY, 'None')
+        return self._load(BATTERY_TECH_KEY, "None")
 
     @property
     def charging(self):
-        """Returns `True` if the device is recharging, `False` otherwise.
-        """
-        return self._load(CHARGING_KEY, 'off').lower() == 'on'
+        """Returns `True` if the device is recharging, `False` otherwise."""
+        return self._load(CHARGING_KEY, "off").lower() == "on"
 
     @property
     def charger_type(self):
-        """Returns how the device is recharging.
-        """
-        return self._load(CHARGER_KEY, 'None')
+        """Returns how the device is recharging."""
+        return self._load(CHARGER_KEY, "None")
 
     @property
     def wired(self):
-        """Returns `True` if the device plugged in, `False` otherwise.
-        """
-        return self.charger_type.lower() != 'none'
+        """Returns `True` if the device plugged in, `False` otherwise."""
+        return self.charger_type.lower() != "none"
 
     @property
     def wired_only(self):
-        """Returns `True` if the device is plugged in with no batteries, `False` otherwise.
-        """
-        return self.battery_tech.lower() == 'none' and self.wired
+        """Returns `True` if the device is plugged in with no batteries, `False` otherwise."""
+        return self.battery_tech.lower() == "none" and self.wired
 
     @property
     def signal_strength(self):
-        """Returns the WiFi signal strength (0-5).
-        """
+        """Returns the WiFi signal strength (0-5)."""
         return self._load(SIGNAL_STR_KEY, 3)
 
     @property
@@ -385,20 +371,22 @@ class ArloChildDevice(ArloDevice):
         if not self.base_station:
             return True
 
-        return self.base_station.is_unavailable or self._load(CONNECTION_KEY, 'unknown') == 'unavailable'
+        return (
+            self.base_station.is_unavailable
+            or self._load(CONNECTION_KEY, "unknown") == "unavailable"
+        )
 
     @property
     def too_cold(self):
-        """Returns `True` if the device too cold to operate, `False` otherwise.
-        """
-        return self._load(CONNECTION_KEY, 'unknown') == 'thermalShutdownCold'
+        """Returns `True` if the device too cold to operate, `False` otherwise."""
+        return self._load(CONNECTION_KEY, "unknown") == "thermalShutdownCold"
 
     @property
     def state(self):
         if self.is_unavailable:
-            return 'unavailable'
+            return "unavailable"
         if not self.is_on:
-            return 'off'
+            return "off"
         if self.too_cold:
-            return 'offline, too cold'
-        return 'idle'
+            return "offline, too cold"
+        return "idle"

@@ -1,4 +1,28 @@
-
+  actions:
+    - name: Temperature report
+      background_color: "#000000"
+      label:
+        text: Report
+        color: "#ff0000"
+      icon:
+        icon: temperature-fahrenheit
+        color: "#ffffff"
+    - name: Set lights
+      background_color: "#000000"
+      label:
+        text: Set lights
+        color: "#ff0000"
+      icon:
+        icon: lamp
+        color: "#ffffff"
+    - name: Set network
+      background_color: "#000000"
+      label:
+        text: Set network
+        color: "#ff0000"
+      icon:
+        icon: router-wireless-settings
+        color: "#ffffff"
   push:
     categories:
       - name: Abode Alarm
@@ -34,3 +58,45 @@
             authenticationRequired: no
             destructive: yes
             behavior: 'default'
+# Apple Watch
+      - name: Set lights
+        identifier: set_lights
+        actions:
+          - identifier: MASTER
+            title: Master
+          - identifier: LIVING_ROOM
+            title: Living room
+          - identifier: KITCHEN
+            title: Kitchen           
+      - name: Light options
+        identifier: light_options
+        actions:
+          - identifier: "OFF"
+            title: "Off"
+          - identifier: "ON"
+            title: "On"
+
+      - name: Set network
+        identifier: set_network
+        actions:
+          - identifier: RISHAANFIREHD
+            title: Rishaan FireHD
+          - identifier: ARNAV_IPAD
+            title: Arnav iPad
+          - identifier: LENOVO
+            title: Lenovo
+          - identifier: TOSHIBA_AIO
+            title: ToshibaAIO
+          - identifier: SAMMY_TV
+            title: Sammy TV
+          - identifier: PIHOLE_MAIN
+            title: PiHole Main
+          - identifier: PIHOLE_KIDS
+            title: PiHole Kids
+      - name: Device options
+        identifier: device_options
+        actions:
+          - identifier: "OFF"
+            title: "Off"
+          - identifier: "ON"
+            title: "On"

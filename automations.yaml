@@ -1482,6 +1482,9 @@
       entity_id: binary_sensor.door_window_sensor_158d0001bf26df
       from: 'off'
       to: 'on'
+    - platform: state
+      entity_id: cover.garagedoor
+      to: 'open'
   condition:
     - condition: or
       conditions:
@@ -1518,7 +1521,7 @@
   initial_state: 'on'
   trigger:
    - platform: state
-     entity_id: light.ge_kitchen_lights
+     entity_id: light.kitchen_lights
      from: 'off'
      to: 'on'
   condition:
@@ -1527,8 +1530,8 @@
   action:
      service: light.turn_on
      data:
-       entity_id: light.ge_kitchen_lights
-       brightness: 200
+       entity_id: light.kitchen_lights
+       brightness: 255
 
 - id: turn_off_xiaomi
   alias: 'Turn off Xiaomi Gateway light'
@@ -2017,35 +2020,18 @@
         device: 31747959
         entity_id: remote.livingroom
 
-- id: keep_pihole_off_when_thop_running
-  alias: Keep PiHole turned off when running Thop
+- id: turn_on_pihole_after_some_time
+  alias: Turn on PiHole if it has been off
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: switch.pihole
-      to: 'on'
-  condition:
-    - condition: template
-      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' or state_attr('media_player.ftv_master', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
+      entity_id: switch.pi_hole_main
+      to: 'off'
+      for: '00:05:00'
   action:
-    - service: switch.turn_off
+    - service: switch.turn_on
       entity_id:
-        - switch.pihole
-- id: turn_off_pihole_when_thop_running
-  alias: Turn off PiHole when running Thop
-  initial_state: 'on'
-  trigger:
-    - platform: template
-      value_template: "{{ state_attr('media_player.shieldtv', 'app_id') == 'livetvstream.thoptv.com.thoptv' or state_attr('media_player.ftv_master', 'app_id') == 'livetvstream.thoptv.com.thoptv' }}"
-  condition:
-    - condition: state
-      entity_id: switch.pihole
-      state: 'off'
-  action:
-    - service: switch.turn_off
-      entity_id:
-        - switch.pihole
-
+        - switch.pi_hole_main
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -2338,3 +2324,146 @@
       data_template:
         message: "{{trigger.to_state.attributes.Ticker}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}. {{ trigger.to_state.attributes.history[0].firm }} - {{ trigger.to_state.attributes.history[0].action|default('Initiated', true) }} to {{ trigger.to_state.attributes.history[0].toGrade }} on {{ trigger.to_state.attributes.history[0].epochGradeDate }}"
         title: "{{trigger.to_state.attributes.Ticker}} updated"
+
+# Apple Watch related
+- alias: "Apple Watch: temperature report"
+  mode: parallel
+  trigger:
+    platform: event
+    event_type: ios.action_fired
+    event_data:
+      actionName: Temperature report
+  action:
+    - variables:
+        iphone: >
+          notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(' ', '_').replace("'", '_')|lower }}
+    - service: "{{ iphone }}"
+      data:
+        title: "Temperature"
+        message: >
+          Upstairs: {{ state_attr('climate.upstairs_homekit', 'temperature') }}°F
+          Living room: {{ state_attr('climate.downstairs_homekit', 'temperature') }}°F
+          Master: {{ state_attr('climate.master_homekit', 'temperature') }}°F
+          Outside: {{ states('sensor.dark_sky_temperature') }}°F
+
+- alias: "Apple Watch: set lights"
+  mode: parallel
+  trigger:
+    platform: event
+    event_type: ios.action_fired
+    event_data:
+      actionName: Set lights
+  action:
+    - variables:
+        iphone: >
+          notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(' ', '_').replace("'", '_')|lower }}
+    - service: "{{ iphone }}"
+      data:
+        message: "Apple Watch: set lights"
+        data:
+          push:
+            category: set_lights
+    - wait_for_trigger:
+        platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          categoryName: set_lights
+      timeout: "00:00:20"
+      continue_on_timeout: false
+    - variables:
+        light: >
+          {{
+            {'MASTER': 'light.master_lights',
+             'LIVING_ROOM': 'light.living_room_lights',
+             'KITCHEN': 'light.kitchen_lights',
+            }[wait.trigger.event.data.actionName] }}
+    - service: "{{ iphone }}"
+      data:
+        message: "Apple Watch: choose option"
+        data:
+          push:
+            category: light_options
+    - wait_for_trigger:
+        platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          categoryName: light_options
+      timeout: "00:00:20"
+      continue_on_timeout: false
+    - variables:
+        option: "{{ wait.trigger.event.data.actionName }}"
+    - choose:
+        - conditions: "{{ option == 'OFF' }}"
+          sequence:
+            service: light.turn_off
+            data:
+              entity_id: "{{ light }}"
+        - conditions: "{{ option == 'ON' }}"
+          sequence:
+            service: light.turn_on
+            data:
+              entity_id: "{{ light }}"
+
+
+
+- alias: "Apple Watch: set network"
+  mode: parallel
+  trigger:
+    platform: event
+    event_type: ios.action_fired
+    event_data:
+      actionName: Set network
+  action:
+    - variables:
+        iphone: >
+          notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(' ', '_').replace("'", '_')|lower }}
+    - service: "{{ iphone }}"
+      data:
+        message: "Apple Watch: set network"
+        data:
+          push:
+            category: set_network
+    - wait_for_trigger:
+        platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          categoryName: set_network
+      timeout: "00:00:20"
+      continue_on_timeout: false
+    - variables:
+        device: >
+          {{
+            {'PIHOLE_MAIN': 'switch.pi_hole_main',
+            'PIHOLE_KIDS': 'switch.pi_hole_kids',
+            'RISHAANFIREHD': 'switch.firehd_rishaan',
+             'ARNAV_IPAD': 'switch.my_ipad',
+             'LENOVO': 'switch.lenovohome',
+             'TOSHIBA_AIO': 'switch.toshibaaio',
+             'SAMMY_TV': 'switch.samsungtv',
+            }[wait.trigger.event.data.actionName] }}
+    - service: "{{ iphone }}"
+      data:
+        message: "Apple Watch: choose option"
+        data:
+          push:
+            category: device_options
+    - wait_for_trigger:
+        platform: event
+        event_type: ios.notification_action_fired
+        event_data:
+          categoryName: device_options
+      timeout: "00:00:20"
+      continue_on_timeout: false
+    - variables:
+        option: "{{ wait.trigger.event.data.actionName }}"
+    - choose:
+        - conditions: "{{ option == 'OFF' }}"
+          sequence:
+            service: switch.turn_off
+            data:
+              entity_id: "{{ device }}"
+        - conditions: "{{ option == 'ON' }}"
+          sequence:
+            service: switch.turn_on
+            data:
+              entity_id: "{{ device }}"

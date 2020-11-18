@@ -165,6 +165,33 @@ class AarloGlance extends LitElement {
                     cursor: pointer;
                     width: 100%;
                 }
+                div.base-1x1 {
+                    width: 100%;
+                    overflow: hidden;
+                    margin: 0;
+                    padding-top: 100%;
+                    position: relative;
+                }
+                .img-1x1 {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 100%;
+                    transform: translate(-50%, -50%);
+                    cursor: pointer;
+                }
+                .video-1x1 {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 100%;
+                    height: auto;
+                    transform: translate(-50%, -50%);
+                }
+                .library-1x1 {
+                    cursor: pointer;
+                    width: 100%;
+                }
                 .lrow {
                   display: flex;
                   margin: 6px 2px 6px 2px;
@@ -221,8 +248,8 @@ class AarloGlance extends LitElement {
             ${AarloGlance.outerStyleTemplate}
             <ha-card>
             ${AarloGlance.innerStyleTemplate}
-            <div id="aarlo-wrapper" class="base-16x9">
-                <video class="${this._v.stream} video-16x9"
+            <div id="aarlo-wrapper" class="base-${this._v.aspectRatio}">
+                <video class="${this._v.stream} video-${this._v.aspectRatio}"
                     id="stream-${this._s.cameraId}"
                     poster="${this._streamPoster}"
                     @ended="${() => { this.stopStream(); }}"
@@ -230,7 +257,7 @@ class AarloGlance extends LitElement {
                     @click="${() => { this.clickVideo(); }}">
                         Your browser does not support the video tag.
                 </video>
-                <video class="${this._v.video} video-16x9"
+                <video class="${this._v.video} video-${this._v.aspectRatio}"
                     autoplay playsinline 
                     id="video-${this._s.cameraId}"
                     src="${this._video}"
@@ -241,61 +268,61 @@ class AarloGlance extends LitElement {
                     @click="${() => { this.clickVideo(); }}">
                         Your browser does not support the video tag.
                 </video>
-                <img class="${this._v.image} ${this._v.cameraOn} img-16x9"
+                <img class="${this._v.image} ${this._v.cameraOn} img-${this._v.aspectRatio}"
                     id="image-${this._s.cameraId}"
                     src="${this._image}"
                     alt="${this._s.imageFullDate}"
                     title="${this._s.imageFullDate}"
                     @click="${() => { this.clickImage(); }}">
                 </img>
-                <div class="${this._v.library} img-16x9" >
+                <div class="${this._v.library} img-${this._v.aspectRatio}" >
                     <div class="lrow">
                         <div class="lcolumn">
-                            <img class="${this._s.libraryItem[0].hidden} library-16x9" 
+                            <img class="${this._s.libraryItem[0].hidden} library-${this._v.aspectRatio}" 
                                 src="${this._s.libraryItem[0].thumbnail}"
                                 alt="${this._s.libraryItem[0].captured_at}"
                                 title="${this._s.libraryItem[0].captured_at}"
                                 @click="${() => { this.showLibraryVideo(0); }}"/>
-                            <img class="${this._s.libraryItem[3].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[3].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[3].thumbnail}"
                                 alt="${this._s.libraryItem[3].captured_at}"
                                 title="${this._s.libraryItem[3].captured_at}"
                                 @click="${() => { this.showLibraryVideo(3); }}"/>
-                            <img class="${this._s.libraryItem[6].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[6].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[6].thumbnail}"
                                 alt="${this._s.libraryItem[6].captured_at}"
                                 title="${this._s.libraryItem[6].captured_at}"
                                 @click="${() => { this.showLibraryVideo(6); }}"/>
                         </div>
                         <div class="lcolumn">
-                            <img class="${this._s.libraryItem[1].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[1].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[1].thumbnail}"
                                 alt="${this._s.libraryItem[1].captured_at}"
                                 title="${this._s.libraryItem[1].captured_at}"
                                 @click="${() => { this.showLibraryVideo(1); }}"/>
-                            <img class="${this._s.libraryItem[4].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[4].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[4].thumbnail}"
                                 alt="${this._s.libraryItem[4].captured_at}"
                                 title="${this._s.libraryItem[4].captured_at}"
                                 @click="${() => { this.showLibraryVideo(4); }}"/>
-                            <img class="${this._s.libraryItem[7].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[7].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[7].thumbnail}"
                                 alt="${this._s.libraryItem[7].captured_at}"
                                 title="${this._s.libraryItem[7].captured_at}"
                                 @click="${() => { this.showLibraryVideo(7); }}"/>
                         </div>
                         <div class="lcolumn">
-                            <img class="${this._s.libraryItem[2].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[2].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[2].thumbnail}"
                                 alt="${this._s.libraryItem[2].captured_at}"
                                 title="${this._s.libraryItem[2].captured_at}"
                                 @click="${() => { this.showLibraryVideo(2); }}"/>
-                            <img class="${this._s.libraryItem[5].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[5].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[5].thumbnail}"
                                 alt="${this._s.libraryItem[5].captured_at}"
                                 title="${this._s.libraryItem[5].captured_at}"
                                 @click="${() => { this.showLibraryVideo(5); }}"/>
-                            <img class="${this._s.libraryItem[8].hidden} library-16x9"
+                            <img class="${this._s.libraryItem[8].hidden} library-${this._v.aspectRatio}"
                                 src="${this._s.libraryItem[8].thumbnail}"
                                 alt="${this._s.libraryItem[8].captured_at}"
                                 title="${this._s.libraryItem[8].captured_at}"
@@ -303,7 +330,7 @@ class AarloGlance extends LitElement {
                         </div>
                     </div>
                 </div>
-                <div class="${this._v.brokeStatus} img-16x9" style="height: 100px" id="brokenImage"></div>
+                <div class="${this._v.brokeStatus} img-${this._v.aspectRatio}" style="height: 100px" id="brokenImage"></div>
             </div>
             <div class="box box-top ${this._v.topBar}">
                 <div class="box-title ${this._v.topTitle}">
@@ -420,6 +447,7 @@ class AarloGlance extends LitElement {
             video: 'hidden',
             library: 'hidden',
             broke: 'hidden',
+            aspectRatio: '16x9',
 
             // camera On/Off
             cameraOn: 'hidden',
@@ -943,6 +971,9 @@ class AarloGlance extends LitElement {
         // what are we showing?
         const show = this._config.show || [];
 
+        // aspect ratio
+        this._v.aspectRatio = config.aspect_ratio == 'square' ? '1x1' : '16x9';
+ 
         // on click
         this._v.imageClick = config.image_click ? config.image_click : false;
 

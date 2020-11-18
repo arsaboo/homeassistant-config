@@ -11,19 +11,27 @@ from .background import ArloBackground
 from .base import ArloBase
 from .camera import ArloCamera
 from .cfg import ArloCfg
-from .constant import (BLANK_IMAGE, DEVICES_PATH,
-                       FAST_REFRESH_INTERVAL, SLOW_REFRESH_INTERVAL,
-                       TOTAL_BELLS_KEY, TOTAL_CAMERAS_KEY, TOTAL_LIGHTS_KEY, MEDIA_LIBRARY_DELAY,
-                       REFRESH_CAMERA_DELAY, INITIAL_REFRESH_DELAY)
+from .constant import (
+    BLANK_IMAGE,
+    DEVICES_PATH,
+    FAST_REFRESH_INTERVAL,
+    INITIAL_REFRESH_DELAY,
+    MEDIA_LIBRARY_DELAY,
+    REFRESH_CAMERA_DELAY,
+    SLOW_REFRESH_INTERVAL,
+    TOTAL_BELLS_KEY,
+    TOTAL_CAMERAS_KEY,
+    TOTAL_LIGHTS_KEY,
+)
 from .doorbell import ArloDoorBell
 from .light import ArloLight
 from .media import ArloMediaLibrary
 from .storage import ArloStorage
 from .util import time_to_arlotime
 
-_LOGGER = logging.getLogger('pyaarlo')
+_LOGGER = logging.getLogger("pyaarlo")
 
-__version__ = '0.7.0.beta.5'
+__version__ = "0.7.0.beta.7"
 
 
 class PyArlo(object):
@@ -122,8 +130,7 @@ class PyArlo(object):
     """
 
     def __init__(self, **kwargs):
-        """Constructor for the PyArlo object.
-        """
+        """Constructor for the PyArlo object."""
         # core values
         self._last_error = None
 
@@ -164,41 +171,54 @@ class PyArlo(object):
 
         # Slow piece.
         # Get devices, fill local db, and create device instance.
-        self.info('pyaarlo starting')
+        self.info("pyaarlo starting")
         self._started = False
         self._refresh_devices()
 
         for device in self._devices:
-            dname = device.get('deviceName')
-            dtype = device.get('deviceType')
-            if device.get('state', 'unknown') != 'provisioned':
-                self.info('skipping ' + dname + ': state unknown')
+            dname = device.get("deviceName")
+            dtype = device.get("deviceType")
+            if device.get("state", "unknown") != "provisioned":
+                self.info("skipping " + dname + ": state unknown")
                 continue
 
             # This needs it's own code now... Does no parent indicate a base station???
-            if dtype == 'basestation' or \
-                    device.get('modelId') == 'ABC1000' or dtype == 'arloq' or dtype == 'arloqs' or \
-                    device.get("modelId").startswith("FB1001A"):
+            if (
+                dtype == "basestation"
+                or device.get("modelId") == "ABC1000"
+                or dtype == "arloq"
+                or dtype == "arloqs"
+            ):
                 self._bases.append(ArloBase(dname, self, device))
-            # video doorbell can be its own base station, it can also be assigned to a real base station
-            if device.get('modelId').startswith('AVD1001'):
-                parent_id = device.get('parentId', None)
-                if parent_id is None or parent_id == device.get('deviceId', None):
+            # Newer devices can connect directly to wifi and can be its own base station,
+            # it can also be assigned to a real base station
+            if (
+                device.get("modelId").startswith("AVD1001")
+                or device.get("modelId").startswith("FB1001")
+                or device.get("modelId").startswith("VMC4041")
+                or device.get("modelId").startswith("VMC2030")
+            ):
+                parent_id = device.get("parentId", None)
+                if parent_id is None or parent_id == device.get("deviceId", None):
                     self._bases.append(ArloBase(dname, self, device))
-            if dtype == 'arlobridge':
+            if dtype == "arlobridge":
                 self._bases.append(ArloBase(dname, self, device))
-            if dtype == 'camera' or dtype == 'arloq' or dtype == 'arloqs' or \
-                    device.get('modelId').startswith('AVD1001'):
+            if (
+                dtype == "camera"
+                or dtype == "arloq"
+                or dtype == "arloqs"
+                or device.get("modelId").startswith("AVD1001")
+            ):
                 self._cameras.append(ArloCamera(dname, self, device))
-            if dtype == 'doorbell':
+            if dtype == "doorbell":
                 self._doorbells.append(ArloDoorBell(dname, self, device))
-            if dtype == 'lights':
+            if dtype == "lights":
                 self._lights.append(ArloLight(dname, self, device))
 
         # Save out unchanging stats!
-        self._st.set(['ARLO', TOTAL_CAMERAS_KEY], len(self._cameras))
-        self._st.set(['ARLO', TOTAL_BELLS_KEY], len(self._doorbells))
-        self._st.set(['ARLO', TOTAL_LIGHTS_KEY], len(self._lights))
+        self._st.set(["ARLO", TOTAL_CAMERAS_KEY], len(self._cameras))
+        self._st.set(["ARLO", TOTAL_BELLS_KEY], len(self._doorbells))
+        self._st.set(["ARLO", TOTAL_LIGHTS_KEY], len(self._lights))
 
         # Always ping bases first!
         self._ping_bases()
@@ -206,7 +226,7 @@ class PyArlo(object):
         # Initial config and state retrieval.
         if self._cfg.synchronous_mode:
             # Synchronous; run them one after the other
-            self.debug('getting initial settings')
+            self.debug("getting initial settings")
             self._refresh_bases(initial=True)
             self._refresh_ambient_sensors()
             self._refresh_doorbells()
@@ -216,7 +236,7 @@ class PyArlo(object):
             self._initial_refresh_done()
         else:
             # Asynchronous; queue them to run one after the other
-            self.debug('queueing initial settings')
+            self.debug("queueing initial settings")
             self._bg.run(self._refresh_bases, initial=True)
             self._bg.run(self._refresh_ambient_sensors)
             self._bg.run(self._refresh_doorbells)
@@ -226,8 +246,7 @@ class PyArlo(object):
             self._bg.run(self._initial_refresh_done)
 
         # Register house keeping cron jobs.
-        self.debug("retry={}".format(self._cfg.media_retry))
-        self.debug('registering cron jobs')
+        self.debug("registering cron jobs")
         self._bg.run_every(self._fast_refresh, FAST_REFRESH_INTERVAL)
         self._bg.run_every(self._slow_refresh, SLOW_REFRESH_INTERVAL)
 
@@ -235,9 +254,9 @@ class PyArlo(object):
         if self._cfg.wait_for_initial_setup:
             with self._lock:
                 while not self._started:
-                    self.debug('waiting for initial setup...')
+                    self.debug("waiting for initial setup...")
                     self._lock.wait(1)
-            self.debug('setup finished...')
+            self.debug("setup finished...")
 
     def __repr__(self):
         # Representation string of object.
@@ -275,54 +294,70 @@ class PyArlo(object):
 
     def _refresh_bases(self, initial):
         for base in self._bases:
-            base.update_modes()
-            if initial:
-                base.update_mode()
-            self._be.notify(base=base, body={"action": "get", "resource": "cameras", "publishResponse": False},
-                            wait_for="response")
-            self._be.notify(base=base, body={"action": "get", "resource": "doorbells", "publishResponse": False},
-                            wait_for="response")
-            self._be.notify(base=base, body={"action": "get", "resource": "lights", "publishResponse": False},
-                            wait_for="response")
+            base.update_modes(initial)
+            base.update_mode()
+            self._be.notify(
+                base=base,
+                body={"action": "get", "resource": "cameras", "publishResponse": False},
+                wait_for="response",
+            )
+            self._be.notify(
+                base=base,
+                body={
+                    "action": "get",
+                    "resource": "doorbells",
+                    "publishResponse": False,
+                },
+                wait_for="response",
+            )
+            self._be.notify(
+                base=base,
+                body={"action": "get", "resource": "lights", "publishResponse": False},
+                wait_for="response",
+            )
 
     def _fast_refresh(self):
-        self.debug('fast refresh')
+        self.vdebug("fast refresh")
         self._bg.run(self._st.save)
         self._ping_bases()
 
         # if day changes then reload recording library and camera counts
         today = datetime.date.today()
-        self.debug('day testing with {}!'.format(str(today)))
+        self.vdebug("day testing with {}!".format(str(today)))
         if self._today != today:
-            self.debug('day changed to {}!'.format(str(today)))
+            self.debug("day changed to {}!".format(str(today)))
             self._today = today
             self._bg.run(self._ml.load)
             self._bg.run(self._refresh_camera_media, wait=False)
 
     def _slow_refresh(self):
-        self.debug('slow refresh')
+        self.vdebug("slow refresh")
         self._bg.run(self._refresh_bases, initial=False)
         self._bg.run(self._refresh_ambient_sensors)
 
         # do we need to reload the devices?
         if self._cfg.refresh_devices_every != 0:
             now = time.monotonic()
-            self.debug('device reload check {} {}'.format(str(now), str(self._refresh_devices_at)))
+            self.debug(
+                "device reload check {} {}".format(
+                    str(now), str(self._refresh_devices_at)
+                )
+            )
             if now > self._refresh_devices_at:
-                self.debug('device reload needed')
+                self.debug("device reload needed")
                 self._refresh_devices_at = now + self._cfg.refresh_devices_every
                 self._bg.run(self._refresh_devices)
         else:
-            self.debug('no device reload')
+            self.debug("no device reload")
 
     def _initial_refresh(self):
-        self.debug('initial refresh')
+        self.debug("initial refresh")
         self._bg.run(self._refresh_bases, initial=True)
         self._bg.run(self._refresh_ambient_sensors)
         self._bg.run(self._initial_refresh_done)
 
     def _initial_refresh_done(self):
-        self.debug('initial refresh done')
+        self.debug("initial refresh done")
         with self._lock:
             self._started = True
             self._lock.notify_all()
@@ -337,15 +372,15 @@ class PyArlo(object):
         if self.cfg.serial_ids:
             return self.device_id
         else:
-            return self.name.lower().replace(' ', '_')
+            return self.name.lower().replace(" ", "_")
 
     @property
     def name(self):
-        return 'ARLO CONTROLLER'
+        return "ARLO CONTROLLER"
 
     @property
     def device_id(self):
-        return 'ARLO'
+        return "ARLO"
 
     @property
     def model_id(self):
@@ -373,8 +408,7 @@ class PyArlo(object):
 
     @property
     def is_connected(self):
-        """Returns `True` if the object is connected to the Arlo servers, `False` otherwise.
-        """
+        """Returns `True` if the object is connected to the Arlo servers, `False` otherwise."""
         return self._be.is_connected
 
     @property
@@ -490,7 +524,7 @@ class PyArlo(object):
         :type attr: str
         :return: The value associated with attribute or `None` if not found.
         """
-        return self._st.get(['ARLO', attr], None)
+        return self._st.get(["ARLO", attr], None)
 
     def add_attr_callback(self, attr, cb):
         pass
@@ -505,8 +539,7 @@ class PyArlo(object):
 
     @property
     def last_error(self):
-        """Return the last reported error.
-        """
+        """Return the last reported error."""
         return self._last_error
 
     def warning(self, msg):

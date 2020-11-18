@@ -119,6 +119,7 @@ MIN_4PRO_FIRMWARE_DATE = 20200408
 MIN_FIRMWARE_DATE = 20200812
 
 MODEL_SHELLY1 = f"{ATTR_SHELLY} 1"
+MODEL_SHELLY1L = f"{ATTR_SHELLY} 1L"
 MODEL_SHELLY1PM = f"{ATTR_SHELLY} 1PM"
 MODEL_SHELLY2 = f"{ATTR_SHELLY} 2"
 MODEL_SHELLY25 = f"{ATTR_SHELLY} 2.5"
@@ -148,6 +149,9 @@ MODEL_SHELLYVINTAGE = f"{ATTR_SHELLY} Vintage"
 
 MODEL_SHELLY1_ID = "SHSW-1"  # Shelly 1
 MODEL_SHELLY1_PREFIX = "shelly1"
+
+MODEL_SHELLY1L_ID = "SHSW-L"  # Shelly 1L
+MODEL_SHELLY1L_PREFIX = "shelly1l"
 
 MODEL_SHELLY1PM_ID = "SHSW-PM"  # Shelly 1PM
 MODEL_SHELLY1PM_PREFIX = "shelly1pm"
@@ -204,6 +208,7 @@ MODEL_SHELLYI3_ID = "SHIX3-1"  # Shelly i3
 MODEL_SHELLYI3_PREFIX = "shellyix3"
 
 MODEL_SHELLYPLUG_ID = "SHPLG-1"  # Shelly Plug
+MODEL_SHELLYPLUG_E_ID = "SHPLG2-1"  # Shelly Plug E
 MODEL_SHELLYPLUG_PREFIX = "shellyplug"
 
 MODEL_SHELLYPLUG_S_ID = "SHPLG-S"  # Shelly Plug S
@@ -221,7 +226,7 @@ MODEL_SHELLYSENSE_PREFIX = "shellysense"
 MODEL_SHELLYSMOKE_ID = "SHSM-01"  # Shelly Smoke
 MODEL_SHELLYSMOKE_PREFIX = "shellysmoke"
 
-MODEL_SHELLYVINTAGE_ID = "SHBVIN-1"  # Shelly Vintage
+MODEL_SHELLYVINTAGE_ID = "SHVIN-1"  # Shelly Vintage
 MODEL_SHELLYVINTAGE_PREFIX = "shellyvintage"
 
 MODEL_SHELLYUNI_ID = "SHUNI-1"  # Shelly UNI
@@ -334,6 +339,7 @@ TPL_OVERPOWER_VALUE_TO_JSON = "{{{^overpower_value^:value}|tojson}}"
 TPL_POSITION = "{%if value!=-1%}{{value}}{%endif%}"
 TPL_POWER = "{{value|float|round(1)}}"
 TPL_POWER_FACTOR = "{{value|float*100|round}}"
+TPL_ROLLER_TO_JSON = "{{{^roller_state^:value}|tojson}}"
 TPL_RSSI = "{{value_json[^wifi_sta^].rssi}}"
 TPL_SHORTPUSH = "{%if value_json.event==^S^%}ON{%else%}OFF{%endif%}"
 TPL_SHORTPUSH_LONGPUSH = "{%if value_json.event==^SL^%}ON{%else%}OFF{%endif%}"
@@ -388,7 +394,7 @@ ROLLER_DEVICE_CLASSES = [
 
 def parse_version(version):
     """Parse version string and return version date integer."""
-    return int(version.rsplit("-", 1)[0])
+    return int(version.split("-", 1)[0])
 
 
 def get_device_config(dev_id):
@@ -397,8 +403,6 @@ def get_device_config(dev_id):
     if not result:
         result = {}
     try:
-        if isinstance(result, list):
-            raise TypeError
         if len(result) > 0:
             result[0]
     except TypeError:
@@ -548,6 +552,74 @@ if model_id == MODEL_SHELLY1_ID or dev_id_prefix == MODEL_SHELLY1_PREFIX:
     sensors_topics = [None, None, None]
     ext_humi_sensors = 1
     ext_temp_sensors = 3
+
+if model_id == MODEL_SHELLY1L_ID or dev_id_prefix == MODEL_SHELLY1L_PREFIX:
+    model = MODEL_SHELLY1L
+    relays = 1
+    relays_sensors = [SENSOR_POWER, SENSOR_ENERGY]
+    relays_sensors_units = [UNIT_WATT, UNIT_KWH]
+    relays_sensors_classes = [DEVICE_CLASS_POWER, DEVICE_CLASS_ENERGY]
+    relays_sensors_tpls = [TPL_POWER, TPL_ENERGY_WMIN]
+    sensors = [SENSOR_TEMPERATURE, SENSOR_RSSI, SENSOR_SSID, SENSOR_UPTIME]
+    sensors_classes = [
+        DEVICE_CLASS_TEMPERATURE,
+        DEVICE_CLASS_SIGNAL_STRENGTH,
+        None,
+        DEVICE_CLASS_TIMESTAMP,
+    ]
+    sensors_units = [UNIT_CELSIUS, UNIT_DB, None, None]
+    sensors_tpls = [TPL_TEMPERATURE, TPL_RSSI, TPL_SSID, TPL_UPTIME]
+    sensors_topics = [None, None, None, None]
+    bin_sensors = [
+        SENSOR_INPUT_0,
+        SENSOR_INPUT_1,
+        SENSOR_SHORTPUSH_0,
+        SENSOR_LONGPUSH_0,
+        SENSOR_SHORTPUSH_1,
+        SENSOR_LONGPUSH_1,
+        SENSOR_FIRMWARE_UPDATE,
+        SENSOR_OVERTEMPERATURE,
+    ]
+    bin_sensors_classes = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        DEVICE_CLASS_PROBLEM,
+    ]
+    bin_sensors_tpls = [
+        None,
+        None,
+        TPL_SHORTPUSH,
+        TPL_LONGPUSH,
+        TPL_SHORTPUSH,
+        TPL_LONGPUSH,
+        TPL_NEW_FIRMWARE_FROM_INFO,
+        None,
+    ]
+    bin_sensors_topics = [
+        TOPIC_INPUT_0,
+        TOPIC_INPUT_1,
+        TOPIC_INPUT_EVENT_0,
+        TOPIC_INPUT_EVENT_0,
+        TOPIC_INPUT_EVENT_1,
+        TOPIC_INPUT_EVENT_1,
+        TOPIC_INFO,
+        None,
+    ]
+    bin_sensors_pl = [
+        PL_1_0,
+        PL_1_0,
+        None,
+        None,
+        None,
+        None,
+        None,
+        PL_1_0,
+    ]
 
 if model_id == MODEL_SHELLY1PM_ID or dev_id_prefix == MODEL_SHELLY1PM_PREFIX:
     model = MODEL_SHELLY1PM
@@ -700,7 +772,10 @@ if model_id == MODEL_SHELLYUNI_ID or dev_id_prefix == MODEL_SHELLYUNI_PREFIX:
     sensors_tpls = [None, TPL_RSSI, TPL_SSID, TPL_UPTIME]
     sensors_topics = [TOPIC_ADC, None, None, None]
 
-if model_id == MODEL_SHELLYPLUG_ID or dev_id_prefix == MODEL_SHELLYPLUG_PREFIX:
+if (
+    model_id in [MODEL_SHELLYPLUG_ID, MODEL_SHELLYPLUG_E_ID]
+    or dev_id_prefix == MODEL_SHELLYPLUG_PREFIX
+):
     model = MODEL_SHELLYPLUG
     relays = 1
     relays_sensors = [SENSOR_POWER, SENSOR_ENERGY]
@@ -1487,6 +1562,8 @@ for roller_id in range(rollers):
                 KEY_MANUFACTURER: ATTR_MANUFACTURER,
             },
             "~": default_topic,
+            KEY_JSON_ATTRIBUTES_TOPIC: f"~roller/{roller_id}",
+            KEY_JSON_ATTRIBUTES_TEMPLATE: TPL_ROLLER_TO_JSON,
         }
     else:
         payload = ""
@@ -1494,7 +1571,9 @@ for roller_id in range(rollers):
         payload[KEY_DEVICE_CLASS] = device_class
     if dev_id.lower() in ignored:
         payload = ""
-    mqtt_publish(config_topic, str(payload).replace("'", '"'), retain, qos)
+    mqtt_publish(
+        config_topic, str(payload).replace("'", '"').replace("^", "'"), retain, qos
+    )
 
 # relays
 for relay_id in range(relays):
@@ -1936,9 +2015,9 @@ for bin_sensor_id in range(len(bin_sensors)):
     else:
         payload[KEY_PAYLOAD_ON] = bin_sensors_pl[bin_sensor_id][VALUE_ON]
         payload[KEY_PAYLOAD_OFF] = bin_sensors_pl[bin_sensor_id][VALUE_OFF]
-    if battery_powered:
+    if battery_powered and bin_sensors[bin_sensor_id] != SENSOR_FIRMWARE_UPDATE:
         payload[KEY_EXPIRE_AFTER] = expire_after
-    else:
+    if not battery_powered:
         payload[KEY_AVAILABILITY_TOPIC] = availability_topic
         payload[KEY_PAYLOAD_AVAILABLE] = VALUE_TRUE
         payload[KEY_PAYLOAD_NOT_AVAILABLE] = VALUE_FALSE
@@ -2236,7 +2315,7 @@ for light_id in range(white_lights):
             '"cmd_off_tpl":"{\\"turn\\":\\"off\\"}",'
             '"stat_tpl":"{%if value_json.ison%}on{%else%}off{%endif%}",'
             '"bri_tpl":"{{value_json.brightness|float|multiply(2.55)|round}}",'
-            '"clr_temp_tpl":"{{((1000000/(value_json.temp|int))|round(0,\\"floor\\"))}}",'
+            '"clr_temp_tpl":"{{((1000000/(value_json.temp|int,2700)|max)|round(0,\\"floor\\"))}}",'
             '"max_mireds":370,'
             '"min_mireds":153,'
             '"uniq_id":"' + unique_id + '",'

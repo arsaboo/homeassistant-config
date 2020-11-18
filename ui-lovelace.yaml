@@ -56,7 +56,7 @@ views:
               width: 7%
             # Kitchen
           - type: image
-            entity: light.kitchen_light
+            entity: light.kitchen_lights
             tap_action:
               action: toggle
             image: /local/icons/light_bulb_off.png
@@ -595,7 +595,7 @@ views:
           - entity: light.gateway_light_34ce00813670
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.kitchen_light
+          - entity: light.kitchen_lights
             type: custom:slider-entity-row
             toggle: true
           - entity: light.lifx3
@@ -648,7 +648,7 @@ views:
       - type: vertical-stack
         cards:
           - type: alarm-panel
-            entity: alarm_control_panel.abode_alarm
+            entity: alarm_control_panel.abode_homekit
             name: Abode
             states:
               - arm_home
@@ -1305,7 +1305,7 @@ views:
       #   entity: media_player.shieldtv
       # - type: media-control
       #   entity: media_player.ftv_master
-  - icon: mdi:settings
+  - icon: mdi:cog
     id: settings
     title: Settings
     cards:
@@ -1358,7 +1358,7 @@ views:
                   'home': /local/icons/rashmi_ios_home.png
                   'not_home': /local/icons/rashmi_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.rashmiphone
+                entity: device_tracker.iphone_3
                 show_name: false
                 show_state: false
                 state_image:
@@ -1399,7 +1399,7 @@ views:
                   'Buckhead': /local/icons/alok_ios_not_home.png
                   'Downtown': /local/icons/alok_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.aloks_iphone
+                entity: device_tracker.aloks_iphone_3
                 show_name: false
                 show_state: false
                 state_image:
@@ -1437,9 +1437,18 @@ views:
           - device_tracker.test_alok
           - person.rashmi
           - device_tracker.test_rashmi
-          - switch.garage_relay_switch
-          - automation.reset_garage_relay
+          - switch.shelly_garage
           - input_boolean.sleeping
+          - type: attribute
+            entity: sensor.master_temp_statistics
+            attribute: average_change
+            name: Master Temp change
+          - binary_sensor.master_cooling
+          - sensor.masterthermoper
+          - type: attribute
+            entity: binary_sensor.master_cooling
+            attribute: gradient
+            name: Master Gradient
 
       - type: entities
         title: Network Details
@@ -1450,13 +1459,23 @@ views:
           hours_to_show: 24
           detail: 1
         entities:
-          - switch.pihole
+          - switch.pi_hole_main
+          - switch.pi_hole_kids
           - sensor.nuc_cpu_load
           - sensor.nuc_ram_used_percent
           - sensor.nuc_containers_active
           - sensor.speedtest_download
       - type: horizontal-stack
         cards:
+          - type: custom:button-card
+            entity: switch.firehd_rishaan
+            name: Fire Tab
+            icon: mdi:tablet-ipad
+            color: rgb(250, 218, 79)
+            color_type: icon
+            style:
+              - font-size: 12px
+              - text-transform: capitalize
           - type: custom:button-card
             entity: switch.my_ipad
             name: iPad
@@ -2284,7 +2303,7 @@ views:
             device: Shield
           - name: Watch Apple TV
             device: AppleTV
-  - icon: mdi:coin-outline
+  - icon: mdi:currency-usd-circle-outline
     id: stocks
     title: Stocks
     cards:
@@ -2567,7 +2586,7 @@ views:
     cards:
       - type: iframe
         aspect_ratio: 90%
-        url: https://ourworldindata.org/grapher/covid-confirmed-cases-since-100th-case?country=IND+USA+ITA
+        url: https://ourworldindata.org/grapher/covid-confirmed-cases-since-100th-case?country=IND+USA+RUS+BRA
 
   - icon: mdi:bug
     id: grafana

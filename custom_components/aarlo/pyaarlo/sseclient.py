@@ -8,11 +8,21 @@ import requests
 
 # Technically, we should support streams that mix line endings.  This regex,
 # however, assumes that a system will provide consistent line endings.
-end_of_field = re.compile(r'\r\n\r\n|\r\r|\n\n')
+end_of_field = re.compile(r"\r\n\r\n|\r\r|\n\n")
 
 
 class SSEClient(object):
-    def __init__(self, log, url, last_id=None, retry=3000, session=None, chunk_size=1024, reconnect_cb=None, **kwargs):
+    def __init__(
+        self,
+        log,
+        url,
+        last_id=None,
+        retry=3000,
+        session=None,
+        chunk_size=1024,
+        reconnect_cb=None,
+        **kwargs
+    ):
         self.log = log
         self.url = url
         self.last_id = last_id
@@ -28,15 +38,15 @@ class SSEClient(object):
         self.requests_kwargs = kwargs
 
         # The SSE spec requires making requests with Cache-Control: nocache
-        if 'headers' not in self.requests_kwargs:
-            self.requests_kwargs['headers'] = {}
-        self.requests_kwargs['headers']['Cache-Control'] = 'no-cache'
+        if "headers" not in self.requests_kwargs:
+            self.requests_kwargs["headers"] = {}
+        self.requests_kwargs["headers"]["Cache-Control"] = "no-cache"
 
         # The 'Accept' header is not required, but explicit > implicit
-        self.requests_kwargs['headers']['Accept'] = 'text/event-stream'
+        self.requests_kwargs["headers"]["Accept"] = "text/event-stream"
 
         # Keep data here as it streams in
-        self.buf = u''
+        self.buf = u""
 
         self._connect()
 
@@ -45,7 +55,7 @@ class SSEClient(object):
 
     def _connect(self):
         if self.last_id:
-            self.requests_kwargs['headers']['Last-Event-ID'] = self.last_id
+            self.requests_kwargs["headers"]["Last-Event-ID"] = self.last_id
 
         # Use session if set.  Otherwise fall back to requests module.
         requester = self.session or requests
@@ -63,8 +73,7 @@ class SSEClient(object):
         return self
 
     def __next__(self):
-        decoder = codecs.getincrementaldecoder(
-            self.resp.encoding)(errors='replace')
+        decoder = codecs.getincrementaldecoder(self.resp.encoding)(errors="replace")
         while not self._event_complete():
             try:
                 next_chunk = next(self.resp_iterator)
@@ -72,12 +81,17 @@ class SSEClient(object):
                     raise EOFError()
                 self.buf += decoder.decode(next_chunk)
 
-            except (StopIteration, requests.RequestException, EOFError, http.client.IncompleteRead) as e:
+            except (
+                StopIteration,
+                requests.RequestException,
+                EOFError,
+                http.client.IncompleteRead,
+            ) as e:
                 if not self.running:
-                    self.log.debug('stopping')
+                    self.log.debug("stopping")
                     return None
 
-                self.log.debug('sseclient-error={}'.format(type(e).__name__))
+                self.log.debug("sseclient-error={}".format(type(e).__name__))
                 time.sleep(self.retry / 1000.0)
                 self._connect()
 
@@ -87,7 +101,7 @@ class SSEClient(object):
 
                 # The SSE spec only supports resuming from a whole message, so
                 # if we have half a message we should throw it out.
-                head, sep, tail = self.buf.rpartition('\n')
+                head, sep, tail = self.buf.rpartition("\n")
                 self.buf = head + sep
                 continue
 
@@ -110,9 +124,9 @@ class SSEClient(object):
 
 
 class Event(object):
-    sse_line_pattern = re.compile('(?P<name>[^:]*):?( ?(?P<value>.*))?')
+    sse_line_pattern = re.compile("(?P<name>[^:]*):?( ?(?P<value>.*))?")
 
-    def __init__(self, data='', event='message', id=None, retry=None):
+    def __init__(self, data="", event="message", id=None, retry=None):
         self.data = data
         self.event = event
         self.id = id
@@ -121,17 +135,17 @@ class Event(object):
     def dump(self):
         lines = []
         if self.id:
-            lines.append('id: %s' % self.id)
+            lines.append("id: %s" % self.id)
 
         # Only include an event line if it's not the default already.
-        if self.event != 'message':
-            lines.append('event: %s' % self.event)
+        if self.event != "message":
+            lines.append("event: %s" % self.event)
 
         if self.retry:
-            lines.append('retry: %s' % self.retry)
+            lines.append("retry: %s" % self.retry)
 
-        lines.extend('data: %s' % d for d in self.data.split('\n'))
-        return '\n'.join(lines) + '\n\n'
+        lines.extend("data: %s" % d for d in self.data.split("\n"))
+        return "\n".join(lines) + "\n\n"
 
     @classmethod
     def parse(cls, raw):
@@ -147,24 +161,24 @@ class Event(object):
                 warnings.warn('Invalid SSE line: "%s"' % line, SyntaxWarning)
                 continue
 
-            name = m.group('name')
-            if name == '':
+            name = m.group("name")
+            if name == "":
                 # line began with a ":", so is a comment.  Ignore
                 continue
-            value = m.group('value')
+            value = m.group("value")
 
-            if name == 'data':
+            if name == "data":
                 # If we already have some data, then join to it with a newline.
                 # Else this is it.
                 if msg.data:
-                    msg.data = '%s\n%s' % (msg.data, value)
+                    msg.data = "%s\n%s" % (msg.data, value)
                 else:
                     msg.data = value
-            elif name == 'event':
+            elif name == "event":
                 msg.event = value
-            elif name == 'id':
+            elif name == "id":
                 msg.id = value
-            elif name == 'retry':
+            elif name == "retry":
                 msg.retry = int(value)
 
         return msg

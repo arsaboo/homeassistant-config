@@ -7,23 +7,27 @@ import logging
 import time
 from datetime import timedelta
 
-import voluptuous as vol
-
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.dt as dt_util
+import voluptuous as vol
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.const import (ATTR_ATTRIBUTION)
+from homeassistant.const import ATTR_ATTRIBUTION
 from homeassistant.core import callback
-from homeassistant.helpers.config_validation import (PLATFORM_SCHEMA)
+from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.event import track_point_in_time
-from . import COMPONENT_ATTRIBUTION, COMPONENT_DATA, COMPONENT_BRAND
-from .pyaarlo.constant import (ACTIVITY_STATE_KEY, SILENT_MODE_KEY,
-                               SILENT_MODE_ACTIVE_KEY, SILENT_MODE_CALL_KEY,
-                               SIREN_STATE_KEY)
+
+from . import COMPONENT_ATTRIBUTION, COMPONENT_BRAND, COMPONENT_DATA
+from .pyaarlo.constant import (
+    ACTIVITY_STATE_KEY,
+    SILENT_MODE_ACTIVE_KEY,
+    SILENT_MODE_CALL_KEY,
+    SILENT_MODE_KEY,
+    SIREN_STATE_KEY,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['aarlo']
+DEPENDENCIES = ["aarlo"]
 
 SIRENS_DEFAULT = False
 SIREN_DURATION_DEFAULT = timedelta(seconds=300)
@@ -43,17 +47,22 @@ CONF_SNAPSHOT = "snapshot"
 CONF_SNAPSHOT_TIMEOUT = "snapshot_timeout"
 CONF_DOORBELL_SILENCE = "doorbell_silence"
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_SIRENS, default=SIRENS_DEFAULT): cv.boolean,
-    vol.Optional(CONF_ALL_SIRENS, default=ALL_SIRENS_DEFAULT): cv.boolean,
-    vol.Optional(CONF_SIREN_DURATION, default=SIREN_DURATION_DEFAULT): vol.All(cv.time_period, cv.positive_timedelta),
-    vol.Optional(CONF_SIREN_VOLUME, default=SIREN_VOLUME_DEFAULT): cv.string,
-    vol.Optional(CONF_SIREN_ALLOW_OFF, default=SIREN_ALLOW_OFF_DEFAULT): cv.boolean,
-    vol.Optional(CONF_SNAPSHOT, default=SNAPSHOTS_DEFAULT): cv.boolean,
-    vol.Optional(CONF_SNAPSHOT_TIMEOUT, default=SNAPSHOT_TIMEOUT_DEFAULT): vol.All(cv.time_period,
-                                                                                   cv.positive_timedelta),
-    vol.Optional(CONF_DOORBELL_SILENCE, default=SILENT_MODE_DEFAULT): cv.boolean,
-})
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
+    {
+        vol.Optional(CONF_SIRENS, default=SIRENS_DEFAULT): cv.boolean,
+        vol.Optional(CONF_ALL_SIRENS, default=ALL_SIRENS_DEFAULT): cv.boolean,
+        vol.Optional(CONF_SIREN_DURATION, default=SIREN_DURATION_DEFAULT): vol.All(
+            cv.time_period, cv.positive_timedelta
+        ),
+        vol.Optional(CONF_SIREN_VOLUME, default=SIREN_VOLUME_DEFAULT): cv.string,
+        vol.Optional(CONF_SIREN_ALLOW_OFF, default=SIREN_ALLOW_OFF_DEFAULT): cv.boolean,
+        vol.Optional(CONF_SNAPSHOT, default=SNAPSHOTS_DEFAULT): cv.boolean,
+        vol.Optional(CONF_SNAPSHOT_TIMEOUT, default=SNAPSHOT_TIMEOUT_DEFAULT): vol.All(
+            cv.time_period, cv.positive_timedelta
+        ),
+        vol.Optional(CONF_DOORBELL_SILENCE, default=SILENT_MODE_DEFAULT): cv.boolean,
+    }
+)
 
 
 async def async_setup_platform(hass, config, async_add_entities, _discovery_info=None):
@@ -105,7 +114,7 @@ class AarloSwitch(SwitchEntity):
         self._unique_id = identifier
         self._icon = "mdi:{}".format(icon)
         self._device = None
-        _LOGGER.info('AarloSwitch: {} created'.format(self._name))
+        _LOGGER.info("AarloSwitch: {} created".format(self._name))
 
     @property
     def icon(self):
@@ -128,25 +137,25 @@ class AarloSwitch(SwitchEntity):
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
-        _LOGGER.debug('implement turn on')
+        _LOGGER.debug("implement turn on")
 
     def turn_off(self, **kwargs):
         """Turn the switch off."""
-        _LOGGER.debug('implement turn off')
+        _LOGGER.debug("implement turn off")
 
     @property
     def device_state_attributes(self):
         """Return the device state attributes."""
         attrs = {
             ATTR_ATTRIBUTION: COMPONENT_ATTRIBUTION,
-            'brand': COMPONENT_BRAND,
-            'friendly_name': self._name,
-            'icon': self._icon
+            "brand": COMPONENT_BRAND,
+            "friendly_name": self._name,
+            "icon": self._icon,
         }
 
         if self._device is not None:
-            attrs['device_id'] = self._device.device_id
-            attrs['model_id'] = self._device.model_id
+            attrs["device_id"] = self._device.device_id
+            attrs["model_id"] = self._device.model_id
 
         return attrs
 
@@ -167,7 +176,7 @@ class AarloSirenBaseSwitch(AarloSwitch):
         """Return the state of the switch."""
         if self._on_until is not None:
             if self._on_until < time.monotonic():
-                _LOGGER.debug('turned off')
+                _LOGGER.debug("turned off")
                 self.do_off()
                 self._on_until = None
         return self.get_state()
@@ -178,15 +187,17 @@ class AarloSirenBaseSwitch(AarloSwitch):
             self.do_on()
             self._on_until = time.monotonic() + self._on_for.total_seconds()
             self.async_schedule_update_ha_state()
-            track_point_in_time(self.hass, self.async_update_ha_state, dt_util.utcnow() + self._on_for)
-            _LOGGER.debug('turned on')
+            track_point_in_time(
+                self.hass, self.async_update_ha_state, dt_util.utcnow() + self._on_for
+            )
+            _LOGGER.debug("turned on")
 
     def turn_off(self, **kwargs):
         """Turn the switch off."""
         if self._allow_off:
             self.do_off()
             self._on_until = None
-            _LOGGER.debug('forced off')
+            _LOGGER.debug("forced off")
         self.async_schedule_update_ha_state()
 
     def get_state(self):
@@ -204,9 +215,13 @@ class AarloSirenSwitch(AarloSirenBaseSwitch):
 
     def __init__(self, config, device):
         """Initialize the Aarlo siren switch device."""
-        super().__init__("{0} Siren".format(device.name), "siren_{}".format(device.entity_id), "alarm-bell",
-                         config.get(CONF_SIREN_DURATION),
-                         config.get(CONF_SIREN_ALLOW_OFF))
+        super().__init__(
+            "{0} Siren".format(device.name),
+            "siren_{}".format(device.entity_id),
+            "alarm-bell",
+            config.get(CONF_SIREN_DURATION),
+            config.get(CONF_SIREN_ALLOW_OFF),
+        )
         self._device = device
         self._volume = config.get(CONF_SIREN_VOLUME)
         self._state = "off"
@@ -217,7 +232,9 @@ class AarloSirenSwitch(AarloSirenBaseSwitch):
 
         @callback
         def update_state(_device, attr, value):
-            _LOGGER.debug('siren-callback:' + self._name + ':' + attr + ':' + str(value)[:80])
+            _LOGGER.debug(
+                "siren-callback:" + self._name + ":" + attr + ":" + str(value)[:80]
+            )
             self._state = value
             self.async_schedule_update_ha_state()
 
@@ -230,7 +247,9 @@ class AarloSirenSwitch(AarloSirenBaseSwitch):
 
     def do_on(self):
         _LOGGER.debug("turned siren {} on".format(self._name))
-        self._device.siren_on(duration=self._on_for.total_seconds(), volume=self._volume)
+        self._device.siren_on(
+            duration=self._on_for.total_seconds(), volume=self._volume
+        )
         self._state = "on"
 
     def do_off(self):
@@ -244,8 +263,13 @@ class AarloAllSirensSwitch(AarloSirenBaseSwitch):
 
     def __init__(self, config, arlo, devices):
         """Initialize the Aarlo siren switch device."""
-        super().__init__("All Sirens", "all_sirens", "alarm-light", config.get(CONF_SIREN_DURATION),
-                         config.get(CONF_SIREN_ALLOW_OFF))
+        super().__init__(
+            "All Sirens",
+            "all_sirens",
+            "alarm-light",
+            config.get(CONF_SIREN_DURATION),
+            config.get(CONF_SIREN_ALLOW_OFF),
+        )
         self._volume = config.get(CONF_SIREN_VOLUME)
         self._devices = devices
         self._device = arlo
@@ -256,7 +280,9 @@ class AarloAllSirensSwitch(AarloSirenBaseSwitch):
 
         @callback
         def update_state(_device, attr, value):
-            _LOGGER.debug('all-siren-callback:' + self._name + ':' + attr + ':' + str(value)[:80])
+            _LOGGER.debug(
+                "all-siren-callback:" + self._name + ":" + attr + ":" + str(value)[:80]
+            )
 
             state = "off"
             for device in self._devices:
@@ -292,7 +318,11 @@ class AarloSnapshotSwitch(AarloSwitch):
 
     def __init__(self, config, camera):
         """Initialize the Aarlo snapshot switch device."""
-        super().__init__("{0} Snapshot".format(camera.name), "snapshot_{}".format(camera.entity_id), "camera")
+        super().__init__(
+            "{0} Snapshot".format(camera.name),
+            "snapshot_{}".format(camera.entity_id),
+            "camera",
+        )
         self._device = camera
         self._timeout = config.get(CONF_SNAPSHOT_TIMEOUT)
 
@@ -301,7 +331,7 @@ class AarloSnapshotSwitch(AarloSwitch):
 
         @callback
         def update_state(_device, attr, value):
-            _LOGGER.debug('callback:' + self._name + ':' + attr + ':' + str(value)[:80])
+            _LOGGER.debug("callback:" + self._name + ":" + attr + ":" + str(value)[:80])
             self.async_schedule_update_ha_state()
 
         self._device.add_attr_callback(ACTIVITY_STATE_KEY, update_state)
@@ -338,9 +368,9 @@ class AarloSilentModeBaseSwitch(AarloSwitch):
     def state(self):
         """Return the state of the switch."""
         if self._state:
-          return 'on'
+            return "on"
         else:
-          return 'off'
+            return "off"
 
     def turn_on(self, **kwargs):
         _LOGGER.debug("Turning on silent mode for {}".format(self._name))
@@ -354,28 +384,29 @@ class AarloSilentModeBaseSwitch(AarloSwitch):
         """Register callbacks."""
 
         @callback
-        def update_state(_device, attr, value):
+        def update_state(_device, _attr, value):
             active = value.get(SILENT_MODE_ACTIVE_KEY, None)
             block_call = value.get(SILENT_MODE_CALL_KEY, None)
 
             # If active isn't present -- we cannot assert any state.
             if active is None:
-              return
+                return
             # If active is False, OR if this object doesn't block calls, then
             # simply mirror that state.
             elif not active or not self._block_call:
-              self._state = active
+                self._state = active
             # If it falls through to here, then silent mode has moved to
             # active, and this object does block calls. If we do not have fresh
             # block_call information, we cannot assert any state.
             elif block_call is None:
-              return
+                return
             # Silent mode is active, this object does block calls and there is
             # block_call information -- use that state.
             else:
-              self._state = block_call
+                self._state = block_call
 
             self.async_schedule_update_ha_state()
+
         self._doorbell.add_attr_callback(SILENT_MODE_KEY, update_state)
 
 
@@ -384,9 +415,12 @@ class AarloSilentModeChimeSwitch(AarloSilentModeBaseSwitch):
 
     def __init__(self, doorbell):
         """Initialize the Aarlo silent mode switch device."""
-        super().__init__("{0} Silent Mode Chime".format( doorbell.name), 
+        super().__init__(
+            "{0} Silent Mode Chime".format(doorbell.name),
             "{0} Silent Mode Chime".format(doorbell.entity_id),
-            doorbell, block_call=False)
+            doorbell,
+            block_call=False,
+        )
 
 
 class AarloSilentModeChimeCallSwitch(AarloSilentModeBaseSwitch):
@@ -394,6 +428,9 @@ class AarloSilentModeChimeCallSwitch(AarloSilentModeBaseSwitch):
 
     def __init__(self, doorbell):
         """Initialize the Aarlo silent mode switch device."""
-        super().__init__("{0} Silent Mode Chime Call".format(doorbell.name),
+        super().__init__(
+            "{0} Silent Mode Chime Call".format(doorbell.name),
             "{0} Silent Mode Chime Call".format(doorbell.entity_id),
-            doorbell, block_call=True)
+            doorbell,
+            block_call=True,
+        )
