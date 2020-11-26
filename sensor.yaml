@@ -207,8 +207,8 @@
   #     - temp_f
   #     - wind_string
   #     - relative_humidity
-  - platform: sectorperformance
-    api_key: !secret alphavantage_key
+  # - platform: sectorperformance
+  #   api_key: !secret alphavantage_key
   - platform: alpha_vantage
     api_key: !secret alphavantage_key
     foreign_exchange:

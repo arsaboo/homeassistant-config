@@ -1380,6 +1380,25 @@
           push:
             badge: 0
 
+- id: ensure_room_assistant_nodes_on
+  alias: 'Ensure Room Assistant devices are on'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.master_cluster_size
+        - sensor.study_cluster_size
+        - sensor.livingroom_cluster_size
+      to: "unavailable"
+  action:
+    - service: notify.mobile_app_alok_s_iphone
+      data_template:
+        message: "Check Room Assistant"
+        data:
+          subtitle: "{{ trigger.to_state.name.split(' ')[0]|capitalize }} cluster is not working"
+          push:
+            badge: 0
+
 - id: master_lights_on
   alias: 'Turn on Master lights on motion'
   initial_state: 'on'

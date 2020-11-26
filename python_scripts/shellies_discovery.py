@@ -593,30 +593,30 @@ if model_id == MODEL_SHELLY1L_ID or dev_id_prefix == MODEL_SHELLY1L_PREFIX:
     bin_sensors_tpls = [
         None,
         None,
-        TPL_SHORTPUSH,
-        TPL_LONGPUSH,
-        TPL_SHORTPUSH,
-        TPL_LONGPUSH,
+        None,
+        None,
+        None,
+        None,
         TPL_NEW_FIRMWARE_FROM_INFO,
         None,
     ]
     bin_sensors_topics = [
         TOPIC_INPUT_0,
         TOPIC_INPUT_1,
-        TOPIC_INPUT_EVENT_0,
-        TOPIC_INPUT_EVENT_0,
-        TOPIC_INPUT_EVENT_1,
-        TOPIC_INPUT_EVENT_1,
+        TOPIC_LONGPUSH_0,
+        TOPIC_LONGPUSH_0,
+        TOPIC_LONGPUSH_1,
+        TOPIC_LONGPUSH_1,
         TOPIC_INFO,
         None,
     ]
     bin_sensors_pl = [
         PL_1_0,
         PL_1_0,
-        None,
-        None,
-        None,
-        None,
+        PL_0_1,
+        PL_1_0,
+        PL_0_1,
+        PL_1_0,
         None,
         PL_1_0,
     ]
@@ -763,13 +763,13 @@ if model_id == MODEL_SHELLYUNI_ID or dev_id_prefix == MODEL_SHELLYUNI_PREFIX:
     relays_bin_sensors_classes = [None]
     sensors = [SENSOR_ADC, SENSOR_RSSI, SENSOR_SSID, SENSOR_UPTIME]
     sensors_classes = [
-        None,
+        DEVICE_CLASS_VOLTAGE,
         DEVICE_CLASS_SIGNAL_STRENGTH,
         None,
         DEVICE_CLASS_TIMESTAMP,
     ]
-    sensors_units = [None, UNIT_DB, None, None]
-    sensors_tpls = [None, TPL_RSSI, TPL_SSID, TPL_UPTIME]
+    sensors_units = [UNIT_VOLT, UNIT_DB, None, None]
+    sensors_tpls = [TPL_VOLTAGE, TPL_RSSI, TPL_SSID, TPL_UPTIME]
     sensors_topics = [TOPIC_ADC, None, None, None]
 
 if (

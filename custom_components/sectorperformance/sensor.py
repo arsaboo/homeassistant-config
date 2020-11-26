@@ -39,15 +39,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_API_KEY): cv.string
 })
 
-
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the Sector performance sensor."""
     api_key = config.get(CONF_API_KEY)
     api = SectorPerfAPI(api_key)
     sensors = [SectorPerfSensor(hass, api, condition)
                for condition in MONITORED_CONDITIONS]
 
-    add_devices(sensors, True)
+    async_add_entities(sensors, True)
 
 
 class SectorPerfSensor(Entity):
@@ -86,6 +85,8 @@ class SectorPerfSensor(Entity):
         try:
             return_value = self._api.data[
                 'Rank A: Real-Time Performance'][self._var_name]
+            _LOGGER.error("%s: %s", self._var_name, self._api.data[
+                'Rank A: Real-Time Performance'][self._var_name])
             return float(return_value[:-1])
         except TypeError:
             return None
@@ -95,9 +96,9 @@ class SectorPerfSensor(Entity):
         """Could the device be accessed during the last update call."""
         return self._api.available
 
-    def update(self):
+    async def async_update(self):
         """Get the latest data from Alphavantage."""
-        self._api.update()
+        await self._api.async_update()
 
 
 class SectorPerfAPI(object):
@@ -111,13 +112,13 @@ class SectorPerfAPI(object):
         self._rest = RestData('GET', resource, None, None, None, False)
         self.data = None
         self.available = True
-        self.update()
+        self._rest.async_update()
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
-    def update(self):
+    async def async_update(self):
         """Get the latest data from Alphavantage."""
         try:
-            self._rest.update()
+            await self._rest.async_update()
             self.data = json.loads(self._rest.data)
             self.available = True
         except TypeError:
