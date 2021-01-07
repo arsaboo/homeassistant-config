@@ -7,13 +7,13 @@ climate.upstairs:
 climate.bedroom:
   friendly_name: Master
   entity_picture: /local/icons/Ecobee.png
-device_tracker.aloks_iphone_3:
+device_tracker.alokiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone
 device_tracker.alokphone_alokphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
-device_tracker.iphone_3:
+device_tracker.rashmiphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
 device_tracker.rashmiphone_rashmiphone_2:
@@ -266,7 +266,7 @@ sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
   icon: mdi:currency-usd-circle-outline
-sensor.alok_s_iphone_room_presence:
+sensor.alok_iphone12_room_presence:
   friendly_name: Alok Room
   entity_picture: /local/icons/Alok.png
 sensor.iphone_room_presence:

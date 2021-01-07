@@ -56,7 +56,7 @@ class ArloMediaLibrary(object):
             # videos, add missing
             if video.get("contentType", "").startswith("video/"):
                 key = "{0}:{1}".format(
-                    camera.device_id, arlotime_strftime(video.get("localCreatedDate"))
+                    camera.device_id, arlotime_strftime(video.get("utcCreatedDate"))
                 )
                 if key in keys:
                     self._arlo.vdebug("skipping {0}, already present".format(key))
@@ -92,6 +92,10 @@ class ArloMediaLibrary(object):
         data = self._arlo.be.post(
             LIBRARY_PATH, {"dateFrom": date_from, "dateTo": date_to}
         )
+        if data is None:
+            self._arlo.warning("error loading the image library")
+            return
+
         videos = []
         keys = []
         snapshots = {}
@@ -102,7 +106,7 @@ class ArloMediaLibrary(object):
             if camera is None:
                 key = "{0}:{1}".format(
                     video.get("deviceId"),
-                    arlotime_strftime(video.get("localCreatedDate")),
+                    arlotime_strftime(video.get("utcCreatedDate")),
                 )
                 self._arlo.vdebug("skipping {0}".format(key))
                 continue
@@ -120,7 +124,7 @@ class ArloMediaLibrary(object):
             if video.get("contentType", "").startswith("video/"):
                 key = "{0}:{1}".format(
                     video.get("deviceId"),
-                    arlotime_strftime(video.get("localCreatedDate")),
+                    arlotime_strftime(video.get("utcCreatedDate")),
                 )
                 self._arlo.vdebug("adding {0}".format(key))
                 videos.append(ArloVideo(video, camera, self._arlo))
@@ -193,7 +197,7 @@ class ArloMediaObject(object):
     @property
     def created_at(self):
         """Returns date video was creaed."""
-        return self._attrs.get("localCreatedDate", None)
+        return self._attrs.get("utcCreatedDate", None)
 
     def created_at_pretty(self, date_format=None):
         """Returns date video was taken formated with `last_date_format`"""

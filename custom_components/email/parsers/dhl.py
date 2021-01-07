@@ -6,8 +6,8 @@ from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)
-EMAIL_DOMAIN_DHL = 'dhl'
 ATTR_DHL = 'dhl'
+EMAIL_DOMAIN_DHL = 'dhl'
 
 
 def parse_dhl(email):
@@ -18,6 +18,5 @@ def parse_dhl(email):
     for tracking_number in matches:
         if tracking_number not in tracking_numbers:
             tracking_numbers.append(tracking_number)
-                
+
     return tracking_numbers
-    

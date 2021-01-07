@@ -1,4 +1,12 @@
   actions:
+    - name: Skip Track
+      background_color: "#000000"
+      label:
+        text: Skip Track
+        color: "#ff0000"
+      icon:
+        icon: skip-next-circle-outline
+        color: "#ffffff"
     - name: Temperature report
       background_color: "#000000"
       label:
@@ -67,7 +75,7 @@
           - identifier: LIVING_ROOM
             title: Living room
           - identifier: KITCHEN
-            title: Kitchen           
+            title: Kitchen
       - name: Light options
         identifier: light_options
         actions:

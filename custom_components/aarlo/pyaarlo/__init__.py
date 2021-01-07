@@ -31,7 +31,7 @@ from .util import time_to_arlotime
 
 _LOGGER = logging.getLogger("pyaarlo")
 
-__version__ = "0.7.0.beta.7"
+__version__ = "0.7.0.5"
 
 
 class PyArlo(object):
@@ -166,6 +166,9 @@ class PyArlo(object):
         # Every few hours we can refresh the device list.
         self._refresh_devices_at = time.monotonic() + self._cfg.refresh_devices_every
 
+        # Every few minutes we can refresh the mode list.
+        self._refresh_modes_at = time.monotonic() + self._cfg.refresh_modes_every
+
         # default blank image when waiting for camera image to appear
         self._blank_image = base64.standard_b64decode(BLANK_IMAGE)
 
@@ -228,6 +231,7 @@ class PyArlo(object):
             # Synchronous; run them one after the other
             self.debug("getting initial settings")
             self._refresh_bases(initial=True)
+            self._refresh_modes()
             self._refresh_ambient_sensors()
             self._refresh_doorbells()
             self._ml.load()
@@ -238,6 +242,7 @@ class PyArlo(object):
             # Asynchronous; queue them to run one after the other
             self.debug("queueing initial settings")
             self._bg.run(self._refresh_bases, initial=True)
+            self._bg.run(self._refresh_modes)
             self._bg.run(self._refresh_ambient_sensors)
             self._bg.run(self._refresh_doorbells)
             self._bg.run(self._ml.load)
@@ -295,7 +300,6 @@ class PyArlo(object):
     def _refresh_bases(self, initial):
         for base in self._bases:
             base.update_modes(initial)
-            base.update_mode()
             self._be.notify(
                 base=base,
                 body={"action": "get", "resource": "cameras", "publishResponse": False},
@@ -316,10 +320,43 @@ class PyArlo(object):
                 wait_for="response",
             )
 
+    def _refresh_modes(self):
+        self.vdebug("refresh modes")
+        for base in self._bases:
+            base.update_mode()
+
     def _fast_refresh(self):
         self.vdebug("fast refresh")
         self._bg.run(self._st.save)
         self._ping_bases()
+
+        # do we need to reload the modes?
+        if self._cfg.refresh_modes_every != 0:
+            now = time.monotonic()
+            self.vdebug(
+                "mode reload check {} {}".format(str(now), str(self._refresh_modes_at))
+            )
+            if now > self._refresh_modes_at:
+                self.debug("mode reload needed")
+                self._refresh_modes_at = now + self._cfg.refresh_modes_every
+                self._bg.run(self._refresh_modes)
+        else:
+            self.vdebug("no mode reload")
+
+        # do we need to reload the devices?
+        if self._cfg.refresh_devices_every != 0:
+            now = time.monotonic()
+            self.vdebug(
+                "device reload check {} {}".format(
+                    str(now), str(self._refresh_devices_at)
+                )
+            )
+            if now > self._refresh_devices_at:
+                self.debug("device reload needed")
+                self._refresh_devices_at = now + self._cfg.refresh_devices_every
+                self._bg.run(self._refresh_devices)
+        else:
+            self.vdebug("no device reload")
 
         # if day changes then reload recording library and camera counts
         today = datetime.date.today()
@@ -334,21 +371,6 @@ class PyArlo(object):
         self.vdebug("slow refresh")
         self._bg.run(self._refresh_bases, initial=False)
         self._bg.run(self._refresh_ambient_sensors)
-
-        # do we need to reload the devices?
-        if self._cfg.refresh_devices_every != 0:
-            now = time.monotonic()
-            self.debug(
-                "device reload check {} {}".format(
-                    str(now), str(self._refresh_devices_at)
-                )
-            )
-            if now > self._refresh_devices_at:
-                self.debug("device reload needed")
-                self._refresh_devices_at = now + self._cfg.refresh_devices_every
-                self._bg.run(self._refresh_devices)
-        else:
-            self.debug("no device reload")
 
     def _initial_refresh(self):
         self.debug("initial refresh")

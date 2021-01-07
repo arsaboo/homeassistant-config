@@ -22,7 +22,7 @@
         prob_given_false: 0.10
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.iphone_3'
+      - entity_id: 'device_tracker.rashmiphone_2'
         prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'
@@ -51,7 +51,7 @@
         prob_given_false: 0.10
         platform: 'state'
         to_state: 'home'
-      - entity_id: 'device_tracker.aloks_iphone_3'
+      - entity_id: 'device_tracker.alokiphone'
         prob_given_true: 0.99
         prob_given_false: 0.4
         platform: 'state'

@@ -225,11 +225,24 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
             f"{ALEXA_DOMAIN}_{hide_email(self._login.email)}"[0:32],
             self._handle_event,
         )
+        # Register to coordinator:
+        email = self._login.email
+        coordinator = self.hass.data[DATA_ALEXAMEDIA]["accounts"][email].get(
+            "coordinator"
+        )
+        if coordinator:
+            coordinator.async_add_listener(self.update)
 
     async def async_will_remove_from_hass(self):
         """Prepare to remove entity."""
         # Register event handler on bus
         self._listener()
+        email = self._login.email
+        coordinator = self.hass.data[DATA_ALEXAMEDIA]["accounts"][email].get(
+            "coordinator"
+        )
+        if coordinator:
+            coordinator.async_remove_listener(self.update)
 
     async def _handle_event(self, event):
         """Handle events.
@@ -314,8 +327,9 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
             )
         if not event_serial:
             return
-        self._available = True
-        self.async_write_ha_state()
+        if event_serial == self.device_serial_number:
+            self._available = True
+            self.async_write_ha_state()
         if "last_called_change" in event:
             if event_serial == self.device_serial_number or any(
                 item["serialNumber"] == event_serial for item in self._app_device_list
@@ -474,14 +488,14 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
             self._capabilities = device["capabilities"]
             self._cluster_members = device["clusterMembers"]
             self._parent_clusters = device["parentClusters"]
-            self._bluetooth_state = device["bluetooth_state"]
+            self._bluetooth_state = device.get("bluetooth_state", {})
             self._locale = device["locale"] if "locale" in device else "en-US"
             self._timezone = device["timeZoneId"] if "timeZoneId" in device else "UTC"
             self._dnd = device["dnd"] if "dnd" in device else None
             self._set_authentication_details(device["auth_info"])
         session = None
         if self.available:
-            _LOGGER.debug("%s: Refreshing %s", self.account, self.name)
+            _LOGGER.debug("%s: Refreshing %s", self.account, self)
             self._assumed_state = False
             if "PAIR_BT_SOURCE" in self._capabilities:
                 self._source = self._get_source()
@@ -635,6 +649,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                             ),
                         )
                     )
+        if self.hass:
+            self.async_write_ha_state()
 
     @property
     def source(self):
@@ -652,7 +668,7 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
         if source == "Local Speaker":
             await self.alexa_api.disconnect_bluetooth()
             self._source = "Local Speaker"
-        elif self._bluetooth_state["pairedDeviceList"] is not None:
+        elif self._bluetooth_state.get("pairedDeviceList"):
             for devices in self._bluetooth_state["pairedDeviceList"]:
                 if devices["friendlyName"] == source:
                     await self.alexa_api.set_bluetooth(devices["address"])
@@ -775,6 +791,11 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
         if self._media_player_state == "IDLE":
             return STATE_IDLE
         return STATE_STANDBY
+
+    def update(self):
+        """Get the latest details on a media player synchronously."""
+        return
+        # return self.hass.add_job(async_update)
 
     @_catch_login_errors
     async def async_update(self):
@@ -1197,6 +1218,19 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
         elif media_type == "image":
             _LOGGER.debug("%s:Setting background to %s", self, media_id)
             await self.alexa_api.set_background(media_id)
+        elif media_type == "custom":
+            _LOGGER.debug(
+                '%s:Running custom command: "%s" with queue_delay %s',
+                self,
+                media_id,
+                queue_delay,
+            )
+            await self.alexa_api.run_custom(
+                media_id,
+                customer_id=self._customer_id,
+                queue_delay=queue_delay,
+                **kwargs,
+            )
         else:
             _LOGGER.debug(
                 "%s:Playing music %s on %s with queue_delay %s",

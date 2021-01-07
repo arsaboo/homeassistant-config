@@ -1,5 +1,4 @@
 homeassistant:
-  legacy_templates: true
   auth_providers:
     - type: homeassistant
     - type: trusted_networks
@@ -824,7 +823,6 @@ logger:
     homeassistant.components.switch.unifi: debug
     custom_components.aesop: debug
     custom_components.aesop.sensor: debug
-    homeassistant.components.ssdp: debug
     homeassistant.components.smartthings: debug
     # custom_components.alexa_media: debug
     # homeassistant.components.http.view: info

@@ -35,6 +35,12 @@ from .parsers.best_buy import ATTR_BEST_BUY, EMAIL_DOMAIN_BEST_BUY, parse_best_b
 from .parsers.dollar_shave_club import ATTR_DOLLAR_SHAVE_CLUB, EMAIL_DOMAIN_DOLLAR_SHAVE_CLUB, parse_dollar_shave_club
 from .parsers.nuleaf import ATTR_NULEAF, EMAIL_DOMAIN_NULEAF, parse_nuleaf
 from .parsers.timeless import ATTR_TIMELESS, EMAIL_DOMAIN_TIMLESS, parse_timeless
+from .parsers.dsw import ATTR_DSW, EMAIL_DOMAIN_DSW, parse_dsw
+from .parsers.wyze import ATTR_WYZE, EMAIL_DOMAIN_WYZE, parse_wyze
+from .parsers.reolink import ATTR_REOLINK, EMAIL_DOMAIN_REOLINK, parse_reolink
+from .parsers.chewy import ATTR_CHEWY, EMAIL_DOMAIN_CHEWY, parse_chewy
+from .parsers.groupon import ATTR_GROUPON, EMAIL_DOMAIN_GROUPON, parse_groupon
+from .parsers.zazzle import ATTR_ZAZZLE, EMAIL_DOMAIN_ZAZZLE, parse_zazzle
 
 parsers = [
     (ATTR_UPS, EMAIL_DOMAIN_UPS, parse_ups),
@@ -56,6 +62,12 @@ parsers = [
     (ATTR_DOLLAR_SHAVE_CLUB, EMAIL_DOMAIN_DOLLAR_SHAVE_CLUB, parse_dollar_shave_club),
     (ATTR_NULEAF, EMAIL_DOMAIN_NULEAF, parse_nuleaf),
     (ATTR_TIMELESS, EMAIL_DOMAIN_TIMLESS, parse_timeless),
+    (ATTR_DSW, EMAIL_DOMAIN_DSW, parse_dsw),
+    (ATTR_WYZE, EMAIL_DOMAIN_WYZE, parse_wyze),
+    (ATTR_REOLINK, EMAIL_DOMAIN_REOLINK, parse_reolink),
+    (ATTR_CHEWY, EMAIL_DOMAIN_CHEWY, parse_chewy),
+    (ATTR_GROUPON, EMAIL_DOMAIN_GROUPON, parse_groupon),
+    (ATTR_ZAZZLE, EMAIL_DOMAIN_ZAZZLE, parse_zazzle),
 ]
 
 _LOGGER = logging.getLogger(__name__)

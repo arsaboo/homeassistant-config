@@ -23,6 +23,7 @@ from .constant import (
     SUBSCRIBE_PATH,
     TFA_CONSOLE_SOURCE,
     TFA_IMAP_SOURCE,
+    TFA_PUSH_SOURCE,
     TFA_REST_API_SOURCE,
     TRANSID_PREFIX,
 )
@@ -497,38 +498,70 @@ class ArloBackEnd(object):
                 self._arlo.error("2fa no suitable secondary choice available")
                 return False
 
-            # snapshot 2fa before sending in request
-            if not tfa.start():
-                self._arlo.error("2fa startup failed")
-                return False
+            if tfa != TFA_PUSH_SOURCE:
+                # snapshot 2fa before sending in request
+                if not tfa.start():
+                    self._arlo.error("2fa startup failed")
+                    return False
 
-            # start authentication with email
-            self._arlo.debug("starting auth with {}".format(self._arlo.cfg.tfa_type))
-            body = self.auth_post(AUTH_START_PATH, {"factorId": factor_id}, headers)
-            if body is None:
-                self._arlo.error("2fa startAuth failed")
-                return False
-            factor_auth_code = body["factorAuthCode"]
+                # start authentication with email
+                self._arlo.debug(
+                    "starting auth with {}".format(self._arlo.cfg.tfa_type)
+                )
+                body = self.auth_post(AUTH_START_PATH, {"factorId": factor_id}, headers)
+                if body is None:
+                    self._arlo.error("2fa startAuth failed")
+                    return False
+                factor_auth_code = body["factorAuthCode"]
 
-            # get code from TFA source
-            code = tfa.get()
-            if code is None:
-                self._arlo.error("2fa core retrieval failed")
-                return False
+                # get code from TFA source
+                code = tfa.get()
+                if code is None:
+                    self._arlo.error("2fa core retrieval failed")
+                    return False
 
-            # tidy 2fa
-            tfa.stop()
+                # tidy 2fa
+                tfa.stop()
 
-            # finish authentication
-            self._arlo.debug("finishing auth")
-            body = self.auth_post(
-                AUTH_FINISH_PATH,
-                {"factorAuthCode": factor_auth_code, "otp": code},
-                headers,
-            )
-            if body is None:
-                self._arlo.error("2fa finishAuth failed")
-                return False
+                # finish authentication
+                self._arlo.debug("finishing auth")
+                body = self.auth_post(
+                    AUTH_FINISH_PATH,
+                    {"factorAuthCode": factor_auth_code, "otp": code},
+                    headers,
+                )
+                if body is None:
+                    self._arlo.error("2fa finishAuth failed")
+                    return False
+            else:
+                # start authentication
+                self._arlo.debug(
+                    "starting auth with {}".format(self._arlo.cfg.tfa_type)
+                )
+                body = self.auth_post(AUTH_START_PATH, {"factorId": factor_id}, headers)
+                if body is None:
+                    self._arlo.error("2fa startAuth failed")
+                    return False
+                factor_auth_code = body["factorAuthCode"]
+                tries = 1
+                while True:
+                    # finish authentication
+                    self._arlo.debug("finishing auth")
+                    body = self.auth_post(
+                        AUTH_FINISH_PATH,
+                        {"factorAuthCode": factor_auth_code},
+                        headers,
+                    )
+                    if body is None:
+                        self._arlo.warning("2fa finishAuth - tries {}".format(tries))
+                        if tries < self._arlo.cfg.tfa_retries:
+                            time.sleep(self._arlo.cfg.tfa_delay)
+                            tries += 1
+                        else:
+                            self._arlo.error("2fa finishAuth failed")
+                            return False
+                    else:
+                        break
 
             # save new login information
             self._update_auth_info(body)
@@ -648,10 +681,14 @@ class ArloBackEnd(object):
 
         self._arlo.vdebug("finishing transaction-->{}".format(tid))
         with self._lock:
-            while mnow < mend and self._requests[tid] is None:
-                self._lock.wait(mend - mnow)
-                mnow = time.monotonic()
-            response = self._requests.pop(tid)
+            try:
+                while mnow < mend and self._requests[tid] is None:
+                    self._lock.wait(mend - mnow)
+                    mnow = time.monotonic()
+                response = self._requests.pop(tid)
+            except KeyError as e:
+                self._arlo.debug("got a key error")
+                response = None
         self._arlo.vdebug("finished transaction-->{}".format(tid))
         return response
 

@@ -34,7 +34,7 @@ class ArloBase(ArloDevice):
         return self._load([MODE_ID_TO_NAME_KEY, mode_id], None)
 
     def _id_is_schedule(self, mode_id):
-        return self._load([MODE_IS_SCHEDULE_KEY, mode_id], False)
+        return self._load([MODE_IS_SCHEDULE_KEY, mode_id.lower()], False)
 
     def _name_to_id(self, mode_name):
         return self._load([MODE_NAME_TO_ID_KEY, mode_name.lower()], None)
@@ -51,6 +51,7 @@ class ArloBase(ArloDevice):
                 self._arlo.debug(mode_id + "<=M=>" + mode_name)
                 self._save([MODE_ID_TO_NAME_KEY, mode_id], mode_name)
                 self._save([MODE_NAME_TO_ID_KEY, mode_name.lower()], mode_id)
+                self._save([MODE_IS_SCHEDULE_KEY, mode_id.lower()], False)
                 self._save([MODE_IS_SCHEDULE_KEY, mode_name.lower()], False)
 
     def schedule_to_modes(self):
@@ -84,6 +85,7 @@ class ArloBase(ArloDevice):
                 self._arlo.debug(schedule_id + "<=S=>" + schedule_name)
                 self._save([MODE_ID_TO_NAME_KEY, schedule_id], schedule_name)
                 self._save([MODE_NAME_TO_ID_KEY, schedule_name.lower()], schedule_id)
+                self._save([MODE_IS_SCHEDULE_KEY, schedule_id.lower()], True)
                 self._save([MODE_IS_SCHEDULE_KEY, schedule_name.lower()], True)
 
     def _set_mode_or_schedule(self, event):
@@ -275,7 +277,11 @@ class ArloBase(ArloDevice):
                             "Fetching device list (hoping this will fix arming/disarming)"
                         )
                         self._arlo.be.devices()
-                        self._arlo.bg.run(_set_mode_v2_cb, attempt=attempt + 1)
+                        if self._arlo.cfg.synchronous_mode:
+                            self._arlo.debug("trying again, but synchronous")
+                            _set_mode_v2_cb(attempt=attempt + 1)
+                        else:
+                            self._arlo.bg.run(_set_mode_v2_cb, attempt=attempt + 1)
                         return
 
                     self._arlo.error("Failed to set mode.")
@@ -329,9 +335,12 @@ class ArloBase(ArloDevice):
             modes = self._arlo.be.get(
                 DEFINITIONS_PATH + "?uniqueIds={}".format(self.unique_id)
             )
-            modes = modes.get(self.unique_id, {})
-            self._parse_modes(modes.get("modes", []))
-            self._parse_schedules(modes.get("schedules", []))
+            if modes is not None:
+                modes = modes.get(self.unique_id, {})
+                self._parse_modes(modes.get("modes", []))
+                self._parse_schedules(modes.get("schedules", []))
+            else:
+                self._arlo.error("failed to read modes (v2)")
 
     @property
     def schedule(self):

@@ -337,21 +337,21 @@ views:
           # Room Detection Alok
           - type: conditional
             conditions:
-              - entity: sensor.alok_s_iphone_room_presence
+              - entity: sensor.alok_iphone12_room_presence
                 state: 'livingroom'
             elements:
               - type: state-icon
-                entity: sensor.alok_s_iphone_room_presence
+                entity: sensor.alok_iphone12_room_presence
                 style:
                   top: 23%
                   left: 35%
           - type: conditional
             conditions:
-              - entity: sensor.alok_s_iphone_room_presence
+              - entity: sensor.alok_iphone12_room_presence
                 state: 'study'
             elements:
               - type: state-icon
-                entity: sensor.alok_s_iphone_room_presence
+                entity: sensor.alok_iphone12_room_presence
                 style:
                   top: 73%
                   left: 49%
@@ -464,11 +464,11 @@ views:
           # Room Detection Alok
           - type: conditional
             conditions:
-              - entity: sensor.alok_s_iphone_room_presence
+              - entity: sensor.alok_iphone12_room_presence
                 state: 'master'
             elements:
               - type: state-icon
-                entity: sensor.alok_s_iphone_room_presence
+                entity: sensor.alok_iphone12_room_presence
                 style:
                   top: 66%
                   left: 73%
@@ -1358,7 +1358,7 @@ views:
                   'home': /local/icons/rashmi_ios_home.png
                   'not_home': /local/icons/rashmi_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.iphone_3
+                entity: device_tracker.rashmiphone_2
                 show_name: false
                 show_state: false
                 state_image:
@@ -1399,7 +1399,7 @@ views:
                   'Buckhead': /local/icons/alok_ios_not_home.png
                   'Downtown': /local/icons/alok_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.aloks_iphone_3
+                entity: device_tracker.alokiphone
                 show_name: false
                 show_state: false
                 state_image:
@@ -1429,7 +1429,7 @@ views:
         title: HASS Details
         show_header_toggle: false
         entities:
-          - sensor.ssl_certificate_expiry
+          - sensor.cert_expiry
           - input_select.current_theme
           - input_boolean.devmode
           - input_select.abodestatus
@@ -1919,13 +1919,6 @@ views:
             - domain: image_processing
           exclude:
             - state: "unknown"
-      - type: custom:calendar-card
-        startFromToday: true
-        progressBar: true
-        entities:
-          - calendar.personal
-          - calendar.work
-          - calendar.us_holidays
       - type: picture-elements
         # title: Main Level
         image: /local/icons/remote2.png

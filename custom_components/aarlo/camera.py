@@ -9,6 +9,7 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from haffmpeg.camera import CameraMjpeg
 from homeassistant.components import websocket_api
 from homeassistant.components.camera import (
     ATTR_FILENAME,
@@ -199,7 +200,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
     cameras = []
     cameras_with_siren = False
     for camera in arlo.cameras:
-        cameras.append(ArloCam(camera, config, arlo))
+        cameras.append(ArloCam(camera, config, arlo, hass))
         if camera.has_capability(SIREN_STATE_KEY):
             cameras_with_siren = True
 
@@ -336,7 +337,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
 class ArloCam(Camera):
     """An implementation of a Netgear Arlo IP camera."""
 
-    def __init__(self, camera, config, arlo):
+    def __init__(self, camera, config, arlo, hass):
         """Initialize an Arlo camera."""
         super().__init__()
         self._name = camera.name
@@ -348,6 +349,7 @@ class ArloCam(Camera):
         self._motion_status = False
         self._stream_snapshot = arlo.cfg.stream_snapshot
         self._save_updates_to = arlo.cfg.save_updates_to
+        self._ffmpeg = hass.data[DATA_FFMPEG]
         self._ffmpeg_arguments = config.get(CONF_FFMPEG_ARGUMENTS)
         _LOGGER.info("ArloCam: %s created", self._name)
 
@@ -422,18 +424,19 @@ class ArloCam(Camera):
 
     async def handle_async_mjpeg_stream(self, request):
         """Generate an HTTP MJPEG stream from the camera."""
-        from haffmpeg.camera import CameraMjpeg
+        video = await self.hass.async_add_executor_job(
+            getattr, self._camera, "last_video"
+        )
 
-        video = self._camera.last_video
         if not video:
-            error_msg = "Video not found for {0}. Is it older than {1} days?".format(
-                self._name, self._camera.min_days_vdo_cache
+            error_msg = (
+                f"Video not found for {self._name}. "
+                f"Is it older than {self._camera.min_days_vdo_cache} days?"
             )
             _LOGGER.error(error_msg)
             return
 
-        ffmpeg_manager = self.hass.data[DATA_FFMPEG]
-        stream = CameraMjpeg(ffmpeg_manager.binary, loop=self.hass.loop)
+        stream = CameraMjpeg(self._ffmpeg.binary)
         await stream.open_camera(video.video_url, extra_cmd=self._ffmpeg_arguments)
 
         try:
@@ -442,11 +445,13 @@ class ArloCam(Camera):
                 self.hass,
                 request,
                 stream_reader,
-                ffmpeg_manager.ffmpeg_stream_content_type,
+                self._ffmpeg.ffmpeg_stream_content_type,
             )
-
         finally:
-            await stream.close()
+            try:
+                await stream.close()
+            except:
+                _LOGGER.debug(f"problem with stream close for {self._name}")
 
     @property
     def unique_id(self):
@@ -1095,8 +1100,8 @@ def camera_start_recording_service(hass, call):
             _LOGGER.info("{} start recording(duration={})".format(entity_id, duration))
             camera = get_entity_from_domain(hass, DOMAIN, entity_id)
             camera.start_recording(duration=duration)
-        except HomeAssistantError:
-            _LOGGER.warning("{} start recording service failed".format(entity_id))
+        except HomeAssistantError as e:
+            _LOGGER.warning(f"{entity_id} start recording service failed - {str(e)}")
 
 
 def camera_stop_recording_service(hass, call):
@@ -1104,5 +1109,5 @@ def camera_stop_recording_service(hass, call):
         try:
             _LOGGER.info("{} stop recording".format(entity_id))
             get_entity_from_domain(hass, DOMAIN, entity_id).stop_recording()
-        except HomeAssistantError:
-            _LOGGER.warning("{} stop recording service failed".format(entity_id))
+        except HomeAssistantError as e:
+            _LOGGER.warning(f"{entity_id} stop recording service failed - {str(e)}")

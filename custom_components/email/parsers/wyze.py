@@ -6,12 +6,12 @@ from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)
-ATTR_ROCKAUTO = 'rockauto'
-EMAIL_DOMAIN_ROCKAUTO = 'rockauto.com'
+ATTR_WYZE = 'wyze'
+EMAIL_DOMAIN_WYZE = 'wyze.com'
 
 
-def parse_rockauto(email):
-    """Parse Rockauto tracking numbers."""
+def parse_wyze(email):
+    """Parse Wyze tracking numbers."""
     tracking_numbers = []
 
     soup = BeautifulSoup(email[EMAIL_ATTR_BODY], 'html.parser')
@@ -19,7 +19,7 @@ def parse_rockauto(email):
     for link in links:
         if not link:
             continue
-        match = re.search('tracknumbers=(.*?)$', link)
+        match = re.search('tracking_numbers=(.*?)&', link)
         if match and match.group(1) not in tracking_numbers:
             tracking_numbers.append(match.group(1))
 

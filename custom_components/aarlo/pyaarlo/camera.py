@@ -700,6 +700,12 @@ class ArloCamera(ArloChildDevice):
         )
 
     def request_snapshot(self):
+        """Requests a snapshot from the camera without blocking.
+
+        The snapshot can be handled with callbacks registered to
+        LAST_IMAGE_SRC_KEY - lastImageSource starting with snapshot/, or capture/
+        LAST_IMAGE_DATA_KEY - presignedLastImageData containing the image data.
+        """
         with self._lock:
             if self.has_user_request("snapshot"):
                 return
@@ -835,7 +841,7 @@ class ArloCamera(ArloChildDevice):
             return "taking snapshot"
         if self.has_activity("recording"):
             return "recording"
-        if self.has_local_user("streaming"):
+        if self.has_activity("streaming"):
             return "streaming"
         if self.was_recently_active:
             return "recently active"

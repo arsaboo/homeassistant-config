@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 from ..const import EMAIL_ATTR_BODY
 
 _LOGGER = logging.getLogger(__name__)
-EMAIL_DOMAIN_DOLLAR_SHAVE_CLUB = 'dollarshaveclub.com'
 ATTR_DOLLAR_SHAVE_CLUB = 'dollar_shave_club'
+EMAIL_DOMAIN_DOLLAR_SHAVE_CLUB = 'dollarshaveclub.com'
 
 
 def parse_dollar_shave_club(email):
@@ -17,7 +17,8 @@ def parse_dollar_shave_club(email):
     elements = soup.find_all('a')
     for element in elements:
         title = element.get('title')
-        if not title: continue
+        if not title:
+            continue
         if 'Track Package' == title:
             link = element.get('href')
             match = re.search(r'x=(.*?)%7c', link)

@@ -8,8 +8,6 @@
       type: module
     - url: /hacsfiles/lovelace-thermostat-card/main.js
       type: module
-    - url: /hacsfiles/calendar-card/calendar-card.js
-      type: module
     - url: /hacsfiles/button-card/button-card.js
       type: module
     - url: /hacsfiles/restriction-card/restriction-card.js

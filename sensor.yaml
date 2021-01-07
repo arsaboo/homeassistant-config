@@ -275,11 +275,6 @@
     command: !secret grafana_usdinr
     scan_interval: 600
   - platform: command_line
-    name: SSL certificate expiry
-    unit_of_measurement: days
-    scan_interval: 86400
-    command: !secret cert_expiry
-  - platform: command_line
     name: 10 Year Treasury
     unit_of_measurement: '%'
     scan_interval: 18000
@@ -606,17 +601,17 @@
           {%- endfor -%}.
       alok_location_sensor:
         value_template: >-
-          {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+          {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
           {{ trackers[0].state }}
         attribute_templates:
           latitude: >-
-            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.latitude }}
           longitude: >-
-            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.longitude }}
           source: >-
-            {% set trackers = [states.device_tracker.aloks_iphone_3, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].entity_id }}
       # porchtags:
       #   friendly_name: "Porch Tags"

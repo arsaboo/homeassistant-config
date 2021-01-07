@@ -6,12 +6,12 @@ from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)
-ATTR_NULEAF = 'nuleaf'
-EMAIL_DOMAIN_NULEAF = 'nuleafnaturals.com'
+ATTR_GROUPON = 'groupon'
+EMAIL_DOMAIN_GROUPON = 'groupon.com'
 
 
-def parse_nuleaf(email):
-    """Parse NuLeaf tracking numbers."""
+def parse_groupon(email):
+    """Parse groupon tracking numbers."""
     tracking_numbers = []
 
     soup = BeautifulSoup(email[EMAIL_ATTR_BODY], 'html.parser')
@@ -20,9 +20,9 @@ def parse_nuleaf(email):
         link = element.get('href')
         if not link:
             continue
-        if 'emailtrk' in link:
+        if 'track_order' in link:
             tracking_number = element.text
-            if tracking_number and tracking_number not in tracking_numbers:
+            if tracking_number != 'here' and tracking_number and tracking_number not in tracking_numbers:
                 tracking_numbers.append(tracking_number)
 
     return tracking_numbers

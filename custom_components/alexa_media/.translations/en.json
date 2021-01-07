@@ -6,10 +6,11 @@
       "reauth_successful": "Alexa Media Player successfully reauthenticated."
     },
     "error": {
+      "2fa_key_invalid": "Invalid Built-In 2FA key",
       "connection_error": "Error connecting; check network and retry",
       "identifier_exists": "Email for Alexa URL already registered",
       "invalid_credentials": "Invalid credentials",
-      "unknown_error": "Unknown error, please report log info"
+      "unknown_error": "Unknown error, please enable advanced debugging and report log info"
     },
     "step": {
       "action_required": {
@@ -39,6 +40,13 @@
         "description": "**{email} - alexa.{url}**  \nPlease select verification method by number. (e.g., `0` or `1`)  \n{message}",
         "title": "Alexa Media Player - Verification Method"
       },
+      "totp_register": {
+        "data": {
+          "registered": "OTP from the Built-in 2FA App Key confirmed successfully."
+        },
+        "description": "**{email} - alexa.{url}**  \nHave you successfully confirmed an OTP from the Built-in 2FA App Key with Amazon?  \n >OTP Code {message}",
+        "title": "Alexa Media Player - OTP Confirmation"
+      },
       "twofactor": {
         "data": {
           "securitycode": "2FA Code"
@@ -53,6 +61,7 @@
           "email": "Email Address",
           "exclude_devices": "Excluded device (comma separated)",
           "include_devices": "Included device (comma separated)",
+          "otp_secret": "Built-in 2FA App Key (automatically generate 2FA Codes)",
           "password": "Password",
           "scan_interval": "Seconds between scans",
           "securitycode": "2FA Code (recommended to avoid login issues)",

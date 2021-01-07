@@ -27,8 +27,8 @@
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone_3
-        - device_tracker.iphone_3
+        - device_tracker.alokiphone
+        - device_tracker.rashmiphone_2
         - device_tracker.alokphone_alokphone_2
         - device_tracker.rashmiphone_rashmiphone_2
       to: 'not_home'
@@ -49,9 +49,9 @@
         - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone_3
+        - device_tracker.alokiphone
         - device_tracker.elantrase_2
-        - device_tracker.iphone_3
+        - device_tracker.rashmiphone_2
       to: 'home'
   action:
     - service: script.updatetracker
@@ -125,12 +125,12 @@
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone_3
+        - device_tracker.alokiphone
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.aloks_iphone_3
+        - device_tracker.alokiphone
         - device_tracker.elantrase_2
       to: 'home'
   action:
@@ -202,12 +202,12 @@
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.iphone_3
+        - device_tracker.rashmiphone_2
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.iphone_3
+        - device_tracker.rashmiphone_2
       to: 'home'
   action:
     - service: device_tracker.see
@@ -1487,7 +1487,7 @@
       state: 'off'
     - condition: template
       value_template: >
-        {{states('sensor.alok_s_iphone_room_presence') != 'master' and states('sensor.iphone_room_presence') != 'master'}}
+        {{states('sensor.alok_iphone12_room_presence') != 'master' and states('sensor.iphone_room_presence') != 'master'}}
   action:
     - service: light.turn_off
       data:
@@ -2345,6 +2345,26 @@
         title: "{{trigger.to_state.attributes.Ticker}} updated"
 
 # Apple Watch related
+- alias: "iOS: Double Tap"
+  mode: queued
+  trigger:
+    platform: event
+    event_type: ios.action_fired
+    event_data:
+      actionName: "Double Tap"
+  action:
+    service: media_player.media_next_track
+    entity_id: media_player.family_room_2
+- alias: "Apple Watch: Skip Track"
+  mode: queued
+  trigger:
+    platform: event
+    event_type: ios.action_fired
+    event_data:
+      actionName: Skip Track
+  action:
+    service: media_player.media_next_track
+    entity_id: media_player.family_room_2
 - alias: "Apple Watch: temperature report"
   mode: parallel
   trigger:

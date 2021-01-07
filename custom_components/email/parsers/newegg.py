@@ -6,8 +6,8 @@ from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)
-EMAIL_DOMAIN_NEWEGG = 'newegg.com'
 ATTR_NEWEGG = 'newegg'
+EMAIL_DOMAIN_NEWEGG = 'newegg.com'
 
 
 def parse_newegg(email):
@@ -18,12 +18,12 @@ def parse_newegg(email):
 
     link_urls = [link.get('href') for link in soup.find_all('a')]
     for link in link_urls:
-        if not link: 
+        if not link:
             continue
         match = re.search('TrackingNumber=(.*?)&type=0', link)
         if match and match.group(1) not in tracking_numbers:
             tracking_numbers.append(match.group(1))
-    
+
     # sometimes tracking numbers are text in a link
     strongs = [link for link in soup.find_all('strong')]
     for strong in strongs:
@@ -31,8 +31,8 @@ def parse_newegg(email):
             continue
         match = re.search('Tracking Number', strong.get_text())
         if match:
-            link_texts = [link.get_text() for link in 
-                            strong.findChildren("a", recursive=False)]
+            link_texts = [link.get_text() for link in
+                          strong.findChildren("a", recursive=False)]
             for link_text in link_texts:
                 if not link_text:
                     continue

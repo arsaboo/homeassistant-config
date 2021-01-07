@@ -6,8 +6,8 @@ from ..const import EMAIL_ATTR_BODY
 
 
 _LOGGER = logging.getLogger(__name__)
-EMAIL_DOMAIN_BEST_BUY = 'bestbuy.com'
 ATTR_BEST_BUY = 'best_buy'
+EMAIL_DOMAIN_BEST_BUY = 'bestbuy.com'
 
 
 def parse_best_buy(email):
@@ -18,7 +18,8 @@ def parse_best_buy(email):
     elements = soup.find_all('a')
     for element in elements:
         link = element.get('href')
-        if not link: continue
+        if not link:
+            continue
         if 'shipment/tracking' in link:
             tracking_number = element.text
             if tracking_number and tracking_number not in tracking_numbers:
