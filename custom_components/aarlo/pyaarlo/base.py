@@ -12,10 +12,20 @@ from .constant import (
     MODE_IS_SCHEDULE_KEY,
     MODE_KEY,
     MODE_NAME_TO_ID_KEY,
+    MODE_UPDATE_INTERVAL,
+    MODEL_BABY,
+    MODEL_ESSENTIAL,
+    MODEL_GO,
+    MODEL_PRO_3_FLOODLIGHT,
+    MODEL_PRO_4,
+    MODEL_WIREFREE_VIDEO_DOORBELL,
+    PING_CAPABILITY,
+    RESOURCE_CAPABILITY,
     RESTART_PATH,
     SCHEDULE_KEY,
     SIREN_STATE_KEY,
     TEMPERATURE_KEY,
+    TIMEZONE_KEY,
 )
 from .device import ArloDevice
 from .util import time_to_arlotime
@@ -57,6 +67,7 @@ class ArloBase(ArloDevice):
     def schedule_to_modes(self):
         if self._schedules is None:
             return []
+
         now = time.localtime()
         day = day_of_week[now.tm_wday]
         minute = (now.tm_hour * 60) + now.tm_min
@@ -72,7 +83,9 @@ class ArloBase(ArloDevice):
                         if modes:
                             self._arlo.debug("schdule={}".format(modes[0]))
                             return modes
-        return []
+
+        # If nothing in schedule we are disarmed.
+        return ["mode0"]
 
     def _parse_schedules(self, schedules):
         self._schedules = schedules
@@ -103,6 +116,10 @@ class ArloBase(ArloDevice):
         # try to parse that out
         mode_ids = event.get("activeModes", [])
         if not mode_ids and schedule_ids:
+            self._arlo.debug(self.name + " mode change (via schedule) ")
+            self._arlo.vdebug(
+                self.name + " schedules: " + pprint.pformat(self._schedules)
+            )
             mode_ids = self.schedule_to_modes()
         if mode_ids:
             self._arlo.debug(self.name + " mode change " + mode_ids[0])
@@ -127,6 +144,21 @@ class ArloBase(ArloDevice):
             elif "active" in props:
                 self._save_and_do_callbacks(MODE_KEY, self._id_to_name(props["active"]))
 
+        # Base station mode change.
+        # These come in per device and can arrive multiple times per state
+        # change. We limit the updates to once per MODE_UPDATE_INTERVAL
+        # seconds. Arlo doesn't send a "schedule changed" notification so we
+        # re-fetch that information before testing the mode.
+        elif resource == "states":
+            now = time.monotonic()
+            with self._lock:
+                if now < self._last_update + MODE_UPDATE_INTERVAL:
+                    return
+                self._last_update = now
+            self._arlo.debug("state change")
+            self.update_modes()
+            self.update_mode()
+
         # mode change?
         elif resource == "activeAutomations":
             self._set_mode_or_schedule(event)
@@ -148,7 +180,8 @@ class ArloBase(ArloDevice):
             self._arlo.vdebug("forced v2 api")
             return False
         if (
-            self.model_id == "ABC1000"
+            self.model_id == MODEL_BABY
+            or self.model_id == MODEL_GO
             or self.device_type == "arloq"
             or self.device_type == "arloqs"
         ):
@@ -266,6 +299,7 @@ class ArloBase(ArloDevice):
                             if (
                                 body.get("success", False) is True
                                 or body.get("resource", "") == "modes"
+                                or body.get("resource", "") == "activeAutomations"
                             ):
                                 return
                         self._arlo.warning(
@@ -339,6 +373,7 @@ class ArloBase(ArloDevice):
                 modes = modes.get(self.unique_id, {})
                 self._parse_modes(modes.get("modes", []))
                 self._parse_schedules(modes.get("schedules", []))
+                self._save(TIMEZONE_KEY,modes.get("olsonTimeZone", None))
             else:
                 self._arlo.error("failed to read modes (v2)")
 
@@ -435,9 +470,39 @@ class ArloBase(ArloDevice):
 
     def has_capability(self, cap):
         if cap in (TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY):
-            if self.model_id.startswith("ABC1000"):
+            if self.model_id.startswith(MODEL_BABY):
                 return True
         if cap in (SIREN_STATE_KEY,):
-            if self.model_id.startswith(("VMB400", "VMB450")):
+            if (
+                self.model_id.startswith(("VMB400", "VMB450"))
+                or self.model_id == MODEL_GO
+            ):
                 return True
+        if cap in (PING_CAPABILITY,):
+            # Battery powered wifi devices that act as their own base station don't get pinged.
+            if self.model_id.startswith(MODEL_BABY):
+                return True
+            if self.is_own_parent and self.using_wifi and not self.is_corded:
+                return False
+            # Don't ping these devices ever.
+            if self.model_id.startswith(
+                (
+                    MODEL_WIREFREE_VIDEO_DOORBELL,
+                    MODEL_ESSENTIAL,
+                    MODEL_PRO_3_FLOODLIGHT,
+                    MODEL_PRO_4,
+                )
+            ):
+                return False
+            return True
+        if cap in (RESOURCE_CAPABILITY,):
+            # Not all devices need (or want) to get their resources queried.
+            if self.model_id.startswith(
+                (
+                    MODEL_WIREFREE_VIDEO_DOORBELL,
+                    MODEL_ESSENTIAL,
+                )
+            ):
+                return False
+            return True
         return super().has_capability(cap)

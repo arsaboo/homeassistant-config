@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#  SPDX-License-Identifier: Apache-2.0
 """
 Alexa Devices Switches.
+
+SPDX-License-Identifier: Apache-2.0
 
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
@@ -41,7 +40,7 @@ async def async_setup_platform(hass, config, add_devices_callback, discovery_inf
         ("shuffle", ShuffleSwitch),
         ("repeat", RepeatSwitch),
     ]
-    account = config[CONF_EMAIL]
+    account = config[CONF_EMAIL] if config else discovery_info["config"][CONF_EMAIL]
     include_filter = config.get(CONF_INCLUDE_DEVICES, [])
     exclude_filter = config.get(CONF_EXCLUDE_DEVICES, [])
     account_dict = hass.data[DATA_ALEXAMEDIA]["accounts"][account]
@@ -124,9 +123,11 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 async def async_unload_entry(hass, entry) -> bool:
     """Unload a config entry."""
     account = entry.data[CONF_EMAIL]
+    _LOGGER.debug("Attempting to unload switch")
     account_dict = hass.data[DATA_ALEXAMEDIA]["accounts"][account]
     for key, switches in account_dict["entities"]["switch"].items():
         for device in switches[key].values():
+            _LOGGER.debug("Removing %s", device)
             await device.async_remove()
     return True
 
@@ -135,7 +136,11 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
     """Representation of a Alexa Media switch."""
 
     def __init__(
-        self, client, switch_property: Text, switch_function: Text, name="Alexa",
+        self,
+        client,
+        switch_property: Text,
+        switch_function: Text,
+        name="Alexa",
     ):
         """Initialize the Alexa Switch device."""
         # Class info
@@ -222,7 +227,7 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
 
     @property
     def available(self):
-        """Return the availabilty of the switch."""
+        """Return the availability of the switch."""
         return (
             self._client.available
             and getattr(self._client, self._switch_property) is not None
@@ -241,7 +246,7 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
     @property
     def name(self):
         """Return the name of the switch."""
-        return "{} {} switch".format(self._client.name, self._name)
+        return f"{self._client.name} {self._name} switch"
 
     @property
     def device_class(self):
@@ -295,13 +300,16 @@ class DNDSwitch(AlexaMediaSwitch):
         """Initialize the Alexa Switch."""
         # Class info
         super().__init__(
-            client, "dnd_state", "set_dnd_state", "do not disturb",
+            client,
+            "dnd_state",
+            "set_dnd_state",
+            "do not disturb",
         )
 
     @property
     def icon(self):
         """Return the icon of the switch."""
-        return super()._icon("mdi:do-not-disturb", "mdi:do-not-disturb-off")
+        return super()._icon("mdi:minus-circle", "mdi:minus-circle-off")
 
     def _handle_event(self, event):
         """Handle events."""
@@ -313,7 +321,8 @@ class DNDSwitch(AlexaMediaSwitch):
         if "dnd_update" in event:
             result = list(
                 filter(
-                    lambda x: x["deviceSerialNumber"] == self._client.unique_id,
+                    lambda x: x["deviceSerialNumber"]
+                    == self._client.device_serial_number,
                     event["dnd_update"],
                 )
             )

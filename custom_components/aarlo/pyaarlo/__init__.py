@@ -17,7 +17,16 @@ from .constant import (
     FAST_REFRESH_INTERVAL,
     INITIAL_REFRESH_DELAY,
     MEDIA_LIBRARY_DELAY,
+    MODEL_ESSENTIAL,
+    MODEL_ESSENTIAL_INDOOR,
+    MODEL_GO,
+    MODEL_PRO_3_FLOODLIGHT,
+    MODEL_PRO_4,
+    MODEL_WIRED_VIDEO_DOORBELL,
+    MODEL_WIREFREE_VIDEO_DOORBELL,
+    PING_CAPABILITY,
     REFRESH_CAMERA_DELAY,
+    RESOURCE_CAPABILITY,
     SLOW_REFRESH_INTERVAL,
     TOTAL_BELLS_KEY,
     TOTAL_CAMERAS_KEY,
@@ -31,7 +40,7 @@ from .util import time_to_arlotime
 
 _LOGGER = logging.getLogger("pyaarlo")
 
-__version__ = "0.7.0.5"
+__version__ = "0.7.2b7"
 
 
 class PyArlo(object):
@@ -64,6 +73,7 @@ class PyArlo(object):
       ISP forced a new IP on you.
     * **synchronous_mode** - Wait for operations to complete before returing. If you are coming from Pyarlo this
       will make Pyaarlo behave more like you expect.
+    * **save_media_to** - Save media to a local directory.
 
     **Debug `kwargs` parameters:**
 
@@ -105,7 +115,7 @@ class PyArlo(object):
     * **no_media_upload** - Force a media upload after camera activity.
       Normally not needed but some systems fail to push media uploads. Default 'False'.
     * **user_agent** - Set what 'user-agent' string is passed in request headers. It affects what video stream type is
-      returned. Default is `apple`.
+      returned. Default is `arlo`.
     * **mode_api** - Which api to use to set the base station modes. Default is `auto` which choose an API
       based on camera model. Can also be `v1` and `v2`.
     * **http_connections** - HTTP connection pool size. Default is `20`, set to `None` to default provided
@@ -138,11 +148,12 @@ class PyArlo(object):
         self._cfg = ArloCfg(self, **kwargs)
 
         # Create storage/scratch directory.
-        if self._cfg.state_file is not None or self._cfg.dump_file is not None:
+        if self._cfg.save_state or self._cfg.dump or self._cfg.save_session:
             try:
-                os.mkdir(self._cfg.storage_dir)
+                if not os.path.exists(self._cfg.storage_dir):
+                    os.mkdir(self._cfg.storage_dir)
             except Exception:
-                pass
+                self.warning(f"Problem creating {self._cfg.storage_dir}")
 
         # Create remaining components.
         self._bg = ArloBackground(self)
@@ -189,6 +200,7 @@ class PyArlo(object):
             if (
                 dtype == "basestation"
                 or device.get("modelId") == "ABC1000"
+                or device.get("modelId").startswith(MODEL_GO)
                 or dtype == "arloq"
                 or dtype == "arloqs"
             ):
@@ -196,10 +208,12 @@ class PyArlo(object):
             # Newer devices can connect directly to wifi and can be its own base station,
             # it can also be assigned to a real base station
             if (
-                device.get("modelId").startswith("AVD1001")
-                or device.get("modelId").startswith("FB1001")
-                or device.get("modelId").startswith("VMC4041")
-                or device.get("modelId").startswith("VMC2030")
+                device.get("modelId").startswith(MODEL_WIRED_VIDEO_DOORBELL)
+                or device.get("modelId").startswith(MODEL_PRO_3_FLOODLIGHT)
+                or device.get("modelId").startswith(MODEL_PRO_4)
+                or device.get("modelId").startswith(MODEL_ESSENTIAL)
+                or device.get("modelId").startswith(MODEL_ESSENTIAL_INDOOR)
+                or device.get("modelId").startswith(MODEL_WIREFREE_VIDEO_DOORBELL)
             ):
                 parent_id = device.get("parentId", None)
                 if parent_id is None or parent_id == device.get("deviceId", None):
@@ -210,7 +224,9 @@ class PyArlo(object):
                 dtype == "camera"
                 or dtype == "arloq"
                 or dtype == "arloqs"
-                or device.get("modelId").startswith("AVD1001")
+                or device.get("modelId").startswith(MODEL_GO)
+                or device.get("modelId").startswith(MODEL_WIRED_VIDEO_DOORBELL)
+                or device.get("modelId").startswith(MODEL_WIREFREE_VIDEO_DOORBELL)
             ):
                 self._cameras.append(ArloCamera(dname, self, device))
             if dtype == "doorbell":
@@ -223,7 +239,10 @@ class PyArlo(object):
         self._st.set(["ARLO", TOTAL_BELLS_KEY], len(self._doorbells))
         self._st.set(["ARLO", TOTAL_LIGHTS_KEY], len(self._lights))
 
-        # Always ping bases first!
+        # Subscribe to events.
+        self._be.start_monitoring()
+
+        # Now ping the bases.
         self._ping_bases()
 
         # Initial config and state retrieval.
@@ -275,13 +294,33 @@ class PyArlo(object):
             self._devices = []
         self.vdebug("devices={}".format(pprint.pformat(self._devices)))
 
+        # Newer devices include information in this response. Be sure to update it.
+        for device in self._devices:
+            device_id = device.get("deviceId", None)
+            props = device.get("properties", None)
+            if device_id is None or props is None:
+                continue
+            self.debug(f"updating {device_id} from device refresh")
+            base = self.lookup_base_station_by_id(device_id)
+            if base is not None:
+                base.update_resources(props)
+            camera = self.lookup_camera_by_id(device_id)
+            if camera is not None:
+                camera.update_resources(props)
+            doorbell = self.lookup_doorbell_by_id(device_id)
+            if doorbell is not None:
+                doorbell.update_resources(props)
+            light = self.lookup_light_by_id(device_id)
+            if light is not None:
+                light.update_resources(props)
+
     def _refresh_camera_thumbnails(self, wait=False):
-        """Request latest camera thumbnails, called at start up. """
+        """Request latest camera thumbnails, called at start up."""
         for camera in self._cameras:
             camera.update_last_image(wait)
 
     def _refresh_camera_media(self, wait=False):
-        """Rebuild cameras media library, called at start up or when day changes. """
+        """Rebuild cameras media library, called at start up or when day changes."""
         for camera in self._cameras:
             camera.update_media(wait)
 
@@ -295,34 +334,49 @@ class PyArlo(object):
 
     def _ping_bases(self):
         for base in self._bases:
-            base.ping()
+            if base.has_capability(PING_CAPABILITY):
+                base.ping()
+            else:
+                self.vdebug(f"NO ping to {base.device_id}")
 
     def _refresh_bases(self, initial):
         for base in self._bases:
             base.update_modes(initial)
-            self._be.notify(
-                base=base,
-                body={"action": "get", "resource": "cameras", "publishResponse": False},
-                wait_for="response",
-            )
-            self._be.notify(
-                base=base,
-                body={
-                    "action": "get",
-                    "resource": "doorbells",
-                    "publishResponse": False,
-                },
-                wait_for="response",
-            )
-            self._be.notify(
-                base=base,
-                body={"action": "get", "resource": "lights", "publishResponse": False},
-                wait_for="response",
-            )
+            if base.has_capability(RESOURCE_CAPABILITY):
+                self._be.notify(
+                    base=base,
+                    body={
+                        "action": "get",
+                        "resource": "cameras",
+                        "publishResponse": False,
+                    },
+                    wait_for="response",
+                )
+                self._be.notify(
+                    base=base,
+                    body={
+                        "action": "get",
+                        "resource": "doorbells",
+                        "publishResponse": False,
+                    },
+                    wait_for="response",
+                )
+                self._be.notify(
+                    base=base,
+                    body={
+                        "action": "get",
+                        "resource": "lights",
+                        "publishResponse": False,
+                    },
+                    wait_for="response",
+                )
+            else:
+                self.vdebug(f"NO resource for {base.device_id}")
 
     def _refresh_modes(self):
         self.vdebug("refresh modes")
         for base in self._bases:
+            base.update_modes()
             base.update_mode()
 
     def _fast_refresh(self):
@@ -385,7 +439,7 @@ class PyArlo(object):
             self._lock.notify_all()
 
     def stop(self):
-        """Stop connection to Arlo and logout. """
+        """Stop connection to Arlo and logout."""
         self._st.save()
         self._be.logout()
 
@@ -399,6 +453,10 @@ class PyArlo(object):
     @property
     def name(self):
         return "ARLO CONTROLLER"
+
+    @property
+    def devices(self):
+        return self._devices
 
     @property
     def device_id(self):
@@ -524,6 +582,56 @@ class PyArlo(object):
         doorbell = list(filter(lambda cam: cam.name == name, self.doorbells))
         if doorbell:
             return doorbell[0]
+        return None
+
+    def lookup_light_by_id(self, device_id):
+        """Return the light referenced by `device_id`.
+
+        :param device_id: The light device to look for
+        :return: A light object or 'None' on failure.
+        :rtype: ArloDoorBell
+        """
+        light = list(filter(lambda cam: cam.device_id == device_id, self.lights))
+        if light:
+            return light[0]
+        return None
+
+    def lookup_light_by_name(self, name):
+        """Return the light called `name`.
+
+        :param name: The light name to look for
+        :return: A light object or 'None' on failure.
+        :rtype: ArloDoorBell
+        """
+        light = list(filter(lambda cam: cam.name == name, self.lights))
+        if light:
+            return light[0]
+        return None
+
+    def lookup_base_station_by_id(self, device_id):
+        """Return the base_station referenced by `device_id`.
+
+        :param device_id: The base_station device to look for
+        :return: A base_station object or 'None' on failure.
+        :rtype: ArloDoorBell
+        """
+        base_station = list(
+            filter(lambda cam: cam.device_id == device_id, self.base_stations)
+        )
+        if base_station:
+            return base_station[0]
+        return None
+
+    def lookup_base_station_by_name(self, name):
+        """Return the base_station called `name`.
+
+        :param name: The base_station name to look for
+        :return: A base_station object or 'None' on failure.
+        :rtype: ArloDoorBell
+        """
+        base_station = list(filter(lambda cam: cam.name == name, self.base_stations))
+        if base_station:
+            return base_station[0]
         return None
 
     def inject_response(self, response):

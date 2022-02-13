@@ -5,6 +5,7 @@ homeassistant:
       trusted_networks:
         - 192.168.2.0/24
         - 131.96.253.0/24
+  external_url: !secret external_url
     # - type: legacy_api_password
     #   api_password: !secret http_password
   # Omitted values in this section will be auto detected using freegeoip.io
@@ -24,39 +25,53 @@ homeassistant:
   customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
   allowlist_external_dirs:
-    - /home/homeassistant/.homeassistant/downloads
+    - /config/downloads
     - /tmp
-    - /home/homeassistant/.homeassistant/downloads/camera/
+    - /config/downloads/camera/
 default_config:
 updater:
   include_used_components: true
 system_health:
 stream:
+# influxdb:
+#   host: 192.168.2.113
+#   include:
+#     entities:
+#        - sensor.temperature_158d0001ab3b2b
+#        - sensor.humidity_158d0001ab3b2b
+#        - sensor.temperature_158d0001ab7d20
+#        - sensor.humidity_158d0001ab7d20
+#        - sensor.humidity_158d0001ab3c88
+#        - sensor.temperature_158d0001ab3c88
+#        - sensor.living_room_temperature
+#        - sensor.portfolioval
+#        - sensor.pc_investment
+#        - sensor.pc_networth
+#        - sensor.dark_sky_temperature
+#        - sensor.usdinr
+#        - climate.downstairs
+#        - climate.upstairs
+#        - climate.bedroom
+#        - input_number.downstairs_prev_eff
+#        - sensor.downstairs_hvac_efficiency
+#        - input_number.upstairs_prev_eff
+#        - sensor.upstairs_hvac_efficiency
+#        - input_number.master_prev_eff
+#        - sensor.master_hvac_efficiency
 influxdb:
+  api_version: 2
+  ssl: false
   host: 192.168.2.113
-  include:
-    entities:
-       - sensor.temperature_158d0001ab3b2b
-       - sensor.humidity_158d0001ab3b2b
-       - sensor.temperature_158d0001ab7d20
-       - sensor.humidity_158d0001ab7d20
-       - sensor.humidity_158d0001ab3c88
-       - sensor.temperature_158d0001ab3c88
-       - sensor.living_room_temperature
-       - sensor.portfolioval
-       - sensor.pc_investment
-       - sensor.pc_networth
-       - sensor.dark_sky_temperature
-       - sensor.usdinr
-       - climate.downstairs
-       - climate.upstairs
-       - climate.bedroom
-       - input_number.downstairs_prev_eff
-       - sensor.downstairs_hvac_efficiency
-       - input_number.upstairs_prev_eff
-       - sensor.upstairs_hvac_efficiency
-       - input_number.master_prev_eff
-       - sensor.master_hvac_efficiency
+  port: 8086
+  organization: homeassistant
+  bucket: homeassistant
+  token: !secret influxdb_token
+  tags:
+    source: HA
+  tags_attributes:
+    - friendly_name
+    - device_class
+  default_measurement: units
 python_script:
 # hacs:
 #   token: !secret hacs_token
@@ -124,6 +139,12 @@ light:
       - light.lifxnrguest
       - light.lifxnrkitchen
   - platform: group
+    name: Kids Room Lights
+    entities:
+      - light.wb4_d_2
+      - light.wb4_d_3
+      - light.wb4_d
+  - platform: group
     name: Master Lights
     entities:
       - light.master_1
@@ -136,11 +157,11 @@ light:
 #   verify_ssl: false
 #   ssl: true
 wemo:
-  static:
-    - 192.168.2.104
-    - 192.168.2.130
-    - 192.168.2.206
-    - 192.168.2.237
+  # static:
+  #   - 192.168.2.104
+  #   - 192.168.2.130
+  #   - 192.168.2.206
+  #   - 192.168.2.237
 aarlo:
   username: !secret arlo_user
   password: !secret arlo_password
@@ -163,6 +184,7 @@ alarm_control_panel:
       delay_time: 0
 
 xiaomi_aqara:
+  discovery_retry: 5
   gateways:
     - key: !secret xiaomikey
       host: 192.168.2.82
@@ -173,8 +195,8 @@ ecobee:
   api_key: !secret ecobee_key
 
 shell_command:
-  image_classify: bash /home/homeassistant/.homeassistant/shell_scripts/image_classification.sh "{{camera}}"
-  facebox: bash /home/homeassistant/.homeassistant/shell_scripts/facebox.sh "{{camera}}"
+  image_classify: bash /config/shell_scripts/image_classification.sh "{{camera}}"
+  facebox: bash /config/shell_scripts/facebox.sh "{{camera}}"
   delete_unifi: curl http://192.168.2.113:8086/query -d db=unifi -d q='DELETE WHERE time < now() - 5h'
 
 rest_command:
@@ -187,7 +209,16 @@ rest_command:
   plex:
     url: 'http://192.168.2.252:8001/api/v2/applications/kIciSQlYEM.plex'
     method: post
-
+  restart_pihole_study:
+    url: !secret pihole_study_restart
+    method: post
+    headers:
+      X-API-Key: !secret portainer_api_key
+  restart_pihole_syn:
+    url: !secret pihole_syn_restart
+    method: post
+    headers:
+      X-API-Key: !secret portainer_api_key
 media_extractor:
 
 # Enables configuration UI
@@ -205,7 +236,6 @@ alexa:
         - switch.driveway
         - switch.wemoporch
         - script.tv_youtube_on
-        - switch.sammytv
       include_domains:
         - cover
     entity_config:
@@ -299,6 +329,9 @@ google_assistant:
     light.kitchen_lights:
       expose: true
       room: kitchen
+    light.kids_room_lights:
+      expose: true
+      room: kids room
     light.lifx5:
       expose: true
       room: garage
@@ -306,10 +339,6 @@ google_assistant:
       expose: true
       name: Wemo Insight
       room: office
-    script.tv_youtube_on:
-      expose: True
-      name: Youtube
-      room: living room
     camera.porch:
       expose: true
       room: porch
@@ -325,18 +354,14 @@ google_assistant:
     cover.garagedoor:
       expose: true
       room: garage
-    switch.sammytv:
-      expose: true
-      name: TV
-      room: living room
 homekit:
-  auto_start: false
   filter:
     include_entities:
       - alarm_control_panel.aarlo_arlohome
       - alarm_control_panel.abode_alarm
       - cover.garagedoor
       - light.living_room_lights
+      - light.kids_room_lights
       - light.lifx5
       - light.kitchen_lights
       - light.master_lights
@@ -344,23 +369,30 @@ homekit:
       - binary_sensor.water_leak_sensor_158d0001d77800
       - binary_sensor.water_leak_sensor_158d00027b0db6
       - binary_sensor.water_leak_sensor_158d0001bb788c
-      - camera.porch
-      - camera.patio
-      - camera.backyard
-      - camera.driveway
-      - camera.general_profile001
+      # - camera.porch
+      # - camera.patio
+      # - camera.backyard
+      # - camera.driveway
+      # - camera.kitchen
       - camera.garage
       # - binary_sensor.water_leak_sensor_158d00024bfa97
 # map:
 downloader:
   download_dir: downloads
 http:
-  ssl_certificate: !secret ssl_certificate
-  ssl_key: !secret ssl_key
-  base_url: !secret base_url
+  # ssl_certificate: !secret ssl_certificate
+  # ssl_key: !secret ssl_key
+  # base_url: !secret base_url
+
   ip_ban_enabled: true
   login_attempts_threshold: 1
-
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.17.0.0/24
+    - 192.168.2.0/24
+    - 127.0.0.1
+    - ::1
+    - 172.17.0.3
 # Discover some devices automatically
 discovery:
   ignore:
@@ -380,6 +412,10 @@ proximity:
 
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
+amcrest:
+  - host: 192.168.2.26
+    username: admin
+    password: Runway125
 ffmpeg:
 camera:
   - platform: bloomsky
@@ -394,25 +430,28 @@ camera:
   # - platform: ring
   - platform: local_file
     name: worldtime
-    file_path: /home/homeassistant/.homeassistant/downloads/worldtime/worldtime.png
+    file_path: /config/downloads/worldtime/worldtime.png
   - platform: local_file
     name: Driveway TF
-    file_path: /home/homeassistant/.homeassistant/downloads/camera/driveway_latest.jpg
+    file_path: /config/downloads/camera/driveway_latest.jpg
   - platform: local_file
     name: Porch TF
-    file_path: /home/homeassistant/.homeassistant/downloads/camera/porch_latest.jpg
+    file_path: /config/downloads/camera/porch_latest.jpg
   - platform: local_file
     name: Patio TF
-    file_path: /home/homeassistant/.homeassistant/downloads/camera/patio_latest.jpg
+    file_path: /config/downloads/camera/patio_latest.jpg
   - platform: local_file
     name: Backyard TF
-    file_path: /home/homeassistant/.homeassistant/downloads/camera/backyard_latest.jpg
+    file_path: /config/downloads/camera/backyard_latest.jpg
   - platform: generic
-    still_image_url: !secret meteogram_png_url
+    still_image_url: !secret meteogram_url
     name: Meteogram
   - platform: ffmpeg
     input: !secret wyzecam_rtsp_url
     name: Garage
+  - platform: ffmpeg
+    input: !secret amcrest_ip_cam_url
+    name: Kitchen
   # Generate your link - https://www.wunderground.com/weather-radar/united-states/
   # - platform: generic
   #   still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
@@ -421,62 +460,63 @@ camera:
   #   name: worldtime
   #   still_image_url: https://imgs.xkcd.com/comics/now.png
   # - platform: generic
-  #   name: LivingRoom_temperature
-  #   still_image_url: 'http://192.168.2.113:3000/render/d-solo/000000001/home-assistant?orgId=1&panelId=1&width=1000&height=500&tz=UTC-05%3A00'
+  #   name: Grafana portfolio
+  #   still_image_url: 'http://192.168.2.212:3000/render/d-solo/47YMSC6iz/hass?orgId=1&panelId=2&width=1000&height=500&tz=America%2FNew_York&from=now-500d&to=now'
   #   username: !secret grafana_user
   #   password: !secret grafana_pass
   - platform: local_file
     name: Grafana portfolio
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/portfolio.png
+    file_path: /config/downloads/grafana/portfolio.png
   - platform: local_file
     name: Grafana networth
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/networth.png
+    file_path: /config/downloads/grafana/networth.png
   - platform: local_file
     name: Grafana temp down
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/down_temp.png
+    file_path: /config/downloads/grafana/down_temp.png
   - platform: local_file
     name: Grafana mode down
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/down_mode.png
+    file_path: /config/downloads/grafana/down_mode.png
   - platform: local_file
     name: Grafana temp up
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/up_temp.png
+    file_path: /config/downloads/grafana/up_temp.png
   - platform: local_file
     name: Grafana mode up
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/up_mode.png
+    file_path: /config/downloads/grafana/up_mode.png
+
   - platform: local_file
     name: Grafana temp master
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_temp.png
+    file_path: /config/downloads/grafana/master_temp.png
   - platform: local_file
     name: Grafana mode master
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_mode.png
+    file_path: /config/downloads/grafana/master_mode.png
   - platform: local_file
     name: Grafana USD INR
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/usdinr.png
+    file_path: /config/downloads/grafana/usdinr.png
   - platform: local_file
     name: Grafana master efficiency
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/master_hvac_efficiency.png
+    file_path: /config/downloads/grafana/master_hvac_efficiency.png
   - platform: local_file
     name: Grafana upstairs efficiency
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/upstairs_hvac_efficiency.png
+    file_path: /config/downloads/grafana/upstairs_hvac_efficiency.png
   - platform: local_file
     name: Grafana downstairs efficiency
-    file_path: /home/homeassistant/.homeassistant/downloads/grafana/downstairs_hvac_efficiency.png
-  - platform: generic
-    stream_source: !secret porch_rtsp_camera_image_url
-    still_image_url: !secret porch_camera_image_url
-    name: Porch
-  - platform: generic
-    stream_source: !secret patio_rtsp_camera_image_url
-    still_image_url: !secret patio_camera_image_url
-    name: Patio
-  - platform: generic
-    stream_source: !secret driveway_rtsp_camera_image_url
-    still_image_url: !secret driveway_camera_image_url
-    name: Driveway
-  - platform: generic
-    stream_source: !secret backyard_rtsp_camera_image_url
-    still_image_url: !secret backyard_camera_image_url
-    name: Backyard
+    file_path: /config/downloads/grafana/downstairs_hvac_efficiency.png
+  # - platform: generic
+  #   stream_source: !secret porch_rtsp_camera_image_url
+  #   still_image_url: !secret porch_camera_image_url
+  #   name: Porch
+  # - platform: generic
+  #   stream_source: !secret patio_rtsp_camera_image_url
+  #   still_image_url: !secret patio_camera_image_url
+  #   name: Patio
+  # - platform: generic
+  #   stream_source: !secret driveway_rtsp_camera_image_url
+  #   still_image_url: !secret driveway_camera_image_url
+  #   name: Driveway
+  # - platform: generic
+  #   stream_source: !secret backyard_rtsp_camera_image_url
+  #   still_image_url: !secret backyard_camera_image_url
+  #   name: Backyard
   # - platform: generic
   #   still_image_url: !secret porch_camera_image_url
   #   name: porch
@@ -529,9 +569,9 @@ image_processing:
     source:
       - entity_id: camera.patio
     file_out:
-      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
+      - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
     model:
-      graph: /home/homeassistant/.homeassistant/tensorflow/models/efficientdet_d1_coco17_tpu-32/
+      graph: /config/tensorflow/models/efficientdet_d1_coco17_tpu-32/
       categories:
         - person
   - platform: tensorflow
@@ -542,10 +582,10 @@ image_processing:
       - entity_id: camera.driveway
       - entity_id: camera.porch
     file_out:
-      - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      # - "/home/homeassistant/.homeassistant/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+      - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
+      # - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     model:
-      graph: /home/homeassistant/.homeassistant/tensorflow/models/efficientdet_d1_coco17_tpu-32/
+      graph: /config/tensorflow/models/efficientdet_d1_coco17_tpu-32/
       categories:
         - category: person
           area:
@@ -568,9 +608,9 @@ image_processing:
   #     - entity_id: camera.backyard
   #     - entity_id: camera.driveway
   #   options:
-  #     detect_model: /home/homeassistant/.homeassistant/deps/yolov3-tiny.cfg
-  #     weights: /home/homeassistant/.homeassistant/deps/yolov3-tiny.weights
-  #     labels: /home/homeassistant/.homeassistant/deps/coco.names
+  #     detect_model: /config/deps/yolov3-tiny.cfg
+  #     weights: /config/deps/yolov3-tiny.weights
+  #     labels: /config/deps/coco.names
   #     confidence: 0.55
   # - platform: deepstack_object
   #   ip_address: 192.168.2.212
@@ -616,10 +656,13 @@ sonos:
   media_player:
     hosts:
       - 192.168.2.150
-      - 192.168.2.253
+      - 192.168.2.15
       - 192.168.2.160
 sun:
 person:
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
 media_player:
   - platform: kodi
     host: 192.168.2.28
@@ -633,15 +676,15 @@ media_player:
     name: Kodi Master
     username: !secret kodi_username
     password: !secret kodi_password
-
-  # - platform: spotify
-  #   client_id: !secret spotify_client_id
-  #   client_secret: !secret spotify_client_secret
   # - platform: plex
   #   host: 192.168.2.212
   # - platform: apple_tv
   #   host: 192.168.2.90
   #   login_id: !secret apple_hsgid
+  - platform: androidtv
+    host: 192.168.2.172
+    name: "ShieldTVPro"
+    device_class: androidtv
   - platform: androidtv
     host: 192.168.2.28
     name: "ShieldTV"
@@ -674,6 +717,12 @@ media_player:
       com.synology.dsvideo: "DS Video"
       com.mxtech.videoplayer.ad: "MXPlayer"
       com.amazon.firetv.youtube: "Youtube"
+  # - platform: samsungtv_custom
+  #   host: 192.168.2.252
+  #   mac: !secret samsung_tv_mac
+  #   port: 8002
+  #   sourcelist: '{"Shield": "KEY_HDMI4"}'
+  #   protocol: ws
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -731,12 +780,12 @@ telegram_bot:
   allowed_chat_ids:
     - !secret telegram_chatID_Alok
 pi_hole:
-  - host: 192.168.2.3
-    name: Pi Hole Main
-    api_key: !secret pi_hole_main
   - host: 192.168.2.14
     name: Pi Hole Kids
     api_key: !secret pi_hole_kids
+  - host: 192.168.2.114
+    name: Pi Hole Syn
+    api_key: !secret pi_hole_synology
 hangouts:
 notify:
   - platform: hangouts
@@ -764,12 +813,12 @@ notify:
   - platform: group
     name: iOS
     services:
-      - service: mobile_app_alok_s_iphone
-      - service: mobile_app_iphone
+      - service: mobile_app_alokiphone
+      - service: mobile_app_rashmiiphone12
   - platform: group
     name: ios_abode_updates
     services:
-      - service: mobile_app_alok_s_iphone
+      - service: mobile_app_alokiphone
         data:
           title: 'Enable Abode updates?'
           data:
@@ -779,7 +828,7 @@ notify:
   - platform: group
     name: ios_home_automation
     services:
-      - service: mobile_app_alok_s_iphone
+      - service: mobile_app_alokiphone
         data:
           title: 'Enable Home automation?'
           data:
@@ -794,7 +843,7 @@ notify:
     host: 192.168.2.180
   - platform: command_line
     name: 'Echo Dot'
-    command: "/home/homeassistant/.homeassistant/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
+    command: "/config/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
 # Log Severities: notset, debug, info, warn, warning, error, fatal, critical
 logger:
   default: error
@@ -834,7 +883,7 @@ tts:
   - platform: google_translate
     service_name: google_say
     cache: true
-    cache_dir: /home/homeassistant/.homeassistant/tts
+    cache_dir: /config/tts
     time_memory: 300
   # - platform: voicerss
   #   api_key: !secret voicerss_key
@@ -843,11 +892,16 @@ tts:
   #   aws_secret_access_key: !secret aws_secret_access_key
   #   text_type: ssml
   #   cache: True
-remote:
-  - platform: harmony
-    name: livingroom
-    host: 192.168.2.152
-
+device_tracker:
+  - platform: composite
+    name: Alok Composite Temp
+    time_as: device_or_local
+    entity_id:
+      - device_tracker.alokiphone
+      - device_tracker.alokphone_alokphone_2
+      - device_tracker.alokiphone_3
+      - device_tracker.life360_alok_saboo
+      - device_tracker.alok_geofency
 google:
   client_id: !secret gcal_client_id
   client_secret: !secret gcal_client_secret
@@ -859,7 +913,12 @@ mqtt:
   client_id: home-assistant-1
   username: !secret mqtt_username
   password: !secret mqtt_password
-
+  birth_message:
+    topic: 'homeassistant/status'
+    payload: 'online'
+  will_message:
+    topic: 'homeassistant/status'
+    payload: 'offline'
 dialogflow:
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml
@@ -874,6 +933,7 @@ switch: !include switches.yaml
 binary_sensor: !include binary_sensor.yaml
 input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
+input_button: !include input_button.yaml
 input_number: !include input_number.yaml
 input_text: !include input_text.yaml
 input_datetime: !include input_datetime.yaml

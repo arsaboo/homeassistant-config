@@ -67,7 +67,7 @@ async def async_setup_platform(hass, _config, async_add_entities, _discovery_inf
         if camera.has_capability(SPOTLIGHT_KEY):
             lights.append(ArloSpotlight(camera))
 
-    async_add_entities(lights, True)
+    async_add_entities(lights)
 
 
 class ArloLight(LightEntity):
@@ -98,6 +98,10 @@ class ArloLight(LightEntity):
 
         self._light.add_attr_callback(LAMP_STATE_KEY, update_state)
         self._light.add_attr_callback(BRIGHTNESS_KEY, update_state)
+
+    @property
+    def should_poll(self):
+        return False
 
     @property
     def unique_id(self):
@@ -139,7 +143,7 @@ class ArloLight(LightEntity):
         return self._brightness
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
         attrs = {
@@ -147,7 +151,7 @@ class ArloLight(LightEntity):
             for name, value in (
                 (ATTR_BATTERY_LEVEL, self._light.battery_level),
                 (ATTR_BATTERY_TECH, self._light.battery_tech),
-                (ATTR_BATTERY_CHARGING, self._light.charging),
+                (ATTR_BATTERY_CHARGING, self._light.is_charging),
                 (ATTR_CHARGER_TYPE, self._light.charger_type),
                 (BRIGHTNESS_KEY, self._brightness),
             )
@@ -362,10 +366,10 @@ class ArloFloodLight(ArloLight):
         return SUPPORT_BRIGHTNESS
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
-        super_attrs = super().device_state_attributes
+        super_attrs = super().extra_state_attributes
         flood_attrs = {
             name: value
             for name, value in (

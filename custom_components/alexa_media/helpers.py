@@ -1,26 +1,23 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#  SPDX-License-Identifier: Apache-2.0
 """
 Helper functions for Alexa Media Player.
+
+SPDX-License-Identifier: Apache-2.0
 
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
-
-import functools
+import hashlib
 import logging
-import sys
-from typing import Any, Callable, List, Optional, Text
+from typing import Any, Callable, Dict, List, Optional, Text
 
 from alexapy import AlexapyLoginCloseRequested, AlexapyLoginError, hide_email
 from alexapy.alexalogin import AlexaLogin
+from homeassistant.const import CONF_EMAIL, CONF_URL
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_component import EntityComponent
 import wrapt
 
-from . import DATA_ALEXAMEDIA
-from .const import EXCEPTION_TEMPLATE
+from .const import DATA_ALEXAMEDIA, EXCEPTION_TEMPLATE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,7 +74,7 @@ def retry_async(
     """Wrap function with retry logic.
 
     The function will retry until true or the limit is reached. It will delay
-    for the period of time specified exponentialy increasing the delay.
+    for the period of time specified exponentially increasing the delay.
 
     Parameters
     ----------
@@ -95,8 +92,8 @@ def retry_async(
     """
 
     def wrap(func) -> Callable:
-        import functools
         import asyncio
+        import functools
 
         @functools.wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
@@ -251,3 +248,77 @@ def _existing_serials(hass, login_obj) -> List:
             #               existing_serials, apps)
             existing_serials = existing_serials + apps
     return existing_serials
+
+
+async def calculate_uuid(hass, email: Text, url: Text) -> dict:
+    """Return uuid and index of email/url.
+
+    Args
+        hass (bool): Hass entity
+        url (Text): url for account
+        email (Text): email for account
+
+    Returns
+        dict: dictionary with uuid and index
+
+    """
+    result = {}
+    return_index = 0
+    if hass.config_entries.async_entries(DATA_ALEXAMEDIA):
+        for index, entry in enumerate(
+            hass.config_entries.async_entries(DATA_ALEXAMEDIA)
+        ):
+            if entry.data.get(CONF_EMAIL) == email and entry.data.get(CONF_URL) == url:
+                return_index = index
+                break
+    uuid = await hass.helpers.instance_id.async_get()
+    result["uuid"] = hex(
+        int(uuid, 16)
+        # increment uuid for second accounts
+        + return_index
+        # hash email/url in case HA uuid duplicated
+        + int(hashlib.md5((email.lower() + url.lower()).encode()).hexdigest(), 16)
+    )[-32:]
+    result["index"] = return_index
+    _LOGGER.debug("%s: Returning uuid %s", hide_email(email), result)
+    return result
+
+
+def alarm_just_dismissed(
+    alarm: Dict[Text, Any],
+    previous_status: Optional[Text],
+    previous_version: Optional[Text],
+) -> bool:
+    """Given the previous state of an alarm, determine if it has just been dismissed."""
+
+    if previous_status not in ("SNOOZED", "ON"):
+        # The alarm had to be in a status that supported being dismissed
+        return False
+
+    if previous_version is None:
+        # The alarm was probably just created
+        return False
+
+    if not alarm:
+        # The alarm that was probably just deleted.
+        return False
+
+    if alarm.get("status") not in ("OFF", "ON"):
+        # A dismissed alarm is guaranteed to be turned off(one-off alarm) or left on(recurring alarm)
+        return False
+
+    if previous_version == alarm.get("version"):
+        # A dismissal always has a changed version.
+        return False
+
+    if int(alarm.get("version", "0")) > 1 + int(previous_version):
+        # This is an absurd thing to check, but it solves many, many edge cases.
+        # Experimentally, when an alarm is dismissed, the version always increases by 1
+        # When an alarm is edited either via app or voice, its version always increases by 2+
+        return False
+
+    # It seems obvious that a check involving time should be necessary. It is not.
+    # We know there was a change and that it wasn't an edit.
+    # We also know the alarm's status rules out a snooze.
+    # The only remaining possibility is that this alarm was just dismissed.
+    return True

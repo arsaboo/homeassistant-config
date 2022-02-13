@@ -18,13 +18,17 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.helpers.entity import Entity
 
 from .providers import PROVIDERS
+from .const import (
+    OUTFILE,
+    CONF_NOTIFY,
+    CONF_EXCLUDE,
+    CONF_EXCLUDE_CLIENTS,
+    CONF_PROVIDER,
+    CONF_LOG_LOCATION,
+    STARTUP,
+)
 
 _LOGGER = logging.getLogger(__name__)
-
-CONF_NOTIFY = "enable_notification"
-CONF_EXCLUDE = "exclude"
-CONF_PROVIDER = "provider"
-CONF_LOG_LOCATION = "log_location"
 
 ATTR_HOSTNAME = "hostname"
 ATTR_COUNTRY = "country"
@@ -38,10 +42,6 @@ ATTR_USER = "username"
 SCAN_INTERVAL = timedelta(minutes=1)
 
 PLATFORM_NAME = "authenticated"
-
-LOGFILE = "home-assistant.log"
-OUTFILE = ".ip_authenticated.yaml"
-
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Optional(CONF_PROVIDER, default="ipapi"): vol.In(
@@ -50,6 +50,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_LOG_LOCATION, default=""): cv.string,
         vol.Optional(CONF_NOTIFY, default=True): cv.boolean,
         vol.Optional(CONF_EXCLUDE, default=[]): vol.All(cv.ensure_list, [cv.string]),
+        vol.Optional(CONF_EXCLUDE_CLIENTS, default=[]): vol.All(
+            cv.ensure_list, [cv.string]
+        ),
     }
 )
 
@@ -60,17 +63,25 @@ def humanize_time(timestring):
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
+    # Print startup message
+    _LOGGER.info(STARTUP)
+
     """Create the sensor"""
     notify = config.get(CONF_NOTIFY)
     exclude = config.get(CONF_EXCLUDE)
+    exclude_clients = config.get(CONF_EXCLUDE_CLIENTS)
     hass.data[PLATFORM_NAME] = {}
 
-    if not load_authentications(hass.config.path(".storage/auth"), exclude):
+    if not load_authentications(
+        hass.config.path(".storage/auth"), exclude, exclude_clients
+    ):
         return False
 
     out = str(hass.config.path(OUTFILE))
 
-    sensor = AuthenticatedSensor(hass, notify, out, exclude, config[CONF_PROVIDER])
+    sensor = AuthenticatedSensor(
+        hass, notify, out, exclude, exclude_clients, config[CONF_PROVIDER]
+    )
     sensor.initial_run()
 
     add_devices([sensor], True)
@@ -79,7 +90,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class AuthenticatedSensor(Entity):
     """Representation of a Sensor."""
 
-    def __init__(self, hass, notify, out, exclude, provider):
+    def __init__(self, hass, notify, out, exclude, exclude_clients, provider):
         """Initialize the sensor."""
         self.hass = hass
         self._state = None
@@ -87,13 +98,14 @@ class AuthenticatedSensor(Entity):
         self.stored = {}
         self.last_ip = None
         self.exclude = exclude
+        self.exclude_clients = exclude_clients
         self.notify = notify
         self.out = out
 
     def initial_run(self):
         """Run this at startup to initialize the platform data."""
         users, tokens = load_authentications(
-            self.hass.config.path(".storage/auth"), self.exclude
+            self.hass.config.path(".storage/auth"), self.exclude, self.exclude_clients
         )
 
         if os.path.isfile(self.out):
@@ -155,8 +167,10 @@ class AuthenticatedSensor(Entity):
         """Method to update sensor value"""
         updated = False
         users, tokens = load_authentications(
-            self.hass.config.path(".storage/auth"), self.exclude
+            self.hass.config.path(".storage/auth"), self.exclude, self.exclude_clients
         )
+        _LOGGER.debug("Users %s", users)
+        _LOGGER.debug("Access %s", tokens)
         for access in tokens:
             try:
                 ValidateIP(access)
@@ -187,13 +201,14 @@ class AuthenticatedSensor(Entity):
                 accessdata = AuthenticatedData(access, tokens[access])
                 ipaddress = IPData(accessdata, users, self.provider)
                 ipaddress.lookup()
-                if ipaddress.new_ip:
-                    if self.notify:
-                        ipaddress.notify(self.hass)
-                    ipaddress.new_ip = False
 
             if ipaddress.hostname is None:
                 ipaddress.hostname = get_hostname(ipaddress.ip_address)
+
+            if ipaddress.new_ip:
+                if self.notify:
+                    ipaddress.notify(self.hass)
+                ipaddress.new_ip = False
 
             self.hass.data[PLATFORM_NAME][access] = ipaddress
 
@@ -294,7 +309,7 @@ def get_hostname(ip_address):
     return hostname
 
 
-def load_authentications(authfile, exclude):
+def load_authentications(authfile, exclude, exclude_clients):
     """Load info from auth file."""
     if not os.path.exists(authfile):
         _LOGGER.critical("File is missing %s", authfile)
@@ -316,6 +331,8 @@ def load_authentications(authfile, exclude):
                     excludeaddress, False
                 ):
                     raise Exception("IP in excluded address configuration")
+            if token["client_id"] in exclude_clients:
+                raise Exception("Client in excluded clients configuration")
             if token.get("last_used_at") is None:
                 continue
             if token["last_used_ip"] in tokens_cleaned:
@@ -395,6 +412,10 @@ class IPData:
             country = "**Country:**   {}".format(self.country)
         else:
             country = ""
+        if self.hostname is not None:
+            hostname = "**Hostname:**   {}".format(self.hostname)
+        else:
+            hostname = ""
         if self.region is not None:
             region = "**Region:**   {}".format(self.region)
         else:
@@ -414,10 +435,12 @@ class IPData:
         {}
         {}
         {}
+        {}
         """.format(
             self.ip_address,
             self.username,
             country,
+            hostname,
             region,
             city,
             last_used_at.replace("T", " "),

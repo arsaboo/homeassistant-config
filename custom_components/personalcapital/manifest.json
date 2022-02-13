@@ -4,5 +4,6 @@
   "documentation": "https://github.com/custom-components/sensor.personalcapital/blob/master/README.md",
   "dependencies": [],
   "codeowners": ["@iantrich"],
-  "requirements": ["personalcapital==1.0.1"]
+  "requirements": ["git+https://github.com/sanghviharshit/personalcapital.git@master#sanghviharshit"],
+  "version": "0.1.3"
 }

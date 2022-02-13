@@ -28,7 +28,7 @@ from requests.exceptions import ConnectTimeout, HTTPError
 
 from .pyaarlo.constant import DEFAULT_AUTH_HOST, DEFAULT_HOST, SIREN_STATE_KEY
 
-__version__ = "0.7.0.5"
+__version__ = "0.7.2b7"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,6 +77,10 @@ CONF_STREAM_SNAPSHOT = "stream_snapshot"
 CONF_STREAM_SNAPSHOT_STOP = "stream_snapshot_stop"
 CONF_SAVE_UPDATES_TO = "save_updates_to"
 CONF_USER_STREAM_DELAY = "user_stream_delay"
+CONF_SAVE_MEDIA_TO = "save_media_to"
+CONF_NO_UNICODE_SQUASH = "no_unicode_squash"
+CONF_SAVE_SESSION = "save_session"
+CONF_BACKEND = "backend"
 
 SCAN_INTERVAL = timedelta(seconds=60)
 PACKET_DUMP = False
@@ -91,7 +95,7 @@ STR_TIMEOUT = timedelta(seconds=0)
 NO_MEDIA_UP = False
 MEDIA_RETRY = None
 SNAPSHOT_CHECKS = None
-USER_AGENT = "apple"
+USER_AGENT = "arlo"
 MODE_API = "auto"
 DEVICE_REFRESH = 0
 MODE_REFRESH = 0
@@ -113,6 +117,10 @@ STREAM_SNAPSHOT = False
 STREAM_SNAPSHOT_STOP = 0
 SAVE_UPDATES_TO = ""
 USER_STREAM_DELAY = 1
+SAVE_MEDIA_TO = ""
+NO_UNICODE_SQUASH = True
+SAVE_SESSION = True
+DEFAULT_BACKEND = "mqtt"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -187,6 +195,12 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(
                     CONF_USER_STREAM_DELAY, default=USER_STREAM_DELAY
                 ): cv.positive_int,
+                vol.Optional(CONF_SAVE_MEDIA_TO, default=SAVE_MEDIA_TO): cv.string,
+                vol.Optional(
+                    CONF_NO_UNICODE_SQUASH, default=NO_UNICODE_SQUASH
+                ): cv.boolean,
+                vol.Optional(CONF_SAVE_SESSION, default=SAVE_SESSION): cv.boolean,
+                vol.Optional(CONF_BACKEND, default=DEFAULT_BACKEND): cv.string,
             }
         ),
     },
@@ -360,7 +374,11 @@ def login(hass, conf):
     stream_snapshot = conf.get(CONF_STREAM_SNAPSHOT)
     stream_snapshot_stop = conf.get(CONF_STREAM_SNAPSHOT_STOP)
     save_updates_to = conf.get(CONF_SAVE_UPDATES_TO)
+    save_media_to = conf.get(CONF_SAVE_MEDIA_TO)
     user_stream_delay = conf.get(CONF_USER_STREAM_DELAY)
+    no_unicode_squash = conf.get(CONF_NO_UNICODE_SQUASH)
+    save_session = conf.get(CONF_SAVE_SESSION)
+    backend = conf.get(CONF_BACKEND)
 
     # Fix up config
     if conf_dir == "":
@@ -413,6 +431,10 @@ def login(hass, conf):
                 stream_snapshot_stop=stream_snapshot_stop,
                 save_updates_to=save_updates_to,
                 user_stream_delay=user_stream_delay,
+                no_unicode_squash=no_unicode_squash,
+                save_media_to=save_media_to,
+                save_session=save_session,
+                backend=backend,
                 wait_for_initial_setup=False,
                 verbose_debug=verbose_debug,
             )

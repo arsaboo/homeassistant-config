@@ -66,7 +66,7 @@ async def async_setup_platform(hass, _config, async_add_entities, _discovery_inf
             name = "{0}".format(camera.name)
             players.append(ArloMediaPlayer(name, camera))
 
-    async_add_entities(players, True)
+    async_add_entities(players)
 
 
 class ArloMediaPlayer(MediaPlayerEntity, ABC):
@@ -131,6 +131,10 @@ class ArloMediaPlayer(MediaPlayerEntity, ABC):
         return self._name
 
     @property
+    def should_poll(self):
+        return False
+
+    @property
     def unique_id(self):
         """Return a unique ID."""
         return self._unique_id
@@ -180,7 +184,7 @@ class ArloMediaPlayer(MediaPlayerEntity, ABC):
         return "mdi:speaker"
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the device state attributes."""
         return {
             ATTR_ATTRIBUTION: COMPONENT_ATTRIBUTION,

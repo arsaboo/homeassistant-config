@@ -1,1 +1,0 @@
-"""Component to integrate with email."""

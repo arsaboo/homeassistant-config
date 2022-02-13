@@ -1,8 +1,0 @@
-{
-  "domain": "aesop",
-  "name": "Aesop",
-  "documentation": "https://github.com/custom-components/sensor.personalcapital/blob/master/README.md",
-  "dependencies": [],
-  "codeowners": ["@arsaboo"],
-  "requirements": ["requests-cache==0.5.2","selenium"]
-}

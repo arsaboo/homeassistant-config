@@ -31,7 +31,7 @@ class ArloCfg(object):
 
     @property
     def storage_dir(self):
-        return self._kw.get("storage_dir", "/config/.aarlo")
+        return self._kw.get("storage_dir", "/tmp/.aarlo")
 
     @property
     def name(self):
@@ -98,14 +98,11 @@ class ArloCfg(object):
 
     @property
     def snapshot_checks(self):
-        checks = self._kw.get("snapshot_checks", [])
-        if not checks:
-            return [1, 5]
-        return checks
+        return self._kw.get("snapshot_checks", [])
 
     @property
     def user_agent(self):
-        return self._kw.get("user_agent", "apple")
+        return self._kw.get("user_agent", "arlo")
 
     @property
     def mode_api(self):
@@ -169,7 +166,16 @@ class ArloCfg(object):
 
     @property
     def tfa_host(self):
-        return self._kw.get("tfa_host", TFA_DEFAULT_HOST)
+        h = self._kw.get("tfa_host", TFA_DEFAULT_HOST).split(":")
+        return h[0]
+
+    @property
+    def tfa_port(self):
+        h = self._kw.get("tfa_host", TFA_DEFAULT_HOST).split(":")
+        if len(h) == 1:
+            return 993
+        else:
+            return h[1]
 
     @property
     def tfa_username(self):
@@ -198,6 +204,14 @@ class ArloCfg(object):
         if self.save_state:
             return self.storage_dir + "/" + self.name + ".pickle"
         return None
+
+    @property
+    def session_file(self):
+        return self.storage_dir + "/session.pickle"
+
+    @property
+    def save_session(self):
+        return self._kw.get("save_session", True)
 
     @property
     def dump_file(self):
@@ -232,3 +246,15 @@ class ArloCfg(object):
     @property
     def save_updates_to(self):
         return self._kw.get("save_updates_to", "")
+
+    @property
+    def save_media_to(self):
+        return self._kw.get("save_media_to", "")
+
+    @property
+    def no_unicode_squash(self):
+        return self._kw.get("no_unicode_squash", True)
+
+    @property
+    def use_mqtt(self):
+        return self._kw.get("backend", "mqtt") == "mqtt"

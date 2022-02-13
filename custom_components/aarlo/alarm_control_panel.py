@@ -61,6 +61,7 @@ ICON = "mdi:security"
 
 CONF_CODE_ARM_REQUIRED = "code_arm_required"
 CONF_CODE_DISARM_REQUIRED = "code_disarm_required"
+CONF_DISARMED_MODE_NAME = "disarmed_mode_name"
 CONF_HOME_MODE_NAME = "home_mode_name"
 CONF_AWAY_MODE_NAME = "away_mode_name"
 CONF_NIGHT_MODE_NAME = "night_mode_name"
@@ -81,6 +82,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(
             CONF_COMMAND_TEMPLATE, default=DEFAULT_COMMAND_TEMPLATE
         ): cv.template,
+        vol.Optional(CONF_DISARMED_MODE_NAME, default=DISARMED): cv.string,
         vol.Optional(CONF_HOME_MODE_NAME, default=DEFAULT_HOME): cv.string,
         vol.Optional(CONF_AWAY_MODE_NAME, default=ARMED): cv.string,
         vol.Optional(CONF_NIGHT_MODE_NAME, default=DEFAULT_NIGHT): cv.string,
@@ -147,7 +149,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
         if base_station.has_capability(SIREN_STATE_KEY):
             base_stations_with_sirens = True
 
-    async_add_entities(base_stations, True)
+    async_add_entities(base_stations)
 
     # Component services
     def service_callback(call):
@@ -207,6 +209,7 @@ class ArloBaseStation(AlarmControlPanelEntity):
         self._name = device.name
         self._unique_id = device.entity_id
         self._base = device
+        self._disarmed_mode_name = config.get(CONF_DISARMED_MODE_NAME).lower()
         self._home_mode_name = config.get(CONF_HOME_MODE_NAME).lower()
         self._away_mode_name = config.get(CONF_AWAY_MODE_NAME).lower()
         self._night_mode_name = config.get(CONF_NIGHT_MODE_NAME).lower()
@@ -232,6 +235,10 @@ class ArloBaseStation(AlarmControlPanelEntity):
 
         self._state = self._get_state_from_ha(self._base.attribute(MODE_KEY, ARMED))
         self._base.add_attr_callback(MODE_KEY, update_state)
+
+    @property
+    def should_poll(self):
+        return False
 
     @property
     def state(self):
@@ -272,7 +279,7 @@ class ArloBaseStation(AlarmControlPanelEntity):
         code_required = self._config[CONF_CODE_DISARM_REQUIRED]
         if code_required and not self._validate_code(code, "disarming"):
             return
-        self.set_mode_in_ha(DISARMED)
+        self.set_mode_in_ha(self._disarmed_mode_name)
 
     def alarm_arm_away(self, code=None):
         code_required = self._config[CONF_CODE_ARM_REQUIRED]
@@ -324,7 +331,7 @@ class ArloBaseStation(AlarmControlPanelEntity):
         return self._unique_id
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return {
             ATTR_ATTRIBUTION: COMPONENT_ATTRIBUTION,
@@ -340,7 +347,7 @@ class ArloBaseStation(AlarmControlPanelEntity):
     def _get_state_from_ha(self, mode):
         """Convert Arlo mode to Home Assistant state."""
         lmode = mode.lower()
-        if lmode == DISARMED:
+        if lmode == self._disarmed_mode_name:
             return STATE_ALARM_DISARMED
         if lmode == self._away_mode_name:
             return STATE_ALARM_ARMED_AWAY
@@ -353,9 +360,9 @@ class ArloBaseStation(AlarmControlPanelEntity):
         return mode
 
     def set_mode_in_ha(self, mode):
-        """ convert Home Assistant state to Arlo mode."""
+        """convert Home Assistant state to Arlo mode."""
         lmode = mode.lower()
-        if lmode == DISARMED:
+        if lmode == self._disarmed_mode_name:
             if self._trigger_till is not None:
                 _LOGGER.debug("{0} disarming/silencing".format(self._name))
                 self.alarm_clear()

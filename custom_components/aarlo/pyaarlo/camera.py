@@ -35,6 +35,17 @@ from .constant import (
     MEDIA_UPLOAD_KEY,
     MEDIA_UPLOAD_KEYS,
     MIRROR_KEY,
+    MODEL_BABY,
+    MODEL_ESSENTIAL,
+    MODEL_ESSENTIAL_INDOOR,
+    MODEL_GO,
+    MODEL_PRO_2,
+    MODEL_PRO_3,
+    MODEL_PRO_3_FLOODLIGHT,
+    MODEL_PRO_4,
+    MODEL_ULTRA,
+    MODEL_WIRED_VIDEO_DOORBELL,
+    MODEL_WIREFREE_VIDEO_DOORBELL,
     MOTION_DETECTED_KEY,
     MOTION_SENS_KEY,
     NIGHTLIGHT_KEY,
@@ -176,33 +187,35 @@ class ArloCamera(ArloChildDevice):
 
         # Always make this the latest thumbnail image.
         if self._snapshot_time < date:
-            self._arlo.debug("updating image for " + self.name)
             self._snapshot_time = date
             date = date.strftime(self._arlo.cfg.last_format)
+            self._arlo.debug(f"updating image for {self.name} ({date})")
             self._save_and_do_callbacks(LAST_IMAGE_SRC_KEY, "capture/" + date)
             self._save_and_do_callbacks(LAST_CAPTURE_KEY, date)
             self._save_and_do_callbacks(LAST_IMAGE_DATA_KEY, img)
         else:
-            self._arlo.vdebug("ignoring image for " + self.name)
+            date = date.strftime(self._arlo.cfg.last_format)
+            self._arlo.vdebug(f"ignoring image for {self.name} ({date})")
 
     # Update the last snapshot
-    def _update_snapshot(self):
+    def _update_snapshot(self, ignore_date=False):
         # Get image and date, if fails ignore.
-        img, date = http_get_img(self._load(SNAPSHOT_KEY, None))
+        img, date = http_get_img(self._load(SNAPSHOT_KEY, None), ignore_date)
         if img is None:
             self._arlo.debug("failed to load snapshot for " + self.name)
             return
 
         # Always make this the latest snapshot image.
         if self._snapshot_time < date:
-            self._arlo.debug("updating snapshot for " + self.name)
             self._snapshot_time = date
             date = date.strftime(self._arlo.cfg.last_format)
+            self._arlo.debug(f"updating snapshot for {self.name} ({date})")
             self._save_and_do_callbacks(LAST_IMAGE_SRC_KEY, "snapshot/" + date)
             self._save_and_do_callbacks(LAST_IMAGE_DATA_KEY, img)
             self._stop_snapshot()
         else:
-            self._arlo.vdebug("ignoring snapshot for " + self.name)
+            date = date.strftime(self._arlo.cfg.last_format)
+            self._arlo.vdebug(f"ignoring snapshot for {self.name} ({date})")
 
     def _set_recent(self, timeo):
         with self._lock:
@@ -238,9 +251,33 @@ class ArloCamera(ArloChildDevice):
             ACTIVITY_STATE_KEY, self._load(ACTIVITY_STATE_KEY, "unknown")
         )
 
+    def _queue_media_updates(self):
+        for retry in self._arlo.cfg.media_retry:
+            self._arlo.debug("queueing update in {}".format(retry))
+            self._arlo.bg.run_in(
+                self._arlo.ml.queue_update, retry, cb=self._update_media
+            )
+
+    def _mark_as_idle(self):
+        """Camera has moved to idle.
+        Either we did this or backend did this.
+        """
+        if self.has_any_local_users:
+            self._arlo.debug("got a stream/recording stop")
+            self._queue_media_updates()
+            self._set_recent(self._arlo.cfg.recent_time)
+
+        # Remove streaming from state
+        self._arlo.debug("removing streaming activity state")
+        with self._lock:
+            self._local_users = set()
+            self._remote_users = set()
+            self._dump_activities("_event::idle")
+            self._lock.notify_all()
+
     def _stop_activity(self):
         """Request the camera stop whatever it is doing and return to the idle state."""
-        self._arlo.be.notify(
+        response = self._arlo.be.notify(
             base=self.base_station,
             body={
                 "action": "set",
@@ -248,9 +285,12 @@ class ArloCamera(ArloChildDevice):
                 "publishResponse": True,
                 "resource": self.resource_id,
             },
+            wait_for="response",
         )
+        if response is not None:
+            self._mark_as_idle()
 
-    def _start_stream(self, starting_for):
+    def _start_stream(self, starting_for, user_agent=None):
         with self._lock:
             # Already streaming. Update sub-activity as needed.
             if self.has_any_local_users:
@@ -277,9 +317,12 @@ class ArloCamera(ArloChildDevice):
             "to": self.parent_id,
             "transId": self._arlo.be.gen_trans_id(),
         }
-        self._stream_url = self._arlo.be.post(
-            STREAM_START_PATH, body, headers={"xcloudId": self.xcloud_id}
-        )
+
+        headers = {"xcloudId": self.xcloud_id}
+        if user_agent is not None:
+            headers["User-Agent"] = self._arlo.be.user_agent(user_agent)
+
+        self._stream_url = self._arlo.be.post(STREAM_START_PATH, body, headers=headers)
         if self._stream_url is not None:
             self._stream_url = self._stream_url["url"].replace("rtsp://", "rtsps://")
             self._arlo.debug("url={}".format(self._stream_url))
@@ -308,7 +351,8 @@ class ArloCamera(ArloChildDevice):
                 if value is not None:
                     self._save_and_do_callbacks(key, value)
 
-            # The last image thumbnail has changed. Queue an update.
+            # The last image thumbnail has changed. Queue an image or snapshot
+            # update to download the image and process it.
             if LAST_IMAGE_KEY in event:
                 if not self.is_taking_snapshot:
                     self._arlo.debug("{} -> thumbnail changed".format(self.name))
@@ -318,20 +362,26 @@ class ArloCamera(ArloChildDevice):
                         "{} -> snapshot(thumbnail) ready".format(self.name)
                     )
                     self._save(SNAPSHOT_KEY, event.get(LAST_IMAGE_KEY, ""))
-                    self._arlo.bg.run_low(self._update_snapshot)
+                    self._arlo.bg.run_low(self._update_snapshot, ignore_date=True)
 
-            # Recording has stopped so a new video is available. Queue and
+            # Recording has stopped so a new video is available. Queue an
+            # media update, this could later trigger a snapshot or image
             # update.
             if event.get(RECORDING_STOPPED_KEY, False):
                 self._arlo.debug("{} -> recording stopped".format(self.name))
                 self._arlo.ml.queue_update(self._update_media)
 
-            # A snapshot is ready. Queue an update.
+            # Examine the URL passed; snapshots contain `/snapshots/` and
+            # recordings contain `recordings`. For snapshot, save URL and queue
+            # up an event to download and process it. We do nothing with the
+            # recording for now, it will come in via a media update.
             value = event.get(STREAM_SNAPSHOT_KEY, "")
             if "/snapshots/" in value:
-                self._arlo.debug("{} -> snapshot ready".format(self.name))
+                self._arlo.debug("{} -> snapshot1 ready".format(self.name))
                 self._save(SNAPSHOT_KEY, value)
                 self._arlo.bg.run_low(self._update_snapshot)
+            if "/recordings/" in value:
+                self._arlo.debug("{} -> new recording ready".format(self.name))
 
             # Something just happened.
             self._set_recent(self._arlo.cfg.recent_time)
@@ -343,26 +393,7 @@ class ArloCamera(ArloChildDevice):
 
         # Camera has gone idle.
         if activity == "idle":
-            # Currently recording or streaming and media upload not working?
-            # Then send in a request for updated media.
-            if self.has_any_local_users:
-                self._arlo.debug("got a stream/recording stop")
-                for retry in self._arlo.cfg.media_retry:
-                    self._arlo.debug("queueing update in {}".format(retry))
-                    self._arlo.bg.run_in(
-                        self._arlo.ml.queue_update, retry, cb=self._update_media
-                    )
-
-                # Something just happened.
-                self._set_recent(self._arlo.cfg.recent_time)
-
-            # Remove streaming from state
-            self._arlo.debug("removing streaming activity state")
-            with self._lock:
-                self._local_users = set()
-                self._remote_users = set()
-                self._dump_activities("_event::idle")
-                self._lock.notify_all()
+            self._mark_as_idle()
 
         # Camera is active. If we don't know about it then update our status.
         if activity == "fullFrameSnapshot":
@@ -395,7 +426,15 @@ class ArloCamera(ArloChildDevice):
                 "presignedFullFrameSnapshotUrl", None
             )
             if value is not None:
-                self._arlo.debug("{} -> snapshot ready".format(self.name))
+                self._arlo.debug("{} -> snapshot2 ready".format(self.name))
+                self._save(SNAPSHOT_KEY, value)
+                self._arlo.bg.run_low(self._update_snapshot)
+
+        # Non subscription...
+        if event.get("action", "") == "lastImageSnapshotAvailable":
+            value = event.get("properties", {}).get("presignedLastImageUrl", None)
+            if value is not None:
+                self._arlo.debug("{} -> snapshot3 ready".format(self.name))
                 self._save(SNAPSHOT_KEY, value)
                 self._arlo.bg.run_low(self._update_snapshot)
 
@@ -415,6 +454,11 @@ class ArloCamera(ArloChildDevice):
             if key in RECENT_ACTIVITY_KEYS:
                 self._arlo.debug("recent activity key")
                 self._set_recent(self._arlo.cfg.recent_time)
+
+        # Local record stopped, try and trip and update.
+        if properties.get("localRecordingActive", True) is False:
+            self._arlo.debug("local recording stopped, updating media")
+            self._queue_media_updates()
 
         # Night light status.
         nightlight = properties.get(NIGHTLIGHT_KEY, None)
@@ -601,12 +645,12 @@ class ArloCamera(ArloChildDevice):
 
     @property
     def unseen_videos(self):
-        """Returns the camera unseen video count. """
+        """Returns the camera unseen video count."""
         return self._load(MEDIA_COUNT_KEY, 0)
 
     @property
     def captured_today(self):
-        """Returns the number of videos captured today. """
+        """Returns the number of videos captured today."""
         return self._load(CAPTURED_TODAY_KEY, 0)
 
     @property
@@ -656,7 +700,7 @@ class ArloCamera(ArloChildDevice):
 
         Queues a job that requests the info from Arlo.
         """
-        if self.model_id == "ABC1000":
+        if self.model_id == MODEL_BABY:
             self._arlo.be.notify(
                 base=self.base_station,
                 body={
@@ -847,29 +891,29 @@ class ArloCamera(ArloChildDevice):
             return "recently active"
         return super().state
 
-    def get_stream(self):
+    def get_stream(self, user_agent=None):
         """Start a stream and return the URL for it.
 
         Code does nothing with the url, it's up to you to pass the url to something.
 
         The stream will stop if nothing connects to it within 30 seconds.
         """
-        return self._start_stream("streaming")
+        return self._start_stream("streaming", user_agent)
 
-    def start_stream(self):
+    def start_stream(self, user_agent=None):
         """Start a stream and return the URL for it.
 
         Code does nothing with the url, it's up to you to pass the url to something.
 
         The stream will stop if nothing connects to it within 30 seconds.
         """
-        return self._start_stream("streaming")
+        return self._start_stream("streaming", user_agent)
 
-    def start_snapshot_stream(self):
-        return self._start_stream("snapshot")
+    def start_snapshot_stream(self, user_agent=None):
+        return self._start_stream("snapshot", user_agent)
 
-    def start_recording_stream(self):
-        return self._start_stream("recording")
+    def start_recording_stream(self, user_agent=None):
+        return self._start_stream("recording", user_agent)
 
     def stop_stream(self):
         self._stop_stream("streaming")
@@ -1275,20 +1319,27 @@ class ArloCamera(ArloChildDevice):
         )
 
     def has_capability(self, cap):
-        if cap in (MOTION_DETECTED_KEY, BATTERY_KEY, SIGNAL_STR_KEY):
+        if cap in (BATTERY_KEY,):
+            if self.model_id.startswith(MODEL_ESSENTIAL_INDOOR):
+                return False
+            else:
+                return True
+        if cap in (MOTION_DETECTED_KEY, SIGNAL_STR_KEY):
             return True
         if cap in (LAST_CAPTURE_KEY, CAPTURED_TODAY_KEY, RECENT_ACTIVITY_KEY):
             return True
         if cap in (AUDIO_DETECTED_KEY,):
             if self.model_id.startswith(
                 (
-                    "VMC2030",
-                    "VMC4030",
-                    "VMC4040",
-                    "VMC4041",
-                    "VMC5040",
-                    "ABC1000",
-                    "FB1001",
+                    MODEL_ESSENTIAL,
+                    MODEL_ESSENTIAL_INDOOR,
+                    MODEL_PRO_2,
+                    MODEL_PRO_3,
+                    MODEL_PRO_3_FLOODLIGHT,
+                    MODEL_PRO_4,
+                    MODEL_ULTRA,
+                    MODEL_GO,
+                    MODEL_BABY,
                 )
             ):
                 return True
@@ -1296,24 +1347,45 @@ class ArloCamera(ArloChildDevice):
                 return True
         if cap in (SIREN_STATE_KEY,):
             if self.model_id.startswith(
-                ("VMC2030", "VMC4040", "VMC4041", "VMC5040", "FB1001")
+                (
+                    MODEL_ESSENTIAL,
+                    MODEL_ESSENTIAL_INDOOR,
+                    MODEL_PRO_3,
+                    MODEL_PRO_3_FLOODLIGHT,
+                    MODEL_PRO_4,
+                    MODEL_ULTRA,
+                    MODEL_WIREFREE_VIDEO_DOORBELL,
+                )
             ):
                 return True
         if cap in (SPOTLIGHT_KEY,):
-            if self.model_id.startswith(("VMC2030", "VMC4040", "VMC4041", "VMC5040")):
+            if self.model_id.startswith(
+                (MODEL_ESSENTIAL, MODEL_PRO_3, MODEL_PRO_4, MODEL_ULTRA)
+            ):
                 return True
         if cap in (TEMPERATURE_KEY, HUMIDITY_KEY, AIR_QUALITY_KEY):
-            if self.model_id.startswith("ABC1000"):
+            if self.model_id.startswith(MODEL_BABY):
                 return True
         if cap in (MEDIA_PLAYER_KEY, NIGHTLIGHT_KEY, CRY_DETECTION_KEY):
-            if self.model_id.startswith("ABC1000"):
+            if self.model_id.startswith(MODEL_BABY):
                 return True
         if cap in (FLOODLIGHT_KEY,):
-            if self.model_id.startswith("FB1001"):
+            if self.model_id.startswith(MODEL_PRO_3_FLOODLIGHT):
                 return True
         if cap in (CONNECTION_KEY,):
             # These devices are their own base stations so don't re-add connection key.
-            if self.model_id.startswith(("ABC1000", "FB1001A", "VMC2030", "VMC4041")):
+            if self.model_id.startswith(
+                (
+                    MODEL_BABY,
+                    MODEL_PRO_3_FLOODLIGHT,
+                    MODEL_PRO_4,
+                    MODEL_ESSENTIAL,
+                    MODEL_WIRED_VIDEO_DOORBELL,
+                    MODEL_WIREFREE_VIDEO_DOORBELL,
+                    MODEL_ESSENTIAL_INDOOR,
+                    MODEL_GO,
+                )
+            ):
                 return False
             if self.device_type in ("arloq", "arloqs"):
                 return False

@@ -10,6 +10,7 @@
       entity_id:
         - person.alok
         - person.rashmi
+        - person.arnav
   condition:
     - condition: template
       value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
@@ -28,30 +29,34 @@
     - platform: state
       entity_id:
         - device_tracker.alokiphone
-        - device_tracker.rashmiphone_2
-        - device_tracker.alokphone_alokphone_2
-        - device_tracker.rashmiphone_rashmiphone_2
+        - device_tracker.rashmiiphone
+        - device_tracker.arnav_iphone_12
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
         - device_tracker.alokphone_alokphone_2
         - device_tracker.rashmiphone_rashmiphone_2
+        - bdevice_tracker.arnavphone_arnavphone
       to: 'home'
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alok_s_iphone_2
+        - device_tracker.alokiphone_3
         - device_tracker.life360_alok_saboo
-        - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
+        - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
         - device_tracker.rashmiappiphone_2
         - device_tracker.life360_sonu
-        - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
+        - device_tracker.alok_geofency
+        - device_tracker.arnaviphone12pro
+        - device_tracker.life360_arnav_saboo
+#        - device_tracker.7dab02d9_7205_4897_95d8_3d8921ed7ccf
+        - device_tracker.bb1c8fd7_590d_4544_a362_07eba9dae90b
     - platform: state
       entity_id:
         - device_tracker.alokiphone
         - device_tracker.elantrase_2
-        - device_tracker.rashmiphone_2
+        - device_tracker.rashmiiphone
       to: 'home'
   action:
     - service: script.updatetracker
@@ -59,6 +64,10 @@
         entityid: '{{trigger.entity_id}}'
         fromstate: '{{trigger.from_state.state}}'
         tostate: '{{trigger.to_state.state}}'
+    # - service: logbook.log
+    #   data_template:
+    #     name: "Update Tracker: "
+    #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}."
 
 - id: update_alok_test_tracker
   alias: "Update Alok Test Tracker"
@@ -77,9 +86,9 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alok_s_iphone_2
+        - device_tracker.alokiphone_3
         - device_tracker.life360_alok_saboo
-        - device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
+        - device_tracker.alok_geofency
   action:
     - service: device_tracker.see
       data_template:
@@ -160,7 +169,7 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.e1594e53_21df_414c_82da_f655d5282fca
+        - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
         - device_tracker.rashmiappiphone_2
         - device_tracker.life360_sonu
   action:
@@ -202,12 +211,12 @@
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
       entity_id:
-        - device_tracker.rashmiphone_2
+        - device_tracker.rashmiiphone
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
-        - device_tracker.rashmiphone_2
+        - device_tracker.rashmiiphone
       to: 'home'
   action:
     - service: device_tracker.see
@@ -325,7 +334,7 @@
        state: 'disarmed'
      - condition: time
        after: '22:15:00'
-       before: '07:00:00'
+       before: '05:00:00'
      - condition: state
        entity_id: input_boolean.abodeupdate
        state: 'on'
@@ -353,7 +362,7 @@
         entity_id: group.household
         state: 'home'
       - condition: time
-        after: '08:15:00'
+        after: '05:00:00'
         before: '21:45:00'
       - condition: state
         entity_id: input_boolean.abodeupdate
@@ -376,6 +385,31 @@
   trigger:
     - platform: time_pattern
       minutes: '/10'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: script.abodestandby
+
+- id: abode_standby_2
+  alias: 'Abode Standby_test'
+  initial_state: 'on'
+  condition:
+    - condition: state
+      entity_id: group.household
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.abodeupdate
+      state: 'on'
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'armed_home'
+        - condition: state
+          entity_id: input_select.abodestatus
+          state: 'armed_away'
+  trigger:
+    - platform: time
+      at: "05:30:00"
   action:
     - service: homeassistant.turn_on
       entity_id: script.abodestandby
@@ -443,7 +477,7 @@
        state: 'on'
   trigger:
     - platform: time
-      at: '07:20:00'
+      at: '05:20:00'
   action:
     - service: homeassistant.turn_on
       entity_id: script.abodestandby
@@ -680,11 +714,9 @@
      to: 'on'
   action:
     - service: notify.ios
-      data_template:
+      data:
         message: "Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} camera."
         data:
-          push:
-            category: camera
           entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
           attachment:
             url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[0]].attributes.entity_picture }}"
@@ -698,7 +730,7 @@
     # - service: camera.snapshot
     #   data_template:
     #     entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-    #     filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
+    #     filename: '/config/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
     - service: logbook.log
       data_template:
         name: "Camera activity: "
@@ -776,7 +808,7 @@
        - image_processing.tensorflow_driveway
        - image_processing.tensorflow_backyard
   action:
-    - service: notify.mobile_app_alok_s_iphone
+    - service: notify.mobile_app_alokiphone
       data_template:
         message: >
           {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join(', ')|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
@@ -798,7 +830,7 @@
     - service: local_file.update_file_path
       data_template:
         entity_id: camera.worldtime
-        file_path: '/home/homeassistant/.homeassistant/downloads/worldtime/worldtime__{{ now().strftime("%H%M") }}.png'
+        file_path: '/config/downloads/worldtime/worldtime__{{ now().strftime("%H%M") }}.png'
 
 
 - id: save_camera_images
@@ -825,7 +857,7 @@
     - service: camera.snapshot
       data_template:
         entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-        filename: '/home/homeassistant/.homeassistant/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
+        filename: '/config/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0] }}/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
 
 - alias: 'Trigger alarm while armed away'
   trigger:
@@ -1307,6 +1339,28 @@
           {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
             {{state_attr("climate.downstairs_homekit","current_temperature")|float}}
           {%- endif -%}
+- id: prevent_hvac_failure_2
+  alias: 'Prevent HVAC Failure 2'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+      to: 'cooling'
+      for: '00:03:00'
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+      to: 'heating'
+      for: '00:03:00'
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state == 'heating' and states('sensor.temperature_158d0001a35ba5')|int > 50 }}"
+  action:
+    - service: logbook.log
+      data:
+        name: "Master vent: "
+        message: "Vent Temp is {{states('sensor.temperature_158d0001a35ba5')}} and pressure is {{states('sensor.pressure_158d0001a35ba5')}}. Temp change is {{states('sensor.master_vent_temp_change')}}"
 - id: prevent_master_hvac_failure
   alias: 'Prevent master hvac failure'
   initial_state: 'on'
@@ -1319,7 +1373,7 @@
       above: 20
       for: '00:05:00'
   action:
-    - service: notify.mobile_app_alok_s_iphone
+    - service: notify.mobile_app_alokiphone
       data_template:
         message: >
           Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
@@ -1337,7 +1391,7 @@
       to: 'cooling'
       for: '00:30:00'
   action:
-    - service: notify.mobile_app_alok_s_iphone
+    - service: notify.mobile_app_alokiphone
       data_template:
         message: >
           Turning off {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
@@ -1364,6 +1418,7 @@
         - light.living_room_lights
         - light.lifx5
         - light.master_lights
+        - light.kids_room_lights
       to: 'unavailable'
       for: '00:05:00'
     - platform: state
@@ -1379,6 +1434,27 @@
           subtitle: "Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state }}"
           push:
             badge: 0
+- id: restart_pihole_if_down
+  alias: 'Restart PiHole container'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.internet_connected
+      to: 'off'
+  action:
+    - service: input_button.press
+      target:
+        entity_id: input_button.restart_pihole
+- id: restart_pihole
+  alias: 'Restart Pihole'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_button.restart_pihole
+  action:
+    - service: rest_command.restart_pihole_syn
+    - service: rest_command.restart_pihole_study
 
 - id: ensure_room_assistant_nodes_on
   alias: 'Ensure Room Assistant devices are on'
@@ -1391,11 +1467,30 @@
         - sensor.livingroom_cluster_size
       to: "unavailable"
   action:
-    - service: notify.mobile_app_alok_s_iphone
+    - service: notify.mobile_app_alokiphone
       data_template:
-        message: "Check Room Assistant"
+        message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is offline."
+        # data:
+        #   subtitle: "Check Room Assistant"
+        #   push:
+        #     badge: 0
+
+- id: roomassistant_cluster_online
+  alias: 'Room Assistant cluster back online'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.master_cluster_size
+        - sensor.study_cluster_size
+        - sensor.livingroom_cluster_size
+      from: "unavailable"
+  action:
+    - service: notify.mobile_app_alokiphone
+      data_template:
+        message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is online"
         data:
-          subtitle: "{{ trigger.to_state.name.split(' ')[0]|capitalize }} cluster is not working"
+          subtitle: "{{ 'All' if trigger.to_state.state == '3' else trigger.to_state.state }} clusters working."
           push:
             badge: 0
 
@@ -1424,11 +1519,14 @@
           - condition: state
             entity_id: input_boolean.sleeping
             state: 'off'
+          - condition: state
+            entity_id: input_boolean.master_occupied
+            state: 'off'
       - condition: and
         conditions:
           - condition: time
             after: '22:30:00'
-            before: '07:00:00'
+            before: '05:00:00'
           - condition: state
             entity_id: light.master_lights
             state: 'off'
@@ -1437,6 +1535,9 @@
             state: 'disarmed'
           - condition: state
             entity_id: input_boolean.sleeping
+            state: 'off'
+          - condition: state
+            entity_id: input_boolean.master_occupied
             state: 'off'
       - condition: and
         conditions:
@@ -1455,6 +1556,9 @@
               {%- endif -%}
           - condition: state
             entity_id: input_boolean.sleeping
+            state: 'off'
+          - condition: state
+            entity_id: input_boolean.master_occupied
             state: 'off'
   action:
     - service: light.turn_on
@@ -1487,11 +1591,26 @@
       state: 'off'
     - condition: template
       value_template: >
-        {{states('sensor.alok_iphone12_room_presence') != 'master' and states('sensor.iphone_room_presence') != 'master'}}
+        {{states('sensor.alok_ble_room') != 'master' and states('sensor.rashmi_ble_room') != 'master'}}
   action:
     - service: light.turn_off
       data:
         entity_id: light.master_lights
+
+- id: set_master_occupancy
+  alias: 'Set Master Occupancy'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.alok_ble_room
+        - sensor.rashmi_ble_room
+      to: ~
+  action:
+    - service_template: "input_boolean.turn_{{ 'on' if (states('sensor.alok_ble_room') == 'master' or states('sensor.rashmi_ble_room') == 'master') else 'off' }}"
+      data:
+        entity_id: input_boolean.master_occupied
+
 
 - id: garage_lights_on
   alias: 'Turn on garage lights when door opened'
@@ -1543,14 +1662,29 @@
      entity_id: light.kitchen_lights
      from: 'off'
      to: 'on'
+  action:
+     service: light.turn_on
+     data:
+       entity_id: light.kitchen_lights
+       brightness: 255
+
+- id: breakfast_light_reset
+  alias: 'Breakfast light reset'
+  initial_state: 'on'
+  trigger:
+   - platform: state
+     entity_id: light.kids_room_lights
+     from: 'off'
+     to: 'on'
   condition:
     - condition: template
       value_template: '{{ trigger.from_state.state == "off" }}'
   action:
      service: light.turn_on
      data:
-       entity_id: light.kitchen_lights
+       entity_id: light.kids_room_lights
        brightness: 255
+       rgb_color: [255, 255, 255]
 
 - id: turn_off_xiaomi
   alias: 'Turn off Xiaomi Gateway light'
@@ -1924,30 +2058,30 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: switch.03783133807d3a7d0403
+      entity_id: switch.study_fan
       state: 'off'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.rpi_cpu_thermal_1_temp
+      entity_id: sensor.rpi_cpu_thermal_1_temperature
       above: 135
   action:
     service: homeassistant.turn_on
-    entity_id: switch.03783133807d3a7d0403
+    entity_id: switch.study_fan
 
 - id: turn_off_study_fan
   alias: Turn off study fan
   initial_state: 'on'
   # condition:
   #   - condition: state
-  #     entity_id: switch.03783133807d3a7d0403
+  #     entity_id: switch.study_fan
   #     state: 'on'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.rpi_cpu_thermal_1_temp
+      entity_id: sensor.rpi_cpu_thermal_1_temperature
       below: 125
   action:
     service: homeassistant.turn_off
-    entity_id: switch.03783133807d3a7d0403
+    entity_id: switch.study_fan
 
 # - id: get_iphone_steps
 #   alias: Get steps from iPhone
@@ -2044,13 +2178,13 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: switch.pi_hole_main
+      entity_id: switch.pi_hole_syn
       to: 'off'
       for: '00:05:00'
   action:
     - service: switch.turn_on
       entity_id:
-        - switch.pi_hole_main
+        - switch.pi_hole_syn
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -2192,6 +2326,7 @@
 - id: update_volume_slider
   alias: "Update Volume Slider"
   initial_state: 'on'
+  mode: restart
   trigger:
     - platform: state
       entity_id: sensor.sonos_volume
@@ -2208,6 +2343,7 @@
 - id: update_master_sonos_volume
   alias: "Update Master Sonos Volume"
   initial_state: 'on'
+  mode: restart
   trigger:
     - platform: state
       entity_id: sensor.master_sonos_volume
@@ -2217,24 +2353,6 @@
         title: "\U0001F50A Home Assistant"
         message: >
             Volume changed to {{ trigger.to_state.state }}
-- id: notify_sonos_audio_in
-  alias: "Notify Sonos audio-in state"
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: sensor.sonos_stereo
-      to: '2'
-  condition:
-    - condition: template
-      value_template: "{{state_attr('media_player.family_room_2','source')=='TV'}}"
-    - condition: state
-      entity_id: media_player.family_room_2
-      state: 'playing'
-  action:
-    service: notify.telegram
-    data_template:
-      message: Sonos audio-in is {{states('sensor.sonos_audio_in')}}
-      title: Sonos in Stereo
 - id: notify_ftv_master_on
   alias: "Notify when FTV master turned on"
   initial_state: 'on'
@@ -2260,14 +2378,10 @@
       after: '20:30:00'
       before: '23:00:00'
   action:
-    - service: sonos.set_option
-      data:
-        entity_id: media_player.family_room_2
-        night_sound: true
-    - service: sonos.set_option
-      data:
-        entity_id: media_player.family_room_2
-        speech_enhance: true
+    - service: switch.turn_on
+      entity_id:
+        - switch.sonos_family_room_night_sound
+        - switch.sonos_family_room_speech_enhancement
 - id: sonos_disable_speech_enhance_and_night_sound
   alias: "Sonos Disable speech enhance and night sound"
   initial_state: 'on'
@@ -2280,14 +2394,10 @@
       after: '20:30:00'
       before: '07:00:00'
   action:
-    - service: sonos.set_option
-      data:
-        entity_id: media_player.family_room_2
-        night_sound: false
-    - service: sonos.set_option
-      data:
-        entity_id: media_player.family_room_2
-        speech_enhance: false
+    - service: switch.turn_off
+      entity_id:
+        - switch.sonos_family_room_night_sound
+        - switch.sonos_family_room_speech_enhancement
 
 
 - id: ifttt_test
@@ -2315,34 +2425,7 @@
     - service: camera.aarlo_request_snapshot_to_file
       entity_id: camera.aarlo_livingroom2
       data_template:
-        filename: '/home/homeassistant/.homeassistant/downloads/camera/arlo_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
-
-- id: earnings_estimate_logging
-  alias: 'Log Earnings Estimate changes'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - sensor.yahoo_cop
-        - sensor.yahoo_wpc
-        - sensor.yahoo_pm
-        - sensor.yahoo_brk_b
-        - sensor.yahoo_well
-        - sensor.yahoo_irm
-        - sensor.yahoo_doc
-        - sensor.yahoo_cvs
-  condition:
-    - condition: template
-      value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
-  action:
-    - service: logbook.log
-      data_template:
-        name: "Yahoo Estimates: "
-        message: "{{trigger.to_state.attributes.Ticker}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}. {{ trigger.to_state.attributes.history[0].firm }} - {{ trigger.to_state.attributes.history[0].action|default('Initiated', true) }} to {{ trigger.to_state.attributes.history[0].toGrade }} on {{ trigger.to_state.attributes.history[0].epochGradeDate }}"
-    - service: notify.telegram
-      data_template:
-        message: "{{trigger.to_state.attributes.Ticker}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}. {{ trigger.to_state.attributes.history[0].firm }} - {{ trigger.to_state.attributes.history[0].action|default('Initiated', true) }} to {{ trigger.to_state.attributes.history[0].toGrade }} on {{ trigger.to_state.attributes.history[0].epochGradeDate }}"
-        title: "{{trigger.to_state.attributes.Ticker}} updated"
+        filename: '/config/downloads/camera/arlo_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
 
 # Apple Watch related
 - alias: "iOS: Double Tap"
@@ -2385,63 +2468,215 @@
           Master: {{ state_attr('climate.master_homekit', 'temperature') }}°F
           Outside: {{ states('sensor.dark_sky_temperature') }}°F
 
+# - alias: "Apple Watch: set lights"
+#   mode: parallel
+#   trigger:
+#     platform: event
+#     event_type: ios.action_fired
+#     event_data:
+#       actionName: Set lights
+#   action:
+#     - variables:
+#         iphone: >
+#           notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(' ', '_').replace("'", '_')|lower }}
+#     - service: "{{ iphone }}"
+#       data:
+#         message: "Apple Watch: set lights"
+#         data:
+#           push:
+#             category: set_lights
+#     - wait_for_trigger:
+#         platform: event
+#         event_type: ios.notification_action_fired
+#         event_data:
+#           categoryName: set_lights
+#       timeout: "00:00:20"
+#       continue_on_timeout: false
+#     - variables:
+#         light: >
+#           {{
+#             {'MASTER': 'light.master_lights',
+#              'LIVING_ROOM': 'light.living_room_lights',
+#              'KITCHEN': 'light.kitchen_lights',
+#             }[wait.trigger.event.data.actionName] }}
+#     - service: "{{ iphone }}"
+#       data:
+#         message: "Apple Watch: choose option"
+#         data:
+#           push:
+#             category: light_options
+#     - wait_for_trigger:
+#         platform: event
+#         event_type: ios.notification_action_fired
+#         event_data:
+#           categoryName: light_options
+#       timeout: "00:00:20"
+#       continue_on_timeout: false
+#     - variables:
+#         option: "{{ wait.trigger.event.data.actionName }}"
+#     - choose:
+#         - conditions: "{{ option == 'OFF' }}"
+#           sequence:
+#             service: light.turn_off
+#             data:
+#               entity_id: "{{ light }}"
+#         - conditions: "{{ option == 'ON' }}"
+#           sequence:
+#             service: light.turn_on
+#             data:
+#               entity_id: "{{ light }}"
+
+
+
+
+
 - alias: "Apple Watch: set lights"
   mode: parallel
   trigger:
     platform: event
     event_type: ios.action_fired
     event_data:
-      actionName: Set lights
+      actionName: "Set lights"
   action:
     - variables:
         iphone: >
           notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(' ', '_').replace("'", '_')|lower }}
+        action_on: "{{ 'ON' }}"
+        action_off: "{{ 'OFF' }}"
+        action_master: "{{ 'MASTER' }}"
+        action_living_room: "{{ 'LIVING_ROOM' }}"
+        action_kitchen: "{{ 'KITCHEN' }}"
     - service: "{{ iphone }}"
       data:
-        message: "Apple Watch: set lights"
+        message: "Choose Light"
         data:
-          push:
-            category: set_lights
+          actions:
+            - action: "{{ action_master }}"
+              title: "Master"
+            - action: "{{ action_living_room }}"
+              title: "Living Room"
+            - action: "{{ action_kitchen }}"
+              title: "Kitchen"
     - wait_for_trigger:
-        platform: event
-        event_type: ios.notification_action_fired
-        event_data:
-          categoryName: set_lights
-      timeout: "00:00:20"
-      continue_on_timeout: false
-    - variables:
-        light: >
-          {{
-            {'MASTER': 'light.master_lights',
-             'LIVING_ROOM': 'light.living_room_lights',
-             'KITCHEN': 'light.kitchen_lights',
-            }[wait.trigger.event.data.actionName] }}
-    - service: "{{ iphone }}"
-      data:
-        message: "Apple Watch: choose option"
-        data:
-          push:
-            category: light_options
-    - wait_for_trigger:
-        platform: event
-        event_type: ios.notification_action_fired
-        event_data:
-          categoryName: light_options
-      timeout: "00:00:20"
-      continue_on_timeout: false
-    - variables:
-        option: "{{ wait.trigger.event.data.actionName }}"
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: "{{ action_master }}"
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: "{{ action_living_room }}"
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: "{{ action_kitchen }}"
     - choose:
-        - conditions: "{{ option == 'OFF' }}"
+        - conditions: "{{ wait.trigger.event.data.action == action_master }}"
           sequence:
-            service: light.turn_off
-            data:
-              entity_id: "{{ light }}"
-        - conditions: "{{ option == 'ON' }}"
+            - variables:
+                lights:
+                  - light.master_lights
+            - service: "{{ iphone }}"
+              data:
+                message: "Choose option"
+                data:
+                  actions:
+                    - action: "{{ action_on }}"
+                      title: "Turn On"
+                    - action: "{{ action_off }}"
+                      title: "Turn Off"
+            - wait_for_trigger:
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_on }}"
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_off }}"
+            - choose:
+                - conditions: "{{ wait.trigger.event.data.action == action_on }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ lights }}"
+                - conditions: "{{ wait.trigger.event.data.action == action_off }}"
+                  sequence:
+                    - service: light.turn_off
+                      target:
+                        entity_id: "{{ lights }}"
+
+        - conditions: "{{ wait.trigger.event.data.action == action_living_room }}"
           sequence:
-            service: light.turn_on
-            data:
-              entity_id: "{{ light }}"
+            - variables:
+                lights:
+                  - light.living_room_lights
+            - service: "{{ iphone }}"
+              data:
+                message: "Choose option"
+                data:
+                  actions:
+                    - action: "{{ action_on }}"
+                      title: "Turn On"
+                    - action: "{{ action_off }}"
+                      title: "Turn Off"
+            - wait_for_trigger:
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_on }}"
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_off }}"
+            - choose:
+                - conditions: "{{ wait.trigger.event.data.action == action_on }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ lights }}"
+                - conditions: "{{ wait.trigger.event.data.action == action_off }}"
+                  sequence:
+                    - service: light.turn_off
+                      target:
+                        entity_id: "{{ lights }}"
+        - conditions: "{{ wait.trigger.event.data.action == action_kitchen }}"
+          sequence:
+            - variables:
+                lights:
+                  - light.kitchen_lights
+            - service: "{{ iphone }}"
+              data:
+                message: "Choose option"
+                data:
+                  actions:
+                    - action: "{{ action_on }}"
+                      title: "Turn On"
+                    - action: "{{ action_off }}"
+                      title: "Turn Off"
+            - wait_for_trigger:
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_on }}"
+                - platform: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: "{{ action_off }}"
+            - choose:
+                - conditions: "{{ wait.trigger.event.data.action == action_on }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ lights }}"
+                - conditions: "{{ wait.trigger.event.data.action == action_off }}"
+                  sequence:
+                    - service: light.turn_off
+                      target:
+                        entity_id: "{{ lights }}"
+
+
+
 
 
 
@@ -2472,8 +2707,7 @@
     - variables:
         device: >
           {{
-            {'PIHOLE_MAIN': 'switch.pi_hole_main',
-            'PIHOLE_KIDS': 'switch.pi_hole_kids',
+            {'PIHOLE_KIDS': 'switch.pi_hole_kids',
             'RISHAANFIREHD': 'switch.firehd_rishaan',
              'ARNAV_IPAD': 'switch.my_ipad',
              'LENOVO': 'switch.lenovohome',

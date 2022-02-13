@@ -1,15 +1,19 @@
 import threading
 
+from unidecode import unidecode
+
 from .constant import (
     BATTERY_KEY,
     BATTERY_TECH_KEY,
     CHARGER_KEY,
     CHARGING_KEY,
     CONNECTION_KEY,
+    CONNECTIVITY_KEY,
     DEVICE_KEYS,
     RESOURCE_KEYS,
     RESOURCE_UPDATE_KEYS,
     SIGNAL_STR_KEY,
+    TIMEZONE_KEY,
     XCLOUD_ID_KEY,
 )
 
@@ -28,17 +32,28 @@ class ArloDevice(object):
         self._lock = threading.Lock()
         self._attr_cbs_ = []
 
-        # stuff we use a lot
+        # Basic IDs.
         self._device_id = attrs.get("deviceId", None)
         self._device_type = attrs.get("deviceType", "unknown")
         self._unique_id = attrs.get("uniqueId", None)
 
+        # We save this here but only expose it directly in the ArloChild class.
+        # Some devices are their own parents and we need to know that at the ArloDevice
+        # or ArloChild class so we leave this here as a short cut.
+        self._parent_id = attrs.get("parentId", None)
+
         # Activities. Used by camera for now but made available to all.
         self._activities = {}
 
-        # Build initial values... attrs is device state
+        # Build initial values. These can be at the top level or in the
+        # properties dictionary.
         for key in DEVICE_KEYS:
             value = attrs.get(key, None)
+            if value is not None:
+                self._save(key, value)
+        props = attrs.get("properties", {})
+        for key in RESOURCE_KEYS + RESOURCE_UPDATE_KEYS:
+            value = props.get(key, None)
             if value is not None:
                 self._save(key, value)
 
@@ -63,14 +78,7 @@ class ArloDevice(object):
 
         # Find properties. Event either contains a item called properties or it
         # is the whole thing.
-        props = event.get("properties", event)
-
-        # Save out new values.
-        for key in props:
-            if key in RESOURCE_KEYS or key in RESOURCE_UPDATE_KEYS:
-                value = props.get(key, None)
-                if value is not None:
-                    self._save_and_do_callbacks(key, value)
+        self.update_resources(event.get("properties", event))
 
     def _do_callbacks(self, attr, value):
         cbs = []
@@ -95,12 +103,20 @@ class ArloDevice(object):
     def _load_matching(self, attr, default=None):
         return self._arlo.st.get_matching(self._to_storage_key(attr), default)
 
+    def update_resources(self, props):
+        for key in RESOURCE_KEYS + RESOURCE_UPDATE_KEYS:
+            value = props.get(key, None)
+            if value is not None:
+                self._save_and_do_callbacks(key, value)
+
     @property
     def entity_id(self):
         if self._arlo.cfg.serial_ids:
             return self.device_id
-        else:
+        elif self._arlo.cfg.no_unicode_squash:
             return self.name.lower().replace(" ", "_")
+        else:
+            return unidecode(self.name.lower().replace(" ", "_"))
 
     @property
     def name(self):
@@ -136,9 +152,7 @@ class ArloDevice(object):
 
     @property
     def device_type(self):
-        """Returns the Arlo reported device type.
-\
-        """
+        """Returns the Arlo reported device type."""
         return self._device_type
 
     @property
@@ -154,7 +168,10 @@ class ArloDevice(object):
     @property
     def timezone(self):
         """Returns the timezone."""
-        return self._attrs.get("properties", {}).get("olsonTimeZone", None)
+        time_zone = self._load(TIMEZONE_KEY, None)
+        if time_zone is None:
+            return self._attrs.get("properties", {}).get("olsonTimeZone", None)
+        return time_zone
 
     @property
     def user_id(self):
@@ -180,6 +197,14 @@ class ArloDevice(object):
     def unique_id(self):
         """Returns the device's unique id."""
         return self._unique_id
+
+    @property
+    def is_own_parent(self):
+        """Returns True if device is its own parent.
+
+        Can work from child or parent class.
+        """
+        return self._parent_id == self._device_id
 
     def attribute(self, attr, default=None):
         """Return the value of attribute attr.
@@ -257,6 +282,66 @@ class ArloDevice(object):
         """
         return self._load(CONNECTION_KEY, "unknown") == "unavailable"
 
+    @property
+    def battery_level(self):
+        """Returns the current battery level."""
+        return self._load(BATTERY_KEY, 100)
+
+    @property
+    def battery_tech(self):
+        """Returns the current battery technology.
+
+        Is it rechargable, wired...
+        """
+        return self._load(BATTERY_TECH_KEY, "None")
+
+    @property
+    def has_batteries(self):
+        """Returns `True` if device has batteries installed, `False` otherwise."""
+        return self.battery_tech != "None"
+
+    @property
+    def charger_type(self):
+        """Returns how the device is recharging."""
+        return self._load(CHARGER_KEY, "None")
+
+    @property
+    def has_charger(self):
+        """Returns `True` if the charger is plugged in, `False` otherwise."""
+        return self.charger_type != "None"
+
+    @property
+    def is_charging(self):
+        """Returns `True` if the device is charging, `False` otherwise."""
+        return self._load(CHARGING_KEY, "off").lower() == "on"
+
+    @property
+    def is_charger_only(self):
+        """Returns `True` if the cahrger is plugged in with no batteries, `False` otherwise."""
+        return self.battery_tech == "None" and self.has_charger
+
+    @property
+    def is_corded(self):
+        """Returns `True` if the device is connected directly to a power outlet, `False` otherwise.
+
+        The device can't have any battery option, it can't be using a charger, it has to run
+        directly from a plug. ie, an original base station.
+        """
+        return not self.has_batteries and not self.has_charger
+
+    @property
+    def using_wifi(self):
+        """Returns `True` if the device is connected to the wifi, `False` otherwise.
+
+        This means connecting directly to your home wifi, not connecting to and Arlo basestation.
+        """
+        return self._attrs.get(CONNECTIVITY_KEY, {}).get("type", "").lower() == "wifi"
+
+    @property
+    def signal_strength(self):
+        """Returns the WiFi signal strength (0-5)."""
+        return self._load(SIGNAL_STR_KEY, 3)
+
 
 class ArloChildDevice(ArloDevice):
     """Base class for all Arlo devices that attach to a base station."""
@@ -264,7 +349,6 @@ class ArloChildDevice(ArloDevice):
     def __init__(self, name, arlo, attrs):
         super().__init__(name, arlo, attrs)
 
-        self._parent_id = attrs.get("parentId", None)
         self._arlo.debug("parent is {}".format(self._parent_id))
         self._arlo.vdebug("resource is {}".format(self.resource_id))
 
@@ -305,6 +389,18 @@ class ArloChildDevice(ArloDevice):
         return self.device_id
 
     @property
+    def timezone(self):
+        """Returns the timezone.
+
+        Tries to be clever. If it doesn't have a timezone it will try its
+        basestation.
+        """
+        time_zone = super().timezone
+        if time_zone is None:
+            return self.base_station.timezone
+        return time_zone
+
+    @property
     def base_station(self):
         """Returns the base station controlling this device.
 
@@ -316,7 +412,7 @@ class ArloChildDevice(ArloDevice):
             if base.device_id == self.parent_id:
                 return base
 
-        # some cameras don't have base stations... it's its own basestation...
+        # some cameras don't have base stations... it's its own base station...
         for base in self._arlo.base_stations:
             if base.device_id == self.device_id:
                 return base
@@ -327,44 +423,6 @@ class ArloChildDevice(ArloDevice):
 
         self._arlo.error("Could not find any base stations for device " + self._name)
         return None
-
-    @property
-    def battery_level(self):
-        """Returns the current battery level."""
-        return self._load(BATTERY_KEY, 100)
-
-    @property
-    def battery_tech(self):
-        """Returns the current battery technology.
-
-        Is it rechargable, wired...
-        """
-        return self._load(BATTERY_TECH_KEY, "None")
-
-    @property
-    def charging(self):
-        """Returns `True` if the device is recharging, `False` otherwise."""
-        return self._load(CHARGING_KEY, "off").lower() == "on"
-
-    @property
-    def charger_type(self):
-        """Returns how the device is recharging."""
-        return self._load(CHARGER_KEY, "None")
-
-    @property
-    def wired(self):
-        """Returns `True` if the device plugged in, `False` otherwise."""
-        return self.charger_type.lower() != "none"
-
-    @property
-    def wired_only(self):
-        """Returns `True` if the device is plugged in with no batteries, `False` otherwise."""
-        return self.battery_tech.lower() == "none" and self.wired
-
-    @property
-    def signal_strength(self):
-        """Returns the WiFi signal strength (0-5)."""
-        return self._load(SIGNAL_STR_KEY, 3)
 
     @property
     def is_unavailable(self):

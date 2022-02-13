@@ -60,3 +60,5 @@
       type: module
     - url: /hacsfiles/bar-card/bar-card.js
       type: module
+    - url: /hacsfiles/uptime-card/uptime-card.js
+      type: module

@@ -13,7 +13,7 @@ device_tracker.alokiphone:
 device_tracker.alokphone_alokphone_2:
   icon: mdi:cellphone-iphone
   friendly_name: Alok's iPhone MQTT
-device_tracker.rashmiphone_2:
+device_tracker.rashmiiphone:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi's iPhone
 device_tracker.rashmiphone_rashmiphone_2:
@@ -138,6 +138,9 @@ sensor.evening_commute:
   icon: mdi:car
 sensor.garagedoor:
   icon: mdi:glassdoor
+cover.garagedoor:
+  # device_class: garage
+  homebridge_cover_type: garage_door
 media_player.my_shield_android_tv:
   friendly_name: Shield TV
 thermostat.main_floor:
@@ -174,13 +177,15 @@ switch.shelly_garage:
   emulated_hue_hidden: false
   emulated_hue_name: Garage Door
   friendly_name: Garage Door Switch
+light.living_room_lights:
+  emulated_hue_hidden: false
+  emulated_hue_name: Living Room
+  friendly_name: Living Room
 input_boolean.tv:
   homebridge_hidden: false
 input_boolean.tvtime:
   templates:
     icon: if (state === 'on') return 'mdi:television-classic'; return 'mdi:television-classic-off';
-cover.garagedoor:
-  homebridge_cover_type: garage_door
 light.kitchen_lights:
   emulated_hue_hidden: false
   emulated_hue_name: Kitchen lights
@@ -266,9 +271,21 @@ sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
   icon: mdi:currency-usd-circle-outline
-sensor.alok_iphone12_room_presence:
+sensor.alok_ble_room:
   friendly_name: Alok Room
   entity_picture: /local/icons/Alok.png
-sensor.iphone_room_presence:
+sensor.rashmi_ble_room:
   friendly_name: Rashmi Room
   entity_picture: /local/icons/Rashmi.png
+sensor.arnav_ble_room:
+  friendly_name: Arnav Room
+  entity_picture: /local/icons/Arnav.png
+
+light.wb4_d_2:
+  supported_features: 191
+light.wb4_d_3:
+  supported_features: 191
+light.wb4_d:
+  supported_features: 191
+light.wb4_d_4:
+  supported_features: 191

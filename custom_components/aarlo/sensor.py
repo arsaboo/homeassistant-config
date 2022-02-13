@@ -11,6 +11,7 @@ import voluptuous as vol
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
     CONF_MONITORED_CONDITIONS,
+    DEVICE_CLASS_BATTERY,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_TEMPERATURE,
     TEMP_CELSIUS,
@@ -80,7 +81,7 @@ async def async_setup_platform(hass, config, async_add_entities, _discovery_info
                 if light.has_capability(SENSOR_TYPES[sensor_type][3]):
                     sensors.append(ArloSensor(arlo, light, sensor_type))
 
-    async_add_entities(sensors, True)
+    async_add_entities(sensors)
 
 
 class ArloSensor(Entity):
@@ -124,6 +125,10 @@ class ArloSensor(Entity):
             self._device.add_attr_callback(self._attr, update_state)
 
     @property
+    def should_poll(self):
+        return False
+
+    @property
     def unique_id(self):
         """Return a unique ID."""
         return self._unique_id
@@ -154,10 +159,12 @@ class ArloSensor(Entity):
             return DEVICE_CLASS_TEMPERATURE
         if self._sensor_type == "humidity":
             return DEVICE_CLASS_HUMIDITY
+        if self._sensor_type == "battery_level":
+            return DEVICE_CLASS_BATTERY
         return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the device state attributes."""
         attrs = {
             ATTR_ATTRIBUTION: COMPONENT_ATTRIBUTION,
@@ -174,6 +181,7 @@ class ArloSensor(Entity):
                 attrs["object_type"] = video.object_type
                 attrs["object_region"] = video.object_region
                 attrs["thumbnail_url"] = video.thumbnail_url
+                attrs["video_url"] = video.video_url
             else:
                 attrs["object_type"] = None
 

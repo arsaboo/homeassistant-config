@@ -1,16 +1,20 @@
 """Initialize repositories."""
-from custom_components.hacs.repositories.appdaemon import HacsAppdaemon
-from custom_components.hacs.repositories.integration import HacsIntegration
-from custom_components.hacs.repositories.netdaemon import HacsNetdaemon
-from custom_components.hacs.repositories.plugin import HacsPlugin
-from custom_components.hacs.repositories.python_script import HacsPythonScript
-from custom_components.hacs.repositories.theme import HacsTheme
+from __future__ import annotations
 
-RERPOSITORY_CLASSES = {
-    "theme": HacsTheme,
-    "integration": HacsIntegration,
-    "python_script": HacsPythonScript,
-    "appdaemon": HacsAppdaemon,
-    "netdaemon": HacsNetdaemon,
-    "plugin": HacsPlugin,
+from ..enums import HacsCategory
+from .appdaemon import HacsAppdaemonRepository
+from .base import HacsRepository
+from .integration import HacsIntegrationRepository
+from .netdaemon import HacsNetdaemonRepository
+from .plugin import HacsPluginRepository
+from .python_script import HacsPythonScriptRepository
+from .theme import HacsThemeRepository
+
+RERPOSITORY_CLASSES: dict[HacsCategory, HacsRepository] = {
+    HacsCategory.THEME: HacsThemeRepository,
+    HacsCategory.INTEGRATION: HacsIntegrationRepository,
+    HacsCategory.PYTHON_SCRIPT: HacsPythonScriptRepository,
+    HacsCategory.APPDAEMON: HacsAppdaemonRepository,
+    HacsCategory.NETDAEMON: HacsNetdaemonRepository,
+    HacsCategory.PLUGIN: HacsPluginRepository,
 }

@@ -1,43 +1,4 @@
   - platform: authenticated
-  - platform: email
-    email: !secret hassbot
-    password: !secret hassbot_pass
-  - platform: yahoo_earnings
-    ticker: WPC
-    name: Yahoo WPC
-  - platform: yahoo_earnings
-    ticker: COR
-    name: Yahoo COR
-  - platform: yahoo_earnings
-    ticker: O
-    name: Yahoo O
-  - platform: yahoo_earnings
-    ticker: COP
-    name: Yahoo COP
-  - platform: yahoo_earnings
-    ticker: WELL
-    name: Yahoo WELL
-  - platform: yahoo_earnings
-    ticker: IRM
-    name: Yahoo IRM
-  - platform: yahoo_earnings
-    ticker: CVS
-    name: Yahoo CVS
-  - platform: yahoo_earnings
-    ticker: CCI
-    name: Yahoo CCI
-  - platform: yahoo_earnings
-    ticker: VTR
-    name: Yahoo VTR
-  - platform: yahoo_earnings
-    ticker: DOC
-    name: Yahoo DOC
-  - platform: yahoo_earnings
-    ticker: PM
-    name: Yahoo PM
-  - platform: yahoo_earnings
-    ticker: BRK-B
-    name: Yahoo BRK.B
   - platform: moon_here
     app_id: !secret here_app_id
     app_code: !secret here_app_code
@@ -136,6 +97,22 @@
     entity_id: sensor.master_temperature
     max_age:
       minutes: 30
+  - platform: statistics
+    name: Master Vent Temp Change
+    entity_id: sensor.temperature_158d0001a35ba5
+    state_characteristic: change
+    sampling_size: 5
+    precision: 1
+    max_age:
+      minutes: 5
+  - platform: statistics
+    name: Master Vent Pressure Change
+    entity_id: sensor.pressure_158d0001a35ba5
+    state_characteristic: change
+    sampling_size: 5
+    precision: 1
+    max_age:
+      minutes: 5
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.living_room_tv
@@ -226,59 +203,59 @@
   #   state_topic: "owntracks/pi/alokphone/step"
   #   name: "Steps Alok"
   #   value_template: '{{ value_json.steps }}'
-  - platform: command_line
-    name: Grafana temp down
-    command: !secret grafana_temp_down
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana HVAC Eff down
-    command: !secret grafana_downstairs_hvac_efficiency
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana mode down
-    command: !secret grafana_mode_down
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana temp up
-    command: !secret grafana_temp_up
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana HVAC Eff up
-    command: !secret grafana_upstairs_hvac_efficiency
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana mode up
-    command: !secret grafana_mode_up
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana temp master
-    command: !secret grafana_temp_master
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana HVAC Eff master
-    command: !secret grafana_master_hvac_efficiency
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana mode master
-    command: !secret grafana_mode_master
-    scan_interval: 300
-  - platform: command_line
-    name: Grafana portfolio
-    command: !secret grafana_portfolio
-    scan_interval: 600
-  - platform: command_line
-    name: Grafana networth
-    command: !secret grafana_networth
-    scan_interval: 600
-  - platform: command_line
-    name: Grafana USDINR
-    command: !secret grafana_usdinr
-    scan_interval: 600
-  - platform: command_line
-    name: 10 Year Treasury
-    unit_of_measurement: '%'
-    scan_interval: 18000
-    command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"
+  # - platform: command_line
+  #   name: Grafana temp down
+  #   command: !secret grafana_temp_down
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana HVAC Eff down
+  #   command: !secret grafana_downstairs_hvac_efficiency
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana mode down
+  #   command: !secret grafana_mode_down
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana temp up
+  #   command: !secret grafana_temp_up
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana HVAC Eff up
+  #   command: !secret grafana_upstairs_hvac_efficiency
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana mode up
+  #   command: !secret grafana_mode_up
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana temp master
+  #   command: !secret grafana_temp_master
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana HVAC Eff master
+  #   command: !secret grafana_master_hvac_efficiency
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana mode master
+  #   command: !secret grafana_mode_master
+  #   scan_interval: 300
+  # - platform: command_line
+  #   name: Grafana portfolio
+  #   command: !secret grafana_portfolio
+  #   scan_interval: 600
+  # - platform: command_line
+  #   name: Grafana networth
+  #   command: !secret grafana_networth
+  #   scan_interval: 600
+  # - platform: command_line
+  #   name: Grafana USDINR
+  #   command: !secret grafana_usdinr
+  #   scan_interval: 600
+  # - platform: command_line
+  #   name: 10 Year Treasury
+  #   unit_of_measurement: '%'
+  #   scan_interval: 18000
+  #   command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"
   # - platform: scrape
   #   resource: http://money.cnn.com/data/premarket/
   #   name: Curr Future
@@ -309,16 +286,6 @@
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
     value_template: '{{ value_json["s:Envelope"]["s:Body"]["u:GetZoneInfoResponse"]["HTAudioIn"] }}'
-  - platform: rest
-    resource: "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=(Country_Region%3D%27US%27)%20AND%20(Province_State%20LIKE%20%27%25Georgia%27)&outStatistics=%5B%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Confirmed%22%2C%22outStatisticFieldName%22%3A%22Confirmed%22%7D%2C%20%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Deaths%22%2C%22outStatisticFieldName%22%3A%22Deaths%22%7D%2C%20%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22Recovered%22%2C%22outStatisticFieldName%22%3A%22Recovered%22%7D%5D"
-    name: Corona Virus Georgia
-    value_template: "{{ value_json.features[0].attributes.Confirmed }}"
-    json_attributes_path: "$.features[0].attributes"
-    unit_of_measurement: "Confirmed"
-    json_attributes:
-      - Confirmed
-      - Deaths
-      - Recovered
     # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
   # - platform: rest
   #   resource: !secret here_weather
@@ -333,6 +300,21 @@
   #     - sunset
   - platform: template
     sensors:
+      # ds1515_uptime:
+      #   value_template: >
+      #     {% set uptime = (as_timestamp(now()) - as_timestamp(states("sensor.ds1515_last_boot")))/60 | round %}
+      #     {% set minutes = (uptime % 60) | int %}
+      #     {% set hours = ((uptime / 60) % 24) | int %}
+      #     {% set days = (uptime / 1440) | int %}
+      #     {%- if days > 0 -%}
+      #       {%- if days == 1 -%}
+      #         1 day
+      #       {%- else -%}
+      #         {{ days }} days
+      #       {%- endif -%}
+      #       {{ ', ' }}
+      #     {%- endif -%}
+      #     {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
       cube_last_action:
         friendly_name: "Cube last action"
         value_template: >
@@ -348,22 +330,6 @@
         friendly_name: "Study temperature"
         value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
         # unit_of_measurement: "°F"
-      sonos_audio_in:
-        friendly_name: "Sonos Audio-in"
-        value_template: >-
-          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence'} -%}
-          {{ audio_in[states.sensor.sonos_stereo.state] | default('NA', true)}}
-        icon_template: >-
-          {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
-          {{ audio_in[states.sensor.sonos_stereo.state] | default('mdi:volume-high', true) }}
-      master_audio_in:
-        friendly_name: "Master Audio-in"
-        value_template: >-
-          {%- set audio_in = {'0': 'No SPDIF input connected', '2': 'Stereo', '7': 'Dolby 2.0', '18': 'Dolby 5.1', '20': 'Pause Burst', '21': 'Paused', '22': 'Silence', '33554434': 'Stereo 2.0'} -%}
-          {{ audio_in[states.sensor.sonos_master.state] | default('NA', true)}}
-        icon_template: >-
-          {%- set audio_in = {'2': 'mdi:surround-sound-2-0', '7': 'mdi:dolby', '18': 'mdi:surround-sound-5-1'} -%}
-          {{ audio_in[states.sensor.sonos_master.state] | default('mdi:volume-high', true) }}
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -510,10 +476,10 @@
         unit_of_measurement: "$"
         value_template: >-
            {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
-      ringvideourl:
-        friendly_name: "Ring Video URL"
-        value_template: >-
-          {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
+      # ringvideourl:
+      #   friendly_name: "Ring Video URL"
+      #   value_template: >-
+      #     {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
@@ -601,17 +567,17 @@
           {%- endfor -%}.
       alok_location_sensor:
         value_template: >-
-          {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+          {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
           {{ trackers[0].state }}
         attribute_templates:
           latitude: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.latitude }}
           longitude: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].attributes.longitude }}
           source: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alok_s_iphone_2, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111]|sort(attribute='last_changed', reverse=True) %}
+            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
             {{ trackers[0].entity_id }}
       # porchtags:
       #   friendly_name: "Porch Tags"

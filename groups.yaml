@@ -10,3 +10,4 @@
   Household:
     - device_tracker.meta_rashmi
     - device_tracker.meta_alok
+    - device_tracker.meta_arnav

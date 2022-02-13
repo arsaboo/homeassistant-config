@@ -40,3 +40,7 @@
     name: Lifx Colorloop
     initial: off
     icon: mdi:theme-light-dark
+  master_occupied:
+    name: Master Occupied
+    initial: off
+    icon: mdi:motion-sensor

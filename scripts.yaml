@@ -365,6 +365,11 @@
           entityid: 'device_tracker.life360_alok_saboo'
           fromstate: '{{states.device_tracker.life360_alok_saboo.state}}'
           tostate: '{{states.device_tracker.life360_alok_saboo.state}}'
+      - service: script.updatetracker
+        data_template:
+          entityid: 'device_tracker.life360_arnav_saboo'
+          fromstate: '{{states.device_tracker.life360_arnav_saboo.state}}'
+          tostate: '{{states.device_tracker.life360_arnav_saboo.state}}'
       - service_template: "homeassistant.turn_{{ 'on' if states.media_player.living_room_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv
@@ -410,7 +415,6 @@
           {% endif %}
         timeout: 00:05  # Waits 15 minutes
         continue_on_timeout: false
-      - service: homekit.start
   classify_images:
     alias: 'Process all images'
     sequence:

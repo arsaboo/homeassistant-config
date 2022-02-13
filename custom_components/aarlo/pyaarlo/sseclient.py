@@ -45,12 +45,19 @@ class SSEClient(object):
         # The 'Accept' header is not required, but explicit > implicit
         self.requests_kwargs["headers"]["Accept"] = "text/event-stream"
 
+        # Remove these.
+        self.requests_kwargs["headers"]["Content-Type"] = None
+        self.requests_kwargs["headers"]["host"] = None
+
         # Keep data here as it streams in
         self.buf = u""
 
         self._connect()
 
     def stop(self):
+        self.running = False
+
+    def disconnect(self):
         self.running = False
 
     def _connect(self):
@@ -88,7 +95,7 @@ class SSEClient(object):
                 http.client.IncompleteRead,
             ) as e:
                 if not self.running:
-                    self.log.debug("stopping")
+                    self.log.debug("stopping #1")
                     return None
 
                 self.log.debug("sseclient-error={}".format(type(e).__name__))
@@ -104,6 +111,10 @@ class SSEClient(object):
                 head, sep, tail = self.buf.rpartition("\n")
                 self.buf = head + sep
                 continue
+
+        if not self.running:
+            self.log.debug("stopping #2")
+            return None
 
         # Split the complete event (up to the end_of_field) into event_string,
         # and retain anything after the current complete event in self.buf

@@ -82,55 +82,46 @@
         friendly_name: Sonos Night Sound
         value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
         turn_on:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.family_room_2
-              night_sound: True
+          - service: switch.turn_on
+            entity_id:
+              - switch.sonos_family_room_night_sound
         turn_off:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.family_room_2
-              night_sound: False
+          - service: switch.turn_off
+            entity_id:
+              - switch.sonos_family_room_night_sound
       sonos_speech_enhance:
         friendly_name: Sonos Speech Enhance
         value_template: "{{state_attr('media_player.family_room_2','speech_enhance')}}"
         turn_on:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.family_room_2
-              speech_enhance: True
+          - service: switch.turn_on
+            entity_id:
+              - switch.sonos_family_room_speech_enhancement
         turn_off:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.family_room_2
-              speech_enhance: False
+          - service: switch.turn_off
+            entity_id:
+              - switch.sonos_family_room_speech_enhancement
       master_night_sound:
         friendly_name: Master Night Sound
         value_template: "{{state_attr('media_player.master','night_sound')}}"
         turn_on:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.master
-              night_sound: True
+          - service: switch.turn_on
+            entity_id:
+              - switch.sonos_master_night_sound
         turn_off:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.master
-              night_sound: False
+          - service: switch.turn_off
+            entity_id:
+              - switch.sonos_family_room_night_sound
       master:
         friendly_name: Master Speech Enhance
         value_template: "{{state_attr('media_player.master','speech_enhance')}}"
         turn_on:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.master
-              speech_enhance: True
+          - service: switch.turn_on
+            entity_id:
+              - switch.sonos_master_speech_enhancement
         turn_off:
-          - service: sonos.set_option
-            data:
-              entity_id: media_player.master
-              speech_enhance: False
-
+          - service: switch.turn_off
+            entity_id:
+              - switch.sonos_master_speech_enhancement
 # example of PiHole commands (PWHASH is the value of WEBPASSWORD in /etc/pihole/setupVars.conf)
 # pihole_status: "curl -X GET 'http://ip.ad.dr.ess/admin/api.php?status&auth=PWHASH'"
 # pihole_enable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?enable=300&auth=PWHASH'

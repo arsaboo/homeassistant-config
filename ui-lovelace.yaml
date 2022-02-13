@@ -337,46 +337,66 @@ views:
           # Room Detection Alok
           - type: conditional
             conditions:
-              - entity: sensor.alok_iphone12_room_presence
+              - entity: sensor.alok_ble_room
                 state: 'livingroom'
             elements:
               - type: state-icon
-                entity: sensor.alok_iphone12_room_presence
+                entity: sensor.alok_ble_room
                 style:
                   top: 23%
                   left: 35%
           - type: conditional
             conditions:
-              - entity: sensor.alok_iphone12_room_presence
+              - entity: sensor.alok_ble_room
                 state: 'study'
             elements:
               - type: state-icon
-                entity: sensor.alok_iphone12_room_presence
+                entity: sensor.alok_ble_room
                 style:
                   top: 73%
                   left: 49%
           # Room Detection Rashmi
           - type: conditional
             conditions:
-              - entity: sensor.iphone_room_presence
+              - entity: sensor.rashmi_ble_room
                 state: 'livingroom'
             elements:
               - type: state-icon
-                entity: sensor.iphone_room_presence
+                entity: sensor.rashmi_ble_room
                 style:
                   top: 23%
                   left: 44%
           - type: conditional
             conditions:
-              - entity: sensor.iphone_room_presence
+              - entity: sensor.rashmi_ble_room
                 state: 'study'
             elements:
               - type: state-icon
-                entity: sensor.iphone_room_presence
+                entity: sensor.rashmi_ble_room
                 style:
                   top: 87%
                   left: 49%
-
+          # Room Detection Arnav
+          - type: conditional
+            conditions:
+              - entity: sensor.arnav_ble_room
+                state: 'livingroom'
+            elements:
+              - type: state-icon
+                entity: sensor.arnav_ble_room
+                style:
+                  top: 23%
+                  left: 57%
+          - type: conditional
+            conditions:
+              - entity: sensor.arnav_ble_room
+                state: 'study'
+            elements:
+              - type: state-icon
+                entity: sensor.arnav_ble_room
+                style:
+                  top: 87%
+                  left: 49%
       - type: picture-elements
         # title: Second Level
         image: /local/floorplans/second.jpg
@@ -443,6 +463,22 @@ views:
               width: 2%
               transform: rotate(180deg)
               padding: 10px 0 10px 30px
+            # Kids Room
+          - type: image
+            entity: light.kids_room_lights
+            tap_action:
+              action: toggle
+            image: /local/icons/light_bulb_off.png
+            state_image:
+              'on': /local/icons/light_bulb_on.png
+            state_filter:
+              'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+              'off': brightness(80%) saturate(0.8)
+            style:
+              top: 21%
+              left: 16%
+              width: 7%
+              padding: 50px 50px 100px 50px
 
             # Laundry
           - type: state-icon
@@ -464,26 +500,36 @@ views:
           # Room Detection Alok
           - type: conditional
             conditions:
-              - entity: sensor.alok_iphone12_room_presence
+              - entity: sensor.alok_ble_room
                 state: 'master'
             elements:
               - type: state-icon
-                entity: sensor.alok_iphone12_room_presence
+                entity: sensor.alok_ble_room
                 style:
                   top: 66%
                   left: 73%
           # Room Detection Rashmi
           - type: conditional
             conditions:
-              - entity: sensor.iphone_room_presence
+              - entity: sensor.rashmi_ble_room
                 state: 'master'
             elements:
               - type: state-icon
-                entity: sensor.iphone_room_presence
+                entity: sensor.rashmi_ble_room
                 style:
                   top: 66%
                   left: 86%
-
+          # Room Detection Arnav
+          - type: conditional
+            conditions:
+              - entity: sensor.arnav_ble_room
+                state: 'master'
+            elements:
+              - type: state-icon
+                entity: sensor.arnav_ble_room
+                style:
+                  top: 66%
+                  left: 86%
       - type: 'custom:config-template-card'
         entities:
           - sensor.nasdaq_futures_change
@@ -617,6 +663,19 @@ views:
           - entity: light.master_3
             type: custom:slider-entity-row
             toggle: true
+          - type: divider
+          - entity: light.wb4_d_2
+            type: custom:slider-entity-row
+            toggle: true
+          - entity: light.wb4_d_3
+            type: custom:slider-entity-row
+            toggle: true
+          - entity: light.wb4_d
+            type: custom:slider-entity-row
+            toggle: true
+          - entity: light.wb4_d_4
+            type: custom:slider-entity-row
+            toggle: true
       - type: entities
         title: Switches
         entities:
@@ -633,17 +692,34 @@ views:
               - attribute: current_power_w
                 unit: w
                 name: Power
+          - entity: switch.smart_wifi
+            type: custom:multiple-entity-row
+            name: Kasa Plug 1
+            toggle: True
+            state_color: true
+            secondary_info: last-changed
+            entities:
+              - entity: sensor.smart_wifi_current
+                unit: A
+                name: Current
+              - entity: sensor.smart_wifi_current_consumption
+                unit: w
+                name: Power
           - entity: switch.aeon_switch
             secondary_info: last-changed
             state_color: true
-          - entity: switch.0220013568c63aa78156
+          - entity: switch.wifi_plug
             secondary_info: last-changed
             state_color: true
-          - entity: switch.03783133807d3a7d0403
+          - entity: switch.study_fan
             type: "custom:secondaryinfo-entity-row"
-            secondary_info: '[[ sensor.rpi_cpu_thermal_1_temp ]] °F'
+            secondary_info: '[[ sensor.rpi_cpu_thermal_1_temperature ]] °F'
             state_color: true
-          - entity: switch.41034600cc50e359a4f8
+          - entity: switch.smart_socket_4
+            state_color: true
+          - entity: switch.smart_socket_5
+            state_color: true
+          - entity: switch.socket_1
             state_color: true
       - type: vertical-stack
         cards:
@@ -845,57 +921,6 @@ views:
                     color: 'red'
                   - value: 'off'
                     icon: mdi:water-off
-      - type: custom:vertical-stack-in-card
-        cards:
-          - type: entities
-            title: Coronavirus
-            show_header_toggle: false
-            entities:
-              - entity: sensor.us_coronavirus_confirmed
-                type: custom:multiple-entity-row
-                name: USA
-                secondary_info: last-changed
-                show_state: false
-                entities:
-                  - entity: sensor.us_coronavirus_confirmed
-                    name: Confirmed
-                    unit: " "
-                  - entity: sensor.us_coronavirus_deaths
-                    name: Deaths
-                    unit: " "
-                  - entity: sensor.new_cases_us
-                    name: Change
-                    unit: " "
-              - entity:  sensor.corona_virus_georgia
-                type: custom:multiple-entity-row
-                name: Georgia
-                secondary_info: last-changed
-                show_state: false
-                entities:
-                  - attribute: Confirmed
-                    name: Confirmed
-                    unit: " "
-                  - attribute: Deaths
-                    name: Deaths
-                    unit: " "
-                  - entity: sensor.new_cases_georgia
-                    name: Change
-                    unit: " "
-              - entity: sensor.india_coronavirus_confirmed
-                type: custom:multiple-entity-row
-                name: India
-                secondary_info: last-changed
-                show_state: false
-                entities:
-                  - entity: sensor.india_coronavirus_confirmed
-                    name: Confirmed
-                    unit: " "
-                  - entity: sensor.india_coronavirus_deaths
-                    name: Deaths
-                    unit: " "
-                  - entity: sensor.new_cases_india
-                    name: Change
-                    unit: " "
       - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
@@ -1009,7 +1034,10 @@ views:
                 name: Prev Eff
               - entity: sensor.master_hvac_efficiency
                 name: Avg Eff
-
+              - entity: sensor.master_vent_temp_change
+                name: Vent Temp Change
+              - entity: sensor.master_vent_pressure_change
+                name: Vent Press Change
           - type: thermostat
             entity: climate.bedroom
           - type: picture-entity
@@ -1107,7 +1135,7 @@ views:
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.general_profile001
+        entity: camera.kitchen
       # - type: picture-entity
       #   entity: camera.garage
       #   show_name: false
@@ -1162,8 +1190,6 @@ views:
           - input_select.hdmiinput
           - input_number.harmonyvolume
           - sensor.total_tv_time
-          - sensor.sonos_audio_in
-          - sensor.master_audio_in
           - script.tv_off
       - type: custom:auto-entities
         card:
@@ -1341,6 +1367,18 @@ views:
                   service: python_script.toggle_state
                   service_data:
                     entity_id: 'device_tracker.meta_rashmi'
+              - type: picture-entity
+                entity: device_tracker.meta_arnav
+                state_image:
+                  'home': /local/icons/arnav_home.png
+                  'not_home': /local/icons/arnav_not_home.png
+                show_name: false
+                show_state: false
+                hold_action:
+                  action: call-service
+                  service: python_script.toggle_state
+                  service_data:
+                    entity_id: 'device_tracker.meta_arnav'
           - type: horizontal-stack
             cards:
               - type: picture-entity
@@ -1358,7 +1396,7 @@ views:
                   'home': /local/icons/rashmi_ios_home.png
                   'not_home': /local/icons/rashmi_ios_not_home.png
               - type: picture-entity
-                entity: device_tracker.rashmiphone_2
+                entity: device_tracker.rashmiiphone
                 show_name: false
                 show_state: false
                 state_image:
@@ -1372,7 +1410,7 @@ views:
                   'home': /local/icons/rashmi_life360_home.png
                   'not_home': /local/icons/rashmi_life360_not_home.png
               - type: picture-entity
-                entity: device_tracker.e1594e53_21df_414c_82da_f655d5282fca
+                entity: device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
                 show_name: false
                 show_state: false
                 state_image:
@@ -1390,7 +1428,7 @@ views:
                   'Buckhead': /local/icons/alok_owntracks_not_home.png
                   'Downtown': /local/icons/alok_owntracks_not_home.png
               - type: picture-entity
-                entity: device_tracker.alok_s_iphone_2
+                entity: device_tracker.alokiphone_3
                 show_name: false
                 show_state: false
                 state_image:
@@ -1415,7 +1453,7 @@ views:
                   'Buckhead': /local/icons/alok_life360_not_home.png
                   'Downtown': /local/icons/alok_life360_not_home.png
               - type: picture-entity
-                entity: device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111
+                entity: device_tracker.alok_geofency
                 show_name: false
                 show_state: false
                 state_image:
@@ -1435,6 +1473,7 @@ views:
           - input_select.abodestatus
           - person.alok
           - device_tracker.test_alok
+          - device_tracker.alok_composite_temp
           - person.rashmi
           - device_tracker.test_rashmi
           - switch.shelly_garage
@@ -1449,7 +1488,12 @@ views:
             entity: binary_sensor.master_cooling
             attribute: gradient
             name: Master Gradient
-
+          - entity: sensor.alok_ble_room
+            type: "custom:secondaryinfo-entity-row"
+            secondary_info: '[[ sensor.alok_ble_room.attributes.distance ]]'
+          - entity: sensor.rashmi_ble_room
+            type: "custom:secondaryinfo-entity-row"
+            secondary_info: '[[ sensor.rashmi_ble_room.attributes.distance ]]'
       - type: entities
         title: Network Details
         show_header_toggle: false
@@ -1459,7 +1503,9 @@ views:
           hours_to_show: 24
           detail: 1
         entities:
-          - switch.pi_hole_main
+          - binary_sensor.internet_connected
+          - input_button.restart_pihole
+          - switch.pi_hole_syn
           - switch.pi_hole_kids
           - sensor.nuc_cpu_load
           - sensor.nuc_ram_used_percent
@@ -1470,25 +1516,25 @@ views:
           - type: custom:button-card
             entity: switch.firehd_rishaan
             name: Fire Tab
-            icon: mdi:tablet-ipad
+            icon: mdi:tablet
             color: rgb(250, 218, 79)
             color_type: icon
             style:
               - font-size: 12px
               - text-transform: capitalize
           - type: custom:button-card
-            entity: switch.my_ipad
-            name: iPad
-            icon: mdi:tablet-ipad
+            entity: switch.googlenesthub
+            name: Nest Hub
+            icon: mdi:tablet-dashboard
             color: rgb(250, 218, 79)
             color_type: icon
             style:
               - font-size: 12px
               - text-transform: capitalize
           - type: custom:button-card
-            entity: switch.lenovohome
+            entity: switch.lenovolaptop
             name: Lenovo
-            icon: mdi:laptop-windows
+            icon: mdi:laptop
             color: rgb(250, 218, 79)
             color_type: icon
             style:
@@ -2296,251 +2342,6 @@ views:
             device: Shield
           - name: Watch Apple TV
             device: AppleTV
-  - icon: mdi:currency-usd-circle-outline
-    id: stocks
-    title: Stocks
-    cards:
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_pm
-        variables:
-          - states['sensor.yahoo_pm'].attributes["Ticker"]
-          - states['sensor.yahoo_pm'].state
-          - states['sensor.yahoo_pm'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_pm
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_wpc
-        variables:
-          - states['sensor.yahoo_wpc'].attributes["Ticker"]
-          - states['sensor.yahoo_wpc'].state
-          - states['sensor.yahoo_wpc'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_wpc
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_cop
-        variables:
-          - states['sensor.yahoo_cop'].attributes["Ticker"]
-          - states['sensor.yahoo_cop'].state
-          - states['sensor.yahoo_cop'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_cop
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_cvs
-        variables:
-          - states['sensor.yahoo_cvs'].attributes["Ticker"]
-          - states['sensor.yahoo_cvs'].state
-          - states['sensor.yahoo_cvs'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_cvs
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_doc
-        variables:
-          - states['sensor.yahoo_doc'].attributes["Ticker"]
-          - states['sensor.yahoo_doc'].state
-          - states['sensor.yahoo_doc'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_doc
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_irm
-        variables:
-          - states['sensor.yahoo_irm'].attributes["Ticker"]
-          - states['sensor.yahoo_irm'].state
-          - states['sensor.yahoo_irm'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_irm
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_well
-        variables:
-          - states['sensor.yahoo_well'].attributes["Ticker"]
-          - states['sensor.yahoo_well'].state
-          - states['sensor.yahoo_well'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_well
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_vtr
-        variables:
-          - states['sensor.yahoo_vtr'].attributes["Ticker"]
-          - states['sensor.yahoo_vtr'].state
-          - states['sensor.yahoo_vtr'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_vtr
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_cci
-        variables:
-          - states['sensor.yahoo_cci'].attributes["Ticker"]
-          - states['sensor.yahoo_cci'].state
-          - states['sensor.yahoo_cci'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_cci
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.yahoo_brk_b
-        variables:
-          - states['sensor.yahoo_brk_b'].attributes["Ticker"]
-          - states['sensor.yahoo_brk_b'].state
-          - states['sensor.yahoo_brk_b'].attributes["Mean Target"]
-        card:
-          type: "custom:list-card"
-          entity: sensor.yahoo_brk_b
-          title: "${vars[0] + ': Estimate(' + vars[1] + ') Target(' + vars[2] + ')'}"
-          feed_attribute: history
-          row_limit: 10
-          columns:
-            - title: 'Date'
-              field: epochGradeDate
-            - title: Firm
-              field: firm
-            - title: Action
-              field: action
-            - title: From
-              field: fromGrade
-            - title: To
-              field: toGrade
-
   - icon: mdi:cctv
     id: cameras_panel
     title: Cameras
@@ -2617,6 +2418,7 @@ views:
           - entity: media_player.panasonic_viera_tv
           - entity: media_player.master
           - entity: media_player.ftv_master
+          - entity: media_player.tv_living_room_tv
       - type: 'custom:banner-card'
         background: '#EDE7B0'
         heading: "\U0001F4BB Study"
@@ -2626,7 +2428,7 @@ views:
             name: Humidity
           - entity: sensor.temperature_158d0001ab3b2b
             name: Temp
-          - entity: switch.03783133807d3a7d0403
+          - entity: switch.study_fan
             name: Closet Fan
           - entity: sensor.canon_ts6300_series
             name: Printer
@@ -2662,13 +2464,49 @@ views:
           #   label: 'Synology DS1515+'
           - type: 'custom:hui-vertical-stack-card'
             cards:
+              - type: horizontal-stack
+                cards:
+                  - type: picture
+                    style: |
+                      ha-card {
+                          --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                          --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                          --ha-card-box-shadow: 'none';
+                      }
+                    image: /local/icons/synology_ds1515.png
+                  - type: 'custom:button-card'
+                    layout: icon_name_state2nd
+                    show_icon: true
+                    show_state: true
+                    styles:
+                      grid:
+                        - grid-template-columns: 50px auto
+                      icon:
+                        # - padding: 0px 20px
+                        - height: 30px
+                        # - width: 30px
+                      card:
+                        - --ha-card-background: "rgba(0, 0, 0, 0.0)"
+                        - --ha-card-box-shadow: 'none'
+                      state:
+                        - padding: 0px 20px
+                        - justify-self: start
+                        - font-family: Roboto, sans-serif
+                        - font-size: 15px
+                      name:
+                        - padding: 0px 20px 5px
+                        - justify-self: start
+                        - color: var(--secondary-text-color)
+                    entity: sensor.ds1515_uptime
+                    name: Uptime
+                    icon: mdi:clock-outline
               - type: 'custom:config-template-card'
                 variables:
-                  - states['sensor.synology_total_size_volume_1'].state
-                  - states['sensor.synology_used_space_volume_1'].state
+                  - states['sensor.ds1515_volume_1_total_size'].state
+                  - states['sensor.ds1515_volume_1_used_space'].state
                 entities:
-                  - sensor.synology_total_size_volume_1
-                  - sensor.synology_used_space_volume_1
+                  - sensor.ds1515_volume_1_total_size
+                  - sensor.ds1515_volume_1_used_space
                 card:
                   type: 'custom:bar-card'
                   title_position: inside
@@ -2687,17 +2525,16 @@ views:
                       - from: 76
                         to: 100
                         color: "#e45e65"
-                  positions:
-                    icon: 'off'
-                    indicator: 'off'
+                  # positions:
+                  #   icon: 'off'
+                  #   indicator: 'off'
                   style: |
                         ha-card {
                           --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
                           --ha-card-background: "rgba(0, 0, 0, 0.0)";
                           --ha-card-box-shadow: 'none';
-                          --primary-text-color:white;
                         }
-                  entity: sensor.synology_volume_used_volume_1
+                  entity: sensor.ds1515_volume_1_used_space
                   name: "${ 'Space (' + vars[1] + '/' + vars[0] + ')' }"
               - type: horizontal-stack
                 cards:
@@ -2723,9 +2560,8 @@ views:
                             --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
                             --ha-card-background: "rgba(0, 0, 0, 0.0)";
                             --ha-card-box-shadow: 'none';
-                            --primary-text-color: white;
                           }
-                    entity: sensor.synology_memory_usage_real
+                    entity: sensor.ds1515_memory_usage_real
                     name: RAM
                   - type: custom:bar-card
                     title_position: inside
@@ -2749,10 +2585,35 @@ views:
                             --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
                             --ha-card-background: "rgba(0, 0, 0, 0.0)";
                             --ha-card-box-shadow: 'none';
-                            --primary-text-color: white;
                           }
-                    entity: sensor.synology_cpu_load_total
+                    entity: sensor.ds1515_cpu_utilization_total
                     name: CPU
+              - type: custom:bar-card
+                title_position: inside
+                show_icon: true
+                align: split
+                columns: 1
+                max: 100
+                unit_of_measurement: "%"
+                severity:
+                  - from: 0
+                    to: 50
+                    color: "#3498db"
+                  - from: 51
+                    to: 75
+                    color: "#f39c12"
+                  - from: 76
+                    to: 100
+                    color: "#e45e65"
+                style: |
+                      ha-card {
+                        --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                        --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                        --ha-card-box-shadow: 'none';
+                      }
+                entity: sensor.ds1515_volume_1_volume_used
+                name: HDD
+
               - type: custom:mini-graph-card
                 height: 30
                 line_width: 2
@@ -2760,7 +2621,7 @@ views:
                 hours_to_show: 48
                 points_per_hour: 1
                 show:
-                  extrema: true
+                  extreme: true
                   fill: true
                 style: |
                   ha-card {
@@ -2769,7 +2630,7 @@ views:
                     border-radius: 2px;
                   }
                 entities:
-                  - sensor.synology_average_disk_temp_volume_1
+                  - sensor.ds1515_volume_1_average_disk_temp
                 name: Disk Temperature
                 color_thresholds:
                   - value: 90
@@ -2778,3 +2639,19 @@ views:
                     color: "#f39c12"
                   - value: 100
                     color: "#E45E65"
+      - type: history-graph
+        title: 'Master Bathroom Vent'
+        entities:
+          - entity: sensor.temperature_158d0001a35ba5
+            name: Temperature
+          - entity: sensor.humidity_158d0001a35ba5
+            name: Humidity
+      - type: history-graph
+        title: 'Living Room Vent'
+        entities:
+          - entity: sensor.temperature_158d0001ab3b2b
+            name: Temperature
+          - entity: sensor.humidity_158d0001ab3b2b
+            name: Humidity
+          - entity: sensor.pressure_158d0001ab3b2b
+            name: Pressure

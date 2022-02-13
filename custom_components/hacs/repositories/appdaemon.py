@@ -1,17 +1,25 @@
 """Class for appdaemon apps in HACS."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from aiogithubapi import AIOGitHubAPIException
 
-from custom_components.hacs.helpers.classes.exceptions import HacsException
-from custom_components.hacs.helpers.classes.repository import HacsRepository
-from custom_components.hacs.enums import HacsCategory
+from ..enums import HacsCategory
+from ..exceptions import HacsException
+from ..utils.decorator import concurrent
+from .base import HacsRepository
+
+if TYPE_CHECKING:
+    from ..base import HacsBase
 
 
-class HacsAppdaemon(HacsRepository):
+class HacsAppdaemonRepository(HacsRepository):
     """Appdaemon apps in HACS."""
 
-    def __init__(self, full_name):
+    def __init__(self, hacs: HacsBase, full_name: str):
         """Initialize."""
-        super().__init__()
+        super().__init__(hacs=hacs)
         self.data.full_name = full_name
         self.data.full_name_lower = full_name.lower()
         self.data.category = HacsCategory.APPDAEMON
@@ -32,11 +40,11 @@ class HacsAppdaemon(HacsRepository):
             addir = await self.repository_object.get_contents("apps", self.ref)
         except AIOGitHubAPIException:
             raise HacsException(
-                f"Repostitory structure for {self.ref.replace('tags/','')} is not compliant"
+                f"Repository structure for {self.ref.replace('tags/','')} is not compliant"
             ) from None
 
         if not isinstance(addir, list):
-            self.validate.errors.append("Repostitory structure not compliant")
+            self.validate.errors.append("Repository structure not compliant")
 
         self.content.path.remote = addir[0].path
         self.content.objects = await self.repository_object.get_contents(
@@ -50,9 +58,11 @@ class HacsAppdaemon(HacsRepository):
                     self.logger.error("%s %s", self, error)
         return self.validate.success
 
-    async def update_repository(self, ignore_issues=False):
+    @concurrent(concurrenttasks=10, backoff_time=5)
+    async def update_repository(self, ignore_issues=False, force=False):
         """Update."""
-        await self.common_update(ignore_issues)
+        if not await self.common_update(ignore_issues, force) and not force:
+            return
 
         # Get appdaemon objects.
         if self.repository_manifest:
@@ -60,9 +70,7 @@ class HacsAppdaemon(HacsRepository):
                 self.content.path.remote = ""
 
         if self.content.path.remote == "apps":
-            addir = await self.repository_object.get_contents(
-                self.content.path.remote, self.ref
-            )
+            addir = await self.repository_object.get_contents(self.content.path.remote, self.ref)
             self.content.path.remote = addir[0].path
         self.content.objects = await self.repository_object.get_contents(
             self.content.path.remote, self.ref

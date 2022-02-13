@@ -54,7 +54,7 @@ class ArloLight(ArloChildDevice):
         return True
 
     def turn_off(self):
-        """Turn the light off. """
+        """Turn the light off."""
         self._arlo.be.notify(
             base=self.base_station,
             body={

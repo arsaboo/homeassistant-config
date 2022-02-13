@@ -22,7 +22,7 @@ from homeassistant.util import Throttle
 REQUIREMENTS = ['beautifulsoup4==4.8.0']
 
 _LOGGER = logging.getLogger(__name__)
-_RESOURCE = 'http://money.cnn.com/data/premarket/'
+_RESOURCE = 'https://money.cnn.com/data/old_premarket/index.html'
 
 ATTRIBUTION = "Data provided by CNN.com"
 DEFAULT_ICON = 'mdi:currency-usd'

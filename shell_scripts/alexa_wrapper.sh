@@ -30,7 +30,7 @@
 # notify:
 #   - platform: command_line
 #     name: 'My Dot Name'
-#     command: "/home/homeassistant/.homeassistant/alexa_wrapper -d 'My Dot Name'"
+#     command: "/config/alexa_wrapper -d 'My Dot Name'"
 #
 # You should then be able to call notify.my_dot_name from automations
 #

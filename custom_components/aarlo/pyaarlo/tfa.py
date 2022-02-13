@@ -47,7 +47,9 @@ class Arlo2FAImap:
             self.stop()
 
         try:
-            self._imap = imaplib.IMAP4_SSL(self._arlo.cfg.tfa_host)
+            self._imap = imaplib.IMAP4_SSL(
+                self._arlo.cfg.tfa_host, port=self._arlo.cfg.tfa_port
+            )
             res, status = self._imap.login(
                 self._arlo.cfg.tfa_username, self._arlo.cfg.tfa_password
             )
@@ -112,10 +114,10 @@ class Arlo2FAImap:
                     res, msg = self._imap.fetch(msg_id, "(RFC822)")
                     for part in email.message_from_bytes(msg[0][1]).walk():
                         if part.get_content_type() == "text/html":
-                            for line in part.get_payload().splitlines():
+                            for line in part.get_payload(decode=True).splitlines():
 
                                 # match code in email, this might need some work if the email changes
-                                code = re.match(r"^\W*(\d{6})\W*$", line)
+                                code = re.match(r"^\W*(\d{6})\W*$", line.decode())
                                 if code is not None:
                                     self._arlo.debug(
                                         "2fa-imap: code={}".format(code.group(1))

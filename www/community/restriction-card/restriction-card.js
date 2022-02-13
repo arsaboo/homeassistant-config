@@ -229,6 +229,7 @@ class it{constructor(t){this.classes=new Set,this.changed=!1,this.element=t;cons
         --invalid-lock-color: var(--restriction-invalid--color, var(--error-state-color, #db4437));
         --lock-margin-left: var(--restriction-lock-margin-left, 0px);
         --lock-row-margin-left: var(--restriction-lock-row-margin-left, 24px);
+        --lock-row-margin-top: var(--restriction-lock-row-margin-top, 0px);
         --lock-icon-size: var(--restriction-lock-icon-size, var(--mdc-icon-size, 24px));
         --lock-opacity: var(--restriction-lock-opacity, 0.5);
       }
@@ -256,10 +257,11 @@ class it{constructor(t){this.classes=new Set,this.changed=!1,this.element=t;cons
       }
       .row {
         margin-left: var(--lock-row-margin-left) !important;
+        margin-top: var(--lock-row-margin-top) !important;
       }
       .hidden {
         visibility: hidden;
-        opacity: 0;
+        opacity: 0 !important;
         transition: visibility 0s 2s, opacity 2s linear;
         color: var(--success-lock-color);
       }

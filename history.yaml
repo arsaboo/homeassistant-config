@@ -8,3 +8,6 @@
       - device_tracker.meta_alok
       - device_tracker.test_alok
       - person.alok
+      - sensor.temperature_158d0001a35ba5
+      - sensor.humidity_158d0001a35ba5
+      - sensor.pressure_158d0001a35ba5

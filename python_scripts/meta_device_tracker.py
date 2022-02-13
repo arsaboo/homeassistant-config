@@ -6,12 +6,17 @@
 
 # OPTIONS
 # List the trackers for each individual
-RashmiTrackers = ['device_tracker.rashmiphone_2', 'device_tracker.rashmiphone_rashmiphone_2',
+RashmiTrackers = ['device_tracker.rashmiiphone', 'device_tracker.rashmiphone_rashmiphone_2',
                   'device_tracker.rashmiappiphone_2', 'device_tracker.life360_sonu',
-                  'device_tracker.e1594e53_21df_414c_82da_f655d5282fca']
+                  'device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e']
 AlokTrackers = ['device_tracker.alokiphone', 'device_tracker.alokphone_alokphone_2',
-                'device_tracker.alok_s_iphone_2', 'device_tracker.life360_alok_saboo',
-                'device_tracker.elantrase_2', 'device_tracker.b4445761_f6c0_4b7f_835f_cfdc03b47111']
+                'device_tracker.alokiphone_3', 'device_tracker.life360_alok_saboo',
+                'device_tracker.elantrase_2', 'device_tracker.alok_geofency']
+ArnavTrackers = ['device_tracker.arnav_iphone_12',
+'device_tracker.life360_arnav_saboo',
+'device_tracker.arnav_geofency',
+'bdevice_tracker.arnavphone_arnavphone',
+'device_tracker.arnaviphone12pro']
 # Get the entity that triggered the automation
 triggeredEntity = data.get('entity_id')
 
@@ -24,6 +29,10 @@ elif triggeredEntity in RashmiTrackers:
     newFriendlyName = 'Rashmi Tracker'
     newEntityPicture = '/local/icons/Rashmi.png'
     metatrackerName = 'device_tracker.meta_rashmi'
+elif triggeredEntity in ArnavTrackers:
+    newFriendlyName = 'Arnav Tracker'
+    newEntityPicture = '/local/icons/Arnav.png'
+    metatrackerName = 'device_tracker.meta_arnav'
 else:
     newFriendlyName = None
     metatrackerName = None
