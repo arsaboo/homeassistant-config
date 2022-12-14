@@ -415,7 +415,7 @@ conversation:
 amcrest:
   - host: 192.168.2.26
     username: admin
-    password: Runway125
+    password: PASSWORD
 ffmpeg:
 camera:
   - platform: bloomsky
