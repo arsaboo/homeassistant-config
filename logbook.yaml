@@ -72,7 +72,6 @@
       - light.master_2
       - light.master_3
       - sensor.date
-      - input_number.harmonyvolume
       - light.lifx6
       - light.lifx4
       - light.lifxnrkitchen

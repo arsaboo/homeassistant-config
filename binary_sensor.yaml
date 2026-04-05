@@ -5,8 +5,6 @@
         sample_duration: 300
         min_gradient: -0.0008
         device_class: cold
-  # - platform: wyzesense
-  #   device: auto
   - platform: 'bayesian'
     prior: 0.75
     name: 'Rashmi Home'
@@ -105,15 +103,6 @@
             false
           {% endif %}
 
-      # alok_home_sensor:
-      #   device_class: presence
-      #   value_template: >-
-      #     {{ states.device_tracker.my_phone.state == "home" }}
-      #   attribute_templates:
-      #     latitude: >-
-      #       {{ states.device_tracker.my_phone.attributes['latitude'] }}
-      #     longitude: >-
-      #       {{ states.device_tracker.my_phone.attributes['longitude'] }}
   - platform: hikvision
     host: 192.168.2.91
     ssl: false

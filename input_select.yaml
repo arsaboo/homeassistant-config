@@ -6,16 +6,6 @@
       - armed_away
     initial: disarmed
     icon: mdi:security
-  livingroomharmony:
-    name: Harmony Activity
-    options:
-      - PowerOff
-      - Watch Fire TV
-      - Youtube
-      - SATV
-      - Watch Apple TV
-    initial: PowerOff
-    icon: mdi:remote
   hdmiswitcher:
     name: HDMI Switcher
     options:

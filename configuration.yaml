@@ -6,19 +6,11 @@ homeassistant:
         - 192.168.2.0/24
         - 131.96.253.0/24
   external_url: !secret external_url
-    # - type: legacy_api_password
-    #   api_password: !secret http_password
-  # Omitted values in this section will be auto detected using freegeoip.io
-
-  # Location required to calculate the time the sun rises and sets
   latitude: !secret latitude_home
   longitude: !secret longitude_home
   elevation: 322
-  # Name of the location where Home Assistant is running
   name: Home
-  # C for Celcius, F for Fahrenheit
   temperature_unit: F
-  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: America/New_York
   unit_system: imperial
   customize: !include customize.yaml
@@ -28,36 +20,10 @@ homeassistant:
     - /config/downloads
     - /tmp
     - /config/downloads/camera/
+
 default_config:
-updater:
-  include_used_components: true
-system_health:
 stream:
-# influxdb:
-#   host: 192.168.2.113
-#   include:
-#     entities:
-#        - sensor.temperature_158d0001ab3b2b
-#        - sensor.humidity_158d0001ab3b2b
-#        - sensor.temperature_158d0001ab7d20
-#        - sensor.humidity_158d0001ab7d20
-#        - sensor.humidity_158d0001ab3c88
-#        - sensor.temperature_158d0001ab3c88
-#        - sensor.living_room_temperature
-#        - sensor.portfolioval
-#        - sensor.pc_investment
-#        - sensor.pc_networth
-#        - sensor.dark_sky_temperature
-#        - sensor.usdinr
-#        - climate.downstairs
-#        - climate.upstairs
-#        - climate.bedroom
-#        - input_number.downstairs_prev_eff
-#        - sensor.downstairs_hvac_efficiency
-#        - input_number.upstairs_prev_eff
-#        - sensor.upstairs_hvac_efficiency
-#        - input_number.master_prev_eff
-#        - sensor.master_hvac_efficiency
+
 influxdb:
   api_version: 2
   ssl: false
@@ -72,17 +38,9 @@ influxdb:
     - friendly_name
     - device_class
   default_measurement: units
+
 python_script:
-# hacs:
-#   token: !secret hacs_token
-#   options:
-#     experimental: True
-zeroconf:
-weather:
-  - platform: darksky
-    api_key: !secret darksky_key
-    mode: daily
-# enable_debug:
+
 zone:
   - name: Home
     latitude: !secret latitude_home
@@ -99,26 +57,8 @@ zone:
     longitude: !secret longitude_downtown
     radius: 200
     icon: mdi:school
-# zwave:
-#   usb_path: /dev/ttyACM0
-#   network_key: !secret zwave_network_key
-#   device_config:
-#     light.kitchen_lights:
-#       refresh_value: true
-#       delay: 3
-hue:
-  bridges:
-    - host: 192.168.2.229
-      allow_hue_groups: false
-      allow_unreachable: true
-life360:
-  accounts:
-    - username: !secret life360_username
-      password: !secret life360_password
-lifx:
-  light:
+
 light:
-  # z-wave dimmer switch (http://amzn.to/2j1UEli)
   - platform: mqtt
     name: "GE Kitchen Lights"
     state_topic: "smartthings/GE Dimmer Switch/switch"
@@ -151,28 +91,11 @@ light:
       - light.master_2
       - light.master_3
 
-# plex:
-#   host: 192.168.2.212
-#   token: !secret plex_token
-#   verify_ssl: false
-#   ssl: true
-wemo:
-  # static:
-  #   - 192.168.2.104
-  #   - 192.168.2.130
-  #   - 192.168.2.206
-  #   - 192.168.2.237
 aarlo:
   username: !secret arlo_user
   password: !secret arlo_password
+
 alarm_control_panel:
-  # - platform: ifttt
-  #   name: "Abode"
-  # - platform: ifttt
-  #   name: ArloHome
-  #   event_arm_away: arlo_alarm_arm_away
-  #   event_disarm: arlo_alarm_disarm
-  #   optimistic: true
   - platform: aarlo
     away_mode_name: armed
   - platform: manual
@@ -182,17 +105,6 @@ alarm_control_panel:
     armed_home:
       arming_time: 0
       delay_time: 0
-
-xiaomi_aqara:
-  discovery_retry: 5
-  gateways:
-    - key: !secret xiaomikey
-      host: 192.168.2.82
-
-bloomsky:
-  api_key: !secret bloomsky_key
-ecobee:
-  api_key: !secret ecobee_key
 
 shell_command:
   image_classify: bash /config/shell_scripts/image_classification.sh "{{camera}}"
@@ -219,10 +131,9 @@ rest_command:
     method: post
     headers:
       X-API-Key: !secret portainer_api_key
+
 media_extractor:
 
-# Enables configuration UI
-config:
 alexa:
   smart_home:
     filter:
@@ -245,69 +156,7 @@ alexa:
       script.tv_youtube_on:
         name: Youtube
         description: Youtube on
-# cloud:
-#   alexa:
-#     filter:
-#       include_entities:
-#         - light.living_room_lights
-#         - light.master_lights
-#         - input_boolean.abodeupdate
-#         - light.gateway_light_34ce00813670
-#         - light.kitchen
-#         - light.lifx5
-#         - switch.driveway
-#         - switch.garage_relay_switch
-#         - switch.wemoporch
-#         - script.tv_youtube_on
-#       include_domains:
-#         - cover
-#     entity_config:
-#       light.gateway_light_34ce00813670:
-#         name: Gateway Light
-#         description: Xiaomi Gateway Light
-#       script.tv_youtube_on:
-#         name: Youtube
-#         description: Youtube on
-#
-#   google_actions:
-#     filter:
-#       include_entities:
-#         - script.tv_youtube_on
-#         - switch.wemoporch
-#         - switch.driveway
-#         - switch.wemoinsight
-#       include_domains:
-#         - cover
-#         - light
-#       exclude_entities:
-#         - light.gateway_light_34ce00813670
-#         - light.master_1
-#         - light.master_2
-#         - light.master_3
-#         - light.lifx3
-#         - light.lifxnrguest
-#         - light.lifxnrkitchen
-#     entity_config:
-#       light.living_room_lights:
-#         room: living room
-#       light.master_lights:
-#         room: master bedroom
-#       switch.driveway:
-#         room: driveway
-#       switch.wemoporch:
-#         name: Porch Lights
-#         room: porch
-#       light.kitchen:
-#         room: kitchen
-#       light.lifx5:
-#         room: garage
-#       switch.wemoinsight:
-#         name: Wemo Insight
-#         room: office
-#       script.tv_youtube_on:
-#         name: Youtube
-#         room: living room
-mobile_app:
+
 google_assistant:
   project_id: !secret google_project_id
   service_account: !include HASSGoogAssist.json
@@ -354,6 +203,7 @@ google_assistant:
     cover.garagedoor:
       expose: true
       room: garage
+
 homekit:
   filter:
     include_entities:
@@ -369,21 +219,12 @@ homekit:
       - binary_sensor.water_leak_sensor_158d0001d77800
       - binary_sensor.water_leak_sensor_158d00027b0db6
       - binary_sensor.water_leak_sensor_158d0001bb788c
-      # - camera.porch
-      # - camera.patio
-      # - camera.backyard
-      # - camera.driveway
-      # - camera.kitchen
       - camera.garage
-      # - binary_sensor.water_leak_sensor_158d00024bfa97
-# map:
+
 downloader:
   download_dir: downloads
-http:
-  # ssl_certificate: !secret ssl_certificate
-  # ssl_key: !secret ssl_key
-  # base_url: !secret base_url
 
+http:
   ip_ban_enabled: true
   login_attempts_threshold: 1
   use_x_forwarded_for: true
@@ -393,41 +234,17 @@ http:
     - 127.0.0.1
     - ::1
     - 172.17.0.3
-# Discover some devices automatically
-discovery:
-  ignore:
-    - apple_tv
 
-proximity:
-  alok:
-    devices:
-      - device_tracker.meta_alok
-    tolerance: 50
-    unit_of_measurement: mi
-  rashmi:
-    devices:
-      - device_tracker.meta_rashmi
-    tolerance: 50
-    unit_of_measurement: mi
-
-# Allows you to issue voice commands from the frontend in enabled browsers
-conversation:
 amcrest:
   - host: 192.168.2.26
     username: admin
     password: !secret amcrest_password
+
 ffmpeg:
+
 camera:
-  - platform: bloomsky
-  # - platform: synology
-  #   url: http://192.168.2.113:5000/
-  #   username: !secret synology_username
-  #   password: !secret synology_password
-  #   timeout: 15
-  #   verify_ssl: false
   - platform: aarlo
     ffmpeg_arguments: '-pred 1 -q:v 2'
-  # - platform: ring
   - platform: local_file
     name: worldtime
     file_path: /config/downloads/worldtime/worldtime.png
@@ -452,115 +269,6 @@ camera:
   - platform: ffmpeg
     input: !secret amcrest_ip_cam_url
     name: Kitchen
-  # Generate your link - https://www.wunderground.com/weather-radar/united-states/
-  # - platform: generic
-  #   still_image_url: 'https://icons.wxug.com/data/weather-maps/radar/united-states/columbus-georgia-region-current-radar-animation.gif'
-  #   name: WundergroundRadar
-  # - platform: generic
-  #   name: worldtime
-  #   still_image_url: https://imgs.xkcd.com/comics/now.png
-  # - platform: generic
-  #   name: Grafana portfolio
-  #   still_image_url: 'http://192.168.2.212:3000/render/d-solo/47YMSC6iz/hass?orgId=1&panelId=2&width=1000&height=500&tz=America%2FNew_York&from=now-500d&to=now'
-  #   username: !secret grafana_user
-  #   password: !secret grafana_pass
-  - platform: local_file
-    name: Grafana portfolio
-    file_path: /config/downloads/grafana/portfolio.png
-  - platform: local_file
-    name: Grafana networth
-    file_path: /config/downloads/grafana/networth.png
-  - platform: local_file
-    name: Grafana temp down
-    file_path: /config/downloads/grafana/down_temp.png
-  - platform: local_file
-    name: Grafana mode down
-    file_path: /config/downloads/grafana/down_mode.png
-  - platform: local_file
-    name: Grafana temp up
-    file_path: /config/downloads/grafana/up_temp.png
-  - platform: local_file
-    name: Grafana mode up
-    file_path: /config/downloads/grafana/up_mode.png
-
-  - platform: local_file
-    name: Grafana temp master
-    file_path: /config/downloads/grafana/master_temp.png
-  - platform: local_file
-    name: Grafana mode master
-    file_path: /config/downloads/grafana/master_mode.png
-  - platform: local_file
-    name: Grafana USD INR
-    file_path: /config/downloads/grafana/usdinr.png
-  - platform: local_file
-    name: Grafana master efficiency
-    file_path: /config/downloads/grafana/master_hvac_efficiency.png
-  - platform: local_file
-    name: Grafana upstairs efficiency
-    file_path: /config/downloads/grafana/upstairs_hvac_efficiency.png
-  - platform: local_file
-    name: Grafana downstairs efficiency
-    file_path: /config/downloads/grafana/downstairs_hvac_efficiency.png
-  # - platform: generic
-  #   stream_source: !secret porch_rtsp_camera_image_url
-  #   still_image_url: !secret porch_camera_image_url
-  #   name: Porch
-  # - platform: generic
-  #   stream_source: !secret patio_rtsp_camera_image_url
-  #   still_image_url: !secret patio_camera_image_url
-  #   name: Patio
-  # - platform: generic
-  #   stream_source: !secret driveway_rtsp_camera_image_url
-  #   still_image_url: !secret driveway_camera_image_url
-  #   name: Driveway
-  # - platform: generic
-  #   stream_source: !secret backyard_rtsp_camera_image_url
-  #   still_image_url: !secret backyard_camera_image_url
-  #   name: Backyard
-  # - platform: generic
-  #   still_image_url: !secret porch_camera_image_url
-  #   name: porch
-  # - platform: generic
-  #   still_image_url: !secret backyard_camera_image_url
-  #   name: backyard
-  # - platform: generic
-  #   still_image_url: !secret patio_camera_image_url
-  #   name: patio
-  # - platform: generic
-  #   still_image_url: !secret driveway_camera_image_url
-  #   name: driveway
-
-  # - platform: ring
-  # - platform: opencv
-  #   camera: camera.porch
-  #   processor: image_processing.opencv_porch
-  #   name: OpenCV Porch
-  # - platform: opencv
-  #   camera: camera.motoe
-  #   processor: image_processing.opencv_motoe
-  #   name: OpenCV MotoE
-  # - platform: opencv
-  #   camera: camera.porch
-  #   processor: image_processing.opencv_porch
-  #   name: OpenCV Porch
-  # - platform: opencv
-  #   camera: camera.backyard
-  #   processor: image_processing.opencv_backyard
-  #   name: OpenCV Backyard
-  # - platform: opencv
-  #   camera: camera.driveway
-  #   processor: image_processing.opencv_driveway
-  #   name: OpenCV Driveway
-  # - platform: generic
-  #   still_image_url: 'https://radblast.wunderground.com/cgi-bin/radar/WUNIDS_map?station=FFC&brand=wui&num=1&delay=100&type=NTP&frame=0&scale=1&noclutter=0&showstorms=5&mapx=400&mapy=240&centerx=400&centery=240&transx=0&transy=0&showlabels=1&severe=0&rainsnow=0&lightning=0&smooth=0&rand=24427697&lat=0&lon=0&label=you'
-  #   name: RadarGA
-    # Generate link - http://www.intellicast.com/National/Radar/Current.aspx
-  # - platform: generic
-  #   still_image_url: 'http://images.intellicast.com/WxImages/RadarLoop/prc_None_anim.gif'
-  #   name: IntellicastRadar
-
-ifttt:
-  key: !secret ifttt_key
 
 image_processing:
   - platform: tensorflow
@@ -583,7 +291,6 @@ image_processing:
       - entity_id: camera.porch
     file_out:
       - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      # - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     model:
       graph: /config/tensorflow/models/efficientdet_d1_coco17_tpu-32/
       categories:
@@ -599,88 +306,8 @@ image_processing:
           area:
             bottom: 0.70
             right: 0.20
-  # - platform: opencv_darknet
-  #   name: Camera Object Detection
-  #   scan_interval: 10000 # Default 10
-  #   source:
-  #     - entity_id: camera.patio
-  #     - entity_id: camera.porch
-  #     - entity_id: camera.backyard
-  #     - entity_id: camera.driveway
-  #   options:
-  #     detect_model: /config/deps/yolov3-tiny.cfg
-  #     weights: /config/deps/yolov3-tiny.weights
-  #     labels: /config/deps/coco.names
-  #     confidence: 0.55
-  # - platform: deepstack_object
-  #   ip_address: 192.168.2.212
-  #   port: 5000
-  #   scan_interval: 20000
-  #   target: person
-  #   source:
-  #     - entity_id: camera.patio
-  #       name: deepstack_patio
-  #     - entity_id: camera.porch
-  #       name: deepstack_porch
-  #     - entity_id: camera.driveway
-  #       name: deepstack_driveway
-  #     - entity_id: camera.backyard
-  #       name: deepstack_backyard
 
-  # - platform: facebox
-  #   scan_interval: 10000
-  #   ip_address: 192.168.2.212
-  #   port: 8082
-  #   source:
-  #     - entity_id: camera.patio
-  #     - entity_id: camera.porch
-  #     - entity_id: camera.backyard
-  #     - entity_id: camera.driveway
-  # - platform: tagbox
-  #   scan_interval: 10000 # Default 10
-  #   ip_address: 192.168.2.212
-  #   confidence: 50
-  #   port: 8081
-  #   source:
-  #     - entity_id: camera.patio
-  #     - entity_id: camera.porch
-  #     - entity_id: camera.backyard
-  #     - entity_id: camera.driveway
-  # - platform: amazon_rekognition
-  #   aws_access_key_id: !secret aws_access_key_id
-  #   aws_secret_access_key: !secret aws_secret_access_key
-  #   scan_interval: 20000 # optional to limit calls to the API
-  #   source:
-  #     - entity_id: camera.driveway
-sonos:
-  media_player:
-    hosts:
-      - 192.168.2.150
-      - 192.168.2.15
-      - 192.168.2.160
-sun:
-person:
-spotify:
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
 media_player:
-  - platform: kodi
-    host: 192.168.2.28
-    port: 8080
-    name: Kodi NSTV
-    username: !secret kodi_username
-    password: !secret kodi_password
-  - platform: kodi
-    host: 192.168.2.180
-    port: 8080
-    name: Kodi Master
-    username: !secret kodi_username
-    password: !secret kodi_password
-  # - platform: plex
-  #   host: 192.168.2.212
-  # - platform: apple_tv
-  #   host: 192.168.2.90
-  #   login_id: !secret apple_hsgid
   - platform: androidtv
     host: 192.168.2.172
     name: "ShieldTVPro"
@@ -717,68 +344,17 @@ media_player:
       com.synology.dsvideo: "DS Video"
       com.mxtech.videoplayer.ad: "MXPlayer"
       com.amazon.firetv.youtube: "Youtube"
-  # - platform: samsungtv_custom
-  #   host: 192.168.2.252
-  #   mac: !secret samsung_tv_mac
-  #   port: 8002
-  #   sourcelist: '{"Shield": "KEY_HDMI4"}'
-  #   protocol: ws
-alexa_media:
-  accounts:
-    - email: !secret amazon_user
-      password: !secret amazon_pass
-      url: amazon.com
-      include_devices:
-        - "Alexa Guard 227b3"
-        - "Echo Dot Gen2"
-        - "EchoDot3"
-        - "Alok's Echo Dot"
-      # exclude_devices:
-      #   - "Rashmi's Alexa Apps"
-      #   - "Alok's 2nd Fire TV"
-      #   - "Alok's 4th Fire TV"
-      #   - 'Master AFTV'
-      #   - "Alok's 2nd Fire"
-      #   - "Alok's 3rd Fire"
-      #   - 'My Dash'
-      #   - "Alok's 4th Fire"
-      #   - "Alok's 5th Fire"
-      #   - "Alok's 6th Fire"
-      #   - "William's TAB🗼"
-      #   - 'Family Room'
-      #   - 'LivingRoomSonos'
-      #   - "Alok's Echo Dot"
-      #   - "Alok's 2nd Fire TV Stick"
-      #   - 'AFTVMaster'
-      #   - 'AFTV4kStick'
-      #   - 'This Device'
-      #   - "Alok's Alexa Apps"
+
 geofency:
+
 speedtestdotnet:
-  monitored_conditions:
-    - download
-    - upload
-owntracks:
-  max_gps_accuracy: 200
-# unifi:
-#   controllers:
-#     - host: 192.168.2.163
-#       site: 'Default'
-#       dont_track_wired_clients: true
-#       dont_track_devices: true
-#       block_client:
-#         - !secret rishaan_fire_hd_mac
-#         - !secret arnav_ipad_mac
-#         - !secret toshibaaio_mac
-#         - !secret lenovohome_mac
-#         - !secret samsung_tv_mac
-#         - !secret rpi_aiy_mac
 
 telegram_bot:
   platform: polling
   api_key: !secret telegram_key
   allowed_chat_ids:
     - !secret telegram_chatID_Alok
+
 pi_hole:
   - host: 192.168.2.14
     name: Pi Hole Kids
@@ -786,30 +362,12 @@ pi_hole:
   - host: 192.168.2.114
     name: Pi Hole Syn
     api_key: !secret pi_hole_synology
-hangouts:
+
 notify:
-  - platform: hangouts
-    name: alok_hangouts
-    default_conversations:
-      - id: !secret hangouts_alok
-  - platform: hangouts
-    name: rashmi_hangouts
-    default_conversations:
-      - id: !secret hangouts_rashmi
-  - platform: hangouts
-    name: parents_hangouts
-    default_conversations:
-      - id: !secret hangouts_rashmi
-      - id: !secret hangouts_alok
-  - platform: pushbullet
-    api_key: !secret pushbullet_key
-    name: pushbullet
   - name: telegram
     platform: telegram
     api_key: !secret telegram_key
     chat_id: !secret telegram_chatID_Alok
-  - platform: ecobee
-    name: ecobee
   - platform: group
     name: iOS
     services:
@@ -844,19 +402,14 @@ notify:
   - platform: command_line
     name: 'Echo Dot'
     command: "/config/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
-# Log Severities: notset, debug, info, warn, warning, error, fatal, critical
+
 logger:
   default: error
   logs:
     homeassistant.components.image_processing: critical
-    homeassistant.components.camera.synology: critical
     homeassistant.components.camera.generic: critical
-    homeassistant.components.sensor.wunderground: critical
-    homeassistant.components.sensor.pi_hole: critical
     homeassistant.components.media_player: critical
     homeassistant.components.telegram_bot: critical
-    homeassistant.components.scene.lifx_cloud: critical
-    homeassistant.components.sensor.darksky: critical
     homeassistant.components.onvif: info
     pychromecast.socket_client: critical
     aiohttp.access: critical
@@ -869,29 +422,14 @@ logger:
     homeassistant.helpers.entity: critical
     homeassistant.components.http.ban: warning
     homeassistant.components.python_script: warning
-    homeassistant.components.switch.unifi: debug
-    custom_components.aesop: debug
-    custom_components.aesop.sensor: debug
-    homeassistant.components.smartthings: debug
-    # custom_components.alexa_media: debug
-    # homeassistant.components.http.view: info
-    # adb.adb_commands: debug
-    # adb.adb_protocol: debug
-    # homeassistant.components.device_tracker: info
-# Text to speech
+
 tts:
   - platform: google_translate
     service_name: google_say
     cache: true
     cache_dir: /config/tts
     time_memory: 300
-  # - platform: voicerss
-  #   api_key: !secret voicerss_key
-  # - platform: amazon_polly
-  #   aws_access_key_id: !secret aws_access_key_id
-  #   aws_secret_access_key: !secret aws_secret_access_key
-  #   text_type: ssml
-  #   cache: True
+
 device_tracker:
   - platform: composite
     name: Alok Composite Temp
@@ -902,24 +440,9 @@ device_tracker:
       - device_tracker.alokiphone_3
       - device_tracker.life360_alok_saboo
       - device_tracker.alok_geofency
-google:
-  client_id: !secret gcal_client_id
-  client_secret: !secret gcal_client_secret
 
-mqtt:
-  broker: 127.0.0.1
-  port: 1883
-  discovery: true
-  client_id: home-assistant-1
-  username: !secret mqtt_username
-  password: !secret mqtt_password
-  birth_message:
-    topic: 'homeassistant/status'
-    payload: 'online'
-  will_message:
-    topic: 'homeassistant/status'
-    payload: 'offline'
 dialogflow:
+
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml
 alert: !include alert.yaml

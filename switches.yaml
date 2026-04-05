@@ -74,7 +74,6 @@
         turn_off:
           - service: homeassistant.turn_on
             entity_id: script.abodestandby
-
       sonos_night_sound:
         friendly_name: Sonos Night Sound
         value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
@@ -119,48 +118,3 @@
           - service: switch.turn_off
             entity_id:
               - switch.sonos_master_speech_enhancement
-# example of PiHole commands (PWHASH is the value of WEBPASSWORD in /etc/pihole/setupVars.conf)
-# pihole_status: "curl -X GET 'http://ip.ad.dr.ess/admin/api.php?status&auth=PWHASH'"
-# pihole_enable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?enable=300&auth=PWHASH'
-# pihole_disable: /usr/bin/curl -k 'http://ip.ad.dr.ess/admin/api.php?disable=300&auth=PWHASH'
-  # - platform: command_line
-  #   switches:
-  #     pihole:
-  #       command_on: !secret pihole_enable
-  #       command_off: !secret pihole_disable
-  #       command_state: !secret pihole_status
-  #       value_template: "{{ value_json.status == 'enabled' }}"
-  #       friendly_name: PiHole
-
-  # - platform: command_line
-  #   switches:
-  #     utubeon:
-  #       command_on: curl -X POST http://192.168.2.252:8001/api/v2/applications/111299001912
-  #       command_off: curl -X DELETE http://192.168.2.252:8001/api/v2/applications/111299001912
-  #       friendly_name: "Turn on Youtube"
-  #       command_state: off
-  #     netflixon:
-  #       command_on: curl -X POST http://192.168.2.252:8001/ws/apps/Netflix
-  #       command_off: curl -X POST http://192.168.2.252:8001/api/v2/applications/RN1MCdNq8t
-  #       command_state: curl -X GET http://192.168.2.252:8001/ws/apps/Netflix
-  #       friendly_name: "Turn on Netflix"
-  #     plexon:
-  #       command_on: curl -X POST http://192.168.2.252:8001/api/v2/applications/kIciSQlYEM.plex
-  #       command_off: curl -X POST http://192.168.2.252:8001
-  #       command_state: off
-  #       friendly_name: "Turn on Plex"
-#  platform: command_line
-#  switches:
-#    #Switch for Foscam Motion Detection
-#    foscam_record:
-#      command_on: 'curl -k "http://192.168.2.173:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      command_off: 'curl -k "http://192.168.2.173:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      value_template: ''
-#    foscam_record2:
-#      command_on: 'curl -k "http://192.168.2.224:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      command_off: 'curl -k "http://192.168.2.224:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      value_template: ''
-#    foscam_record3:
-#      command_on: 'curl -k "http://192.168.2.50:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=1&isPirAlarmEnable=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      command_off: 'curl -k "http://192.168.2.50:88/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&linkage=8&snapInterval=5&sensitivity=2&triggerInterval=10&isMovAlarmEnable=0&isPirAlarmEnable=0&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023=&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area8=1023&area9=1023&usr=arsaboo&pwd=alok18"'
-#      value_template: ''

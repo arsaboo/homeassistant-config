@@ -1,7 +1,3 @@
-  - platform: moon_here
-    app_id: !secret here_app_id
-    app_code: !secret here_app_code
-    zipcode: !secret home_zip
   - platform: shodan
     api_key: !secret shodan_api
     query: "'home-assistant' country:'US' org:'AT&T U-verse' city:'Suwanee'"
@@ -33,30 +29,10 @@
         query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states_meta WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
-  - platform: personalcapital
-    email: !secret pc_username
-    password: !secret pc_password
-    monitored_categories:
-      - investment
-      - mortgage
-      - cash
-      - other_asset
-      - credit
   - platform: aarlo
     monitored_conditions:
       - battery_level
       - signal_strength
-  # - platform: futures_cnn
-  #   resources:
-  #     - sp
-  #     - sp_change_pct
-  #     - sp_change
-  #     - dow
-  #     - dow_change_pct
-  #     - dow_change
-  #     - nasdaq
-  #     - nasdaq_change_pct
-  #     - nasdaq_change
   - platform: statistics
     name: Master Vent Temp Change
     entity_id: sensor.master_vent
@@ -122,101 +98,6 @@
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
-#Morning Commute Google Travel Time Sensor
-#   - platform: google_travel_time
-#     name: Morning Commute
-#     scan_interval: 60000
-#     api_key: !secret google_key
-#     origin: zone.home
-#     destination: zone.downtown
-# #Evening Commute Google Travel Time Sensor
-#   - platform: google_travel_time
-#     name: Alok to Home
-#     scan_interval: 60000
-#     api_key: !secret google_key
-#     origin: person.alok
-#     destination: zone.home
-  # - platform: wunderground
-  #   api_key: !secret wunderground_key
-  #   pws_id: !secret wunderground_pws
-  #   monitored_conditions:
-  #     - weather
-  #     - temp_f
-  #     - wind_string
-  #     - relative_humidity
-  # - platform: mqtt
-  #   state_topic: "owntracks/pi/rashmiphone/step"
-  #   name: "Steps Rashmi"
-  #   value_template: '{{ value_json.steps }}'
-  # - platform: mqtt
-  #   state_topic: "owntracks/pi/alokphone/step"
-  #   name: "Steps Alok"
-  #   value_template: '{{ value_json.steps }}'
-  # - platform: command_line
-  #   name: Grafana temp down
-  #   command: !secret grafana_temp_down
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana HVAC Eff down
-  #   command: !secret grafana_downstairs_hvac_efficiency
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana mode down
-  #   command: !secret grafana_mode_down
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana temp up
-  #   command: !secret grafana_temp_up
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana HVAC Eff up
-  #   command: !secret grafana_upstairs_hvac_efficiency
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana mode up
-  #   command: !secret grafana_mode_up
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana temp master
-  #   command: !secret grafana_temp_master
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana HVAC Eff master
-  #   command: !secret grafana_master_hvac_efficiency
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana mode master
-  #   command: !secret grafana_mode_master
-  #   scan_interval: 300
-  # - platform: command_line
-  #   name: Grafana portfolio
-  #   command: !secret grafana_portfolio
-  #   scan_interval: 600
-  # - platform: command_line
-  #   name: Grafana networth
-  #   command: !secret grafana_networth
-  #   scan_interval: 600
-  # - platform: command_line
-  #   name: Grafana USDINR
-  #   command: !secret grafana_usdinr
-  #   scan_interval: 600
-  # - platform: command_line
-  #   name: 10 Year Treasury
-  #   unit_of_measurement: '%'
-  #   scan_interval: 18000
-  #   command: "wget -O - -q http://money.cnn.com/data/premarket | grep 'last_572094' | awk -F'>' '{print $3}' | awk -F'<' '{print $1}'"
-  # - platform: scrape
-  #   resource: http://money.cnn.com/data/premarket/
-  #   name: Curr Future
-  #   scan_interval: 86400
-  #   # select: ".wsod_bold.wsod_aRight span"
-  #   select: ".wsod_bold.wsod_aRight"
-  # - platform: scrape
-  #   resource: !secret scholar_profile
-  #   name: Citations
-  #   scan_interval: 172800
-  #   select: "tr:nth-child(1) td:nth-child(2)"
-  #   value_template: '{{ value }}'
   - platform: rest
     method: POST
     resource: http://192.168.2.253:1400/DeviceProperties/Control
@@ -235,35 +116,8 @@
       Content-Type: text/xml; charset="utf-8"
     payload: '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1"></u:GetZoneInfo></s:Body></s:Envelope>'
     value_template: '{{ value_json["s:Envelope"]["s:Body"]["u:GetZoneInfoResponse"]["HTAudioIn"] }}'
-    # value_template: '{{ "<HTAudioIn>2</HTAudioIn>" in value }}'
-  # - platform: rest
-  #   resource: !secret here_weather
-  #   name: Moon Rise
-  #   scan_interval: 86400
-  #   value_template: '{{value_json.astronomy.astronomy[0].moonrise}}'
-  #   json_attributes:
-  #     - moonset
-  #     - moonPhaseDesc
-  #     - moonPhase
-  #     - sunrise
-  #     - sunset
   - platform: template
     sensors:
-      # ds1515_uptime:
-      #   value_template: >
-      #     {% set uptime = (as_timestamp(now()) - as_timestamp(states("sensor.ds1515_last_boot")))/60 | round %}
-      #     {% set minutes = (uptime % 60) | int %}
-      #     {% set hours = ((uptime / 60) % 24) | int %}
-      #     {% set days = (uptime / 1440) | int %}
-      #     {%- if days > 0 -%}
-      #       {%- if days == 1 -%}
-      #         1 day
-      #       {%- else -%}
-      #         {{ days }} days
-      #       {%- endif -%}
-      #       {{ ', ' }}
-      #     {%- endif -%}
-      #     {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
       cube_last_action:
         friendly_name: "Cube last action"
         value_template: >
@@ -278,7 +132,6 @@
       study_temp_rounded:
         friendly_name: "Study temperature"
         value_template: "{{states('sensor.study_temperature_2')|round}}"
-        # unit_of_measurement: "°F"
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -289,22 +142,6 @@
               {{ item.name }}{%- if not loop.last %}, {% endif -%}
           {%- endfor -%}
           {%- endfor -%}
-      # hassuptime:
-      #   friendly_name: "HASS Uptime"
-      #   value_template: >-
-      #     {% set uptime = states.sensor.uptime.state | round %}
-      #     {% set minutes = (uptime % 60) | int %}
-      #     {% set hours = ((uptime / 60) % 24) | int %}
-      #     {% set days = (uptime / 1440) | int %}
-      #     {%- if days > 0 -%}
-      #       {%- if days == 1 -%}
-      #         1 day
-      #       {%- else -%}
-      #         {{ days }} days
-      #       {%- endif -%}
-      #       {{ ', ' }}
-      #     {%- endif -%}
-      #     {{ '%02d' % hours }}:{{ '%02d' % minutes }} hrs
       master_temp_change:
         friendly_name: "Master Efficiency"
         unit_of_measurement: "min"
@@ -319,8 +156,6 @@
           {%- else -%}
             -999
           {%- endif -%}
-
-
       downstairs_hvac_runtime:
         friendly_name: "Downstairs HVAC Runtime"
         unit_of_measurement: "h"
@@ -398,10 +233,6 @@
         unit_of_measurement: "$"
         value_template: >-
            {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
-      # ringvideourl:
-      #   friendly_name: "Ring Video URL"
-      #   value_template: >-
-      #     {{state_attr('camera.front_door', 'video_url').split('?')[0]}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"
@@ -458,16 +289,6 @@
         value_template: >-
           {{ (state_attr('media_player.master', 'volume_level')|default(0) * 100) |int }}
         friendly_name: 'Master Volume'
-      leeoalarmstatus:
-        friendly_name: "Leeo Alarm"
-        value_template: >-
-           {%- if states.input_boolean.leeoalarm.state == 'off' -%}
-              Off
-           {%- elif states.input_boolean.leeoalarm.state == 'on' -%}
-              Active
-           {%- elif states.input_boolean.leeoalarm.state == None -%}
-              unknown
-           {%- endif -%}
       pollen_level:
         friendly_name: 'Pollen Level'
         value_template: >-
@@ -487,35 +308,3 @@
             {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
             {{item.attributes.emulated_hue_name|title}}
           {%- endfor -%}.
-      # porchtags:
-      #   friendly_name: "Porch Tags"
-      #   value_template: >-
-      #     {{ states('input_text.porch') }}
-      # drivewaytags:
-      #   friendly_name: "Driveway Tags"
-      #   value_template: >-
-      #     {{ states('input_text.driveway') }}
-      # backyardtags:
-      #   friendly_name: "Backyard Tags"
-      #   value_template: >-
-      #     {{ states('input_text.backyard') }}
-      # patiotags:
-      #   friendly_name: "Patio Tags"
-      #   value_template: >-
-      #     {{ states('input_text.patio') }}
-      # porchfaces:
-      #   friendly_name: "Porch Faces"
-      #   value_template: >-
-      #     {{ states('input_text.porchfaces') }}
-      # drivewayfaces:
-      #   friendly_name: "Driveway Faces"
-      #   value_template: >-
-      #     {{ states('input_text.drivewayfaces') }}
-      # backyardfaces:
-      #   friendly_name: "Backyard Faces"
-      #   value_template: >-
-      #     {{ states('input_text.backyardfaces') }}
-      # patiofaces:
-      #   friendly_name: "Patio Faces"
-      #   value_template: >-
-      #     {{ states('input_text.patiofaces') }}
