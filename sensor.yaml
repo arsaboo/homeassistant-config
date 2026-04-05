@@ -1,4 +1,3 @@
-  - platform: authenticated
   - platform: moon_here
     app_id: !secret here_app_id
     app_code: !secret here_app_code
@@ -6,65 +5,34 @@
   - platform: shodan
     api_key: !secret shodan_api
     query: "'home-assistant' country:'US' org:'AT&T U-verse' city:'Suwanee'"
-  - platform: darksky
-    api_key: !secret darksky_key
-    monitored_conditions:
-      - summary
-      - daily_summary
-      - hourly_summary
-      - temperature
-    scan_interval:
-      minutes: 20
-  - platform: season
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Portfolio morning
-        query: "SELECT state FROM states WHERE entity_id='sensor.pc_investment' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) < 5)) ORDER BY last_changed desc LIMIT 1;"
+        query: "SELECT state FROM states_meta WHERE entity_id='sensor.pc_investment' and (HOUR(last_changed) >= 22 and (DATEDIFF(NOW(), last_changed) < 5)) ORDER BY last_changed desc LIMIT 1;"
         column: 'state'
         unit_of_measurement: $
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Master HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.master_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states_meta WHERE entity_id='input_number.master_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Upstairs HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.upstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states_meta WHERE entity_id='input_number.upstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
   - platform: sql
     db_url: !secret recorder_db_url
     queries:
       - name: Downstairs HVAC Efficiency
-        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
+        query: "SELECT ROUND(AVG(state),2) AS AvgEff FROM states_meta WHERE entity_id='input_number.downstairs_prev_eff' and state <> 0 ORDER BY last_changed desc LIMIT 50;"
         column: 'AvgEff'
         unit_of_measurement: min
-  - platform: sql
-    db_url: !secret recorder_db_url
-    queries:
-      - name: New Cases US
-        query: "SELECT (select state from states WHERE entity_id='sensor.us_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.us_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
-        column: 'NewCases'
-        unit_of_measurement: people
-  - platform: sql
-    db_url: !secret recorder_db_url
-    queries:
-      - name: New Cases Georgia
-        query: "SELECT (select state from states WHERE entity_id='sensor.corona_virus_georgia' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.corona_virus_georgia' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
-        column: 'NewCases'
-        unit_of_measurement: people
-  - platform: sql
-    db_url: !secret recorder_db_url
-    queries:
-      - name: New Cases India
-        query: "SELECT (select state from states WHERE entity_id='sensor.india_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed desc LIMIT 1) - (select state from states WHERE entity_id='sensor.india_coronavirus_confirmed' and  DAY(last_changed)=DAY(now()) and state != 'unavailable' ORDER BY last_changed asc LIMIT 1) as NewCases;"
-        column: 'NewCases'
-        unit_of_measurement: people
   - platform: personalcapital
     email: !secret pc_username
     password: !secret pc_password
@@ -78,41 +46,33 @@
     monitored_conditions:
       - battery_level
       - signal_strength
-  - platform: futures_cnn
-    resources:
-      - sp
-      - sp_change_pct
-      - sp_change
-      - dow
-      - dow_change_pct
-      - dow_change
-      - nasdaq
-      - nasdaq_change_pct
-      - nasdaq_change
-  - platform: version
-  - platform: uptime
-    unit_of_measurement: minutes
-  - platform: statistics
-    name: Master Temp Statistics
-    entity_id: sensor.master_temperature
-    max_age:
-      minutes: 30
+  # - platform: futures_cnn
+  #   resources:
+  #     - sp
+  #     - sp_change_pct
+  #     - sp_change
+  #     - dow
+  #     - dow_change_pct
+  #     - dow_change
+  #     - nasdaq
+  #     - nasdaq_change_pct
+  #     - nasdaq_change
   - platform: statistics
     name: Master Vent Temp Change
-    entity_id: sensor.temperature_158d0001a35ba5
+    entity_id: sensor.master_vent
     state_characteristic: change
     sampling_size: 5
     precision: 1
     max_age:
-      minutes: 5
+      minutes: 3
   - platform: statistics
-    name: Master Vent Pressure Change
-    entity_id: sensor.pressure_158d0001a35ba5
+    name: Living Vent Temp Change
+    entity_id: sensor.vent
     state_characteristic: change
     sampling_size: 5
     precision: 1
     max_age:
-      minutes: 5
+      minutes: 3
   - platform: history_stats
     name: Total TV Time
     entity_id: media_player.living_room_tv
@@ -163,19 +123,19 @@
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
 #Morning Commute Google Travel Time Sensor
-  - platform: google_travel_time
-    name: Morning Commute
-    scan_interval: 60000
-    api_key: !secret google_key
-    origin: zone.home
-    destination: zone.downtown
-#Evening Commute Google Travel Time Sensor
-  - platform: google_travel_time
-    name: Alok to Home
-    scan_interval: 60000
-    api_key: !secret google_key
-    origin: person.alok
-    destination: zone.home
+#   - platform: google_travel_time
+#     name: Morning Commute
+#     scan_interval: 60000
+#     api_key: !secret google_key
+#     origin: zone.home
+#     destination: zone.downtown
+# #Evening Commute Google Travel Time Sensor
+#   - platform: google_travel_time
+#     name: Alok to Home
+#     scan_interval: 60000
+#     api_key: !secret google_key
+#     origin: person.alok
+#     destination: zone.home
   # - platform: wunderground
   #   api_key: !secret wunderground_key
   #   pws_id: !secret wunderground_pws
@@ -184,17 +144,6 @@
   #     - temp_f
   #     - wind_string
   #     - relative_humidity
-  # - platform: sectorperformance
-  #   api_key: !secret alphavantage_key
-  - platform: alpha_vantage
-    api_key: !secret alphavantage_key
-    foreign_exchange:
-      - from: USD
-        to: INR
-        name: USDINR
-  - platform: mqtt
-    name: "Master Bed Weight"
-    state_topic: "/load/masterbed/WeightChanA"
   # - platform: mqtt
   #   state_topic: "owntracks/pi/rashmiphone/step"
   #   name: "Steps Rashmi"
@@ -262,12 +211,12 @@
   #   scan_interval: 86400
   #   # select: ".wsod_bold.wsod_aRight span"
   #   select: ".wsod_bold.wsod_aRight"
-  - platform: scrape
-    resource: !secret scholar_profile
-    name: Citations
-    scan_interval: 172800
-    select: "tr:nth-child(1) td:nth-child(2)"
-    value_template: '{{ value }}'
+  # - platform: scrape
+  #   resource: !secret scholar_profile
+  #   name: Citations
+  #   scan_interval: 172800
+  #   select: "tr:nth-child(1) td:nth-child(2)"
+  #   value_template: '{{ value }}'
   - platform: rest
     method: POST
     resource: http://192.168.2.253:1400/DeviceProperties/Control
@@ -325,10 +274,10 @@
           {% endif %}
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
-        value_template: "{{states('sensor.temperature_158d0001ab3c88')|round}}"
+        value_template: "{{states('sensor.living_room_temperature_homekit')|round}}"
       study_temp_rounded:
         friendly_name: "Study temperature"
-        value_template: "{{states('sensor.temperature_158d0001ab3b2b')|round}}"
+        value_template: "{{states('sensor.study_temperature_2')|round}}"
         # unit_of_measurement: "°F"
       battery_status:
         friendly_name: "Battery Status"
@@ -362,7 +311,7 @@
         value_template: >-
           {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.master_time','timestamp')|float)/60 -%}
           {%- set temp_diff_cool = states('input_number.master_prev_temp')|float - state_attr('climate.master_homekit','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.master_homekit','current_temperature')|float - states('input_number.master_time')|float -%}
+          {%- set temp_diff_heat = state_attr('climate.master_homekit','current_temperature')|float - states('input_number.master_prev_temp')|float -%}
           {%- if states('sensor.masterthermoper') == 'cooling' and temp_diff_cool != 0 -%}
             {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
           {%- elif states('sensor.masterthermoper') == 'heating' and temp_diff_heat != 0 -%}
@@ -370,34 +319,7 @@
           {%- else -%}
             -999
           {%- endif -%}
-      downstairs_temp_change:
-        friendly_name: "Downstairs Efficiency"
-        unit_of_measurement: "min"
-        value_template: >-
-          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.downstairs_time','timestamp')|float)/60 -%}
-          {%- set temp_diff_cool = states('input_number.downstairs_prev_temp')|float - state_attr('climate.downstairs_homekit','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.downstairs_homekit','current_temperature')|float - states('input_number.downstairs_prev_temp')|float -%}
-          {%- if states('sensor.downstairsthermoper') == 'cooling' and temp_diff_cool != 0 -%}
-            {{ (time_elapsed_min/temp_diff_cool )|round(2) }}
-          {%- elif states('sensor.downstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
-            {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
-          {%- else -%}
-            -999
-          {%- endif -%}
-      upstairs_temp_change:
-        friendly_name: "Upstairs Efficiency"
-        unit_of_measurement: "min"
-        value_template: >-
-          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.upstairs_time','timestamp')|float)/60 -%}
-          {%- set temp_diff_cool = states('input_number.upstairs_prev_temp')|float - state_attr('climate.upstairs_homekit','current_temperature')|float -%}
-          {%- set temp_diff_heat = state_attr('climate.upstairs_homekit','current_temperature')|float - states('input_number.upstairs_prev_temp')|float -%}
-          {%- if states('sensor.upstairsthermoper') == 'cooling' and temp_diff_cool != 0 -%}
-            {{ (time_elapsed_min/temp_diff_cool)|round(2) }}
-          {%- elif states('sensor.upstairsthermoper') == 'heating' and temp_diff_heat != 0 -%}
-            {{ (time_elapsed_min/temp_diff_heat )|round(2) }}
-          {%- else -%}
-            -999
-          {%- endif -%}
+
 
       downstairs_hvac_runtime:
         friendly_name: "Downstairs HVAC Runtime"
@@ -565,20 +487,6 @@
             {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
             {{item.attributes.emulated_hue_name|title}}
           {%- endfor -%}.
-      alok_location_sensor:
-        value_template: >-
-          {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
-          {{ trackers[0].state }}
-        attribute_templates:
-          latitude: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
-            {{ trackers[0].attributes.latitude }}
-          longitude: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
-            {{ trackers[0].attributes.longitude }}
-          source: >-
-            {% set trackers = [states.device_tracker.alokiphone, states.device_tracker.alokiphone_3, states.device_tracker.life360_alok_saboo, states.device_tracker.alokphone_alokphone_2, states.device_tracker.alok_geofency]|sort(attribute='last_changed', reverse=True) %}
-            {{ trackers[0].entity_id }}
       # porchtags:
       #   friendly_name: "Porch Tags"
       #   value_template: >-

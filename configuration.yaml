@@ -415,7 +415,7 @@ conversation:
 amcrest:
   - host: 192.168.2.26
     username: admin
-    password: PASSWORD
+    password: !secret amcrest_password
 ffmpeg:
 camera:
   - platform: bloomsky

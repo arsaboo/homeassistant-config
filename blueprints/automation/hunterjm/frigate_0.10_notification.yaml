@@ -1,0 +1,363 @@
+blueprint:
+  name: Frigate Notification (0.10.0)
+  description: "## Frigate Mobile App Notification\n\nThis blueprint will send a notification
+    to your device when a Frigate event for the selected camera is fired. The notification
+    will initially include the thumbnail of the detection, but include an actionable
+    notification allowing you to view the clip and snapshot.\n\nWith this blueprint,
+    you may send the notification to multiple devices by leaving \"Device\" blank
+    and instead use a [notification group][1].\n\n### Software Version Requirements\nMinimum
+    Home Assistant Version: 2022.2\nMinimum Frigate Version: 0.10.0 Beta 10\nMinimum
+    Frigate Integration Version: 2.2.0\nMinimum iOS Version: 15.0\n\n### Required
+    entities:\n  - Frigate Camera Name\n  - Mobile App Device **or** the name of a
+    Notification Group\n\n### Optional features:\n  - You can optionally send the
+    notification as a critical alert.\n  - You can choose whether or not to update
+    the notification with new thumbnails as they become available.\n  - You can limit
+    notifications to objects entering pre-defined [zones][2] in Frigate.\n  - You
+    can specify which [zones][2] to be notified about. This must be a list (e.g.):\n
+    \   ```yaml\n    - backyard\n    ```\n  - You can specify what type of [objects][3]
+    to be notified about. This must be a list (e.g.):\n    ```yaml\n    - person\n
+    \   - car\n    ```\n  - You can disable notifications if a presence entity or
+    group is \"home\".\n  - You can configure a cooldown for the camera to reduce
+    the number of notifications when back-to-back events occur.\n  - You can silence
+    future notifications for a defined amount of time through actionable notifications.
+    This is helpful in situations where you know you will be triggering detections
+    for an extended period of time. i.e. kids playing outside.\n  - You can set a
+    loitering timer to notify you of stationary objects that remain for a set period
+    of time.\n\n[1]: https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices\n[2]:
+    https://blakeblackshear.github.io/frigate/configuration/cameras#zones\n[3]: https://blakeblackshear.github.io/frigate/configuration/objects\n"
+  domain: automation
+  source_url: https://gist.github.com/hunterjm/8ff0005104dce3f28923294f49a443b1
+  input:
+    camera:
+      name: Frigate Camera
+      description: The name of the camera as defined in your frigate configuration.
+    notify_device:
+      name: Device
+      description: The device must run the official Home Assistant app to receive
+        notifications.
+      default: false
+      selector:
+        device:
+          integration: mobile_app
+          multiple: false
+    notify_group:
+      name: Notification Group
+      description: The name of the notification group to call.
+      default: ''
+    base_url:
+      name: (Optional) Base URL
+      description: 'The external url for your Home Assistant instance. This will default
+        to a relative URL and will open the clips in the app instead of the browser,
+        which does not work well on iOS.
+
+        '
+      default: ''
+    critical:
+      name: (Optional) Critical Notification
+      description: Send as a critical notification to the mobile device.
+      default: false
+      selector:
+        boolean: {}
+    update_thumbnail:
+      name: (Optional) Update Thumbnail
+      description: Update notification if a new "better" thumbnail is available.
+      default: false
+      selector:
+        boolean: {}
+    zone_filter:
+      name: (Optional) Zone Filter
+      description: Only notify if object has entered a defined zone.
+      default: false
+      selector:
+        boolean: {}
+    zones:
+      name: (Optional) Trigger Zones
+      description: A list (-) of zones you wish to recieve notifications for.
+      default: []
+      selector:
+        object: {}
+    labels:
+      name: (Optional) Trigger Objects
+      description: A list (-) of objects you wish to recieve notifications for.
+      default: []
+      selector:
+        object: {}
+    presence_filter:
+      name: (Optional) Presence Filter
+      description: Only notify if selected presence entity is not "home".
+      default: ''
+      selector:
+        entity: {}
+    cooldown:
+      name: (Optional) Cooldown
+      description: Delay before sending another notification for this camera after
+        the last event.
+      default: 30
+      selector:
+        number:
+          max: 300.0
+          min: 0.0
+          unit_of_measurement: seconds
+          mode: slider
+          step: 1.0
+    silence_timer:
+      name: (Optional) Silence New Object Notifications
+      description: "How long to silence notifications for this camera when requested
+        as part of the actionable notification. Note: This only applies to new objects.
+        Existing tracked objects \n"
+      default: 30
+      selector:
+        number:
+          max: 300.0
+          min: 0.0
+          unit_of_measurement: minutes
+          mode: slider
+          step: 1.0
+    loiter_timer:
+      name: (Optional) Loitering Notifications
+      description: 'Sends new loitering notification if a stationary object is detected
+        for longer than the specified time. 0 is off and will not send notifications.
+
+        '
+      default: 0
+      selector:
+        number:
+          max: 300.0
+          min: 0.0
+          unit_of_measurement: minutes
+          mode: slider
+          step: 1.0
+mode: parallel
+trigger_variables:
+  camera: !input camera
+trigger:
+- platform: event
+  event_type: mobile_app_notification_action
+  event_data:
+    action: silence-{{ camera }}
+  id: silence
+- platform: mqtt
+  topic: frigate/events
+  payload: '{{ camera }}/new'
+  value_template: '{{ value_json[''after''][''camera''] }}/{{ value_json[''type'']}}'
+  id: frigate-event
+variables:
+  camera: !input camera
+  camera_name: '{{ camera | replace(''_'', '' '') | title }}'
+  base_url: !input base_url
+  critical: !input critical
+  update_thumbnail: !input update_thumbnail
+  group_target: !input notify_group
+  zone_only: !input zone_filter
+  input_zones: !input zones
+  zones: '{{ input_zones | list }}'
+  input_labels: !input labels
+  labels: '{{ input_labels | list }}'
+  presence_entity: !input presence_filter
+  cooldown: !input cooldown
+  loiter_timer: !input loiter_timer
+  fps_value: '{{ states(''sensor.'' + camera + ''_camera_fps'') }}'
+  fps: '{{ fps_value|int if is_number(fps_value) or 5 }}'
+action:
+- choose:
+  - alias: Silence New Object Notifications
+    conditions:
+    - condition: trigger
+      id: silence
+    sequence:
+    - service: automation.turn_off
+      target:
+        entity_id: '{{ this.entity_id }}'
+      data:
+        stop_actions: false
+    - delay:
+        minutes: !input silence_timer
+    - service: automation.turn_on
+      target:
+        entity_id: '{{ this.entity_id }}'
+  - alias: Frigate Event
+    conditions:
+    - condition: trigger
+      id: frigate-event
+    - '{{ is_state(this.entity_id, ''on'') }}'
+    - '{{ not this.attributes.last_triggered or (now() - this.attributes.last_triggered).seconds
+      > cooldown }}'
+    sequence:
+    - variables:
+        id: '{{ trigger.payload_json[''after''][''id''] }}'
+        object: '{{ trigger.payload_json[''after''][''label''] }}'
+        label: '{{ object | title }}'
+        initial_home: '{{ presence_entity != '''' and is_state(presence_entity, ''home'')
+          }}'
+        initial_entered_zones: '{{ trigger.payload_json[''after''][''entered_zones'']
+          }}'
+    - alias: Notifications enabled for object label
+      condition: template
+      value_template: '{{ not labels|length or object in labels }}'
+    - alias: Notify on new object
+      choose:
+      - conditions:
+        - '{{ not zone_only or initial_entered_zones|length > 0 }}'
+        - '{{ not zones|length or zones|select(''in'', initial_entered_zones)|list|length
+          > 0 }}'
+        - '{{ not initial_home }}'
+        sequence:
+        - choose:
+          - conditions: '{{ not group_target }}'
+            sequence:
+            - device_id: !input notify_device
+              domain: mobile_app
+              type: notify
+              message: A {{ label }} was detected on the {{ camera_name }} camera.
+              data:
+                tag: '{{ id }}'
+                group: frigate-notification-{{ camera }}
+                image: /api/frigate/notifications/{{id}}/thumbnail.jpg?format=android
+                clickAction: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                ttl: '{{ iif(critical, 0, 3600000) }}'
+                priority: '{{ iif(critical, ''high'', ''normal'') }}'
+                url: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                attachment:
+                  url: /api/frigate/notifications/{{id}}/thumbnail.jpg
+                push:
+                  interruption-level: '{{ iif(critical, ''critical'', ''active'')
+                    }}'
+                actions:
+                - action: URI
+                  title: View Clip
+                  uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                - action: URI
+                  title: View Snapshot
+                  uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
+                - action: silence-{{ camera }}
+                  title: Silence New Notifications
+                  destructive: true
+          default:
+          - service: notify.{{ group_target }}
+            data:
+              message: A {{ label }} was detected on the {{ camera_name }} camera.
+              data:
+                tag: '{{ id }}'
+                group: frigate-notification-{{ camera }}
+                image: /api/frigate/notifications/{{id}}/thumbnail.jpg?format=android
+                clickAction: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                ttl: '{{ iif(critical, 0, 3600000) }}'
+                priority: '{{ iif(critical, ''high'', ''normal'') }}'
+                url: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                attachment:
+                  url: /api/frigate/notifications/{{id}}/thumbnail.jpg
+                push:
+                  interruption-level: '{{ iif(critical, ''critical'', ''active'')
+                    }}'
+                actions:
+                - action: URI
+                  title: View Clip
+                  uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                - action: URI
+                  title: View Snapshot
+                  uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
+                - action: silence-{{ camera }}
+                  title: Silence New Notifications
+                  destructive: true
+    - repeat:
+        sequence:
+        - wait_for_trigger:
+          - platform: mqtt
+            topic: frigate/events
+            payload: '{{ id }}'
+            value_template: '{{ value_json[''after''][''id''] }}'
+          timeout:
+            minutes: 2
+          continue_on_timeout: false
+        - variables:
+            event: '{{ wait.trigger.payload_json }}'
+            loitering: '{{ loiter_timer and event[''before''][''motionless_count'']/fps/60
+              < loiter_timer and event[''after''][''motionless_count'']/fps/60 >=
+              loiter_timer }}'
+            new_snapshot: '{{ update_thumbnail and event[''before''][''snapshot_time'']
+              != event[''after''][''snapshot_time''] }}'
+            home: '{{ presence_entity != '''' and is_state(presence_entity, ''home'')
+              }}'
+            presence_changed: '{{ presence_entity != '''' and as_datetime(event[''before''][''frame_time''])
+              < states[presence_entity].last_changed }}'
+            last_zones: '{{ event[''before''][''entered_zones''] }}'
+            entered_zones: '{{ event[''after''][''entered_zones''] }}'
+            zone_filter: '{{ not zone_only or entered_zones|length > 0 }}'
+            stationary_moved: '{{ event[''after''][''position_changes''] > event[''before''][''position_changes'']
+              }}'
+            zone_only_changed: '{{ zone_only and (entered_zones|length > 0 and not
+              last_zones|length) }}'
+            entered_zones_changed: '{{ zones|length > 0 and (zones|select(''in'',
+              entered_zones)|list|length > 0 and not zones|select(''in'', last_zones)|list|length)
+              }}'
+            update: '{{ new_snapshot and not loitering and not presence_changed and
+              not zone_only_changed and not entered_zones_changed }}'
+        - alias: Notify on loitering or significant change
+          choose:
+          - conditions: '{{ loitering or (not home and zone_filter and (new_snapshot
+              or presence_changed or stationary_moved or zone_only_changed or entered_zones_changed))
+              }}'
+            sequence:
+            - choose:
+              - conditions: '{{ not group_target }}'
+                sequence:
+                - device_id: !input notify_device
+                  domain: mobile_app
+                  type: notify
+                  message: A {{ label }} {{ 'is loitering' if loitering else 'was
+                    detected' }} on the {{ camera_name }} camera.
+                  data:
+                    tag: '{{ id }}{{''-loitering'' if loitering}}'
+                    group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
+                    image: /api/frigate/notifications/{{id}}/thumbnail.jpg?format=android
+                    clickAction: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    ttl: '{{ iif(critical, 0, 3600000) }}'
+                    priority: '{{ iif(critical, ''high'', ''normal'') }}'
+                    url: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    attachment:
+                      url: /api/frigate/notifications/{{id}}/thumbnail.jpg
+                    sound: '{{ iif(update, ''none'', ''default'') }}'
+                    push:
+                      interruption-level: '{{ iif(critical, ''critical'', ''active'')
+                        }}'
+                    actions:
+                    - action: URI
+                      title: View Clip
+                      uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    - action: URI
+                      title: View Snapshot
+                      uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
+                    - action: silence-{{ camera }}
+                      title: Silence New Notifications
+                      destructive: true
+              default:
+              - service: notify.{{ group_target }}
+                data:
+                  message: A {{ label }} {{ 'is loitering' if loitering else 'was
+                    detected' }} on the {{ camera_name }} camera.
+                  data:
+                    tag: '{{ id }}{{''-loitering'' if loitering}}'
+                    group: frigate-notification-{{ camera }}{{'-loitering' if loitering}}
+                    image: /api/frigate/notifications/{{id}}/thumbnail.jpg?format=android
+                    clickAction: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    ttl: '{{ iif(critical, 0, 3600000) }}'
+                    priority: '{{ iif(critical, ''high'', ''normal'') }}'
+                    url: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    attachment:
+                      url: /api/frigate/notifications/{{id}}/thumbnail.jpg
+                    sound: '{{ iif(update, ''none'', ''default'') }}'
+                    push:
+                      interruption-level: '{{ iif(critical, ''critical'', ''active'')
+                        }}'
+                    actions:
+                    - action: URI
+                      title: View Clip
+                      uri: '{{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4'
+                    - action: URI
+                      title: View Snapshot
+                      uri: '{{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg'
+                    - action: silence-{{ camera }}
+                      title: Silence New Notifications
+                      destructive: true
+        until: '{{ not wait.trigger or wait.trigger.payload_json[''type''] == ''end''
+          }}'

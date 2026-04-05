@@ -1,0 +1,274 @@
+synthwave:
+  # text
+  primary-text-color: '#fff'
+  secondary-text-color: '#ffffffca'
+  text-primary-color: '#f4eee4'
+  disabled-text-color: '#bdbdbd'
+  text-light-primary-color: '#fff'
+
+  # main interface colors
+  primary-color: '#f92aad'
+  primary-background-color: '#2a2139'
+  dark-primary-color: '#f92aad'
+  light-primary-color: '#241b2f'
+  accent-color: '#f92aad'
+  divider-color: '#49549539'
+  paper-dialog-button-color: '#fff'
+  switch-unchecked-button-color: '#fff'
+  outline-color: 'rgba(255, 255, 255, 0.12)'
+  outline-over-color: 'rgba(255, 255, 255, 0.24)'
+  # iron-icon-fill-color: '#fff'
+  yellow: '#ffcc00'
+  green: '#72f1b8cc'
+  
+  ###
+  
+  # background and sidebar
+  card-background-color: '#34294f'
+  app-header-background-color: 'var(--primary-background-color)'
+  paper-card-background-color: 'var(--card-background-color)'
+  secondary-background-color: 'var(--light-primary-color)' # behind the cards on state
+  ha-card-border-radius: '8px'
+  
+  # sidebar menu
+  sidebar-text-color: 'var(--secondary-text-color)'
+  # sidebar-background-color: 'var(--paper-listbox-background-color)' # backward compatible with existing themes
+  sidebar-icon-color: 'var(--secondary-text-color)'
+  sidebar-selected-text-color: 'var(--primary-text-color)'
+  sidebar-selected-icon-color: 'var(--primary-text-color)'
+  
+  # mwc - for some reason it's buttons
+  mdc-theme-primary: 'var(--dark-primary-color)'
+  mdc-theme-secondary: 'var(--dark-primary-color)'
+  
+  # shadows
+  ha-card-box-shadow: '0'
+
+  # icons
+  paper-item-icon-color: 'var(--secondary-text-color)'  # Off
+  paper-item-icon-active-color: 'var(--yellow)' # On
+
+  # switches
+  toggle-button-color: 'var(--primary-color)'
+  # --toggle-button-unchecked-color: 'var(--accent-color)'
+  paper-toggle-button-checked-button-color: 'var(--primary-text-color)' # Knob On
+  paper-toggle-button-checked-bar-color: 'var(--dark-primary-color)' # Background On
+  switch-checked-color: 'var(--dark-primary-color)' # Background On
+  paper-toggle-button-unchecked-button-color: 'var(--primary-text-color)' # Knob Off
+  paper-toggle-button-unchecked-bar-color: 'var(--disabled-text-color)' # Background Off
+
+  # Sliders
+  slider-color: 'var(--primary-color)'
+  slider-secondary-color: 'var(--light-primary-color)'
+  slider-bar-color: 'var(--disabled-text-color)'
+  paper-slider-knob-color: 'var(--accent-color)'
+  paper-slider-knob-start-color: 'var(--accent-color)'
+  paper-slider-pin-color: 'var(--accent-color)'
+  paper-slider-active-color: 'var(--dark-primary-color)'
+  # paper-slider-container-color: 'linear-gradient(var(--primary-background-color), var(--secondary-background-color)) no-repeat'
+  paper-slider-secondary-color: 'var(--secondary-background-color)'
+  paper-slider-disabled-active-color: 'var(--disabled-text-color)'
+  paper-slider-disabled-secondary-color: 'var(--disabled-text-color)'
+  switch-unchecked-track-color: 'var(--primary-text-color)'
+
+  # radio buttons
+  paper-radio-button-checked-color: 'var(--paper-toggle-button-checked-button-color)'
+  paper-radio-button-unchecked-color: 'var(--paper-toggle-button-unchecked-button-color)'
+
+  # other
+  state-icon-color: 'var(--green)'
+  table-row-background-color: 'var(--divider-color)'
+  table-row-alternative-background-color: 'var(--light-primary-color)'
+  
+  # Inputs
+  mdc-select-fill-color: 'var(--card-background-color)'
+  mdc-select-ink-color: 'var(--primary-text-color)'
+  mdc-select-label-ink-color: 'var(--primary-text-color)'
+  mdc-select-dropdown-icon-color: 'var(--primary-text-color)'
+  mdc-text-field-label-ink-color: 'var(--primary-text-color)'
+  mdc-text-field-ink-color: 'var(--primary-text-color)'
+  mdc-text-field-fill-color: 'var(--card-background-color)'
+  input-dropdown-icon-color: 'var(--primary-text-color)'
+  # Inputs Ripple/line
+  mdc-ripple-color: 'var(--primary-text-color)'
+  mdc-text-field-idle-line-color: 'var(--primary-text-color)'
+  mdc-text-field-hover-line-color: 'var(--primary-text-color)'
+  mdc-select-idle-line-color: 'var(--primary-text-color)'
+  mdc-select-hover-line-color: 'var(--primary-text-color)'
+  # Inputs Disabled
+  mdc-select-disabled-fill-color: 'var(--primary-background-color)'
+  mdc-select-disabled-ink-color: 'var(--disabled-text-color)'
+  mdc-select-disabled-dropdown-icon-color: 'var(--disabled-text-color)'
+  mdc-text-field-disabled-fill-color: 'var(--primary-background-color)'
+  mdc-text-field-disabled-ink-color: 'var(--disabled-text-color)'
+  mdc-text-field-disabled-dropdown-icon-color: 'var(--disabled-text-color)'
+  
+  # Template Editor
+  codemirror-keyword: '#36f9f6'
+  codemirror-operator: '#36f9f6'
+  codemirror-variable: '#ff7edb'
+  codemirror-variable-2: '#ff7edb'
+  codemirror-variable-3: '#ff7edb'
+  codemirror-builtin: '#36f9f6'
+  codemirror-atom: '#36f9f6'
+  codemirror-number: '#f97e72'
+  codemirror-def: '#fe4450'
+  codemirror-string: '#ff8b39'
+  codemirror-string-2: '#ff8b39'
+  codemirror-comment: '#848bbd'
+  codemirror-tag: '#72f1b8'
+  codemirror-meta: '#36f9f6'
+  codemirror-attribute: '#fede5d'
+  codemirror-qualifier: '#fe4450'
+  codemirror-property: 'var(--primary-color)'
+  codemirror-type: '#fe4450'
+  
+  ###
+
+  # UI
+  paper-card-header-color: 'var(--text-primary-color)' # Title in settings
+
+  # Left Menu
+  paper-listbox-background-color: 'var(--light-primary-color)' # Background
+  sidebar-background-color: 'var(--light-primary-color)'
+
+  # bar-card compatibility
+  # https://github.com/custom-cards/bar-card
+  custom-bar-card-color: 'var(--accent-color)'
+
+  # fix dropdown background
+  material-background-color: 'var(--light-primary-color)'
+
+  # Scrollbar
+  scrollbar-thumb-color: 'var(--divider-color)'
+
+  # simple-thermostat buttons
+  # https://github.com/nervetattoo/simple-thermostat
+  st-mode-background: 'var(--primary-background-color)'
+  st-mode-active-background: 'var(--dark-primary-color)'
+
+  # core color tokens
+  ha-color-primary-05: '#720a49'
+  ha-color-primary-10: '#800952'
+  ha-color-primary-20: '#9d0e66'
+  ha-color-primary-30: '#d40588'
+  ha-color-primary-40: 'var(--primary-color)'
+  ha-color-primary-50: '#ee56b6'
+  ha-color-primary-60: '#e77ec0'
+  ha-color-primary-70: '#e4a2cc'
+  ha-color-primary-80: '#e6c2d9'
+  ha-color-primary-90: '#f6d9ec'
+  ha-color-primary-95: '#f4f0f2'
+  ha-color-primary-99: '#fcfcfc'
+
+  ha-color-neutral-05: '#131216'
+  ha-color-neutral-10: '#1e1d22'
+  ha-color-neutral-20: '#333139'
+  ha-color-neutral-30: '#47444f'
+  ha-color-neutral-40: '#5b5665'
+  ha-color-neutral-50: '#767084'
+  ha-color-neutral-60: '#9590a1'
+  ha-color-neutral-70: '#ada9b6'
+  ha-color-neutral-80: '#cac7d0'
+  ha-color-neutral-90: '#e4e3e7'
+  ha-color-neutral-95: '#f1f1f3'
+
+  # semantic color tokens from the default dark theme (Home Assistant 2026.1)
+  ha-color-text-primary: var(--white-color)
+  ha-color-text-secondary: var(--ha-color-neutral-80)
+  ha-color-text-link: var(--ha-color-primary-60)
+
+  ha-color-border-normal: var(--ha-color-primary-50)
+
+  ha-color-border-neutral-quiet: var(--ha-color-neutral-40)
+  ha-color-border-neutral-normal: var(--ha-color-neutral-50)
+  ha-color-border-neutral-loud: var(--ha-color-neutral-70)
+
+  ha-color-border-danger-normal: var(--ha-color-red-50)
+  ha-color-border-danger-loud: var(--ha-color-red-50)
+
+  ha-color-border-warning-normal: var(--ha-color-orange-50)
+  ha-color-border-warning-loud: var(--ha-color-orange-50)
+
+  ha-color-fill-primary-quiet-resting: var(--ha-color-primary-05)
+  ha-color-fill-primary-quiet-hover: var(--ha-color-primary-10)
+  ha-color-fill-primary-quiet-active: var(--ha-color-primary-05)
+
+  ha-color-fill-primary-normal-resting: var(--ha-color-primary-10)
+  ha-color-fill-primary-normal-hover: var(--ha-color-primary-20)
+  ha-color-fill-primary-normal-active: var(--ha-color-primary-10)
+
+  ha-color-fill-neutral-quiet-resting: var(--ha-color-neutral-05)
+  ha-color-fill-neutral-quiet-f-fill-neutral-quiet-active: var(--ha-color-neutral-00)
+
+  ha-color-fill-neutral-normal-resting: var(--ha-color-neutral-10)
+  ha-color-fill-neutral-normal-hover: var(--ha-color-neutral-20)
+  ha-color-fill-neutral-normal-active: var(--ha-color-neutral-10)
+
+  ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10)
+
+  ha-color-fill-disabled-normal-resting: var(--ha-color-neutral-20)
+
+  ha-color-fill-disabled-loud-resting: var(--ha-color-neutral-30)
+
+  ha-color-fill-danger-quiet-resting: var(--ha-color-red-05)
+  ha-color-fill-danger-quiet-hover: var(--ha-color-red-10)
+  ha-color-fill-danger-quiet-active: var(--ha-color-red-05)
+
+  ha-color-fill-danger-normal-resting: var(--ha-color-red-10)
+  ha-color-fill-danger-normal-hover: var(--ha-color-red-20)
+  ha-color-fill-danger-normal-active: var(--ha-color-red-10)
+
+  ha-color-fill-danger-loud-resting: var(--ha-color-red-40)
+  ha-color-fill-danger-loud-hover: var(--ha-color-red-30)
+  ha-color-fill-danger-loud-active: var(--ha-color-red-40)
+
+  ha-color-fill-warning-quiet-resting: var(--ha-color-orange-05)
+  ha-color-fill-warning-quiet-hover: var(--ha-color-orange-10)
+  ha-color-fill-warning-quiet-active: var(--ha-color-orange-05)
+
+  ha-color-fill-warning-normal-resting: var(--ha-color-orange-10)
+  ha-color-fill-warning-normal-hover: var(--ha-color-orange-20)
+  ha-color-fill-warning-normal-active: var(--ha-color-orange-10)
+
+  ha-color-fill-warning-loud-resting: var(--ha-color-orange-40)
+  ha-color-fill-warning-loud-hover: var(--ha-color-orange-30)
+  ha-color-fill-warning-loud-active: var(--ha-color-orange-40)
+
+  ha-color-fill-success-quiet-resting: var(--ha-color-green-05)
+  ha-color-fill-success-quiet-hover: var(--ha-color-green-10)
+  ha-color-fill-success-quiet-active: var(--ha-color-green-05)
+
+  ha-color-fill-success-normal-resting: var(--ha-color-green-10)
+  ha-color-fill-success-normal-hover: var(--ha-color-green-20)
+  ha-color-fill-success-normal-active: var(--ha-color-green-10)
+
+  ha-color-fill-success-loud-resting: var(--ha-color-green-40)
+  ha-color-fill-success-loud-hover: var(--ha-color-green-30)
+  ha-color-fill-success-loud-active: var(--ha-color-green-40)
+
+  ha-color-on-primary-quiet: var(--ha-color-primary-70)
+  ha-color-on-primary-normal: var(--ha-color-primary-60)
+
+  ha-color-on-neutral-quiet: var(--ha-color-neutral-70)
+  ha-color-on-neutral-normal: var(--ha-color-neutral-60)
+  ha-color-on-neutral-loud: var(--white-color)
+
+  ha-color-on-disabled-quiet: var(--ha-color-neutral-40)
+  ha-color-on-disabled-normal: var(--ha-color-neutral-50)
+  ha-color-on-disabled-loud: var(--ha-color-neutral-50)
+
+  ha-color-on-danger-quiet: var(--ha-color-red-70)
+  ha-color-on-danger-normal: var(--ha-color-red-60)
+  ha-color-on-danger-loud: var(--white-color)
+
+  ha-color-on-warning-quiet: var(--ha-color-orange-70)
+  ha-color-on-warning-normal: var(--ha-color-orange-60)
+  ha-color-on-warning-loud: var(--white-color)
+
+  ha-color-on-success-quiet: var(--ha-color-green-70)
+  ha-color-on-success-normal: var(--ha-color-green-60)
+  ha-color-on-success-loud: var(--white-color)
+
+  ha-color-surface-default: var(--ha-color-neutral-10)
+  ha-color-on-surface-default: var(--ha-color-neutral-95)

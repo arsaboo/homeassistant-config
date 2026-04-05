@@ -56,7 +56,7 @@ views:
               width: 7%
             # Kitchen
           - type: image
-            entity: light.kitchen_lights
+            entity: light.kitchen
             tap_action:
               action: toggle
             image: /local/icons/light_bulb_off.png
@@ -71,12 +71,12 @@ views:
               width: 7%
               padding: 50px 50px 100px 50px
           - type: state-icon
-            entity: binary_sensor.water_leak_sensor_158d00027b0db6
+            entity: binary_sensor.kitchen_leak
             style:
               top: 42%
               left: 21%
           - type: state-icon
-            entity: binary_sensor.water_leak_sensor_158d00024bfa97
+            entity: binary_sensor.powder_room_leak
             style:
               top: 62%
               left: 22%
@@ -91,7 +91,7 @@ views:
               width: 7%
               transform: none
           - type: image
-            entity: camera.patio
+            entity: camera.sunroom_sunroom
             image: /local/icons/camera_patio_streaming.png
             state_image:
               'recording': /local/icons/camera_patio_recording.png
@@ -101,7 +101,7 @@ views:
               width: 7%
               transform: none
           - type: image
-            entity: camera.backyard
+            entity: camera.pergola_pergola
             image: /local/icons/camera_backyard_streaming.png
             state_image:
               'recording': /local/icons/camera_backyard_recording.png
@@ -189,17 +189,17 @@ views:
               # 'height': 20px
               # 'opacity': 0.8
           - type: state-icon
-            entity: binary_sensor.motion_sensor_158d00016daecc
+            entity: binary_sensor.living_room_motion
             style:
               top: 27%
               left: 50%
           - type: state-icon
-            entity: binary_sensor.back_door
+            entity: binary_sensor.back_door_entry_door
             style:
               top: 17%
               left: 15%
           - type: image
-            entity: media_player.sammytv
+            entity: media_player.living_room_tv
             tap_action:
               action: toggle
             image: /local/icons/tv_off2.png
@@ -215,12 +215,12 @@ views:
               padding: 10px 0 10px 30px
             # Guest Room
           - type: state-icon
-            entity: binary_sensor.motion_sensor_158d0001a1f2ab
+            entity: binary_sensor.guest_room_motion
             style:
               top: 27%
               left: 85%
           - type: state-icon
-            entity: binary_sensor.water_leak_sensor_158d0001bb788c
+            entity: binary_sensor.guest_bathroom_leak
             style:
               top: 42%
               left: 85%
@@ -247,13 +247,13 @@ views:
               width: 7%
               padding: 10px
           - type: state-icon
-            entity: binary_sensor.front_door_motion_2
+            entity: binary_sensor.g4_doorbell_pro_motion
             style:
               top: 95%
               left: 32%
             # Garage
           - type: state-icon
-            entity: binary_sensor.door_window_sensor_158d0001bf26df
+            entity: binary_sensor.mud_room_door_4
             style:
               top: 64%
               left: 56%
@@ -272,6 +272,11 @@ views:
               left: 78%
               width: 7%
               padding: 10px
+          - type: state-icon
+            entity: binary_sensor.garage_water_moisture
+            style:
+              top: 50%
+              left: 94%
           - type: image
             entity: switch.driveway
             tap_action:
@@ -317,7 +322,17 @@ views:
               font-family: Helvetica
               display: block
               overflow: hidden
-
+          - type: state-icon
+            entity: binary_sensor.sunroom_motion_3
+            style:
+              top: 10%
+              left: 16%
+          - type: state-icon
+            entity: binary_sensor.sun_room_entry_door
+            style:
+              top: 7%
+              left: 20%
+              transform: rotate(-90deg)
             # Dining
           # - type: custom:thermostat-card
           #   entity: climate.downstairs
@@ -402,7 +417,7 @@ views:
         image: /local/floorplans/second.jpg
         elements:
           - type: state-icon
-            entity: binary_sensor.motion_sensor_158d00016612af
+            entity: binary_sensor.upstairs_motion_sensor
             style:
               top: 40%
               left: 35%
@@ -418,18 +433,10 @@ views:
           #     width: 50px
           #     height: 50px
           - type: state-icon
-            entity: binary_sensor.motion_sensor_158d00016c53bf
+            entity: binary_sensor.master_motion
             style:
               top: 55%
               left: 80%
-          - type: state-label
-            entity: sensor.illumination_158d00016c53bf
-            style:
-              top: 78%
-              left: 80%
-              text-align: center
-              font-size: 12px
-              color: black
           - type: image
             entity: light.master_lights
             tap_action:
@@ -479,10 +486,15 @@ views:
               left: 16%
               width: 7%
               padding: 50px 50px 100px 50px
+          - type: state-icon
+            entity: binary_sensor.kids_room_moisture
+            style:
+              top: 63%
+              left: 12%
 
             # Laundry
           - type: state-icon
-            entity: binary_sensor.water_leak_sensor_158d0001d77800
+            entity: binary_sensor.laundry_leak
             style:
               top: 25%
               left: 66%
@@ -530,93 +542,93 @@ views:
                 style:
                   top: 66%
                   left: 86%
-      - type: 'custom:config-template-card'
-        entities:
-          - sensor.nasdaq_futures_change
-          - sensor.dow_futures_change
-          - sensor.s_p_futures_change
-          - sensor.portfoliochange2
-        variables:
-          - parseFloat(states['sensor.portfoliochange2'].state)
-          - parseFloat(states['sensor.dow_futures_change_pct'].state)
-          - parseFloat(states['sensor.s_p_futures_change_pct'].state)
-          - parseFloat(states['sensor.nasdaq_futures_change_pct'].state)
-        card:
-          type: 'custom:hui-entities-card'
-          title: Investments
-          show_header_toggle: false
-          entities:
-            - sensor.pc_networth
-            - type: custom:card-modder
-              entity: sensor.pc_investment
-              style:
-                --paper-item-icon-color: "${vars[0] < 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
-              card:
-                type: "custom:secondaryinfo-entity-row"
-                entity: sensor.pc_investment
-                secondary_info: "${'Change: ' + vars[0]}"
-                icon: "${vars[0] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              entity: sensor.dow_futures
-              style:
-                --paper-item-icon-color: "${
-                  vars[1] < -2.5 ? 'rgb(151, 26, 30)' :
-                  vars[1] < -2.0 ? 'rgb(194, 39, 45)' :
-                  vars[1] < -1.5 ? 'rgb(236, 27, 33)' :
-                  vars[1] < -1.0 ? 'rgb(244, 101, 35)' :
-                  vars[1] < -0.5 ? 'rgb(248, 147, 29)' :
-                  vars[1] < 0 ? 'rgb(255, 194, 15)' :
-                  vars[1] = 0 ? 'rgb(20, 142, 153)' :
-                  vars[1] < 0.5 ? 'rgb(202, 219, 43)' :
-                  vars[1] < 1.0 ? 'rgb(142, 198, 65)' :
-                  vars[1] < 1.5 ? 'rgb(106, 158, 47)' :
-                  vars[1] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: "custom:secondaryinfo-entity-row"
-                entity: sensor.dow_futures
-                secondary_info: "${'Change: ' + states['sensor.dow_futures_change'].state + ' (' +  vars[1] + '%)'}"
-                icon: "${vars[1] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              entity: sensor.s_p_futures
-              style:
-                --paper-item-icon-color: "${
-                  vars[2] < -2.5 ? 'rgb(151, 26, 30)' :
-                  vars[2] < -2.0 ? 'rgb(194, 39, 45)' :
-                  vars[2] < -1.5 ? 'rgb(236, 27, 33)' :
-                  vars[2] < -1.0 ? 'rgb(244, 101, 35)' :
-                  vars[2] < -0.5 ? 'rgb(248, 147, 29)' :
-                  vars[2] < 0 ? 'rgb(255, 194, 15)' :
-                  vars[2] = 0 ? 'rgb(20, 142, 153)' :
-                  vars[2] < 0.5 ? 'rgb(202, 219, 43)' :
-                  vars[2] < 1.0 ? 'rgb(142, 198, 65)' :
-                  vars[2] < 1.5 ? 'rgb(106, 158, 47)' :
-                  vars[2] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: "custom:secondaryinfo-entity-row"
-                entity: sensor.s_p_futures
-                secondary_info: "${'Change: ' + states['sensor.s_p_futures_change'].state + ' (' +  vars[2] + '%)'}"
-                icon: "${vars[2] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - type: custom:card-modder
-              entity: sensor.nasdaq_futures
-              style:
-                --paper-item-icon-color: "${
-                  vars[3] < -2.5 ? 'rgb(151, 26, 30)' :
-                  vars[3] < -2.0 ? 'rgb(194, 39, 45)' :
-                  vars[3] < -1.5 ? 'rgb(236, 27, 33)' :
-                  vars[3] < -1.0 ? 'rgb(244, 101, 35)' :
-                  vars[3] < -0.5 ? 'rgb(248, 147, 29)' :
-                  vars[3] < 0 ? 'rgb(255, 194, 15)' :
-                  vars[3] = 0 ? 'rgb(20, 142, 153)' :
-                  vars[3] < 0.5 ? 'rgb(202, 219, 43)' :
-                  vars[3] < 1.0 ? 'rgb(142, 198, 65)' :
-                  vars[3] < 1.5 ? 'rgb(106, 158, 47)' :
-                  vars[3] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
-              card:
-                type: "custom:secondaryinfo-entity-row"
-                entity: sensor.nasdaq_futures
-                secondary_info: "${'Change: ' + states['sensor.nasdaq_futures_change'].state + ' (' +  vars[3] + '%)'}"
-                icon: "${vars[3] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
-            - sensor.10_year_treasury
+      # - type: 'custom:config-template-card'
+      #   entities:
+      #     - sensor.nasdaq_futures_change
+      #     - sensor.dow_futures_change
+      #     - sensor.s_p_futures_change
+      #     - sensor.portfoliochange2
+      #   variables:
+      #     - parseFloat(states['sensor.portfoliochange2'].state)
+      #     - parseFloat(states['sensor.dow_futures_change_pct'].state)
+      #     - parseFloat(states['sensor.s_p_futures_change_pct'].state)
+      #     - parseFloat(states['sensor.nasdaq_futures_change_pct'].state)
+      #   card:
+      #     type: 'custom:hui-entities-card'
+      #     title: Investments
+      #     show_header_toggle: false
+      #     entities:
+      #       - sensor.pc_networth
+      #       - type: custom:card-modder
+      #         entity: sensor.pc_investment
+      #         style:
+      #           --paper-item-icon-color: "${vars[0] < 0 ? 'rgb(194, 39, 45)' : 'rgb(37, 145, 60)'}"
+      #         card:
+      #           type: "custom:secondaryinfo-entity-row"
+      #           entity: sensor.pc_investment
+      #           secondary_info: "${'Change: ' + vars[0]}"
+      #           icon: "${vars[0] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - type: custom:card-modder
+      #         entity: sensor.dow_futures
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             vars[1] < -2.5 ? 'rgb(151, 26, 30)' :
+      #             vars[1] < -2.0 ? 'rgb(194, 39, 45)' :
+      #             vars[1] < -1.5 ? 'rgb(236, 27, 33)' :
+      #             vars[1] < -1.0 ? 'rgb(244, 101, 35)' :
+      #             vars[1] < -0.5 ? 'rgb(248, 147, 29)' :
+      #             vars[1] < 0 ? 'rgb(255, 194, 15)' :
+      #             vars[1] = 0 ? 'rgb(20, 142, 153)' :
+      #             vars[1] < 0.5 ? 'rgb(202, 219, 43)' :
+      #             vars[1] < 1.0 ? 'rgb(142, 198, 65)' :
+      #             vars[1] < 1.5 ? 'rgb(106, 158, 47)' :
+      #             vars[1] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: "custom:secondaryinfo-entity-row"
+      #           entity: sensor.dow_futures
+      #           secondary_info: "${'Change: ' + states['sensor.dow_futures_change'].state + ' (' +  vars[1] + '%)'}"
+      #           icon: "${vars[1] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - type: custom:card-modder
+      #         entity: sensor.s_p_futures
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             vars[2] < -2.5 ? 'rgb(151, 26, 30)' :
+      #             vars[2] < -2.0 ? 'rgb(194, 39, 45)' :
+      #             vars[2] < -1.5 ? 'rgb(236, 27, 33)' :
+      #             vars[2] < -1.0 ? 'rgb(244, 101, 35)' :
+      #             vars[2] < -0.5 ? 'rgb(248, 147, 29)' :
+      #             vars[2] < 0 ? 'rgb(255, 194, 15)' :
+      #             vars[2] = 0 ? 'rgb(20, 142, 153)' :
+      #             vars[2] < 0.5 ? 'rgb(202, 219, 43)' :
+      #             vars[2] < 1.0 ? 'rgb(142, 198, 65)' :
+      #             vars[2] < 1.5 ? 'rgb(106, 158, 47)' :
+      #             vars[2] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: "custom:secondaryinfo-entity-row"
+      #           entity: sensor.s_p_futures
+      #           secondary_info: "${'Change: ' + states['sensor.s_p_futures_change'].state + ' (' +  vars[2] + '%)'}"
+      #           icon: "${vars[2] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - type: custom:card-modder
+      #         entity: sensor.nasdaq_futures
+      #         style:
+      #           --paper-item-icon-color: "${
+      #             vars[3] < -2.5 ? 'rgb(151, 26, 30)' :
+      #             vars[3] < -2.0 ? 'rgb(194, 39, 45)' :
+      #             vars[3] < -1.5 ? 'rgb(236, 27, 33)' :
+      #             vars[3] < -1.0 ? 'rgb(244, 101, 35)' :
+      #             vars[3] < -0.5 ? 'rgb(248, 147, 29)' :
+      #             vars[3] < 0 ? 'rgb(255, 194, 15)' :
+      #             vars[3] = 0 ? 'rgb(20, 142, 153)' :
+      #             vars[3] < 0.5 ? 'rgb(202, 219, 43)' :
+      #             vars[3] < 1.0 ? 'rgb(142, 198, 65)' :
+      #             vars[3] < 1.5 ? 'rgb(106, 158, 47)' :
+      #             vars[3] < 2 ? 'rgb(37, 145, 60)' : 'rgb(0, 111, 58)'}"
+      #         card:
+      #           type: "custom:secondaryinfo-entity-row"
+      #           entity: sensor.nasdaq_futures
+      #           secondary_info: "${'Change: ' + states['sensor.nasdaq_futures_change'].state + ' (' +  vars[3] + '%)'}"
+      #           icon: "${vars[3] > 0 ? 'mdi:arrow-up-bold-circle' : 'mdi:arrow-down-bold-circle' }"
+      #       - sensor.10_year_treasury
       - type: entities
         title: Information
         show_header_toggle: false
@@ -638,16 +650,40 @@ views:
       - type: entities
         title: Lights
         entities:
-          - entity: light.gateway_light_34ce00813670
+          - entity: light.deck_lights
+            state_header: Light
+            type: custom:multiple-entity-row
+            entities:
+              - entity: input_boolean.deckeffects
+                name: Colorloop
+                toggle: true
+            toggle: true
+          - entity: light.sunroom_lights
+            state_header: Light
+            type: custom:multiple-entity-row
+            entities:
+              - entity: input_boolean.sunroomeffects
+                name: Colorloop
+                toggle: true
+            toggle: true
+          - entity: light.sunroom_lights
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.kitchen_lights
+          - entity: light.deck_floor
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.lifx3
+          - entity: light.pergola
+            toggle: true
+          - entity: light.xiaomi_m1_gateway
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.lifxnrguest
+          - entity: light.kitchen
+            type: custom:slider-entity-row
+            toggle: true
+          - entity: light.lifx6
+            type: custom:slider-entity-row
+            toggle: true
+          - entity: light.lifx4
             type: custom:slider-entity-row
             toggle: true
           - entity: light.lifxnrkitchen
@@ -664,16 +700,13 @@ views:
             type: custom:slider-entity-row
             toggle: true
           - type: divider
-          - entity: light.wb4_d_2
+          - entity: light.wb4_d
             type: custom:slider-entity-row
             toggle: true
           - entity: light.wb4_d_3
             type: custom:slider-entity-row
             toggle: true
-          - entity: light.wb4_d
-            type: custom:slider-entity-row
-            toggle: true
-          - entity: light.wb4_d_4
+          - entity: light.kp1
             type: custom:slider-entity-row
             toggle: true
       - type: entities
@@ -689,20 +722,33 @@ views:
             state_color: true
             secondary_info: last-changed
             entities:
-              - attribute: current_power_w
+              - entity: sensor.wemoinsight_current_power
                 unit: w
                 name: Power
           - entity: switch.smart_wifi
             type: custom:multiple-entity-row
-            name: Kasa Plug 1
+            name: Kasa Office
             toggle: True
             state_color: true
             secondary_info: last-changed
             entities:
-              - entity: sensor.smart_wifi_current
+              - entity: sensor.kasa_smart_plug_2_current
                 unit: A
                 name: Current
-              - entity: sensor.smart_wifi_current_consumption
+              - entity: sensor.kasa_smart_plug_2_current_consumption
+                unit: w
+                name: Power
+          - entity: switch.kasa_plug_3
+            type: custom:multiple-entity-row
+            name: Kasa 3
+            toggle: True
+            state_color: true
+            secondary_info: last-changed
+            entities:
+              - entity: sensor.kasa_plug_3_current
+                unit: A
+                name: Current
+              - entity: sensor.kasa_plug_3_current_consumption
                 unit: w
                 name: Power
           - entity: switch.aeon_switch
@@ -715,7 +761,7 @@ views:
             type: "custom:secondaryinfo-entity-row"
             secondary_info: '[[ sensor.rpi_cpu_thermal_1_temperature ]] °F'
             state_color: true
-          - entity: switch.smart_socket_4
+          - entity: switch.attic_switch_socket
             state_color: true
           - entity: switch.smart_socket_5
             state_color: true
@@ -723,35 +769,64 @@ views:
             state_color: true
       - type: vertical-stack
         cards:
-          - type: alarm-panel
-            entity: alarm_control_panel.abode_homekit
-            name: Abode
-            states:
-              - arm_home
-              - arm_away
-          # - type: alarm-panel
-          #   entity: alarm_control_panel.arlohome
-          #   name: Arlo
-          #   states:
-          #     - arm_away
-          - type: alarm-panel
-            entity: alarm_control_panel.aarlo_arlohome
-            name: Aarlo
-            states:
-              - arm_home
-              - arm_away
-          - type: alarm-panel
-            entity: alarm_control_panel.alexa_guard_227b3
-            name: Alexa
-            states:
-              - arm_away
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: alarm_control_panel.abode_alarm
+                features:
+                  - type: "alarm-modes"
+                    modes:
+                      - armed_home
+                      - armed_away
+                      - disarmed
+                name: Abode
+                icon: mdi:shield-home
+                layout: vertical
+              - type: tile
+                entity: alarm_control_panel.simplisafe_2
+                features:
+                  - type: "alarm-modes"
+                    modes:
+                      - armed_home
+                      - armed_away
+                      - disarmed
+                name: SimpliSafe
+                icon: mdi:shield-home
+                layout: vertical
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: alarm_control_panel.alexa_guard_227b3
+                name: Alexa
+                features:
+                  - type: "alarm-modes"
+                    modes:
+                      - armed_away
+                      - disarmed
+              - type: tile
+                entity: alarm_control_panel.aarlo_arlohome
+                features:
+                  - type: "alarm-modes"
+                    modes:
+                      - armed_home
+                      - armed_away
+                      - disarmed
+                name: Aarlo
+                icon: mdi:shield-home
+                layout: vertical
+
       - type: entities
-        title: Ring Doorbell
+        title: Unifi Doorbell
         show_header_toggle: false
         entities:
-          - entity: binary_sensor.front_door_ding
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.front_door_doorbell
             secondary_info: last-changed
-          - entity: binary_sensor.front_door_motion_2
+            entity: binary_sensor.g4_doorbell_pro_motion
+            secondary_info: last-changed
+          - entity: binary_sensor.front_door_doorbell
+            secondary_info: last-changed
+          - entity: binary_sensor.g4_doorbell_pro_motion
             secondary_info: last-changed
       - type: horizontal-stack
         cards:
@@ -800,7 +875,57 @@ views:
                 entity_id: script.cast_cycle_cameras
             entity: script.cast_cycle_cameras
             icon: mdi:cast-connected
-
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: climate.bedroom
+                features:
+                - type: "climate-hvac-modes"
+                  hvac_modes:
+                    - heat
+                    - cool
+                    - "off"
+                    - fan
+              - type: tile
+                entity: climate.upstairs
+                features:
+                - type: "climate-hvac-modes"
+                  hvac_modes:
+                    - heat
+                    - cool
+                    - "off"
+                    - fan
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: climate.downstairs
+                features:
+                - type: "climate-hvac-modes"
+                  hvac_modes:
+                    - heat
+                    - cool
+                    - "off"
+                    - fan
+              - type: tile
+                entity: climate.sunroom
+                features:
+                - type: "climate-hvac-modes"
+                  hvac_modes:
+                    - heat
+                    - "off"
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: person.alok
+            show_entity_picture: true
+          - type: tile
+            entity: person.rashmi
+            show_entity_picture: true
+          - type: tile
+            entity: person.arnav
+            show_entity_picture: true
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather
@@ -823,59 +948,79 @@ views:
             title: Room Sensors
             show_header_toggle: false
             entities:
-              - entity: sensor.illumination_158d00016612af
+              - entity: binary_sensor.guest_room_motion
                 type: custom:multiple-entity-row
-                name: Brightness
-                show_state: false
-                entities:
-                  - entity: sensor.illumination_158d00016612af
-                    name: Upstairs
-                  - entity: sensor.illumination_34ce00813670
-                    name: Living Room
-                  - entity: sensor.illumination_158d0001a1f2ab
-                    name: Guest Room
-              - type: divider
-              - entity: sensor.temperature_158d0001ab7d20
-                type: custom:multiple-entity-row
-                name: Attic
+                name: Guest Room
                 secondary_info: last-changed
                 show_state: false
                 entities:
-                  - entity: sensor.humidity_158d0001ab7d20
-                    name: Humidity
-                  - entity: sensor.pressure_158d0001ab7d20
-                    name: Pressure
-                  - entity: sensor.temperature_158d0001ab7d20
+                  - entity: sensor.guest_room_illuminance
+                    name: Illuminance
+                  - entity: sensor.guest_motion_device_temperature
                     name: Temp
-              - entity: sensor.temperature_158d0001ab3c88
-                type: custom:multiple-entity-row
-                name: Living Room
-                secondary_info: last-changed
-                show_state: false
-                entities:
-                  - entity: sensor.humidity_158d0001ab3c88
-                    name: Humidity
-                  - entity: sensor.pressure_158d0001ab3c88
-                    name: Pressure
-                  - entity: sensor.temperature_158d0001ab3c88
-                    name: Temp
-              - entity: sensor.temperature_158d0001ab3b2b
+                    format: precision0
+              - entity: sensor.study_temperature_2
                 type: custom:multiple-entity-row
                 name: Study
                 secondary_info: last-changed
                 show_state: false
                 entities:
-                  - entity: sensor.humidity_158d0001ab3b2b
+                  - entity: sensor.study_humidity
                     name: Humidity
-                  - entity: sensor.pressure_158d0001ab3b2b
-                    name: Pressure
-                  - entity: sensor.temperature_158d0001ab3b2b
+                  - entity: sensor.study_temperature_2
                     name: Temp
+                    format: precision0
+              - entity: binary_sensor.sunroom_motion_3
+                type: custom:multiple-entity-row
+                name: Sun Room
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.sunroom_humidity
+                    name: Humidity
+                  - entity: sensor.sunroom_temperature
+                    name: Temp
+                    format: precision0
+              - entity: binary_sensor.living_room_motion
+                type: custom:multiple-entity-row
+                name: Living Room
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.vent_humidity_sensor
+                    name: Vent Humidity
+                    format: precision0
+                  - entity: sensor.vent
+                    name: Vent Temp
+                    format: precision0
+                  - entity: sensor.downstairs_humidity
+                    name: Humidity
+                    format: precision0
+                  - entity: sensor.living_room_temperature_homekit
+                    name: Temp
+                    format: precision0
+              - entity: binary_sensor.master_motion
+                type: custom:multiple-entity-row
+                name: Master
+                secondary_info: last-changed
+                show_state: false
+                entities:
+                  - entity: sensor.master_vent_humidity_sensor
+                    name: Vent Humidity
+                    format: precision0
+                  - entity: sensor.master_vent
+                    name: Vent Temp
+                    format: precision0
+                  - entity: sensor.bedroom_humidity
+                    name: Humidity
+                  - entity: sensor.master_temperature
+                    name: Temp
+                    format: precision0
           - type: horizontal-stack
             cards:
               - type: custom:button-card
                 name: Laundry
-                entity: binary_sensor.water_leak_sensor_158d0001d77800
+                entity: binary_sensor.laundry_leak
                 styles:
                   card:
                     - font-size: 12px
@@ -887,7 +1032,7 @@ views:
                     icon: mdi:water-off
               - type: custom:button-card
                 name: Kitchen Sink
-                entity: binary_sensor.water_leak_sensor_158d00027b0db6
+                entity: binary_sensor.kitchen_leak
                 styles:
                   card:
                     - font-size: 12px
@@ -899,7 +1044,7 @@ views:
                     icon: mdi:water-off
               - type: custom:button-card
                 name: Powder Room
-                entity: binary_sensor.water_leak_sensor_158d00024bfa97
+                entity: binary_sensor.powder_room_leak
                 styles:
                   card:
                     - font-size: 12px
@@ -911,7 +1056,7 @@ views:
                     icon: mdi:water-off
               - type: custom:button-card
                 name: Guest Bath
-                entity: binary_sensor.water_leak_sensor_158d0001bb788c
+                entity: binary_sensor.guest_bathroom_leak
                 styles:
                   card:
                     - font-size: 12px
@@ -921,6 +1066,19 @@ views:
                     color: 'red'
                   - value: 'off'
                     icon: mdi:water-off
+              - type: custom:button-card
+                name: Laundry Room
+                entity: binary_sensor.laundry_leak
+                styles:
+                  card:
+                    - font-size: 12px
+                state:
+                  - value: 'on'
+                    icon: mdi:water
+                    color: 'red'
+                  - value: 'off'
+                    icon: mdi:water-off
+
       - type: picture-entity
         entity: camera.meteogram
       # - id: 8d8b4c4a0e494b278ba93ea016ae35cd
@@ -930,161 +1088,27 @@ views:
         aspect_ratio: 90%
         url: https://embed.windy.com/embed2.html?lat=34.072&lon=-84.051&zoom=5&level=surface&overlay=rain&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&detailLat=34.072&detailLon=-84.051&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
 
-  - icon: mdi:chart-line
-    id: grafana
-    title: Grafana
-    cards:
-      - type: vertical-stack
-        cards:
-          - type: custom:simple-thermostat
-            entity: climate.downstairs
-            control:
-              hvac: true
-              _names: false
-            hide:
-              state: true
-            sensors:
-              - entity: sensor.downstairs_humidity
-                name: Humidity
-              - entity: sensor.downstairs_hvac_runtime
-                name: Runtime
-              - entity: sensor.downstairsthermoper
-                name: Operation
-              - entity: switch.downstairs_away
-                name: Away Mode
-              - entity: sensor.downstairs_temp_change
-                name: Efficiency
-              - entity: input_number.downstairs_prev_eff
-                name: Prev Eff
-              - entity: sensor.downstairs_hvac_efficiency
-                name: Avg Eff
-          - type: thermostat
-            entity: climate.downstairs
-          - type: picture-entity
-            entity: camera.grafana_temp_down
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_mode_down
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_downstairs_efficiency
-            show_name: false
-            show_state: false
-      - type: vertical-stack
-        cards:
-          - type: custom:simple-thermostat
-            entity: climate.upstairs
-            control:
-              hvac: true
-              _names: false
-            hide:
-              state: true
-            sensors:
-              - entity: sensor.upstairs_humidity
-                name: Humidity
-              - entity: sensor.upstairs_hvac_runtime
-                name: Runtime
-              - entity: sensor.upstairsthermoper
-                name: Operation
-              - entity: switch.upstairs_away
-                name: Away Mode
-              - entity: sensor.upstairs_temp_change
-                name: Efficiency
-              - entity: input_number.upstairs_prev_eff
-                name: Prev Eff
-              - entity: sensor.upstairs_hvac_efficiency
-                name: Avg Eff
-          - type: thermostat
-            entity: climate.upstairs
-          - type: picture-entity
-            entity: camera.grafana_temp_up
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_mode_up
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_upstairs_efficiency
-            show_name: false
-            show_state: false
-      - type: vertical-stack
-        cards:
-          - type: custom:simple-thermostat
-            entity: climate.master_homekit
-            control:
-              hvac: true
-              _names: false
-            hide:
-              state: true
-            sensors:
-              - entity: sensor.bedroom_humidity
-                name: Humidity
-              - entity: sensor.master_hvac_runtime
-                name: Runtime
-              - entity: sensor.masterthermoper
-                name: Operation
-              - entity: switch.bedroom_away
-                name: Away Mode
-              - entity: sensor.master_temp_change
-                name: Efficiency
-              - entity: input_number.master_prev_eff
-                name: Prev Eff
-              - entity: sensor.master_hvac_efficiency
-                name: Avg Eff
-              - entity: sensor.master_vent_temp_change
-                name: Vent Temp Change
-              - entity: sensor.master_vent_pressure_change
-                name: Vent Press Change
-          - type: thermostat
-            entity: climate.bedroom
-          - type: picture-entity
-            entity: camera.grafana_temp_master
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_mode_master
-            show_name: false
-            show_state: false
-          - type: picture-entity
-            entity: camera.grafana_master_efficiency
-            show_name: false
-            show_state: false
-
-      - type: picture-entity
-        entity: camera.grafana_portfolio
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.grafana_networth
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.grafana_usd_inr
-        show_name: false
-        show_state: false
   - icon: mdi:camera
     id: cameras
     title: Cameras
     cards:
       - type: picture-entity
-        entity: camera.driveway_tf
+        entity: camera.driveway_person
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.patio_tf
+        entity: camera.porch_person
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.porch_tf
+        entity: camera.pergola_person
         show_name: false
         show_state: false
       - type: picture-entity
-        entity: camera.backyard_tf
+        entity: camera.sunroom_person
         show_name: false
         show_state: false
+
       - type: 'custom:aarlo-glance'
         entity: camera.aarlo_arlo3
         name: Kids Room
@@ -1124,18 +1148,23 @@ views:
         top_title: false
         top_status: false
         image_click: play
-      - type: picture-entity
-        entity: camera.front_door
+      # - type: picture-glance
+      #   camera_image: camera.g4_doorbell_pro_high
+      - type: picture-glance
+        title: Front Door
+        entities:
+          - binary_sensor.front_door_doorbell
+          - binary_sensor.g4_doorbell_pro_motion
+          - binary_sensor.front_door_person_detected
+        camera_image: camera.g4_doorbell_pro_high
+      - type: picture-glance
+        camera_image: camera.g4_doorbell_pro_package_camera
+        entities:
+          - binary_sensor.front_door_package_detected
       - type: picture-entity
         entity: camera.worldtime
         show_name: false
         show_state: false
-      - type: picture-entity
-        entity: camera.ars_bloom
-        show_name: false
-        show_state: false
-      - type: picture-entity
-        entity: camera.kitchen
       # - type: picture-entity
       #   entity: camera.garage
       #   show_name: false
@@ -1309,6 +1338,7 @@ views:
           - script.sonoslinein
           - script.master_colorloop
           - script.master_random
+          - script.master_reset
       - type: media-control
         entity: media_player.livingroomsonos
         artwork: cover
@@ -1403,13 +1433,6 @@ views:
                   'home': /local/icons/rashmi_wifi_home.png
                   'not_home': /local/icons/rashmi_wifi_not_home.png
               - type: picture-entity
-                entity: device_tracker.life360_sonu
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/rashmi_life360_home.png
-                  'not_home': /local/icons/rashmi_life360_not_home.png
-              - type: picture-entity
                 entity: device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
                 show_name: false
                 show_state: false
@@ -1428,7 +1451,7 @@ views:
                   'Buckhead': /local/icons/alok_owntracks_not_home.png
                   'Downtown': /local/icons/alok_owntracks_not_home.png
               - type: picture-entity
-                entity: device_tracker.alokiphone_3
+                entity: device_tracker.alokphone2
                 show_name: false
                 show_state: false
                 state_image:
@@ -1444,15 +1467,6 @@ views:
                   'home': /local/icons/alok_wifi_home.png
                   'not_home': /local/icons/alok_wifi_not_home.png
               - type: picture-entity
-                entity: device_tracker.life360_alok_saboo
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/alok_life360_home.png
-                  'not_home': /local/icons/alok_life360_not_home.png
-                  'Buckhead': /local/icons/alok_life360_not_home.png
-                  'Downtown': /local/icons/alok_life360_not_home.png
-              - type: picture-entity
                 entity: device_tracker.alok_geofency
                 show_name: false
                 show_state: false
@@ -1467,13 +1481,14 @@ views:
         title: HASS Details
         show_header_toggle: false
         entities:
-          - sensor.cert_expiry
           - input_select.current_theme
           - input_boolean.devmode
           - input_select.abodestatus
           - person.alok
           - device_tracker.test_alok
-          - device_tracker.alok_composite_temp
+          - device_tracker.alok_composite
+          - device_tracker.arnav_composite
+          - device_tracker.rashmi_composite
           - person.rashmi
           - device_tracker.test_rashmi
           - switch.shelly_garage
@@ -1497,76 +1512,84 @@ views:
       - type: entities
         title: Network Details
         show_header_toggle: false
-        footer:
-          type: graph
-          entity: sensor.speedtest_download
-          hours_to_show: 24
-          detail: 1
         entities:
+          - input_text.ubuntarr_public_ip
           - binary_sensor.internet_connected
           - input_button.restart_pihole
-          - switch.pi_hole_syn
-          - switch.pi_hole_kids
-          - sensor.nuc_cpu_load
-          - sensor.nuc_ram_used_percent
-          - sensor.nuc_containers_active
-          - sensor.speedtest_download
-      - type: horizontal-stack
-        cards:
-          - type: custom:button-card
-            entity: switch.firehd_rishaan
-            name: Fire Tab
-            icon: mdi:tablet
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
-          - type: custom:button-card
-            entity: switch.googlenesthub
-            name: Nest Hub
-            icon: mdi:tablet-dashboard
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
-          - type: custom:button-card
-            entity: switch.lenovolaptop
-            name: Lenovo
-            icon: mdi:laptop
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
-          - type: "custom:button-card"
-            entity: switch.rpi_aiy
-            name: RPi AIY
-            icon: mdi:raspberry-pi
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
-          - type: custom:button-card
-            entity: switch.toshibaaio
-            name: Toshiba
-            icon: mdi:desktop-mac-dashboard
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
-          - type: custom:button-card
-            entity: switch.samsungtv
-            name: Sammy
-            icon: mdi:television-classic
-            color: rgb(250, 218, 79)
-            color_type: icon
-            style:
-              - font-size: 12px
-              - text-transform: capitalize
+          - entity: switch.pi_hole_vm
+            tap_action:
+              action: url
+              url_path: http://192.168.2.96/admin/index.php
+            type: custom:multiple-entity-row
+            name: PiHole VM
+            toggle: True
+            state_color: true
+            entities:
+              - entity: binary_sensor.pi_hole_vm_core_update_available
+                name: Core
+                hide_if: 'off'
+              - entity: binary_sensor.pi_hole_vm_ftl_update_available
+                name: FTL
+                hide_if: 'off'
+              - entity: binary_sensor.pi_hole_vm_web_update_available
+                name: Web
+                hide_if: 'off'
+      # - type: horizontal-stack
+      #   cards:
+      #     - type: custom:button-card
+      #       entity: switch.firehd_rishaan
+      #       name: Fire Tab
+      #       icon: mdi:tablet
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
+      #     - type: custom:button-card
+      #       entity: switch.googlenesthub
+      #       name: Nest Hub
+      #       icon: mdi:tablet-dashboard
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
+      #     - type: custom:button-card
+      #       entity: switch.lenovolaptop
+      #       name: Lenovo
+      #       icon: mdi:laptop
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
+      #     - type: "custom:button-card"
+      #       entity: switch.rpi_aiy
+      #       name: RPi AIY
+      #       icon: mdi:raspberry-pi
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
+      #     - type: custom:button-card
+      #       entity: switch.toshibaaio
+      #       name: Toshiba
+      #       icon: mdi:desktop-mac-dashboard
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
+      #     - type: custom:button-card
+      #       entity: switch.samsungtv
+      #       name: Sammy
+      #       icon: mdi:television-classic
+      #       color: rgb(250, 218, 79)
+      #       color_type: icon
+      #       style:
+      #         - font-size: 12px
+      #         - text-transform: capitalize
   - icon: mdi:test-tube
     id: test
     title: Testing
@@ -1707,15 +1730,12 @@ views:
                     red: -6
                     yellow: -2
                     green: 0
-      - type: sensor
-        entity: sensor.speedtest_download
-        name: Speedtest
-        graph: line
       - type: map
         entities:
           - zone.home
           - device_tracker.meta_alok
           - device_tracker.meta_rashmi
+          - device_tracker.meta_arnav
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -2352,44 +2372,27 @@ views:
           - type: vertical-stack
             cards:
               - type: picture-entity
-                entity: camera.driveway
+                entity: camera.driveway_2
                 camera_view: live
                 show_name: false
                 show_state: false
               - type: picture-entity
-                entity: camera.patio
+                entity: camera.sunroom
                 show_name: false
                 show_state: false
                 camera_view: live
           - type: vertical-stack
             cards:
               - type: picture-entity
-                entity: camera.porch
+                entity: camera.porch_2
                 show_name: false
                 show_state: false
                 camera_view: live
               - type: picture-entity
-                entity: camera.backyard
+                entity: camera.pergola_fluent
                 show_name: false
                 show_state: false
                 camera_view: live
-  - icon: mdi:bug
-    id: grafana
-    title: Corona - World Data
-    panel: true
-    cards:
-      - type: iframe
-        aspect_ratio: 90%
-        url: https://ourworldindata.org/grapher/covid-confirmed-cases-since-100th-case?country=IND+USA+RUS+BRA
-
-  - icon: mdi:bug
-    id: grafana
-    title: Corona - JHU
-    panel: true
-    cards:
-      - type: iframe
-        aspect_ratio: 90%
-        url: https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
   - icon: mdi:home-floor-1
     id: room_cards
     title: Rooms
@@ -2399,7 +2402,7 @@ views:
         heading: "\U0001F6CC Master"
         row_size: 3
         entities:
-          - entity: binary_sensor.motion_sensor_158d00016c53bf
+          - entity: binary_sensor.master_motion
             map_state:
               'on':
                 value: 'mdi:motion-sensor'
@@ -2642,16 +2645,122 @@ views:
       - type: history-graph
         title: 'Master Bathroom Vent'
         entities:
-          - entity: sensor.temperature_158d0001a35ba5
+          - entity: sensor.master_vent
             name: Temperature
-          - entity: sensor.humidity_158d0001a35ba5
+          - entity: sensor.master_vent_humidity_sensor
             name: Humidity
       - type: history-graph
         title: 'Living Room Vent'
         entities:
-          - entity: sensor.temperature_158d0001ab3b2b
+          - entity: sensor.vent
             name: Temperature
-          - entity: sensor.humidity_158d0001ab3b2b
+          - entity: sensor.vent_humidity_sensor
             name: Humidity
-          - entity: sensor.pressure_158d0001ab3b2b
-            name: Pressure
+
+      - type: custom:history-explorer-card
+        combineSameUnits: true
+        showUnavailable: false
+        defaultTimeRange: 6h
+        header: 'Ecobee Downstairs'
+        stateColors:
+          sensor.heating: red
+          sensor.cooling: blue
+          sensor.idle: grey
+        graphs:
+          - type: line
+            entities:
+              - entity: sensor.dark_sky_temperature
+                color: orangered
+                name: Outside Temperature
+              - entity: sensor.vent
+                color: '#3e95cd'
+                fill: rgba(151,187,205,0.15)
+                name: Living Room Vent
+          - type: timeline
+            labelsVisible: false
+            entities:
+              - entity: sensor.downstairsthermoper
+                name: ''
+      # - type: custom:webrtc-camera
+      #   url: rtmp://192.168.2.76/live/driveway
+      - type: area
+        area: sunroom
+        show_camera: true
+      - type: custom:frigate-card
+        live:
+          webrtc_card:
+            ui: true
+        cameras:
+          - camera_entity: camera.driveway_2
+      # - type: custom:frigate-card
+      #   cameras:
+      #     - camera_entity: camera.driveway_2
+          - camera_entity: camera.porch_2
+          - camera_entity: camera.sunroom
+          - camera_entity: camera.pergola
+          - camera_entity: camera.garage_2
+
+        elements:
+          - type: 'custom:frigate-card-conditional'
+            conditions:
+              camera:
+                - camera.driveway_2
+            elements:
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.driveway_detect
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.driveway_snapshots
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.driveway_recordings
+                tap_action:
+                  action: toggle
+          - type: 'custom:frigate-card-conditional'
+            conditions:
+              camera:
+                - camera.porch_2
+            elements:
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.porch_detect
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.porch_snapshots
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.porch_recordings
+                tap_action:
+                  action: toggle
+          - type: 'custom:frigate-card-conditional'
+            conditions:
+              camera:
+                - camera.pergola_fluent
+            elements:
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.backyard_detect
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.backyard_snapshots
+                tap_action:
+                  action: toggle
+              - type: custom:frigate-card-menu-state-icon
+                entity: switch.backyard_recordings
+                tap_action:
+                  action: toggle
+        menu:
+          mode: above
+          buttons:
+            frigate:
+              enabled: true
+            clips:
+              enabled: true
+            snapshots:
+              enabled: true
+        live:
+          view:
+            default: snapshots

@@ -26,3 +26,5 @@
   backyardfaces:
     name: Backyard Camera Faces
     initial: 0
+  ubuntarr_public_ip:
+    name: Ubuntarr Public IP

@@ -1,0 +1,3 @@
+version: 1
+aarlo:
+  backend: sse

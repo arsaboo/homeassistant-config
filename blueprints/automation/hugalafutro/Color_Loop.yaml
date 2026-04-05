@@ -1,0 +1,33 @@
+blueprint:
+  name: Color Loop
+  description: ''
+  domain: automation
+  input:
+    cl_light:
+      name: Color Loop Light
+      description: Choose Light entity to Color Loop
+      selector:
+        target:
+          entity:
+          - domain:
+            - light
+  source_url: https://gist.github.com/hugalafutro/07a15a55d1e8394744e423a9ce7c8223
+variables:
+  colors: "{{ [[0.217,0.077], [0.157,0.05], [0.136,0.04], [0.137,0.065],\n    [0.141,0.137],
+    [0.146,0.238], [0.151,0.343], [0.157,0.457],\n    [0.164,0.591], [0.17,0.703],
+    [0.172,0.747], [0.199,0.724],\n    [0.269,0.665], [0.36,0.588], [0.444,0.517],
+    [0.527,0.447],\n    [0.612,0.374], [0.677,0.319], [0.701,0.299], [0.667,0.284],\n
+    \   [0.581,0.245], [0.477,0.196], [0.385,0.155], [0.301,0.116], \n    [0.217,0.077]]
+    }}"
+trigger:
+- platform: time_pattern
+  hours: '*'
+  minutes: '*'
+  seconds: /1
+action:
+- service: light.turn_on
+  data_template:
+    xy_color: '{{ colors[(now().second/2.5)|round(0)] }}'
+    transition: 1
+  target: !input cl_light
+mode: single

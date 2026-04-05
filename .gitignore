@@ -1,55 +1,120 @@
-# Logs
-logs
-*.log
-# Python cache
-__pycache__
-*.pyc
+# ==========================================
+# Home Assistant .gitignore
+# ==========================================
 
-# Other
-*.uuid
-*.conf
-*.db
-*.db-journal
-*.log
-*.noload
-*.txt
-*.sqlite
-*.xml
-*.backup
-*.json
-life360.sh
-.ip_authenticated.yaml
-ip_bans.yaml
-.config_entries.json
+# ---- Secrets & Credentials ----
+secrets.yaml
+SERVICE_ACCOUNT.json
 *.google.token
 .google.token
-.ring_cache.pickle
 .spotify-token-cache
-.storage
-abodepy_cache.pickle
-camera_recording.py
+.ring_cache.pickle
+.homekit.state
+*.pickle
 home-assistant.env
-home-assistant.*
+
+# ---- Databases ----
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+
+# ---- Logs ----
+*.log
+*.log.*
+logs/
+OZW_Log.txt
+upnp.log
+
+# ---- Home Assistant Runtime ----
+.HA_VERSION
+.ha_run.lock
+.cloud/
+.storage/
+.ip_authenticated.yaml
+.config_entries.json
+ip_bans.yaml
 known_devices.yaml
 entity_registry.yaml
-secrets.yaml
-google_calendars.yaml
-SERVICE_ACCOUNT.json
-components
-deps
-tts
-www/icons
-www/floorplans
-www/community
-custom_components/hacs
-downloads
-icloud
-dlib_faces
-dlib_nofaces
-dlib_known_faces
-dlib_unknown_faces
-.cloud
-*.pickle
+home-assistant_v2.db
+home-assistant.log*
+
+# ---- Caches ----
+__pycache__/
+*.pyc
+*.pyo
+.cache
+.cache/
+.cache-*
 .pc-session
+abodepy_cache.pickle
+
+# ---- Dependencies & Generated ----
+deps/
+tts/
+components/
+
+# ---- Downloads & Backups ----
+downloads/
+backups/
+*.backup
+
+# ---- Binary & Build Artifacts ----
+go2rtc-*
+rtsp2webrtc_*
 google*.deb
-.homekit.state
+*.noload
+*.uuid
+
+# ---- Integration Configs (auto-generated) ----
+google_calendars.yaml
+*.conf
+ecobee.conf
+fitbit.conf
+lyric.conf
+phue.conf
+phue-*.conf
+plex.conf
+harmony_*.conf
+
+# ---- Media & Large Assets ----
+icloud/
+dlib_faces/
+dlib_nofaces/
+dlib_known_faces/
+dlib_unknown_faces/
+
+# ---- WWW subdirectories (community/generated) ----
+www/icons/
+www/floorplans/
+www/community/
+
+# ---- Custom components (managed by HACS) ----
+custom_components/
+
+# ---- Integration State Directories ----
+.aarlo/
+Abode/
+
+# ---- Image cache ----
+image/
+
+# ---- Z-Wave XML configs ----
+zwcfg_*.xml
+zwscene.xml
+
+# ---- JSON configs (auto-generated / not needed in repo) ----
+alexaIntentSchema.json
+emulated_hue_ids.json
+HAApiAi.json
+HASSGoogAssist.json
+
+# ---- Scripts with hardcoded credentials ----
+python/
+
+# ---- Misc ----
+life360.sh
+camera_recording.py
+options.xml
+lbp_frontalface.xml

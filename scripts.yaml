@@ -16,14 +16,18 @@
           option: armed_away
       - service: alarm_control_panel.alarm_arm_away
         entity_id:
-          - alarm_control_panel.abode_alarm
+          #- alarm_control_panel.abode_alarm
           - alarm_control_panel.aarlo_arlohome
           - alarm_control_panel.alexa_guard_227b3
+          - alarm_control_panel.simplisafe_2
+        data:
+          code: !secret alarm_code
       - service: switch.turn_on
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
           - switch.bedroom_away
+          - switch.reolink_notifications
       # - service: homeassistant.turn_on
       #   entity_id: input_boolean.startrecording
       - service: ifttt.trigger
@@ -38,7 +42,10 @@
           option: armed_home
       - service: alarm_control_panel.alarm_arm_home
         entity_id:
-          - alarm_control_panel.abode_alarm
+          #- alarm_control_panel.abode_alarm
+          - alarm_control_panel.simplisafe_2
+        data:
+          code: !secret alarm_code
       - service: alarm_control_panel.alarm_disarm
         entity_id: alarm_control_panel.aarlo_arlohome
 
@@ -54,14 +61,18 @@
           option: disarmed
       - service: alarm_control_panel.alarm_disarm
         entity_id:
-          - alarm_control_panel.abode_alarm
+          #- alarm_control_panel.abode_alarm
           - alarm_control_panel.aarlo_arlohome
           - alarm_control_panel.alexa_guard_227b3
+          - alarm_control_panel.simplisafe_2
+        data:
+          code: !secret alarm_code
       - service: switch.turn_off
         entity_id:
           - switch.downstairs_away
           - switch.upstairs_away
           - switch.bedroom_away
+          - switch.reolink_notifications
       - service: light.turn_off
         entity_id: light.living_room_lights
       - service: ifttt.trigger
@@ -220,8 +231,8 @@
       - service: lifx.effect_colorloop
         data_template:
           entity_id:
-            - light.lifx3
-            - light.lifxnrguest
+            - light.lifx6
+            - light.lifx4
             - light.lifxnrkitchen
           brightness: "{{lifxbrightness}}"
           period: "{{lifxtransition}}"
@@ -234,8 +245,8 @@
       - service: lifx.effect_colorloop
         data:
           entity_id:
-            - light.lifx3
-            - light.lifxnrguest
+            - light.lifx6
+            - light.lifx4
             - light.lifxnrkitchen
           brightness: 255
           period: 15
@@ -262,21 +273,20 @@
   master_random:
     alias: 'Master random'
     sequence:
-      - service: light.turn_on
-        data:
-          entity_id: light.master_1
-          brightness: 255
-          effect: random
-      - service: light.turn_on
-        data:
-          entity_id: light.master_2
-          brightness: 255
-          effect: random
-      - service: light.turn_on
-        data:
-          entity_id: light.master_3
-          brightness: 255
-          effect: random
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.sleeping
+      - service: script.set_hue_scene
+        data_template:
+          group: "Master"
+          scene: >
+            {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+  master_reset:
+    alias: 'Master reset'
+    sequence:
+      - service: script.set_hue_scene
+        data_template:
+          group: "Master"
+          scene: "Bright"
   lifx_stop_effects:
     alias: 'Stop LIFX effects'
     sequence:
@@ -284,14 +294,49 @@
         data:
           entity_id:
             - light.lifxnrkitchen
-            - light.lifxnrguest
-            - light.lifx3
+            - light.lifx4
+            - light.lifx6
       - service: light.turn_on
         entity_id: light.living_room_lights
         data:
-          rgb_color: [255, 255, 255]
-          brightness: 250
+          rgb_color: [255, 193, 141]
+          brightness_pct: 100
 
+  deck_color_loop:
+    alias: 'Start Deck effects'
+    sequence:
+      - service: automation.trigger
+        entity_id: automation.deck_colorloop
+
+  sunroom_color_loop:
+    alias: 'Start Sunroom effects'
+    sequence:
+      - service: automation.trigger
+        entity_id: automation.sunroom_colorloop
+
+  sunroom_stop_effects:
+    alias: 'Stop Sunroom effects'
+    sequence:
+      - service: automation.toggle
+        target:
+          entity_id: automation.sunroom_colorloop
+      - service: light.turn_on
+        entity_id: light.sunroom_lights
+        data:
+          rgb_color: [255, 148, 45]
+          brightness: 255
+
+  deck_stop_effects:
+    alias: 'Stop Deck effects'
+    sequence:
+      - service: automation.toggle
+        target:
+          entity_id: automation.deck_colorloop
+      - service: light.turn_on
+        entity_id: light.deck_lights
+        data:
+          rgb_color: [255, 255, 255]
+          brightness: 255
   updatetracker:
     alias: 'Update tracker'
     sequence:
@@ -327,56 +372,56 @@
         data:
           entity_id: input_select.current_theme
           option: "oxfordblue"
-      - service: device_tracker.see
-        data_template:
-          dev_id: test_rashmi
-          location_name: '{{states.device_tracker.life360_sonu.state|lower }}'
-          gps: [ '{{ states.device_tracker.life360_sonu.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
-          gps_accuracy: >-
-              {{ states.device_tracker.life360_sonu.attributes.gps_accuracy }}
-          attributes:
-            update_source: 'device_tracker.life360_sonu'
-            source_type: '{{ states.device_tracker.life360_sonu.attributes.source_type }}'
-            velocity: >-
-                {{ states.device_tracker.life360_sonu.attributes.speed }}
-            battery: >-
-                {{ states.device_tracker.life360_sonu.attributes.battery }}
-      - service: device_tracker.see
-        data_template:
-          dev_id: test_alok
-          location_name: '{{states.device_tracker.life360_alok_saboo.state|lower }}'
-          gps: [ '{{ states.device_tracker.life360_alok_saboo.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
-          gps_accuracy: >-
-              {{ states.device_tracker.life360_alok_saboo.attributes.gps_accuracy }}
-          attributes:
-            update_source: 'device_tracker.life360_alok_saboo'
-            source_type: '{{ states.device_tracker.life360_alok_saboo.attributes.source_type }}'
-            velocity: >-
-                {{ states.device_tracker.life360_alok_saboo.attributes.speed }}
-            battery: >-
-                {{ states.device_tracker.life360_alok_saboo.attributes.battery }}
+      # - service: device_tracker.see
+      #   data_template:
+      #     dev_id: test_rashmi
+      #     location_name: '{{states.device_tracker.life360_sonu.state|lower }}'
+      #     gps: [ '{{ states.device_tracker.life360_sonu.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
+      #     gps_accuracy: >-
+      #         {{ states.device_tracker.life360_sonu.attributes.gps_accuracy }}
+      #     attributes:
+      #       update_source: 'device_tracker.life360_sonu'
+      #       source_type: '{{ states.device_tracker.life360_sonu.attributes.source_type }}'
+      #       velocity: >-
+      #           {{ states.device_tracker.life360_sonu.attributes.speed }}
+      #       battery: >-
+      #           {{ states.device_tracker.life360_sonu.attributes.battery }}
+      # - service: device_tracker.see
+      #   data_template:
+      #     dev_id: test_alok
+      #     location_name: '{{states.device_tracker.life360_alok_saboo.state|lower }}'
+      #     gps: [ '{{ states.device_tracker.life360_alok_saboo.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
+      #     gps_accuracy: >-
+      #         {{ states.device_tracker.life360_alok_saboo.attributes.gps_accuracy }}
+      #     attributes:
+      #       update_source: 'device_tracker.life360_alok_saboo'
+      #       source_type: '{{ states.device_tracker.life360_alok_saboo.attributes.source_type }}'
+      #       velocity: >-
+      #           {{ states.device_tracker.life360_alok_saboo.attributes.speed }}
+      #       battery: >-
+      #           {{ states.device_tracker.life360_alok_saboo.attributes.battery }}
       - service: script.updatetracker
         data_template:
-          entityid: 'device_tracker.life360_sonu'
-          fromstate: '{{states.device_tracker.life360_sonu.state}}'
-          tostate: '{{states.device_tracker.life360_sonu.state}}'
+          entityid: 'device_tracker.rashmiappiphone_2'
+          fromstate: "{{ states.device_tracker.rashmiappiphone_2.state }}"
+          tostate: "{{ states.device_tracker.rashmiappiphone_2.state }}"
       - service: script.updatetracker
         data_template:
-          entityid: 'device_tracker.life360_alok_saboo'
-          fromstate: '{{states.device_tracker.life360_alok_saboo.state}}'
-          tostate: '{{states.device_tracker.life360_alok_saboo.state}}'
+          entityid: 'device_tracker.alokphone2'
+          fromstate: "{{ states.device_tracker.alokphone2.state }}"
+          tostate: "{{ states.device_tracker.alokphone2.state }}"
       - service: script.updatetracker
         data_template:
-          entityid: 'device_tracker.life360_arnav_saboo'
-          fromstate: '{{states.device_tracker.life360_arnav_saboo.state}}'
-          tostate: '{{states.device_tracker.life360_arnav_saboo.state}}'
+          entityid: 'device_tracker.arnavphone_arnavphone'
+          fromstate: '{{states.device_tracker.arnavphone_arnavphone.state}}'
+          tostate: '{{states.device_tracker.arnavphone_arnavphone.state}}'
       - service_template: "homeassistant.turn_{{ 'on' if states.media_player.living_room_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv
       - service: input_select.select_option
         data_template:
           entity_id: input_select.abodestatus
-          option: "{{states.alarm_control_panel.abode_alarm.state}}"
+          option: "{{ states('alarm_control_panel.abode_alarm') }}"
       # - service: ifttt.push_alarm_state
       #   data_template:
       #     entity_id: alarm_control_panel.abode

@@ -2,10 +2,6 @@
 ## Input_boolean
 #################################################################
 
-  dashbounty:
-    name: Dash Bounty
-    initial: off
-    icon: mdi:security
   abodeupdate:
     name: Abode Updates
     icon: mdi:security
@@ -24,10 +20,6 @@
     name: TV Time
     initial: on
     icon: mdi:television-guide
-  leeoalarm:
-    name: Leeo Alarm
-    initial: off
-    icon: mdi:fire
   devmode:
     name: Developer Mode
     initial: off
@@ -38,6 +30,14 @@
     icon: mdi:sleep
   lifxeffects:
     name: Lifx Colorloop
+    initial: off
+    icon: mdi:theme-light-dark
+  deckeffects:
+    name: Deck Colorloop
+    initial: off
+    icon: mdi:theme-light-dark
+  sunroomeffects:
+    name: Sunroom Colorloop
     initial: off
     icon: mdi:theme-light-dark
   master_occupied:

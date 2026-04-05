@@ -30,26 +30,24 @@
       entity_id:
         - device_tracker.alokiphone
         - device_tracker.rashmiiphone
-        - device_tracker.arnav_iphone_12
+        - device_tracker.arnavs_iphone_17_pm
+        - device_tracker.arnavphone
       to: 'not_home'
       for: '00:07:00'
     - platform: state
       entity_id:
         - device_tracker.alokphone_alokphone_2
         - device_tracker.rashmiphone_rashmiphone_2
-        - bdevice_tracker.arnavphone_arnavphone
+        - device_tracker.arnavphone_arnavphone
       to: 'home'
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alokiphone_3
-        - device_tracker.life360_alok_saboo
+        - device_tracker.alokphone2
         - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
         - device_tracker.rashmiappiphone_2
-        - device_tracker.life360_sonu
         - device_tracker.alok_geofency
-        - device_tracker.arnaviphone12pro
-        - device_tracker.life360_arnav_saboo
+        - device_tracker.arnavs_iphone_17_pm
 #        - device_tracker.7dab02d9_7205_4897_95d8_3d8921ed7ccf
         - device_tracker.bb1c8fd7_590d_4544_a362_07eba9dae90b
     - platform: state
@@ -86,20 +84,13 @@
       for: '00:00:30'
     - platform: state
       entity_id:
-        - device_tracker.alokiphone_3
-        - device_tracker.life360_alok_saboo
+        - device_tracker.alokphone2
         - device_tracker.alok_geofency
   action:
     - service: device_tracker.see
       data_template:
         dev_id: test_alok
         location_name: '{{trigger.to_state.state|lower }}'
-        # gps: >-
-        #   {% if trigger.to_state.attributes.latitude is defined %}
-        #     [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
-        #   {%- else -%}
-        #     [none, none]
-        #   {%- endif -%}
         gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
         gps_accuracy: >-
           {%- if trigger.to_state.attributes.gps_accuracy is defined -%}
@@ -171,7 +162,6 @@
       entity_id:
         - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
         - device_tracker.rashmiappiphone_2
-        - device_tracker.life360_sonu
   action:
     - service: device_tracker.see
       data_template:
@@ -203,6 +193,13 @@
             {%- else -%}
               NA
             {%- endif -%}
+          address: >-
+            {%- if trigger.to_state.attributes.address is defined -%}
+              {{ trigger.to_state.attributes.address }}
+            {%- else -%}
+              NA
+            {%- endif -%}
+
 - id: update_rashmi_test_tracker_router
   alias: "Update Rashmi Test Tracker Router"
   mode: queued
@@ -573,7 +570,7 @@
 - id: image_processing_scan
   alias: 'Image Processing Scan'
   mode: queued
-  initial_state: 'on'
+  initial_state: 'off'
   trigger:
     - platform: state
       entity_id:
@@ -808,7 +805,7 @@
        - image_processing.tensorflow_driveway
        - image_processing.tensorflow_backyard
   action:
-    - service: notify.mobile_app_alokiphone
+    - service: notify.mobile_app_alokphone
       data_template:
         message: >
           {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join(', ')|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
@@ -862,16 +859,16 @@
 - alias: 'Trigger alarm while armed away'
   trigger:
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d00016612af
+      entity_id: binary_sensor.upstairs_motion_sensor
       to: 'on'
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      entity_id: binary_sensor.master_motion
       to: 'on'
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d00016daecc
+      entity_id: binary_sensor.living_room_motion
       to: 'on'
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d0001a1f2ab
+      entity_id: binary_sensor.guest_room_motion
       to: 'on'
   condition:
     - condition: state
@@ -909,14 +906,6 @@
         message: >
           Check battery: {{ states('sensor.battery_status') }}
 
-- id: heal_zwave_network
-  alias: Heal Z-Wave Network
-  initial_state: 'on'
-  trigger:
-    platform: time
-    at: '2:31:00'
-  action:
-    service: zwave.heal_network
 
 - id: update_available_notification
   alias: "Update Available Notification"
@@ -1112,40 +1101,6 @@
 ## Home Automation Related
 #################################################################
 
-- id: xiaomi_vibration_sensor_test
-  alias: Xiaomi Vibration sensor test
-  initial_state: 'on'
-  trigger:
-    - platform: event
-      event_type: xiaomi_aqara.movement
-      event_data:
-        entity_id: binary_sensor.vibration_158d0002a51fc2
-  action:
-    - service: logbook.log
-      data_template:
-        name: "Xiaomi event: "
-        message: >
-          {{trigger.event.data}}
-
-- id: micube_test
-  alias: MiCube event test
-  initial_state: 'on'
-  trigger:
-    - platform: event
-      event_type: xiaomi_aqara.cube_action
-      event_data:
-        entity_id: binary_sensor.cube_158d0001035aa7
-  action:
-    - service: logbook.log
-      data_template:
-        name: "MiCube event: "
-        message: >
-          {%- if trigger.event.data.action_value -%}
-            {{trigger.event.data.action_type}} and {{trigger.event.data.action_value}}
-          {%- else -%}
-            {{trigger.event.data.action_type}}
-          {%- endif -%}
-
 - id: micube_brightness_rotate
   alias: "MiCube rotate - Master lights"
   initial_state: 'on'
@@ -1153,81 +1108,97 @@
     - condition: state
       entity_id: light.master_lights
       state: 'on'
+    - condition: template
+      value_template: '{{ trigger.event.data.command == "rotate_left" or trigger.event.data.command == "rotate_right" }}'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: rotate
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_id: '71101203d390d0827bcfe7875186373a'
   action:
     - service: light.turn_on
       data_template:
         entity_id: light.master_lights
-        brightness: >
-              {% set state = (state_attr('light.master_lights','brightness') + trigger.event.data.action_value|int) -%}
-              {%-  if state > 255 -%}
-                 {%- set state  = 255 -%}
-              {%-  elif state < 0 -%}
-                 {%- set state  = 0 -%}
-              {%- endif %}
-              {{ state }}
+        brightness_step_pct: '{{trigger.event.data.args.relative_degrees / 3}}'
     - service: input_boolean.turn_on
       entity_id: input_boolean.sleeping
 
-- id: micube_scenes_reset
-  alias: "MiCube scene reset"
-  initial_state: on
+- id: 'micube_scenes_reset'
+  alias: MiCube scene reset
+  description: ''
   condition:
     - condition: state
       entity_id: light.master_lights
       state: 'on'
-  trigger:
-    platform: event
-    event_type: xiaomi_aqara.cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: tap_twice
-  action:
-    service: script.set_hue_scene
-    data_template:
-      group: "Master"
-      scene: "Bright"
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      remote: 71101203d390d0827bcfe7875186373a
+      knock_any_side: true
+      cube_knock_any:
+      - service: script.set_hue_scene
+        data_template:
+          group: "Master"
+          scene: "Bright"
 
-- id: micube_master_scenes
+- id: 'micube_master_scenes'
   alias: "MiCube Master scene"
-  initial_state: on
+  description: ''
   condition:
     - condition: state
       entity_id: light.master_lights
       state: 'on'
-  trigger:
-    - platform: event
-      event_type: xiaomi_aqara.cube_action
-      event_data:
-        entity_id: binary_sensor.cube_158d0001035aa7
-        action_type: flip90
-  action:
-    - service: script.set_hue_scene
-      data_template:
-        group: "Master"
-        scene: >
-          {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
-    - service: automation.turn_off
-      entity_id: automation.turn_off_master_lights
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      remote: 71101203d390d0827bcfe7875186373a
+      cube_knock_any: []
+      cube_flip_90:
+      - service: script.set_hue_scene
+        data_template:
+          group: "Master"
+          scene: >
+            {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+      - service: automation.turn_off
+        entity_id: automation.turn_off_master_lights
+      flip_90: true
 
-- id: micube_toggle_master
-  alias: "MiCube Toggle Master"
-  initial_state: on
-  trigger:
-    platform: event
-    event_type: xiaomi_aqara.cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
-      action_type: flip180
-  action:
-    - service: light.toggle
-      data:
-        entity_id: light.master_lights
+# - id: micube_master_scenes
+#   alias: "MiCube Master scene"
+#   initial_state: on
+#   condition:
+#     - condition: state
+#       entity_id: light.master_lights
+#       state: 'on'
+#   trigger:
+#     - platform: event
+#       event_type: xiaomi_aqara.cube_action
+#       event_data:
+#         entity_id: binary_sensor.cube_158d0001035aa7
+#         action_type: flip90
+#   action:
+#     - service: script.set_hue_scene
+#       data_template:
+#         group: "Master"
+#         scene: >
+#           {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
+#     - service: automation.turn_off
+#       entity_id: automation.turn_off_master_lights
+
+- id: 'micube_toggle_master'
+  alias: MiCube Toggle Master
+  description: ''
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      flip_180: true
+      cube_flip_180:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.master_lights
+      remote: 71101203d390d0827bcfe7875186373a
+
 
 - id: turn_off_master_lights_at_night
   alias: "Turn off Master lights if they randomly turn on at night"
@@ -1251,12 +1222,46 @@
       data_template:
         entity_id: '{{trigger.entity_id}}'
 
-- id: prevent_overcharging
-  alias: 'Prevent overcharging'
+- id: prevent_overcharging_kasa
+  alias: 'Prevent overcharging Kasa'
   initial_state: 'on'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.wemopowerused
+      entity_id: sensor.smart_wifi_current_consumption
+      below: 2
+      for: '00:05:00'
+  condition:
+    - condition: state
+      entity_id: switch.smart_wifi
+      state: 'on'
+  action:
+     service: switch.turn_off
+     data:
+       entity_id: switch.smart_wifi
+
+- id: prevent_overcharging_kasa_3
+  alias: 'Prevent overcharging Kasa_3'
+  initial_state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.kasa_plug_3_current_consumption
+      below: 1
+      for: '00:05:00'
+  condition:
+    - condition: state
+      entity_id: switch.kasa_plug_3
+      state: 'on'
+  action:
+     service: switch.turn_off
+     data:
+       entity_id: switch.kasa_plug_3
+
+- id: prevent_overcharging_wemo
+  alias: 'Prevent overcharging wemo'
+  initial_state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.wemoinsight_current_power
       below: 2
       for: '00:05:00'
   condition:
@@ -1267,6 +1272,7 @@
      service: switch.turn_off
      data:
        entity_id: switch.wemoinsight
+
 
 - id: hvac_set_prev_efficiency
   alias: 'HVAC set previous efficiency'
@@ -1361,6 +1367,77 @@
       data:
         name: "Master vent: "
         message: "Vent Temp is {{states('sensor.temperature_158d0001a35ba5')}} and pressure is {{states('sensor.pressure_158d0001a35ba5')}}. Temp change is {{states('sensor.master_vent_temp_change')}}"
+
+- id: notify_if_living_room_hvac_not_working
+  alias: 'Notify if living room HVAC not working'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.downstairsthermoper
+      to: 'cooling'
+      for: '00:05:00'
+    - platform: state
+      entity_id:
+        - sensor.downstairsthermoper
+      to: 'heating'
+      for: '00:05:00'
+  condition:
+    condition: or
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'heating' and states('sensor.vent')|int < 80 }}"
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'cooling' and states('sensor.vent')|int > 70 }}"
+  action:
+    - service: logbook.log
+      data:
+        name: "Living Room Vent: "
+        message: "Thermostat is {{ trigger.to_state.state }} for the last 3 minutes, but the temperature has only changed {{states('sensor.living_vent_temp_change')}}. Current temp is {{states('sensor.vent')}}."
+    - service: notify.mobile_app_alokphone
+      data_template:
+        message: >
+          Check Master Thermostat
+        data:
+          subtitle: "Master thermostat {{ trigger.to_state.state }} for 5 minutes but the temperature only changed {{states('sensor.master_vent_temp_change')}}."
+          push:
+            badge: 0
+
+- id: notify_if_master_room_hvac_not_working
+  alias: 'Notify if master room HVAC not working'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+      to: 'cooling'
+      for: '00:03:00'
+    - platform: state
+      entity_id:
+        - sensor.masterthermoper
+      to: 'heating'
+      for: '00:03:00'
+  condition:
+    condition: or
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'heating' and states('sensor.master_vent')|int < 80 }}"
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'cooling' and states('sensor.master_vent')|int > 70 }}"
+  action:
+    - service: logbook.log
+      data:
+        name: "Master Room Vent: "
+        message: "Temp is {{states('sensor.master_vent')}}. Temp change is {{states('sensor.master_vent_temp_change')}}"
+    - service: notify.mobile_app_alokphone
+      data_template:
+        message: >
+          Check Master Thermostat
+        data:
+          subtitle: "Master thermostat {{ trigger.to_state.state }} for 3 minutes but the temperature only changed {{states('sensor.master_vent_temp_change')}}."
+          push:
+            badge: 0
+
 - id: prevent_master_hvac_failure
   alias: 'Prevent master hvac failure'
   initial_state: 'on'
@@ -1373,7 +1450,7 @@
       above: 20
       for: '00:05:00'
   action:
-    - service: notify.mobile_app_alokiphone
+    - service: notify.mobile_app_alokphone
       data_template:
         message: >
           Check {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
@@ -1391,7 +1468,7 @@
       to: 'cooling'
       for: '00:30:00'
   action:
-    - service: notify.mobile_app_alokiphone
+    - service: notify.mobile_app_alokphone
       data_template:
         message: >
           Turning off {{ trigger.entity_id.split('.')[1].split('_')[0] }} thermostat
@@ -1418,7 +1495,6 @@
         - light.living_room_lights
         - light.lifx5
         - light.master_lights
-        - light.kids_room_lights
       to: 'unavailable'
       for: '00:05:00'
     - platform: state
@@ -1428,12 +1504,31 @@
       for: '00:15:00'
   action:
     - service: notify.ios
-      data_template:
+      data:
         message: "Check {{ trigger.to_state.name }}"
         data:
           subtitle: "Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state }}"
           push:
             badge: 0
+- id: check_ubuntarr_public_ip
+  alias: 'Notify on UbuntArr public IP change'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.deluge_external_ip
+  condition:
+    - condition: template
+      value_template: '{{ trigger.to_state.state == "104.191.117.2" }}'
+  action:
+    - service: notify.ios
+      data:
+        message: "Check VPN"
+        data:
+          subtitle: "UbuntArr IP changed to {{ trigger.to_state.state }}"
+          push:
+            badge: 0
+    - service: rest_command.stop_deluge_arr
 - id: restart_pihole_if_down
   alias: 'Restart PiHole container'
   initial_state: 'on'
@@ -1467,13 +1562,13 @@
         - sensor.livingroom_cluster_size
       to: "unavailable"
   action:
-    - service: notify.mobile_app_alokiphone
+    - service: notify.mobile_app_alokphone
       data_template:
         message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is offline."
-        # data:
-        #   subtitle: "Check Room Assistant"
-        #   push:
-        #     badge: 0
+        data:
+          subtitle: "Check Room Assistant"
+          push:
+            badge: 0
 
 - id: roomassistant_cluster_online
   alias: 'Room Assistant cluster back online'
@@ -1486,7 +1581,7 @@
         - sensor.livingroom_cluster_size
       from: "unavailable"
   action:
-    - service: notify.mobile_app_alokiphone
+    - service: notify.mobile_app_alokphone
       data_template:
         message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is online"
         data:
@@ -1494,12 +1589,108 @@
           push:
             badge: 0
 
+# - id: sunroom_lights_on
+#   alias: 'Turn on Sunroom lights on motion'
+#   initial_state: 'on'
+#   trigger:
+#     - platform: state
+#       entity_id: binary_sensor.sunroom_motion_3
+#       from: 'off'
+#       to: 'on'
+#   condition:
+#     - condition: state
+#       entity_id: sun.sun
+#       state: 'below_horizon'
+#     - condition: state
+#       entity_id: light.sunroom_lights
+#       state: 'off'
+#   action:
+#     - service: light.turn_on
+#       data:
+#         entity_id: light.sunroom_lights
+#         #brightness: 255
+#         effect: Read
+#         #rgb_color: [255, 177, 109]
+
+# - id: sunroom_lights_off
+#   alias: 'Turn off Sunroom lights after no motion'
+#   initial_state: 'on'
+#   trigger:
+#     - platform: state
+#       entity_id: binary_sensor.sunroom_motion_3
+#       from: 'on'
+#       to: 'off'
+#       for:
+#         minutes: 5
+#   condition:
+#     - condition: state
+#       entity_id: light.sunroom_lights
+#       state: 'on'
+#   action:
+#     - service: light.turn_off
+#       data:
+#         entity_id: light.sunroom_lights
+
+- id: sunroom_lights
+  alias: 'Control Sunroom lights based on motion'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.sunroom_motion_3
+      from: 'off'
+      to: 'on'
+      id: 'motion_detected'
+    - platform: state
+      entity_id: binary_sensor.sunroom_motion_3
+      from: 'on'
+      to: 'off'
+      for:
+        minutes: 5
+      id: 'no_motion'
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: 'motion_detected'
+            # - condition: state
+            #   entity_id: sun.sun
+            #   state: 'below_horizon'
+            - condition: template
+              value_template: "{{ is_state('sun.sun', 'below_horizon') or (as_timestamp(state_attr('sun.sun', 'next_setting')) - as_timestamp(now()) < 2700 and as_timestamp(now()) - as_timestamp(state_attr('sun.sun', 'last_setting')) > 2700) }}"
+            - condition: state
+              entity_id: light.sunroom_lights
+              state: 'off'
+          sequence:
+            - service: light.turn_on
+              data:
+                entity_id: light.sunroom_lights
+                effect: Default
+                brightness: 128
+            - service: light.turn_on
+              data:
+                entity_id: light.deck_floor
+        - conditions:
+            - condition: trigger
+              id: 'no_motion'
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.sunroom_lights
+                  state: 'on'
+                - condition: state
+                  entity_id: light.deck_floor
+                  state: 'on'
+          sequence:
+            - service: light.turn_off
+              entity_id:
+                - light.sunroom_lights
+                - light.deck_floor
 - id: master_lights_on
   alias: 'Turn on Master lights on motion'
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      entity_id: binary_sensor.master_motion
       from: 'off'
       to: 'on'
   condition:
@@ -1513,9 +1704,6 @@
           - condition: state
             entity_id: light.master_lights
             state: 'off'
-          - condition: numeric_state
-            entity_id: sensor.illumination_158d00016c53bf
-            below: 20
           - condition: state
             entity_id: input_boolean.sleeping
             state: 'off'
@@ -1576,9 +1764,9 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.motion_sensor_158d00016c53bf
+      entity_id: binary_sensor.master_motion
       to: 'off'
-      for: '00:03:00'
+      for: '00:05:00'
   condition:
     - condition: time
       after: '17:00:00'
@@ -1611,13 +1799,12 @@
       data:
         entity_id: input_boolean.master_occupied
 
-
 - id: garage_lights_on
   alias: 'Turn on garage lights when door opened'
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.door_window_sensor_158d0001bf26df
+      entity_id: binary_sensor.mud_room_door_4
       from: 'off'
       to: 'on'
     - platform: state
@@ -1643,9 +1830,9 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.door_window_sensor_158d0001bf26df
+      entity_id: binary_sensor.mud_room_door_4
       to: 'off'
-      for: '00:00:30'
+      for: '00:05:00'
   condition:
     - condition: state
       entity_id: light.lifx5
@@ -1659,13 +1846,13 @@
   initial_state: 'on'
   trigger:
    - platform: state
-     entity_id: light.kitchen_lights
+     entity_id: light.kitchen
      from: 'off'
      to: 'on'
   action:
      service: light.turn_on
      data:
-       entity_id: light.kitchen_lights
+       entity_id: light.kitchen
        brightness: 255
 
 - id: breakfast_light_reset
@@ -1695,11 +1882,11 @@
      above: 600
   condition:
     - condition: state
-      entity_id: light.gateway_light_34ce00813670
+      entity_id: light.xiaomi_m1_gateway
       state: 'on'
   action:
     - service: light.turn_off
-      entity_id: light.gateway_light_34ce00813670
+      entity_id: light.xiaomi_m1_gateway
 
 - id: change_xiaomi_color
   alias: 'Change Xiaomi color'
@@ -1716,44 +1903,10 @@
      minutes: '/15'
   action:
      service: light.turn_on
-     entity_id: light.gateway_light_34ce00813670
+     entity_id: light.xiaomi_m1_gateway
      data_template:
        brightness: 255
        rgb_color: ['{{ (range(0, 255)|random) }}','{{ (range(0, 255)|random) }}','{{ (range(0, 255)|random) }}']
-
-- id: change_leeo_color
-  alias: 'Change Leeo color'
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: device_tracker.leeoalert
-      state: 'home'
-    - condition: time
-      after: '19:15:00'
-      before: '07:45:00'
-    - condition: state
-      entity_id: binary_sensor.living_room_occupancy
-      state: 'on'
-  trigger:
-   - platform: time_pattern
-     minutes: '/15'
-  action:
-     service: ifttt.trigger
-     data_template: {"event":"leeocolor", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
-
-- id: change_leeoup_color
-  alias: 'Change Leeo upstairs color'
-  initial_state: 'on'
-  condition:
-    - condition: time
-      after: '19:15:00'
-      before: '07:45:00'
-  trigger:
-   - platform: time_pattern
-     minutes: '/15'
-  action:
-     service: ifttt.trigger
-     data_template: {"event":"leeocolorup", "value1":"{{ '{:02x}{:02x}{:02x}'.format(range(0, 255) | random, range(0, 255) | random, range(0, 255) | random) }}"}
 
 - id: frontyard_lights
   alias: 'Frontyard lights on Motion'
@@ -1798,6 +1951,38 @@
             script.lifx_stop_effects
           {%- endif -%}
 
+- id: deck_effects
+  alias: "Deck Effects"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.deckeffects
+  action:
+    - service: homeassistant.turn_on
+      data_template:
+        entity_id: >
+          {%- if trigger.to_state.state == 'on' -%}
+            script.deck_color_loop
+          {%- else -%}
+            script.deck_stop_effects
+          {%- endif -%}
+
+- id: sunroom_effects
+  alias: "Sunroom Effects"
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.sunroomeffects
+  action:
+    - service: homeassistant.turn_on
+      data_template:
+        entity_id: >
+          {%- if trigger.to_state.state == 'on' -%}
+            script.sunroom_color_loop
+          {%- else -%}
+            script.sunroom_stop_effects
+          {%- endif -%}
+
 - id: lifx_effects_update
   alias: "Lifx Effects Update"
   initial_state: 'on'
@@ -1827,7 +2012,7 @@
     - service: switch.turn_on
       entity_id:
         - switch.driveway
-    - delay: '00:45:00'
+    - delay: '01:15:00'
     - service: switch.turn_off
       entity_id:
         - switch.driveway
@@ -1854,7 +2039,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: binary_sensor.garage_door
+      entity_id: binary_sensor.garagedoor_2
       state: 'off'
       for: '00:02:00'
     - condition: state
@@ -1900,7 +2085,7 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: binary_sensor.garage_door
+      entity_id: binary_sensor.garagedoor_2
       state: 'on'
     - condition: template
       value_template: >
@@ -1937,12 +2122,12 @@
     - platform: state
       entity_id:
         - binary_sensor.garage_door
-        - binary_sensor.back_door
+        - binary_sensor.back_door_entry_door
         - binary_sensor.garage_entry_door
         - binary_sensor.front_door
-        - binary_sensor.motion_sensor_158d00016daecc
-        - binary_sensor.motion_sensor_158d00016612af
-        - binary_sensor.motion_sensor_158d0001a1f2ab
+        - binary_sensor.living_room_motion
+        - binary_sensor.upstairs_motion_sensor
+        - binary_sensor.guest_room_motion
       from: 'off'
       to: 'on'
   action:
@@ -2039,19 +2224,6 @@
     service: homeassistant.turn_on
     entity_id: switch.wemoswitch
 
-- id: turn_off_humidifier
-  alias: Turn off humidifier
-  initial_state: 'off'
-  condition:
-    - condition: state
-      entity_id: switch.wemoswitch
-      state: 'on'
-  trigger:
-    platform: template
-    value_template: '{{ states("sensor.humidity_158d0001ab3b2b") | int >= 30 }}'
-  action:
-    service: homeassistant.turn_off
-    entity_id: switch.wemoswitch
 
 - id: turn_on_study_fan
   alias: Turn on study fan
@@ -2178,13 +2350,13 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: switch.pi_hole_syn
+      entity_id: switch.pi_hole_vm
       to: 'off'
       for: '00:05:00'
   action:
     - service: switch.turn_on
       entity_id:
-        - switch.pi_hole_syn
+        - switch.pi_hole_vm
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -2198,11 +2370,6 @@
       entity_id: input_boolean.tvtime
       state: 'off'
   action:
-    - service: remote.send_command
-      data_template:
-        command: PowerOff
-        device: 56988979
-        entity_id: remote.livingroom
     - service: media_player.turn_off
       entity_id:
         - media_player.living_room_tv
@@ -2335,7 +2502,7 @@
       data_template:
         entity_id: input_number.harmonyvolume
         value: '{{ trigger.to_state.state }}'
-    - service: notify.shield
+    - service: notify.shieldtvpro
       data_template:
         title: "\U0001F50A Home Assistant"
         message: >
@@ -2358,7 +2525,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: media_player.ftv_master
+      entity_id: media_player.aftv_master
       to: 'playing'
   action:
     service: notify.telegram
@@ -2399,7 +2566,24 @@
         - switch.sonos_family_room_night_sound
         - switch.sonos_family_room_speech_enhancement
 
-
+- id: update_ubuntarr_ip
+  alias: Ubuntarr IP
+  initial_state: 'on'
+  trigger:
+    - platform: webhook
+      webhook_id: "ubuntarr_public_ip"
+      # local_only: true
+  action:
+    - service: logbook.log
+      data:
+        name: "UbuntaARR public IP: "
+        message: >
+          {{trigger.json.public_ip}}
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.ubuntarr_public_ip
+      data:
+        value: '{{trigger.json.public_ip}}'
 - id: ifttt_test
   alias: IFTTT Test
   initial_state: 'on'
@@ -2497,7 +2681,7 @@
 #           {{
 #             {'MASTER': 'light.master_lights',
 #              'LIVING_ROOM': 'light.living_room_lights',
-#              'KITCHEN': 'light.kitchen_lights',
+#              'KITCHEN': 'light.kitchen',
 #             }[wait.trigger.event.data.actionName] }}
 #     - service: "{{ iphone }}"
 #       data:
@@ -2644,7 +2828,7 @@
           sequence:
             - variables:
                 lights:
-                  - light.kitchen_lights
+                  - light.kitchen
             - service: "{{ iphone }}"
               data:
                 message: "Choose option"
@@ -2740,3 +2924,97 @@
             service: switch.turn_on
             data:
               entity_id: "{{ device }}"
+
+- id: '16509132542337'
+  alias: Frigate Notification - Porch
+  description: ''
+  use_blueprint:
+    path: hunterjm/frigate_0.10_notification.yaml
+    input:
+      camera: porch
+      notify_device: 10fe03d9d008cc611811db7d8edcdd21
+      base_url: https://media.aloksaboo.com
+      update_thumbnail: true
+      zone_filter: true
+      presence_filter: group.parents
+      labels:
+        - person
+        - vehicle
+        - animal
+      zones:
+        - frontyard
+        - frontyard_driveway
+# - id: '165095442337'
+#   alias: Frigate Notification - Driveway
+#   description: ''
+#   use_blueprint:
+#     path: hunterjm/frigate_0.10_notification.yaml
+#     input:
+#       camera: driveway
+#       notify_device: 10fe03d9d008cc611811db7d8edcdd21
+#       base_url: https://media.aloksaboo.com
+#       update_thumbnail: true
+#       zone_filter: true
+#       labels:
+#         - person
+#         - vehicle
+#       presence_filter: group.parents
+#       zones:
+#         - Driveway
+#         - driveway_yard
+
+- id: '1700404396678'
+  alias: Driveway_frigate_notifications
+  description: ''
+  use_blueprint:
+    path: SgtBatten/Stable.yaml
+    input:
+      camera: camera.driveway_2
+      notify_device: 10fe03d9d008cc611811db7d8edcdd21
+      base_url: https://media.aloksaboo.com
+      update_thumbnail: true
+      ios_live_view: true
+      zone_filter: true
+      zones:
+        - Driveway
+        - driveway_yard
+      presence_filter: group.parents
+
+- id: '165095442338'
+  alias: Frigate Notification - Pergola
+  description: ''
+  use_blueprint:
+    path: hunterjm/frigate_0.10_notification.yaml
+    input:
+      camera: pergola
+      notify_device: 10fe03d9d008cc611811db7d8edcdd21
+      base_url: https://media.aloksaboo.com
+      update_thumbnail: true
+      zone_filter: true
+      labels:
+        - person
+        - vehicle
+      presence_filter: group.parents
+- id: '165095442337'
+  alias: Frigate Notification - Sunroom
+  description: ''
+  use_blueprint:
+    path: hunterjm/frigate_0.10_notification.yaml
+    input:
+      camera: sunroom
+      notify_device: 10fe03d9d008cc611811db7d8edcdd21
+      base_url: https://media.aloksaboo.com
+      update_thumbnail: true
+      zone_filter: true
+      labels:
+        - person
+        - vehicle
+      presence_filter: group.parents
+- id: '17003593711'
+  alias: Sunroom ColorLoop
+  description: 'Sunroom Colorloop'
+  use_blueprint:
+    path: arsaboo/Color_Loop.yaml
+    input:
+      cl_light:
+        entity_id: light.sunroom_lights

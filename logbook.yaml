@@ -12,31 +12,28 @@
       - logbook
     entities:
       - binary_sensor.alok_home
-      - binary_sensor.back_door
+      - binary_sensor.back_door_entry_door
       - binary_sensor.cube_158d0001035aa7
-      - binary_sensor.door_window_sensor_158d0001bf26df
+      - binary_sensor.mud_room_door_4
       - binary_sensor.front_door
       - binary_sensor.garage_entry_door
       - binary_sensor.key_fob
-      - binary_sensor.motion_sensor_158d0001a1f2ab
+      - binary_sensor.guest_room_motion
       - binary_sensor.rashmi_home
-      - binary_sensor.water_leak_sensor_158d0001d77800
+      - binary_sensor.laundry_leak
       - device_tracker.meta_rashmi
       - device_tracker.meta_alok
       - device_tracker.rashmiphone_rashmiphone_2
       - device_tracker.rashmiappiphone_2
       - device_tracker.rashmiiphone
-      - device_tracker.life360_sonu
       - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
       - device_tracker.alokphone_alokphone_2
-      - device_tracker.alokiphone_3
+      - device_tracker.alokphone2
       - device_tracker.alokiphone
-      - device_tracker.life360_alok_saboo
       - device_tracker.alok_geofency
       - device_tracker.alok_composite
       - sensor.living_room
       - sensor.plex
-      - sensor.season
       - sensor.speedtest_download
       - sensor.ssl_certificate_expiry
       - sensor.steps_alok
@@ -76,8 +73,8 @@
       - light.master_3
       - sensor.date
       - input_number.harmonyvolume
-      - light.lifx3
-      - light.lifxnrguest
+      - light.lifx6
+      - light.lifx4
       - light.lifxnrkitchen
       - switch.auto_away
       - switch.auto_home

@@ -37,9 +37,6 @@ device_tracker.toshibaaio:
 device_tracker.44650d8ae465:
   friendly_name: Echo Dot
   icon: mdi:amazon
-device_tracker.94a1a273348b:
-  friendly_name: BloomSky
-  icon: mdi:compass-outline
 proximity.rashmi:
   friendly_name: Rashmi Proximity
 proximity.alok:
@@ -50,14 +47,6 @@ device_tracker.192168272_b853ac4196c1:
   friendly_name: Rashmi iPhone BT
 device_tracker.192168272_64200c8fb1cd:
   friendly_name: Arnav iPad BT
-sensor.ars_bloom_voltage:
-  friendly_name: BloomSky Voltage
-  icon: mdi:battery
-binary_sensor.ars_bloom_rain:
-  friendly_name: BloomSky Rain
-sensor.ars_bloom_humidity:
-  friendly_name: BloomSky Humidity
-  icon: mdi:water-percent
 sensor.pws_wind_dir:
   friendly_name: Wind Direction
   icon: mdi:compass-outline
@@ -74,8 +63,6 @@ sensor.leeouphumid:
   icon: mdi:water-percent
 sensor.leeoalarmstatus:
   icon: mdi:fire
-sensor.ars_bloom_temperature:
-  friendly_name: BloomSky Temperature
 sensor.pws_temp_f:
   friendly_name: Outdoor Temperature
   icon: mdi:thermometer
@@ -186,7 +173,7 @@ input_boolean.tv:
 input_boolean.tvtime:
   templates:
     icon: if (state === 'on') return 'mdi:television-classic'; return 'mdi:television-classic-off';
-light.kitchen_lights:
+light.kitchen:
   emulated_hue_hidden: false
   emulated_hue_name: Kitchen lights
   homebridge_hidden: false
@@ -206,7 +193,7 @@ script.lifx_stop_effects:
 script.disco_party:
   icon: mdi:palette
   homebridge_hidden: false
-light.gateway_light_34ce00813670:
+light.xiaomi_m1_gateway:
   emulated_hue_hidden: false
   friendly_name: Gateway light
 sensor.illumination_34ce00813670:
@@ -214,34 +201,24 @@ sensor.illumination_34ce00813670:
   icon: mdi:brightness-7
 binary_sensor.cube_158d0001035aa7:
   friendly_name: MiCube
-binary_sensor.motion_sensor_158d00016daecc:
-  friendly_name: Living Room Occupancy
-  homebridge_hidden: false
 sensor.illumination_158d00016daecc:
   friendly_name: Living Room Occupancy Sensor Brightness
   icon: mdi:brightness-7
 sensor.illumination_158d00016c53bf:
   friendly_name: Master Brightness
   icon: mdi:brightness-7
-binary_sensor.motion_sensor_158d00016c53bf:
+binary_sensor.master_motion:
   friendly_name: Master Occupancy
   homebridge_hidden: false
 sensor.illumination_158d00016612af:
   friendly_name: Upstairs Brightness
   icon: mdi:brightness-7
-binary_sensor.motion_sensor_158d00016612af:
+binary_sensor.upstairs_motion_sensor:
   friendly_name: Upstairs Occupancy
   homebridge_hidden: false
-binary_sensor.water_leak_sensor_158d0001d77800:
+binary_sensor.laundry_leak:
   friendly_name: Laundry Water Leak
   homebridge_hidden: false
-sensor.humidity_158d0001ab3c88:
-  friendly_name: Living Room Humidity
-  icon: mdi:water-percent
-sensor.pressure_158d0001ab3c88:
-  friendly_name: Living Room Pressure
-sensor.temperature_158d0001ab3c88:
-  friendly_name: Living Room Temperature
 sensor.humidity_158d0001ab7d20:
   friendly_name: Attic Humidity
   icon: mdi:water-percent
@@ -256,13 +233,13 @@ sensor.pressure_158d0001ab3b2b:
   friendly_name: Study Pressure
 sensor.temperature_158d0001ab3b2b:
   friendly_name: Study Temperature
-binary_sensor.door_window_sensor_158d0001bf26df:
+binary_sensor.mud_room_door_4:
   friendly_name: Garage Entry Door
   device_class: door
 sensor.illumination_158d0001a1f2ab:
   friendly_name: Guest Room Brightness
   icon: mdi:brightness-7
-binary_sensor.motion_sensor_158d0001a1f2ab:
+binary_sensor.guest_room_motion:
   friendly_name: Guest Room Occupancy
   homebridge_hidden: false
 sensor.10_year_treasury:
@@ -289,3 +266,10 @@ light.wb4_d:
   supported_features: 191
 light.wb4_d_4:
   supported_features: 191
+
+device_tracker.alok_composite:
+  entity_picture: /local/icons/Alok.png
+device_tracker.rashmi_composite:
+  entity_picture: /local/icons/Rashmi.png
+device_tracker.arnav_composite:
+  entity_picture: /local/icons/Arnav.png
