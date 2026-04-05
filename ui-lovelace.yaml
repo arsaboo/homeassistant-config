@@ -930,18 +930,16 @@ views:
     id: weather
     title: Weather
     cards:
-      - type: "custom:weather-card"
-        entity: weather.dark_sky
-        icons: '/local/icons/weather_icons/animated/'
+      - type: weather-forecast
+        entity: weather.home
+        show_forecast: true
       - type: entities
         title: Weather
         show_header_toggle: false
         entities:
-          - sensor.dark_sky_summary
+          - weather.home
           - sensor.pollen_level
           - sensor.cold_flu_risk
-          - sensor.dark_sky_hourly_summary
-          - sensor.dark_sky_daily_summary
       - type: custom:vertical-stack-in-card
         cards:
           - type: entities
@@ -2669,9 +2667,10 @@ views:
         graphs:
           - type: line
             entities:
-              - entity: sensor.dark_sky_temperature
+              - entity: weather.home
                 color: orangered
                 name: Outside Temperature
+                attribute: temperature
               - entity: sensor.vent
                 color: '#3e95cd'
                 fill: rgba(151,187,205,0.15)

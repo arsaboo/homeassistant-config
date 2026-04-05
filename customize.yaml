@@ -71,12 +71,6 @@ sensor.pws_weather:
 sensor.pws_relative_humidity:
   icon: mdi:water-percent
   friendly_name: Outdoor Humidity
-sensor.dark_sky_cloud_coverage:
-  friendly_name: Cloud Coverage
-sensor.dark_sky_daily_summary:
-  friendly_name: Daily Summary
-sensor.dark_sky_hourly_summary:
-  friendly_name: Hourly Summary
 sensor.iframe_windy:
   custom_ui_state_card: state-card-iframe
   config:

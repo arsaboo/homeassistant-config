@@ -2466,7 +2466,7 @@
           Upstairs: {{ state_attr('climate.upstairs_homekit', 'temperature') }}°F
           Living room: {{ state_attr('climate.downstairs_homekit', 'temperature') }}°F
           Master: {{ state_attr('climate.master_homekit', 'temperature') }}°F
-          Outside: {{ states('sensor.dark_sky_temperature') }}°F
+          Outside: {{ state_attr('weather.home', 'temperature') }}°F
 
 # - alias: "Apple Watch: set lights"
 #   mode: parallel
