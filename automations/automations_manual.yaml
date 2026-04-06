@@ -1690,7 +1690,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.master_motion
+      entity_id: binary_sensor.master_motion_occupancy
       from: 'off'
       to: 'on'
   condition:
@@ -1764,7 +1764,7 @@
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: binary_sensor.master_motion
+      entity_id: binary_sensor.master_motion_occupancy
       to: 'off'
       for: '00:05:00'
   condition:
@@ -1777,9 +1777,6 @@
     - condition: state
       entity_id: input_boolean.sleeping
       state: 'off'
-    - condition: template
-      value_template: >
-        {{states('sensor.alok_ble_room') != 'master' and states('sensor.rashmi_ble_room') != 'master'}}
   action:
     - service: light.turn_off
       data:
