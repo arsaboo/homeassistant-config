@@ -3,11 +3,7 @@
       garagedoor:
         friendly_name: 'Garage Door'
         value_template: >
-          {%- if states.binary_sensor.garage_door -%}
-            {{ states.binary_sensor.garage_door.state == 'on' }}
-          {%- else -%}
-            true
-          {%- endif -%}
+          {{ is_state('binary_sensor.garagedoor_2', 'on') }}
         open_cover:
           service: switch.turn_on
           entity_id: switch.shelly_garage
@@ -18,7 +14,7 @@
           service: switch.turn_on
           entity_id: switch.shelly_garage
         icon_template: >
-          {%- if states.binary_sensor.garage_door.state == 'on' -%}
+          {%- if is_state('binary_sensor.garagedoor_2', 'on') -%}
             mdi:garage-open
           {%- else -%}
             mdi:garage
