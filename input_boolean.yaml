@@ -2,9 +2,9 @@
 ## Input_boolean
 #################################################################
 
-  abodeupdate:
-    name: Abode Updates
-    icon: mdi:security
+  alarm_automation:
+    name: Alarm Automation
+    icon: mdi:shield-home
   homeautomation:
     name: Home Automation
     icon: mdi:home-automation

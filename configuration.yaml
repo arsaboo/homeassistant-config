@@ -91,14 +91,15 @@ light:
       - light.master_1
       - light.master_2
       - light.master_3
-
-aarlo:
-  username: !secret arlo_user
-  password: !secret arlo_password
+  - platform: group
+    name: Sunroom Lights
+    entities:
+      - light.sunroom_light_1
+      - light.sunroom_light_2
+      - light.sunroom_light_3
+      - light.sunroom_light_4
 
 alarm_control_panel:
-  - platform: aarlo
-    away_mode_name: armed
   - platform: manual
     name: HASS Alarm
     disarmed:
@@ -141,7 +142,6 @@ alexa:
       include_entities:
         - light.living_room_lights
         - light.master_lights
-        - input_boolean.abodeupdate
         - light.gateway_light_34ce00813670
         - light.kitchen_lights
         - light.lifx5
@@ -208,8 +208,6 @@ google_assistant:
 homekit:
   filter:
     include_entities:
-      - alarm_control_panel.aarlo_arlohome
-      - alarm_control_panel.abode_alarm
       - cover.garagedoor
       - light.living_room_lights
       - light.kids_room_lights
@@ -244,8 +242,6 @@ amcrest:
 ffmpeg:
 
 camera:
-  - platform: aarlo
-    ffmpeg_arguments: '-pred 1 -q:v 2'
   - platform: local_file
     name: worldtime
     file_path: /config/downloads/worldtime/worldtime.png
@@ -374,16 +370,6 @@ notify:
     services:
       - service: mobile_app_alokiphone
       - service: mobile_app_rashmiiphone12
-  - platform: group
-    name: ios_abode_updates
-    services:
-      - service: mobile_app_alokiphone
-        data:
-          title: 'Enable Abode updates?'
-          data:
-            push:
-              badge: 0
-              category: "abode_updates"
   - platform: group
     name: ios_home_automation
     services:

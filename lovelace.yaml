@@ -15,7 +15,7 @@
     - url: https://unpkg.com/moment@2.22.2/moment.js
       type: js
     - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
-      type: js
+      type: module
     - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
       type: module
     - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
@@ -39,8 +39,6 @@
     - url: /hacsfiles/secondaryinfo-entity-row/secondaryinfo-entity-row.js
       type: module
     - url: /hacsfiles/simple-thermostat/simple-thermostat.js
-      type: module
-    - url: /hacsfiles/lovelace-hass-aarlo/hass-aarlo.js
       type: module
     - url: /hacsfiles/list-card/list-card.js
       type: js

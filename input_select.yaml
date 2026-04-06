@@ -1,11 +1,3 @@
-  abodestatus:
-    name: Abode status
-    options:
-      - disarmed
-      - armed_home
-      - armed_away
-    initial: disarmed
-    icon: mdi:security
   hdmiswitcher:
     name: HDMI Switcher
     options:

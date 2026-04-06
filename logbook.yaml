@@ -21,9 +21,9 @@
       - binary_sensor.guest_room_motion
       - binary_sensor.rashmi_home
       - binary_sensor.laundry_leak
-      - device_tracker.rashmi
-      - device_tracker.alok
-      - device_tracker.arnav
+      - device_tracker.rashmi_smart
+      - device_tracker.alok_smart
+      - device_tracker.arnav_smart
       - sensor.living_room
       - sensor.plex
       - sensor.speedtest_download

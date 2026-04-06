@@ -11,11 +11,23 @@ device_tracker.alok:
   icon: mdi:cellphone-iphone
   friendly_name: Alok
   entity_picture: /local/icons/Alok.png
+device_tracker.alok_smart:
+  icon: mdi:cellphone-iphone
+  friendly_name: Alok
+  entity_picture: /local/icons/Alok.png
 device_tracker.rashmi:
   icon: mdi:cellphone-iphone
   friendly_name: Rashmi
   entity_picture: /local/icons/Rashmi.png
+device_tracker.rashmi_smart:
+  icon: mdi:cellphone-iphone
+  friendly_name: Rashmi
+  entity_picture: /local/icons/Rashmi.png
 device_tracker.arnav:
+  icon: mdi:cellphone-iphone
+  friendly_name: Arnav
+  entity_picture: /local/icons/Arnav.png
+device_tracker.arnav_smart:
   icon: mdi:cellphone-iphone
   friendly_name: Arnav
   entity_picture: /local/icons/Arnav.png
@@ -133,12 +145,6 @@ sensor.upstairs_humidity:
   icon: mdi:water-percent
 sensor.upstairshermostatmode:
   icon: mdi:home
-alarm_control_panel.abode_alarm:
-  entity_picture: /local/icons/Abode.jpg
-alarm_control_panel.arlo:
-  entity_picture: /local/icons/arlo.png
-input_boolean.abodeupdate:
-  emulated_hue_hidden: false
 input_boolean.startrecording:
   emulated_hue_hidden: false
 switch.driveway:
@@ -239,15 +245,6 @@ sensor.plex:
   icon: mdi:magnify
 sensor.pc_networth:
   icon: mdi:currency-usd-circle-outline
-sensor.alok_ble_room:
-  friendly_name: Alok Room
-  entity_picture: /local/icons/Alok.png
-sensor.rashmi_ble_room:
-  friendly_name: Rashmi Room
-  entity_picture: /local/icons/Rashmi.png
-sensor.arnav_ble_room:
-  friendly_name: Arnav Room
-  entity_picture: /local/icons/Arnav.png
 
 light.wb4_d_2:
   supported_features: 191

@@ -70,10 +70,10 @@
         value_template: "{{states('alarm_control_panel.simplisafe_2') != 'disarmed'}}"
         turn_on:
           - service: homeassistant.turn_on
-            entity_id: script.abodeaway
+            entity_id: script.alarm_away
         turn_off:
           - service: homeassistant.turn_on
-            entity_id: script.abodestandby
+            entity_id: script.alarm_standby
       sonos_night_sound:
         friendly_name: Sonos Night Sound
         value_template: "{{state_attr('media_player.family_room_2','night_sound')}}"
