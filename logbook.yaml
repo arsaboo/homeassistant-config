@@ -21,17 +21,9 @@
       - binary_sensor.guest_room_motion
       - binary_sensor.rashmi_home
       - binary_sensor.laundry_leak
-      - device_tracker.meta_rashmi
-      - device_tracker.meta_alok
-      - device_tracker.rashmiphone_rashmiphone_2
-      - device_tracker.rashmiappiphone_2
-      - device_tracker.rashmiiphone
-      - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
-      - device_tracker.alokphone_alokphone_2
-      - device_tracker.alokphone2
-      - device_tracker.alokiphone
-      - device_tracker.alok_geofency
-      - device_tracker.alok_composite
+      - device_tracker.rashmi
+      - device_tracker.alok
+      - device_tracker.arnav
       - sensor.living_room
       - sensor.plex
       - sensor.speedtest_download

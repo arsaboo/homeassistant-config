@@ -19,9 +19,9 @@
     speech:
       text: >
         {%- if User.lower() == "alok" -%}
-          Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
+          Alok is at {{ states.person.alok.state.replace('_', ' ') }}.
         {%- elif User.lower() == "rashmi" -%}
-          Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }}.
+          Rashmi is at {{ states.person.rashmi.state.replace('_', ' ') }}.
         {%- else -%}
           I am sorry, I do not know where {{ User }} is.
         {%- endif -%}
@@ -33,11 +33,11 @@
   WhereAreWeIntent:
     speech:
       text: >
-        {%- if is_state('device_tracker.meta_alok', 'home') and
-               is_state('device_tracker.meta_rashmi', 'home') -%}
+        {%- if is_state('person.alok', 'home') and
+               is_state('person.rashmi', 'home') -%}
           You are both home, you silly
         {%- else -%}
-          Rashmi is at {{ states.device_tracker.meta_rashmi.state.replace('_', ' ') }} and Alok is at {{ states.device_tracker.meta_alok.state.replace('_', ' ') }}.
+          Rashmi is at {{ states.person.rashmi.state.replace('_', ' ') }} and Alok is at {{ states.person.alok.state.replace('_', ' ') }}.
         {% endif %}
     card:
       type: simple

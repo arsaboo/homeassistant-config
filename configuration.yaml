@@ -431,17 +431,6 @@ tts:
     cache_dir: /config/tts
     time_memory: 300
 
-device_tracker:
-  - platform: composite
-    name: Alok Composite Temp
-    time_as: device_or_local
-    entity_id:
-      - device_tracker.alokiphone
-      - device_tracker.alokphone_alokphone_2
-      - device_tracker.alokiphone_3
-      - device_tracker.life360_alok_saboo
-      - device_tracker.alok_geofency
-
 dialogflow:
 
 intent_script: !include intent_script.yaml

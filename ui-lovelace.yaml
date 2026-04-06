@@ -1368,7 +1368,7 @@ views:
           - type: horizontal-stack
             cards:
               - type: picture-entity
-                entity: device_tracker.meta_alok
+                entity: device_tracker.alok
                 state_image:
                   'home': /local/icons/alok_home.png
                   'not_home': /local/icons/alok_not_home.png
@@ -1378,103 +1378,20 @@ views:
                   'Downtown': /local/icons/alok_not_home.png
                 show_name: false
                 show_state: false
-                hold_action:
-                  action: call-service
-                  service: python_script.toggle_state
-                  service_data:
-                    entity_id: 'device_tracker.meta_alok'
               - type: picture-entity
-                entity: device_tracker.meta_rashmi
+                entity: device_tracker.rashmi
                 state_image:
                   'home': /local/icons/rashmi_home.png
                   'not_home': /local/icons/rashmi_not_home.png
                 show_name: false
                 show_state: false
-                hold_action:
-                  action: call-service
-                  service: python_script.toggle_state
-                  service_data:
-                    entity_id: 'device_tracker.meta_rashmi'
               - type: picture-entity
-                entity: device_tracker.meta_arnav
+                entity: device_tracker.arnav
                 state_image:
                   'home': /local/icons/arnav_home.png
                   'not_home': /local/icons/arnav_not_home.png
                 show_name: false
                 show_state: false
-                hold_action:
-                  action: call-service
-                  service: python_script.toggle_state
-                  service_data:
-                    entity_id: 'device_tracker.meta_arnav'
-          - type: horizontal-stack
-            cards:
-              - type: picture-entity
-                entity: device_tracker.rashmiphone_rashmiphone_2
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/rashmi_owntracks_home.png
-                  'not_home': /local/icons/rashmi_owntracks_not_home.png
-              - type: picture-entity
-                entity: device_tracker.rashmiappiphone_2
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/rashmi_ios_home.png
-                  'not_home': /local/icons/rashmi_ios_not_home.png
-              - type: picture-entity
-                entity: device_tracker.rashmiiphone
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/rashmi_wifi_home.png
-                  'not_home': /local/icons/rashmi_wifi_not_home.png
-              - type: picture-entity
-                entity: device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/rashmi_geofency_home.png
-                  'not_home': /local/icons/rashmi_geofency_not_home.png
-          - type: horizontal-stack
-            cards:
-              - type: picture-entity
-                entity: device_tracker.alokphone_alokphone_2
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/alok_owntracks_home.png
-                  'not_home': /local/icons/alok_owntracks_not_home.png
-                  'Buckhead': /local/icons/alok_owntracks_not_home.png
-                  'Downtown': /local/icons/alok_owntracks_not_home.png
-              - type: picture-entity
-                entity: device_tracker.alokphone2
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/alok_ios_home.png
-                  'not_home': /local/icons/alok_ios_not_home.png
-                  'Buckhead': /local/icons/alok_ios_not_home.png
-                  'Downtown': /local/icons/alok_ios_not_home.png
-              - type: picture-entity
-                entity: device_tracker.alokiphone
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/alok_wifi_home.png
-                  'not_home': /local/icons/alok_wifi_not_home.png
-              - type: picture-entity
-                entity: device_tracker.alok_geofency
-                show_name: false
-                show_state: false
-                state_image:
-                  'home': /local/icons/alok_geofency_home.png
-                  'not_home': /local/icons/alok_geofency_not_home.png
-                  'Buckhead': /local/icons/alok_geofency_not_home.png
-                  'buckhead': /local/icons/alok_geofency_not_home.png
-                  'downtown': /local/icons/alok_geofency_not_home.png
-                  'Downtown': /local/icons/alok_geofency_not_home.png
       - type: entities
         title: HASS Details
         show_header_toggle: false
@@ -1483,12 +1400,10 @@ views:
           - input_boolean.devmode
           - input_select.abodestatus
           - person.alok
-          - device_tracker.test_alok
-          - device_tracker.alok_composite
-          - device_tracker.arnav_composite
-          - device_tracker.rashmi_composite
+          - device_tracker.alok
+          - device_tracker.arnav
+          - device_tracker.rashmi
           - person.rashmi
-          - device_tracker.test_rashmi
           - switch.shelly_garage
           - input_boolean.sleeping
           - type: attribute
@@ -1731,9 +1646,9 @@ views:
       - type: map
         entities:
           - zone.home
-          - device_tracker.meta_alok
-          - device_tracker.meta_rashmi
-          - device_tracker.meta_arnav
+          - device_tracker.alok
+          - device_tracker.rashmi
+          - device_tracker.arnav
       - type: vertical-stack
         cards:
           - type: horizontal-stack

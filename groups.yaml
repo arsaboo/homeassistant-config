@@ -8,9 +8,9 @@
     - switch.upstairs_away
 
   Household:
-    - device_tracker.meta_rashmi
-    - device_tracker.meta_alok
-    - device_tracker.meta_arnav
+    - person.rashmi
+    - person.alok
+    - person.arnav
   parents:
-    - device_tracker.meta_rashmi
-    - device_tracker.meta_alok
+    - person.rashmi
+    - person.alok

@@ -337,20 +337,6 @@
         data:
           rgb_color: [255, 255, 255]
           brightness: 255
-  updatetracker:
-    alias: 'Update tracker'
-    sequence:
-      - service: python_script.meta_device_tracker
-        data_template:
-          entity_id: '{{entityid}}'
-      - condition: template
-        value_template: '{{fromstate != tostate}}'
-      - service: logbook.log
-        data_template:
-          name: "Tracker updated: "
-          message: >-
-            {{ states[entityid.split('.')[0]][entityid.split('.')[1]].name }} is {{ tostate }} at {{ as_timestamp(now()) | timestamp_custom('%I:%M:%S %p', true) }}.
-
   portfolio:
     sequence:
       - service: input_number.set_value
@@ -372,49 +358,6 @@
         data:
           entity_id: input_select.current_theme
           option: "oxfordblue"
-      # - service: device_tracker.see
-      #   data_template:
-      #     dev_id: test_rashmi
-      #     location_name: '{{states.device_tracker.life360_sonu.state|lower }}'
-      #     gps: [ '{{ states.device_tracker.life360_sonu.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
-      #     gps_accuracy: >-
-      #         {{ states.device_tracker.life360_sonu.attributes.gps_accuracy }}
-      #     attributes:
-      #       update_source: 'device_tracker.life360_sonu'
-      #       source_type: '{{ states.device_tracker.life360_sonu.attributes.source_type }}'
-      #       velocity: >-
-      #           {{ states.device_tracker.life360_sonu.attributes.speed }}
-      #       battery: >-
-      #           {{ states.device_tracker.life360_sonu.attributes.battery }}
-      # - service: device_tracker.see
-      #   data_template:
-      #     dev_id: test_alok
-      #     location_name: '{{states.device_tracker.life360_alok_saboo.state|lower }}'
-      #     gps: [ '{{ states.device_tracker.life360_alok_saboo.attributes.latitude }}' , '{{states.device_tracker.life360_sonu.attributes.longitude }}' ]
-      #     gps_accuracy: >-
-      #         {{ states.device_tracker.life360_alok_saboo.attributes.gps_accuracy }}
-      #     attributes:
-      #       update_source: 'device_tracker.life360_alok_saboo'
-      #       source_type: '{{ states.device_tracker.life360_alok_saboo.attributes.source_type }}'
-      #       velocity: >-
-      #           {{ states.device_tracker.life360_alok_saboo.attributes.speed }}
-      #       battery: >-
-      #           {{ states.device_tracker.life360_alok_saboo.attributes.battery }}
-      - service: script.updatetracker
-        data_template:
-          entityid: 'device_tracker.rashmiappiphone_2'
-          fromstate: "{{ states.device_tracker.rashmiappiphone_2.state }}"
-          tostate: "{{ states.device_tracker.rashmiappiphone_2.state }}"
-      - service: script.updatetracker
-        data_template:
-          entityid: 'device_tracker.alokphone2'
-          fromstate: "{{ states.device_tracker.alokphone2.state }}"
-          tostate: "{{ states.device_tracker.alokphone2.state }}"
-      - service: script.updatetracker
-        data_template:
-          entityid: 'device_tracker.arnavphone_arnavphone'
-          fromstate: '{{states.device_tracker.arnavphone_arnavphone.state}}'
-          tostate: '{{states.device_tracker.arnavphone_arnavphone.state}}'
       - service_template: "homeassistant.turn_{{ 'on' if states.media_player.living_room_tv.state == 'on' else 'off' }}"
         entity_id:
           - input_boolean.tv

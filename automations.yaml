@@ -20,218 +20,6 @@
         name: "Person: "
         message: "{{trigger.to_state.name}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}} by {{ trigger.to_state.attributes.source }}"
 
-- id: update_meta_tracker
-  alias: "Update Device Meta Tracker"
-  initial_state: 'on'
-  mode: queued
-  trigger:
-    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone
-        - device_tracker.rashmiiphone
-        - device_tracker.arnav_iphone_12
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id:
-        - device_tracker.alokphone_alokphone_2
-        - device_tracker.rashmiphone_rashmiphone_2
-        - bdevice_tracker.arnavphone_arnavphone
-      to: 'home'
-      for: '00:00:30'
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone_3
-        - device_tracker.life360_alok_saboo
-        - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
-        - device_tracker.rashmiappiphone_2
-        - device_tracker.life360_sonu
-        - device_tracker.alok_geofency
-        - device_tracker.arnaviphone12pro
-        - device_tracker.life360_arnav_saboo
-#        - device_tracker.7dab02d9_7205_4897_95d8_3d8921ed7ccf
-        - device_tracker.bb1c8fd7_590d_4544_a362_07eba9dae90b
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone
-        - device_tracker.elantrase_2
-        - device_tracker.rashmiiphone
-      to: 'home'
-  action:
-    - service: script.updatetracker
-      data_template:
-        entityid: '{{trigger.entity_id}}'
-        fromstate: '{{trigger.from_state.state}}'
-        tostate: '{{trigger.to_state.state}}'
-    # - service: logbook.log
-    #   data_template:
-    #     name: "Update Tracker: "
-    #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}."
-
-- id: update_alok_test_tracker
-  alias: "Update Alok Test Tracker"
-  mode: queued
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - device_tracker.alokphone_alokphone_2
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id:
-        - device_tracker.alokphone_alokphone_2
-      to: 'home'
-      for: '00:00:30'
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone_3
-        - device_tracker.life360_alok_saboo
-        - device_tracker.alok_geofency
-  action:
-    - service: device_tracker.see
-      data_template:
-        dev_id: test_alok
-        location_name: '{{trigger.to_state.state|lower }}'
-        # gps: >-
-        #   {% if trigger.to_state.attributes.latitude is defined %}
-        #     [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
-        #   {%- else -%}
-        #     [none, none]
-        #   {%- endif -%}
-        gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
-        gps_accuracy: >-
-          {%- if trigger.to_state.attributes.gps_accuracy is defined -%}
-            {{ trigger.to_state.attributes.gps_accuracy }}
-          {%- else -%}
-            NA
-          {%- endif -%}
-        attributes:
-          update_source: '{{trigger.entity_id}}'
-          source_type: '{{ trigger.to_state.attributes.source_type }}'
-          velocity: >-
-            {%- if trigger.to_state.attributes.velocity is defined -%}
-              {{ trigger.to_state.attributes.velocity }}
-            {%- elif trigger.to_state.attributes.speed is defined -%}
-              {{ trigger.to_state.attributes.speed }}
-            {%- else -%}
-              NA
-            {%- endif -%}
-          battery: >-
-            {%- if trigger.to_state.attributes.battery is defined -%}
-              {{ trigger.to_state.attributes.battery }}
-            {%- elif trigger.to_state.attributes.battery_level is defined -%}
-              {{ trigger.to_state.attributes.battery_level }}
-            {%- else -%}
-              NA
-            {%- endif -%}
-- id: update_alok_test_tracker_router
-  alias: "Update Alok Test Tracker Router"
-  mode: queued
-  initial_state: 'on'
-  trigger:
-    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id:
-        - device_tracker.alokiphone
-        - device_tracker.elantrase_2
-      to: 'home'
-  action:
-    - service: device_tracker.see
-      data_template:
-        dev_id: test_alok
-        location_name: '{{trigger.to_state.state|lower }}'
-        attributes:
-          update_source: '{{trigger.entity_id}}'
-          source_type: '{{ trigger.to_state.attributes.source_type }}'
-
-- id: update_rashmi_test_tracker
-  alias: "Update Rashmi Test Tracker"
-  mode: queued
-  initial_state: 'on'
-  trigger:
-    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
-    - platform: state
-      entity_id:
-        - device_tracker.rashmiphone_rashmiphone_2
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id:
-        - device_tracker.rashmiphone_rashmiphone_2
-      to: 'home'
-      for: '00:00:30'
-    - platform: state
-      entity_id:
-        - device_tracker.275f08b3_dd14_459f_81b9_6c5b02c9b54e
-        - device_tracker.rashmiappiphone_2
-        - device_tracker.life360_sonu
-  action:
-    - service: device_tracker.see
-      data_template:
-        dev_id: test_rashmi
-        location_name: '{{trigger.to_state.state|lower }}'
-        gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
-        gps_accuracy: >-
-          {%- if trigger.to_state.attributes.gps_accuracy is defined -%}
-            {{ trigger.to_state.attributes.gps_accuracy }}
-          {%- else -%}
-            NA
-          {%- endif -%}
-        attributes:
-          update_source: '{{trigger.entity_id}}'
-          source_type: '{{ trigger.to_state.attributes.source_type }}'
-          velocity: >-
-            {%- if trigger.to_state.attributes.velocity is defined -%}
-              {{ trigger.to_state.attributes.velocity }}
-            {%- elif trigger.to_state.attributes.speed is defined -%}
-              {{ trigger.to_state.attributes.speed }}
-            {%- else -%}
-              NA
-            {%- endif -%}
-          battery: >-
-            {%- if trigger.to_state.attributes.battery is defined -%}
-              {{ trigger.to_state.attributes.battery }}
-            {%- elif trigger.to_state.attributes.battery_level is defined -%}
-              {{ trigger.to_state.attributes.battery_level }}
-            {%- else -%}
-              NA
-            {%- endif -%}
-- id: update_rashmi_test_tracker_router
-  alias: "Update Rashmi Test Tracker Router"
-  mode: queued
-  initial_state: 'on'
-  trigger:
-    # Delayed action for router-based and Owntracks trackers that are not 100% reliable
-    - platform: state
-      entity_id:
-        - device_tracker.rashmiiphone
-      to: 'not_home'
-      for: '00:07:00'
-    - platform: state
-      entity_id:
-        - device_tracker.rashmiiphone
-      to: 'home'
-  action:
-    - service: device_tracker.see
-      data_template:
-        dev_id: test_rashmi
-        location_name: '{{trigger.to_state.state|lower }}'
-        attributes:
-          update_source: '{{trigger.entity_id}}'
-          source_type: '{{ trigger.to_state.attributes.source_type }}'
-
-    # - service: logbook.log
-    #   data_template:
-    #     name: "Meta Tracker: "
-    #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}"
-    # - service: script.notify_me
 #################################################################
 ## Security System
 #################################################################
@@ -315,8 +103,8 @@
   trigger:
    - platform: state
      entity_id:
-       - device_tracker.meta_rashmi
-       - device_tracker.meta_alok
+       - person.rashmi
+       - person.alok
      from: 'not_home'
      to: 'home'
   action:
@@ -969,7 +757,7 @@
         - thu
         - fri
     - condition: state
-      entity_id: device_tracker.meta_alok
+      entity_id: person.alok
       state: 'home'
   action:
     - service: homeassistant.update_entity
@@ -995,8 +783,8 @@
         - fri
     - condition: template
       value_template: >
-        {%- if states('device_tracker.meta_alok') -%}
-          {{ states('device_tracker.meta_alok')|lower in ('buckhead', 'downtown') }}
+        {%- if states('person.alok') -%}
+          {{ states('person.alok')|lower in ('buckhead', 'downtown') }}
         {%- else -%}
           false
         {%- endif -%}
@@ -1022,7 +810,7 @@
          - thu
          - fri
      - condition: state
-       entity_id: device_tracker.meta_alok
+       entity_id: person.alok
        state: 'home'
   trigger:
     platform: numeric_state
@@ -1055,8 +843,8 @@
          - fri
      - condition: template
        value_template: >
-         {%- if states('device_tracker.meta_alok') -%}
-           {{ states('device_tracker.meta_alok') != 'home' }}
+         {%- if states('person.alok') -%}
+           {{ states('person.alok') != 'home' }}
          {%- else -%}
            false
          {%- endif -%}
@@ -1878,8 +1666,8 @@
   trigger:
     - platform: state
       entity_id:
-        - device_tracker.meta_rashmi
-        - device_tracker.meta_alok
+        - person.rashmi
+        - person.alok
       from: 'not_home'
       to: 'home'
   action:

@@ -7,21 +7,18 @@ climate.upstairs:
 climate.bedroom:
   friendly_name: Master
   entity_picture: /local/icons/Ecobee.png
-device_tracker.alokiphone:
+device_tracker.alok:
   icon: mdi:cellphone-iphone
-  friendly_name: Alok's iPhone
-device_tracker.alokphone_alokphone_2:
+  friendly_name: Alok
+  entity_picture: /local/icons/Alok.png
+device_tracker.rashmi:
   icon: mdi:cellphone-iphone
-  friendly_name: Alok's iPhone MQTT
-device_tracker.rashmiiphone:
+  friendly_name: Rashmi
+  entity_picture: /local/icons/Rashmi.png
+device_tracker.arnav:
   icon: mdi:cellphone-iphone
-  friendly_name: Rashmi's iPhone
-device_tracker.rashmiphone_rashmiphone_2:
-  icon: mdi:cellphone-iphone
-  friendly_name: Rashmi's iPhone MQTT
-device_tracker.alokdelllatitude:
-  icon: mdi:laptop-windows
-  friendly_name: Dell Laptop
+  friendly_name: Arnav
+  entity_picture: /local/icons/Arnav.png
 device_tracker.gameroom:
   icon: mdi:access-point-network
   friendly_name: Ubiquiti Unifi
@@ -261,9 +258,3 @@ light.wb4_d:
 light.wb4_d_4:
   supported_features: 191
 
-device_tracker.alok_composite:
-  entity_picture: /local/icons/Alok.png
-device_tracker.rashmi_composite:
-  entity_picture: /local/icons/Rashmi.png
-device_tracker.arnav_composite:
-  entity_picture: /local/icons/Arnav.png
