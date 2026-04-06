@@ -75,9 +75,10 @@ light:
   - platform: group
     name: Living Room Lights
     entities:
-      - light.lifx3
-      - light.lifxnrguest
-      - light.lifxnrkitchen
+      - light.living_room_1
+      - light.living_room_2
+      - light.living_room_3
+      - light.living_room_4
   - platform: group
     name: Kids Room Lights
     entities:
