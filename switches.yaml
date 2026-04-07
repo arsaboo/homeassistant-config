@@ -31,36 +31,36 @@
     switches:
       downstairs_away:
         friendly_name: Downstairs Away
-        value_template: "{{(states.climate.downstairs.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
+        value_template: "{{(states.climate.downstairs_2.attributes|default({})).preset_mode|default('home') == 'away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
-              entity_id: climate.downstairs
-              preset_mode: 'Away'
+              entity_id: climate.downstairs_2
+              preset_mode: 'away'
         turn_off:
           - service: ecobee.resume_program
             data:
-              entity_id: climate.downstairs
+              entity_id: climate.downstairs_2
       upstairs_away:
         friendly_name: Upstairs Away
-        value_template: "{{(states.climate.upstairs.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
+        value_template: "{{(states.climate.upstairs.attributes|default({})).preset_mode|default('home') == 'away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
               entity_id: climate.upstairs
-              preset_mode: 'Away'
+              preset_mode: 'away'
         turn_off:
           - service: ecobee.resume_program
             data:
               entity_id: climate.upstairs
       bedroom_away:
         friendly_name: Master Away
-        value_template: "{{(states.climate.bedroom.attributes|default({})).preset_mode|default('Home') == 'Away'}}"
+        value_template: "{{(states.climate.bedroom.attributes|default({})).preset_mode|default('home') == 'away'}}"
         turn_on:
           - service: climate.set_preset_mode
             data:
               entity_id: climate.bedroom
-              preset_mode: 'Away'
+              preset_mode: 'away'
         turn_off:
           - service: ecobee.resume_program
             data:

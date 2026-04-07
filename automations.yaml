@@ -2127,14 +2127,14 @@
       to: 'towards'
     - platform: numeric_state
       entity_id: sensor.home_nearest_distance
-      below: 26400
+      below: 5280
   condition:
     - condition: state
       entity_id: sensor.home_nearest_direction_of_travel
       state: 'towards'
     - condition: numeric_state
       entity_id: sensor.home_nearest_distance
-      below: 26400
+      below: 5280
     - condition: or
       conditions:
         - condition: state
