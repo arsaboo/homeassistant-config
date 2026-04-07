@@ -755,11 +755,8 @@
   initial_state: 'on'
   condition:
     - condition: state
-      entity_id: input_select.abodestatus
-      state: 'disarmed'
-    - condition: state
-      entity_id: calendar.us_holidays
-      state: 'off'
+      entity_id: alarm_control_panel.simplisafe_2
+      state: disarmed
     - condition: or
       conditions:
         - condition: time
@@ -1529,27 +1526,6 @@
           push:
             badge: 0
     - service: rest_command.stop_deluge_arr
-- id: restart_pihole_if_down
-  alias: 'Restart PiHole container'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.internet_connected
-      to: 'off'
-  action:
-    - service: input_button.press
-      target:
-        entity_id: input_button.restart_pihole
-- id: restart_pihole
-  alias: 'Restart Pihole'
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: input_button.restart_pihole
-  action:
-    - service: rest_command.restart_pihole_syn
-    - service: rest_command.restart_pihole_study
 
 - id: ensure_room_assistant_nodes_on
   alias: 'Ensure Room Assistant devices are on'
@@ -2342,18 +2318,7 @@
         device: 31747959
         entity_id: remote.livingroom
 
-- id: turn_on_pihole_after_some_time
-  alias: Turn on PiHole if it has been off
-  initial_state: 'on'
-  trigger:
-    - platform: state
-      entity_id: switch.pi_hole_vm
-      to: 'off'
-      for: '00:05:00'
-  action:
-    - service: switch.turn_on
-      entity_id:
-        - switch.pi_hole_vm
+
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -2888,8 +2853,7 @@
     - variables:
         device: >
           {{
-            {'PIHOLE_KIDS': 'switch.pi_hole_kids',
-            'RISHAANFIREHD': 'switch.firehd_rishaan',
+            {'RISHAANFIREHD': 'switch.firehd_rishaan',
              'ARNAV_IPAD': 'switch.my_ipad',
              'LENOVO': 'switch.lenovohome',
              'TOSHIBA_AIO': 'switch.toshibaaio',

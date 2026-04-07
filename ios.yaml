@@ -73,10 +73,7 @@
             title: ToshibaAIO
           - identifier: SAMMY_TV
             title: Sammy TV
-          - identifier: PIHOLE_MAIN
-            title: PiHole Main
-          - identifier: PIHOLE_KIDS
-            title: PiHole Kids
+
       - name: Device options
         identifier: device_options
         actions:

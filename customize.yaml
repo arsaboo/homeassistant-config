@@ -117,15 +117,7 @@ sensor.usd_inr:
   icon: mdi:currency-inr
 sensor.hoursslept:
   icon: mdi:sleep
-sensor.alok_to_home:
-  friendly_name: Commute to Home
-  icon: mdi:car
-sensor.morning_commute:
-  friendly_name: Morning Commute
-  icon: mdi:car
-sensor.evening_commute:
-  friendly_name: Evening Commute
-  icon: mdi:car
+
 sensor.garagedoor:
   icon: mdi:glassdoor
 cover.garagedoor:

@@ -18,8 +18,6 @@
       - service: switch.turn_on
         entity_id:
           - switch.reolink_notifications
-      - service: ifttt.trigger
-        data: {"event":"wyze_cams_on"}
 
   alarm_home:
     alias: 'Alarm Arm Home'
@@ -40,8 +38,6 @@
       - service: switch.turn_off
         entity_id:
           - switch.reolink_notifications
-      - service: ifttt.trigger
-        data: {"event":"wyze_cams_off"}
 
   tv_off:
     alias: 'Turn Television off'
@@ -453,9 +449,6 @@
   shieldtv_thoptv:
     alias: 'Launch ThopTV on Shield'
     sequence:
-      - service: homeassistant.turn_off
-        entity_id: switch.pihole
-      - delay: '00:00:03'
       - service: androidtv.adb_command
         data:
           entity_id: media_player.shieldtv

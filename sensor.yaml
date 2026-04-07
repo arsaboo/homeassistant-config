@@ -124,10 +124,10 @@
           {% endif %}
       livingroom_temp_rounded:
         friendly_name: "Living room temperature"
-        value_template: "{{states('sensor.living_room_temperature_homekit')|round}}"
+        value_template: "{{states('sensor.living_room_temperature_homekit') | float(0) | round}}"
       study_temp_rounded:
         friendly_name: "Study temperature"
-        value_template: "{{states('sensor.study_temperature_2')|round}}"
+        value_template: "{{states('sensor.study_temperature_2') | float(0) | round}}"
       battery_status:
         friendly_name: "Battery Status"
         value_template: >-
@@ -228,7 +228,7 @@
         friendly_name: "Portfolio Change (PC)"
         unit_of_measurement: "$"
         value_template: >-
-           {{(states('sensor.pc_investment')|float - states('sensor.portfolio_morning')|float)|round (2)}}
+           {{(states('sensor.pc_investment') | float(0) - states('sensor.portfolio_morning') | float(0)) | round(2)}}
       garagedoorbattery:
         friendly_name: "Garage Door Sensor Battery"
         unit_of_measurement: "%"

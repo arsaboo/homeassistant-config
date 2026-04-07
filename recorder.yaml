@@ -18,7 +18,7 @@
       - sensor.pollen_level
       - sensor.sonos_stereo
       - sensor.sonos_audio_in
-      - switch.pihole
+
       - sensor.downstairs_hvac_runtime
       - sensor.upstairs_hvac_runtime
       - sensor.master_hvac_runtime

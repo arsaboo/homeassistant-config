@@ -537,14 +537,6 @@ views:
         title: Information
         show_header_toggle: false
         entities:
-          - entity: sensor.morning_commute
-            tap_action:
-              action: url
-              url_path: !secret google_maps_morning_commute
-          - entity: sensor.alok_to_home
-            tap_action:
-              action: url
-              url_path: !secret google_maps_evening_commute
           - sensor.plex
           - sensor.usdinr
           - type: cast
@@ -1230,25 +1222,7 @@ views:
         entities:
           - input_text.ubuntarr_public_ip
           - binary_sensor.internet_connected
-          - input_button.restart_pihole
-          - entity: switch.pi_hole_vm
-            tap_action:
-              action: url
-              url_path: http://192.168.2.96/admin/index.php
-            type: custom:multiple-entity-row
-            name: PiHole VM
-            toggle: True
-            state_color: true
-            entities:
-              - entity: binary_sensor.pi_hole_vm_core_update_available
-                name: Core
-                hide_if: 'off'
-              - entity: binary_sensor.pi_hole_vm_ftl_update_available
-                name: FTL
-                hide_if: 'off'
-              - entity: binary_sensor.pi_hole_vm_web_update_available
-                name: Web
-                hide_if: 'off'
+
       # - type: horizontal-stack
       #   cards:
       #     - type: custom:button-card
@@ -1629,81 +1603,9 @@ views:
       - type: area
         area: sunroom
         show_camera: true
-      - type: custom:frigate-card
-        live:
-          webrtc_card:
-            ui: true
-        cameras:
-          - camera_entity: camera.driveway_2
-      # - type: custom:frigate-card
-      #   cameras:
-      #     - camera_entity: camera.driveway_2
-          - camera_entity: camera.porch_2
-          - camera_entity: camera.sunroom
-          - camera_entity: camera.pergola
-          - camera_entity: camera.garage_2
-
-        elements:
-          - type: 'custom:frigate-card-conditional'
-            conditions:
-              camera:
-                - camera.driveway_2
-            elements:
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.driveway_detect
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.driveway_snapshots
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.driveway_recordings
-                tap_action:
-                  action: toggle
-          - type: 'custom:frigate-card-conditional'
-            conditions:
-              camera:
-                - camera.porch_2
-            elements:
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.porch_detect
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.porch_snapshots
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.porch_recordings
-                tap_action:
-                  action: toggle
-          - type: 'custom:frigate-card-conditional'
-            conditions:
-              camera:
-                - camera.pergola_fluent
-            elements:
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.backyard_detect
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.backyard_snapshots
-                tap_action:
-                  action: toggle
-              - type: custom:frigate-card-menu-state-icon
-                entity: switch.backyard_recordings
-                tap_action:
-                  action: toggle
-        menu:
-          mode: above
-          buttons:
-            frigate:
-              enabled: true
-            clips:
-              enabled: true
-            snapshots:
-              enabled: true
-        live:
-          view:
-            default: snapshots
+      - type: area
+        area: driveway
+        show_camera: true
+      - type: area
+        area: porch
+        show_camera: true

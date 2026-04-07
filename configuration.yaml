@@ -59,12 +59,6 @@ zone:
     icon: mdi:school
 
 light:
-  - platform: mqtt
-    name: "GE Kitchen Lights"
-    state_topic: "smartthings/GE Dimmer Switch/switch"
-    command_topic: "smartthings/GE Dimmer Switch/switch"
-    payload_on: "on"
-    payload_off: "off"
     brightness_state_topic: "smartthings/GE Dimmer Switch/level"
     brightness_command_topic: "smartthings/GE Dimmer Switch/level"
     brightness_scale: 99
@@ -123,18 +117,6 @@ rest_command:
   plex:
     url: 'http://192.168.2.252:8001/api/v2/applications/kIciSQlYEM.plex'
     method: post
-  restart_pihole_study:
-    url: !secret pihole_study_restart
-    method: post
-    headers:
-      X-API-Key: !secret portainer_api_key
-  restart_pihole_syn:
-    url: !secret pihole_syn_restart
-    method: post
-    headers:
-      X-API-Key: !secret portainer_api_key
-
-media_extractor:
 
 alexa:
   smart_home:
@@ -220,9 +202,6 @@ homekit:
       - binary_sensor.water_leak_sensor_158d0001bb788c
       - camera.garage
 
-downloader:
-  download_dir: downloads
-
 http:
   ip_ban_enabled: true
   login_attempts_threshold: 1
@@ -234,38 +213,9 @@ http:
     - ::1
     - 172.17.0.3
 
-amcrest:
-  - host: 192.168.2.26
-    username: admin
-    password: !secret amcrest_password
-
 ffmpeg:
 
 camera:
-  - platform: local_file
-    name: worldtime
-    file_path: /config/downloads/worldtime/worldtime.png
-  - platform: local_file
-    name: Driveway TF
-    file_path: /config/downloads/camera/driveway_latest.jpg
-  - platform: local_file
-    name: Porch TF
-    file_path: /config/downloads/camera/porch_latest.jpg
-  - platform: local_file
-    name: Patio TF
-    file_path: /config/downloads/camera/patio_latest.jpg
-  - platform: local_file
-    name: Backyard TF
-    file_path: /config/downloads/camera/backyard_latest.jpg
-  - platform: generic
-    still_image_url: !secret meteogram_url
-    name: Meteogram
-  - platform: ffmpeg
-    input: !secret wyzecam_rtsp_url
-    name: Garage
-  - platform: ffmpeg
-    input: !secret amcrest_ip_cam_url
-    name: Kitchen
 
 image_processing:
   - platform: tensorflow
@@ -344,21 +294,6 @@ media_player:
 
 geofency:
 
-speedtestdotnet:
-
-telegram_bot:
-  platform: polling
-  api_key: !secret telegram_key
-  allowed_chat_ids:
-    - !secret telegram_chatID_Alok
-
-pi_hole:
-  - host: 192.168.2.14
-    name: Pi Hole Kids
-    api_key: !secret pi_hole_kids
-  - host: 192.168.2.114
-    name: Pi Hole Syn
-    api_key: !secret pi_hole_synology
 
 notify:
   - name: telegram

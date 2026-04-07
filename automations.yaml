@@ -1,21 +1,3 @@
-- id: person_logging
-  alias: Log person changes
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id:
-    - person.alok
-    - person.rashmi
-    - person.arnav
-  condition:
-  - condition: template
-    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
-  action:
-  - service: logbook.log
-    data_template:
-      name: 'Person: '
-      message: '{{trigger.to_state.name}} changed from {{trigger.from_state.state}}
-        to {{trigger.to_state.state}} by {{ trigger.to_state.attributes.source }}'
 - id: alarm_disarm_on_arrival
   alias: Disarm alarm when someone arrives home
   initial_state: 'on'
@@ -31,9 +13,9 @@
     state: 'on'
   - condition: not
     conditions:
-      - condition: state
-        entity_id: alarm_control_panel.simplisafe_2
-        state: disarmed
+    - condition: state
+      entity_id: alarm_control_panel.simplisafe_2
+      state: disarmed
   action:
     service: script.turn_on
     entity_id: script.alarm_standby
@@ -52,7 +34,7 @@
     entity_id: alarm_control_panel.simplisafe_2
     to: armed_away
   action:
-  - service: notify.pushbullet
+  - service: notify.mobile_app_alokphone2
     data:
       message: Garage Door Open
       title: Garage Door Open
@@ -110,6 +92,13 @@
   - service: input_boolean.turn_off
     entity_id: input_boolean.sleeping
   - service: shell_command.delete_unifi
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.simplisafe_2
+      state: disarmed
+  - service: script.turn_on
+    entity_id: script.alarm_standby
 - id: enable_recording
   alias: Enable Recording
   initial_state: 'on'
@@ -152,32 +141,6 @@
       entity_id: "{% if trigger.entity_id == \"binary_sensor.ring_front_door_motion\"
         %}\n  image_processing.tensorflow_porch\n{% else %}\n  image_processing.tensorflow_{{
         trigger.entity_id.split('.')[1].split('_')[0] }}\n{% endif %}\n"
-- id: tf_image_processing_notification
-  alias: TF image processing
-  initial_state: 'on'
-  mode: queued
-  trigger:
-  - platform: state
-    entity_id:
-    - image_processing.tensorflow_porch
-    - image_processing.tensorflow_patio
-    - image_processing.tensorflow_driveway
-    - image_processing.tensorflow_backyard
-    - image_processing.deepstack_porch
-    - image_processing.deepstack_patio
-    - image_processing.deepstack_driveway
-    - image_processing.deepstack_backyard
-  condition:
-  - condition: template
-    value_template: '{{ trigger.to_state.state |int > 0 }}'
-  action:
-  - service: logbook.log
-    data_template:
-      name: 'TF: '
-      message: '{% for object in state_attr(trigger.entity_id,''matches'').keys()
-        -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title
-        }}{%- endfor %} detected in {{ trigger.entity_id.split(''.'')[1].split(''_'')[1]
-        }}.'
 - id: notify_camera_pictures
   alias: Notify camera pictures
   initial_state: 'off'
@@ -226,39 +189,14 @@
           url: '{{ states.camera[trigger.entity_id.split(''.'')[1].split(''_'')[0]].attributes.entity_picture
             }}'
           content-type: jpg
-  - service: logbook.log
-    data_template:
-      name: 'Camera activity: '
-      message: "{%- for state in states if state.entity_id == trigger.entity_id -%}\n
-        \ {{ state.attributes.friendly_name }} activated at {{ as_timestamp(now())
-        | timestamp_custom('%I:%M:%S %p', true) }}.\n{%- endfor -%}"
-  - service: logbook.log
-    data_template:
-      name: 'Motion detected: '
-      message: "{%- if trigger.entity_id == \"binary_sensor.backyard_field_detection\"
-        or trigger.entity_id == \"binary_sensor.backyard_line_crossing\" -%}\n  {{(as_timestamp(now())
-        - as_timestamp(states.binary_sensor.backyard_motion.attributes.last_tripped_time))|round(2)}}
-        seconds ago.\n{%- elif trigger.entity_id == \"binary_sensor.driveway_field_detection\"
-        or trigger.entity_id == \"binary_sensor.driveway_line_crossing\" -%}\n  {{(as_timestamp(now())
-        - as_timestamp(states.binary_sensor.driveway_motion.attributes.last_tripped_time))|round(2)}}
-        seconds ago.\n{%- elif trigger.entity_id == \"binary_sensor.patio_field_detection\"
-        or trigger.entity_id == \"binary_sensor.patio_line_crossing\" -%}\n  {{(as_timestamp(now())
-        - as_timestamp(states.binary_sensor.patio_motion.attributes.last_tripped_time))|round(2)}}
-        seconds ago.\n{%- elif trigger.entity_id == \"binary_sensor.porch_field_detection\"
-        or trigger.entity_id == \"binary_sensor.porch_line_crossing\" -%}\n  {{(as_timestamp(now())
-        - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))|round(2)}}
-        seconds ago.\n{%- endif -%}"
 - id: notify_tensorflow_bus
   alias: Notify Tensorflow bus
   mode: queued
-  initial_state: 'on'
+  initial_state: 'off'
   condition:
   - condition: state
     entity_id: alarm_control_panel.simplisafe_2
     state: disarmed
-  - condition: state
-    entity_id: calendar.us_holidays
-    state: 'off'
   - condition: or
     conditions:
     - condition: time
@@ -302,7 +240,7 @@
     - image_processing.tensorflow_driveway
     - image_processing.tensorflow_backyard
   action:
-  - service: notify.mobile_app_alokiphone
+  - service: notify.mobile_app_alokphone2
     data_template:
       message: '{{ state_attr(trigger.entity_id,''matches'').keys()|list|unique|list|join('',
         '')|title }} detected in {{ trigger.entity_id.split(''.'')[1].split(''_'')[1]
@@ -397,7 +335,7 @@
       message: 'Check battery: {{ states(''sensor.battery_status'') }}
 
         '
-  - service: notify.pushbullet
+  - service: notify.mobile_app_alokphone2
     data_template:
       title: Battery status
       message: 'Check battery: {{ states(''sensor.battery_status'') }}
@@ -419,7 +357,7 @@
     value_template: '{{states(''sensor.pypi_hass_version'') == states(''sensor.current_version'')
       }}'
   action:
-  - service: notify.pushbullet
+  - service: notify.mobile_app_alokphone2
     data:
       message: HomeAssistant {{ states('sensor.pypi_hass_version') }} is now available
       title: Update HASS
@@ -441,117 +379,6 @@
   - service: frontend.set_theme
     data_template:
       name: '{{states(''input_select.current_theme'')}}'
-- id: update_morning_commute_sensor
-  alias: Commute - Update morning commute sensor
-  initial_state: 'off'
-  trigger:
-  - platform: time_pattern
-    minutes: /2
-  condition:
-  - condition: time
-    after: 08:00:00
-    before: '11:00:00'
-  - condition: time
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-  - condition: state
-    entity_id: person.alok
-    state: home
-  action:
-  - service: homeassistant.update_entity
-    data:
-      entity_id: sensor.morning_commute
-- id: update_evening_commute_sensor
-  alias: Commute - Update evening commute sensor
-  initial_state: 'off'
-  trigger:
-  - platform: time_pattern
-    minutes: /2
-  condition:
-  - condition: time
-    after: '17:00:00'
-    before: '20:00:00'
-  - condition: time
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-  - condition: template
-    value_template: "{%- if states('person.alok') -%}\n  {{ states('person.alok')|lower
-      in ('buckhead', 'downtown') }}\n{%- else -%}\n  false\n{%- endif -%}\n"
-  action:
-  - service: homeassistant.update_entity
-    data:
-      entity_id: sensor.alok_to_home
-- id: morning_commute
-  alias: Morning Commute
-  initial_state: 'off'
-  condition:
-    condition: and
-    conditions:
-    - condition: time
-      after: 08:15:00
-      before: '11:00:00'
-    - condition: time
-      weekday:
-      - mon
-      - tue
-      - wed
-      - thu
-      - fri
-    - condition: state
-      entity_id: person.alok
-      state: home
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.morning_commute
-    below: 43
-  action:
-  - service: notify.pushbullet
-    data:
-      message: Commute time is 43 minutes
-      title: Leave for Work
-      target: device/myiPhone
-  - service: homeassistant.turn_on
-    entity_id: script.notificationleavework
-- id: evening_commute
-  alias: Evening Commute
-  initial_state: 'off'
-  condition:
-    condition: and
-    conditions:
-    - condition: time
-      after: '17:00:00'
-      before: '20:00:00'
-    - condition: time
-      weekday:
-      - mon
-      - tue
-      - wed
-      - thu
-      - fri
-    - condition: template
-      value_template: "{%- if states('person.alok') -%}\n  {{ states('person.alok')
-        != 'home' }}\n{%- else -%}\n  false\n{%- endif -%}\n"
-  trigger:
-    platform: template
-    value_template: "{%- if states.sensor.alok_to_home.attributes.duration_in_traffic
-      -%}\n  {{(states.sensor.alok_to_home.attributes.duration_in_traffic.split('
-      ')[0]|int) / (states.sensor.alok_to_home.attributes.duration.split(' ')[0]|int)
-      < 1.25}}\n{%- else -%}\n  false\n{%- endif -%}\n"
-  action:
-    service: notify.pushbullet
-    data_template:
-      message: Commute time is {{states.sensor.alok_to_home.attributes.duration_in_traffic.split('
-        ')[0]|int}} minutes
-      title: Leave for Home
-      target: device/myiPhone
 - id: plexspy_notification
   alias: Plex Spy notification
   initial_state: 'off'
@@ -559,7 +386,7 @@
     platform: state
     entity_id: sensor.plex
   action:
-  - service: notify.pushbullet
+  - service: notify.mobile_app_alokphone2
     data_template:
       message: "{%- if states.sensor.plex.attributes -%}\n  {% set space = joiner('
         ') %}\n  {%- for attr in states.sensor.plex.attributes -%}\n   {%- if not
@@ -568,44 +395,6 @@
         \  {%- endif -%}\n  {%- endfor -%}\n{%- endif -%}\n"
       title: 'Plex {{ trigger.to_state.state }} people streaming. '
       target: device/myiPhone
-  - service: logbook.log
-    data_template:
-      name: 'Plex {{ trigger.to_state.state }} people streaming. '
-      message: "{%- if states.sensor.plex.attributes -%}\n  {% set space = joiner('
-        ') %}\n  {%- for attr in states.sensor.plex.attributes -%}\n   {%- if not
-        attr==\"friendly_name\" and not attr==\"unit_of_measurement\" and not attr==\"homebridge_hidden\"
-        and not attr==\"icon\"-%}\n    {{space()}}{{attr}} is watching {{states.sensor.plex.attributes[attr]}}.\n
-        \  {%- endif -%}\n  {%- endfor -%}\n{%- endif -%}\n"
-- id: xiaomi_vibration_sensor_test
-  alias: Xiaomi Vibration sensor test
-  initial_state: 'on'
-  trigger:
-  - platform: event
-    event_type: xiaomi_aqara.movement
-    event_data:
-      entity_id: binary_sensor.vibration_158d0002a51fc2
-  action:
-  - service: logbook.log
-    data_template:
-      name: 'Xiaomi event: '
-      message: '{{trigger.event.data}}
-
-        '
-- id: micube_test
-  alias: MiCube event test
-  initial_state: 'on'
-  trigger:
-  - platform: event
-    event_type: xiaomi_aqara.cube_action
-    event_data:
-      entity_id: binary_sensor.cube_158d0001035aa7
-  action:
-  - service: logbook.log
-    data_template:
-      name: 'MiCube event: '
-      message: "{%- if trigger.event.data.action_value -%}\n  {{trigger.event.data.action_type}}
-        and {{trigger.event.data.action_value}}\n{%- else -%}\n  {{trigger.event.data.action_type}}\n{%-
-        endif -%}\n"
 - id: micube_brightness_rotate
   alias: MiCube rotate - Master lights
   initial_state: 'on'
@@ -697,6 +486,9 @@
   - condition: state
     entity_id: alarm_control_panel.simplisafe_2
     state: armed_home
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'on'
   - condition: time
     after: '22:30:00'
     before: 05:00:00
@@ -774,30 +566,6 @@
         elif trigger.entity_id == 'sensor.upstairsthermoper' -%}\n  {{state_attr(\"climate.upstairs_homekit\",\"current_temperature\")|float}}\n{%-
         elif trigger.entity_id == 'sensor.downstairsthermoper' -%}\n  {{state_attr(\"climate.downstairs_homekit\",\"current_temperature\")|float}}\n{%-
         endif -%}\n"
-- id: prevent_hvac_failure_2
-  alias: Prevent HVAC Failure 2
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.masterthermoper
-    to: cooling
-    for: 00:03:00
-  - platform: state
-    entity_id:
-    - sensor.masterthermoper
-    to: heating
-    for: 00:03:00
-  condition:
-  - condition: template
-    value_template: '{{ trigger.to_state.state == ''heating'' and states(''sensor.temperature_158d0001a35ba5'')|int
-      > 50 }}'
-  action:
-  - service: logbook.log
-    data:
-      name: 'Master vent: '
-      message: Vent Temp is {{states('sensor.temperature_158d0001a35ba5')}} and pressure
-        is {{states('sensor.pressure_158d0001a35ba5')}}. Temp change is {{states('sensor.master_vent_temp_change')}}
 - id: prevent_master_hvac_failure
   alias: Prevent master hvac failure
   initial_state: 'on'
@@ -810,7 +578,7 @@
     above: 20
     for: 00:05:00
   action:
-  - service: notify.mobile_app_alokiphone
+  - service: notify.mobile_app_alokphone2
     data_template:
       message: 'Check {{ trigger.entity_id.split(''.'')[1].split(''_'')[0] }} thermostat
 
@@ -830,7 +598,7 @@
     to: cooling
     for: 00:30:00
   action:
-  - service: notify.mobile_app_alokiphone
+  - service: notify.mobile_app_alokphone2
     data_template:
       message: 'Turning off {{ trigger.entity_id.split(''.'')[1].split(''_'')[0] }}
         thermostat
@@ -876,27 +644,6 @@
           }}
         push:
           badge: 0
-- id: restart_pihole_if_down
-  alias: Restart PiHole container
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.internet_connected
-    to: 'off'
-  action:
-  - service: input_button.press
-    target:
-      entity_id: input_button.restart_pihole
-- id: restart_pihole
-  alias: Restart Pihole
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id: input_button.restart_pihole
-  action:
-  - service: rest_command.restart_pihole_syn
-  - service: rest_command.restart_pihole_study
 - id: master_lights_on
   alias: Turn on Master lights on motion
   initial_state: 'on'
@@ -906,39 +653,24 @@
     from: 'off'
     to: 'on'
   condition:
-    condition: or
+  - condition: template
+    value_template: >
+      {% set h = now().hour %}
+      {{ is_state('sun.sun', 'below_horizon') and (h >= 17 or h < 5) }}
+  - condition: state
+    entity_id: light.master_lights
+    state: 'off'
+  - condition: not
     conditions:
-    - condition: and
-      conditions:
-      - condition: time
-        after: '17:00:00'
-        before: '22:30:00'
-      - condition: state
-        entity_id: light.master_lights
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.sleeping
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.master_occupied
-        state: 'off'
-    - condition: and
-      conditions:
-      - condition: time
-        after: '22:30:00'
-        before: 05:00:00
-      - condition: state
-        entity_id: light.master_lights
-        state: 'off'
       - condition: state
         entity_id: alarm_control_panel.simplisafe_2
-        state: disarmed
-      - condition: state
-        entity_id: input_boolean.sleeping
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.master_occupied
-        state: 'off'
+        state: armed_away
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.master_occupied
+    state: 'off'
   action:
   - service: light.turn_on
     data:
@@ -1209,7 +941,7 @@
   condition:
   - condition: state
     entity_id: cover.garagedoor
-    state: 'closed'
+    state: closed
     for: 00:02:00
   - condition: state
     entity_id: input_boolean.homeautomation
@@ -1232,22 +964,18 @@
   action:
   - service: switch.turn_on
     entity_id: switch.shelly_garage
-  - service: logbook.log
-    data_template:
-      name: 'Garage door opened for: '
-      message: '{{trigger.to_state.name.split('' '')[0]}}'
 - id: close_garage_door_when_alarm_armed
   alias: Close garage door when alarm is armed
   initial_state: 'on'
   condition:
   - condition: state
     entity_id: cover.garagedoor
-    state: 'open'
+    state: open
   - condition: not
     conditions:
-      - condition: state
-        entity_id: alarm_control_panel.simplisafe_2
-        state: disarmed
+    - condition: state
+      entity_id: alarm_control_panel.simplisafe_2
+      state: disarmed
   trigger:
   - platform: time_pattern
     minutes: /5
@@ -1279,7 +1007,7 @@
   - service: light.turn_on
     data:
       entity_id: group.all_lights
-  - service: notify.pushbullet
+  - service: notify.mobile_app_alokphone2
     data_template:
       title: Alarm!
       message: The {{ trigger.to_state.name }} was changed to {{ trigger.to_state.state
@@ -1456,18 +1184,6 @@
         }}'
       device: 31747959
       entity_id: remote.livingroom
-- id: turn_on_pihole_after_some_time
-  alias: Turn on PiHole if it has been off
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id: switch.pi_hole_syn
-    to: 'off'
-    for: 00:05:00
-  action:
-  - service: switch.turn_on
-    entity_id:
-    - switch.pi_hole_syn
 - id: no_tv_time
   alias: No TV time
   initial_state: 'on'
@@ -1664,20 +1380,6 @@
     entity_id:
     - switch.sonos_family_room_night_sound
     - switch.sonos_family_room_speech_enhancement
-- id: ifttt_test
-  alias: IFTTT Test
-  initial_state: 'on'
-  trigger:
-    platform: event
-    event_type: ifttt_webhook_received
-  action:
-  - service: logbook.log
-    data_template:
-      name: 'IFTTT event: '
-      message: '{{trigger.event.data}}
-
-        '
-  id: 4f3dea129b9147d981bf08c6b3dea16f
 - alias: 'iOS: Double Tap'
   mode: queued
   trigger:
@@ -1896,7 +1598,7 @@
     timeout: 00:00:20
     continue_on_timeout: false
   - variables:
-      device: "{{\n  {'PIHOLE_KIDS': 'switch.pi_hole_kids',\n  'RISHAANFIREHD': 'switch.firehd_rishaan',\n
+      device: "{{\n  {'RISHAANFIREHD': 'switch.firehd_rishaan',\n
         \  'ARNAV_IPAD': 'switch.my_ipad',\n   'LENOVO': 'switch.lenovohome',\n   'TOSHIBA_AIO':
         'switch.toshibaaio',\n   'SAMMY_TV': 'switch.samsungtv',\n  }[wait.trigger.event.data.actionName]
         }}\n"
@@ -2043,6 +1745,8 @@
   initial_state: 'on'
   mode: queued
   trigger:
+  - platform: homeassistant
+    event: start
   - platform: state
     entity_id:
     - device_tracker.alok
@@ -2068,6 +1772,8 @@
   initial_state: 'on'
   mode: queued
   trigger:
+  - platform: homeassistant
+    event: start
   - platform: state
     entity_id:
     - device_tracker.rashmi
@@ -2093,6 +1799,8 @@
   initial_state: 'on'
   mode: queued
   trigger:
+  - platform: homeassistant
+    event: start
   - platform: state
     entity_id:
     - device_tracker.arnav
@@ -2114,168 +1822,170 @@
       gps_accuracy: '{{ state_attr(winner, ''gps_accuracy'') | int(0) }}'
       battery: '{{ state_attr(winner, ''battery_level'') | int(0) }}'
 - id: thermostat_proximity_approaching
-  alias: 'Thermostat - Pre-condition when approaching'
-  description: >
-    Turn off away mode when the nearest person is heading towards home and
-    within 5 miles. Fires on direction change to 'towards' or when distance
+  alias: Thermostat - Pre-condition when approaching
+  description: 'Turn off away mode when the nearest person is heading towards home
+    and within 5 miles. Fires on direction change to ''towards'' or when distance
     drops below threshold while already heading towards.
+
+    '
   initial_state: 'on'
   mode: single
   trigger:
-    - platform: state
-      entity_id: sensor.home_nearest_direction_of_travel
-      to: 'towards'
-    - platform: numeric_state
-      entity_id: sensor.home_nearest_distance
-      below: 5280
+  - platform: state
+    entity_id: sensor.home_nearest_direction_of_travel
+    to: towards
+  - platform: numeric_state
+    entity_id: sensor.home_nearest_distance
+    below: 5280
   condition:
+  - condition: state
+    entity_id: sensor.home_nearest_direction_of_travel
+    state: towards
+  - condition: numeric_state
+    entity_id: sensor.home_nearest_distance
+    below: 5280
+  - condition: or
+    conditions:
     - condition: state
-      entity_id: sensor.home_nearest_direction_of_travel
-      state: 'towards'
-    - condition: numeric_state
-      entity_id: sensor.home_nearest_distance
-      below: 5280
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: switch.downstairs_away
-          state: 'on'
-        - condition: state
-          entity_id: switch.upstairs_away
-          state: 'on'
-        - condition: state
-          entity_id: switch.bedroom_away
-          state: 'on'
-  action:
-    - service: homeassistant.turn_off
-      target:
-        entity_id:
-          - switch.downstairs_away
-          - switch.upstairs_away
-          - switch.bedroom_away
-    - service: notify.ios
-      data:
-        title: "Home Pre-conditioned"
-        message: >
-          {{ states('sensor.home_nearest_device') }} is heading home
-          (~{{ (states('sensor.home_nearest_distance') | float / 5280) | round(1) }} miles away).
-          Thermostats switched to home mode.
-
-- id: thermostat_proximity_revert
-  alias: 'Thermostat - Revert to away when not coming home'
-  description: >
-    Re-enable away mode when nearest person turns away or goes stationary
-    while still more than 3 miles out and nobody is currently home.
-    Handles the case where someone started heading home but changed direction.
-  initial_state: 'on'
-  mode: single
-  trigger:
-    - platform: state
-      entity_id: sensor.home_nearest_direction_of_travel
-      to: 'away_from'
-    - platform: state
-      entity_id: sensor.home_nearest_direction_of_travel
-      to: 'stationary'
-  condition:
-    - condition: numeric_state
-      entity_id: sensor.home_nearest_distance
-      above: 15840
+      entity_id: switch.downstairs_away
+      state: 'on'
     - condition: state
-      entity_id: group.Household
-      state: 'not_home'
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: switch.downstairs_away
-          state: 'off'
-        - condition: state
-          entity_id: switch.upstairs_away
-          state: 'off'
-        - condition: state
-          entity_id: switch.bedroom_away
-          state: 'off'
+      entity_id: switch.upstairs_away
+      state: 'on'
+    - condition: state
+      entity_id: switch.bedroom_away
+      state: 'on'
   action:
-    - service: homeassistant.turn_on
-      target:
-        entity_id:
-          - switch.downstairs_away
-          - switch.upstairs_away
-          - switch.bedroom_away
-
-- id: thermostat_proximity_arrived
-  alias: 'Thermostat - Confirm home on arrival'
-  description: >
-    Ensure thermostats are fully in home mode when someone arrives.
-    Safety net in case pre-condition did not fire.
-  initial_state: 'on'
-  mode: single
-  trigger:
-    - platform: state
-      entity_id: sensor.home_nearest_direction_of_travel
-      to: 'arrived'
-  condition:
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: switch.downstairs_away
-          state: 'on'
-        - condition: state
-          entity_id: switch.upstairs_away
-          state: 'on'
-        - condition: state
-          entity_id: switch.bedroom_away
-          state: 'on'
-  action:
-    - service: homeassistant.turn_off
-      target:
-        entity_id:
-          - switch.downstairs_away
-          - switch.upstairs_away
-          - switch.bedroom_away
-
-- id: thermostat_proximity_all_left
-  alias: 'Thermostat - Enable away when everyone leaves'
-  description: >
-    Enable away mode 10 minutes after the last person leaves home.
-    Enable thermostat away mode 10 minutes after the last person leaves home.
-  initial_state: 'on'
-  mode: single
-  trigger:
-    - platform: state
+  - service: homeassistant.turn_off
+    target:
       entity_id:
-        - person.alok
-        - person.rashmi
-        - person.arnav
-      to: 'not_home'
+      - switch.downstairs_away
+      - switch.upstairs_away
+      - switch.bedroom_away
+  - service: notify.ios
+    data:
+      title: Home Pre-conditioned
+      message: '{{ states(''sensor.home_nearest_device'') }} is heading home (~{{
+        (states(''sensor.home_nearest_distance'') | float / 5280) | round(1) }} miles
+        away). Thermostats switched to home mode.
+
+        '
+- id: thermostat_proximity_revert
+  alias: Thermostat - Revert to away when not coming home
+  description: 'Re-enable away mode when nearest person turns away or goes stationary
+    while still more than 3 miles out and nobody is currently home. Handles the case
+    where someone started heading home but changed direction.
+
+    '
+  initial_state: 'on'
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: sensor.home_nearest_direction_of_travel
+    to: away_from
+  - platform: state
+    entity_id: sensor.home_nearest_direction_of_travel
+    to: stationary
   condition:
+  - condition: numeric_state
+    entity_id: sensor.home_nearest_distance
+    above: 15840
+  - condition: state
+    entity_id: group.Household
+    state: not_home
+  - condition: or
+    conditions:
     - condition: state
-      entity_id: person.alok
-      state: 'not_home'
+      entity_id: switch.downstairs_away
+      state: 'off'
     - condition: state
-      entity_id: person.rashmi
-      state: 'not_home'
+      entity_id: switch.upstairs_away
+      state: 'off'
     - condition: state
-      entity_id: person.arnav
-      state: 'not_home'
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: switch.downstairs_away
-          state: 'off'
-        - condition: state
-          entity_id: switch.upstairs_away
-          state: 'off'
-        - condition: state
-          entity_id: switch.bedroom_away
-          state: 'off'
+      entity_id: switch.bedroom_away
+      state: 'off'
   action:
-    - delay: '00:10:00'
+  - service: homeassistant.turn_on
+    target:
+      entity_id:
+      - switch.downstairs_away
+      - switch.upstairs_away
+      - switch.bedroom_away
+- id: thermostat_proximity_arrived
+  alias: Thermostat - Confirm home on arrival
+  description: 'Ensure thermostats are fully in home mode when someone arrives. Safety
+    net in case pre-condition did not fire.
+
+    '
+  initial_state: 'on'
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: sensor.home_nearest_direction_of_travel
+    to: arrived
+  condition:
+  - condition: or
+    conditions:
     - condition: state
-      entity_id: group.Household
-      state: 'not_home'
-    - service: homeassistant.turn_on
-      target:
-        entity_id:
-          - switch.downstairs_away
-          - switch.upstairs_away
-          - switch.bedroom_away
+      entity_id: switch.downstairs_away
+      state: 'on'
+    - condition: state
+      entity_id: switch.upstairs_away
+      state: 'on'
+    - condition: state
+      entity_id: switch.bedroom_away
+      state: 'on'
+  action:
+  - service: homeassistant.turn_off
+    target:
+      entity_id:
+      - switch.downstairs_away
+      - switch.upstairs_away
+      - switch.bedroom_away
+- id: thermostat_proximity_all_left
+  alias: Thermostat - Enable away when everyone leaves
+  description: 'Enable away mode 10 minutes after the last person leaves home. Enable
+    thermostat away mode 10 minutes after the last person leaves home.
+
+    '
+  initial_state: 'on'
+  mode: single
+  trigger:
+  - platform: state
+    entity_id:
+    - person.alok
+    - person.rashmi
+    - person.arnav
+    to: not_home
+  condition:
+  - condition: state
+    entity_id: person.alok
+    state: not_home
+  - condition: state
+    entity_id: person.rashmi
+    state: not_home
+  - condition: state
+    entity_id: person.arnav
+    state: not_home
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: switch.downstairs_away
+      state: 'off'
+    - condition: state
+      entity_id: switch.upstairs_away
+      state: 'off'
+    - condition: state
+      entity_id: switch.bedroom_away
+      state: 'off'
+  action:
+  - delay: 00:10:00
+  - condition: state
+    entity_id: group.Household
+    state: not_home
+  - service: homeassistant.turn_on
+    target:
+      entity_id:
+      - switch.downstairs_away
+      - switch.upstairs_away
+      - switch.bedroom_away
