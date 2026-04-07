@@ -1208,8 +1208,8 @@
   initial_state: 'on'
   condition:
   - condition: state
-    entity_id: binary_sensor.garage_door
-    state: 'off'
+    entity_id: cover.garagedoor
+    state: 'closed'
     for: 00:02:00
   - condition: state
     entity_id: input_boolean.homeautomation
@@ -1241,8 +1241,8 @@
   initial_state: 'on'
   condition:
   - condition: state
-    entity_id: binary_sensor.garage_door
-    state: 'on'
+    entity_id: cover.garagedoor
+    state: 'open'
   - condition: not
     conditions:
       - condition: state
