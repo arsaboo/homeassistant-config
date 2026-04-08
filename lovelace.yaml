@@ -1,4 +1,11 @@
-  mode: yaml
+  resource_mode: yaml
+  dashboards:
+    lovelace:
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: ARS Home
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
   resources:
     - url: /hacsfiles/weather-card/weather-card.js
       type: module

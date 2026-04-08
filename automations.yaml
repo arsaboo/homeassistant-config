@@ -1158,8 +1158,8 @@
   alias: Update HA after startup
   initial_state: 'on'
   trigger:
-    platform: homeassistant
-    event: start
+    platform: event
+    event_type: homeassistant_started
   action:
   - delay: 00:00:01
   - service: homeassistant.turn_on
@@ -1623,13 +1623,19 @@
   initial_state: 'on'
   mode: queued
   trigger:
-  - platform: homeassistant
-    event: start
+  - platform: event
+    event_type: homeassistant_started
+    id: startup
   - platform: state
     entity_id:
     - device_tracker.alok
     - device_tracker.alokphone2
   action:
+  - if:
+      - condition: trigger
+        id: startup
+    then:
+      - delay: 00:00:30
   - variables:
       winner: '{% set t1 = states.device_tracker.alok.last_updated %} {% set t2 =
         states.device_tracker.alokphone2.last_updated %} {{ ''device_tracker.alok''
@@ -1650,13 +1656,19 @@
   initial_state: 'on'
   mode: queued
   trigger:
-  - platform: homeassistant
-    event: start
+  - platform: event
+    event_type: homeassistant_started
+    id: startup
   - platform: state
     entity_id:
     - device_tracker.rashmi
     - device_tracker.rashmiiphone2
   action:
+  - if:
+      - condition: trigger
+        id: startup
+    then:
+      - delay: 00:00:30
   - variables:
       winner: '{% set t1 = states.device_tracker.rashmi.last_updated %} {% set t2
         = states.device_tracker.rashmiiphone2.last_updated %} {{ ''device_tracker.rashmi''
@@ -1677,13 +1689,19 @@
   initial_state: 'on'
   mode: queued
   trigger:
-  - platform: homeassistant
-    event: start
+  - platform: event
+    event_type: homeassistant_started
+    id: startup
   - platform: state
     entity_id:
     - device_tracker.arnav
     - device_tracker.arnavs_iphone_17_pm
   action:
+  - if:
+      - condition: trigger
+        id: startup
+    then:
+      - delay: 00:00:30
   - variables:
       winner: '{% set t1 = states.device_tracker.arnav.last_updated %} {% set t2 =
         states.device_tracker.arnavs_iphone_17_pm.last_updated %} {{ ''device_tracker.arnav''

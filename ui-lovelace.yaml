@@ -762,15 +762,114 @@ views:
 
       - type: horizontal-stack
         cards:
-          - type: tile
+          - type: custom:mushroom-template-card
+            primary: Alok
+            secondary: |
+              {% set speed = states('sensor.alok_composite_speed') | float(0) %}
+              {% if speed > 1 %}
+                🚗 {{ speed | round(0) }} mph
+              {% elif is_state('person.alok', 'home') %}
+                Home
+              {% elif states('person.alok') not in ['unknown', 'unavailable', 'not_home'] %}
+                {{ states('person.alok') | replace('_', ' ') | title }}
+              {% else %}
+                Away
+              {% endif %}
+            picture: "{{ state_attr('person.alok', 'entity_picture') }}"
             entity: person.alok
-            show_entity_picture: true
-          - type: tile
+            icon_color: |
+              {% set speed = states('sensor.alok_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.alok', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            badge_icon: |
+              {% set speed = states('sensor.alok_composite_speed') | float(0) %}
+              {% if speed > 1 %} mdi:car
+              {% elif is_state('person.alok', 'home') %} mdi:home
+              {% else %} mdi:map-marker
+              {% endif %}
+            badge_color: |
+              {% set speed = states('sensor.alok_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.alok', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            fill_container: true
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Rashmi
+            secondary: |
+              {% set speed = states('sensor.rashmi_composite_speed') | float(0) %}
+              {% if speed > 1 %}
+                🚗 {{ speed | round(0) }} mph
+              {% elif is_state('person.rashmi', 'home') %}
+                Home
+              {% elif states('person.rashmi') not in ['unknown', 'unavailable', 'not_home'] %}
+                {{ states('person.rashmi') | replace('_', ' ') | title }}
+              {% else %}
+                Away
+              {% endif %}
+            picture: "{{ state_attr('person.rashmi', 'entity_picture') }}"
             entity: person.rashmi
-            show_entity_picture: true
-          - type: tile
+            icon_color: |
+              {% set speed = states('sensor.rashmi_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.rashmi', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            badge_icon: |
+              {% set speed = states('sensor.rashmi_composite_speed') | float(0) %}
+              {% if speed > 1 %} mdi:car
+              {% elif is_state('person.rashmi', 'home') %} mdi:home
+              {% else %} mdi:map-marker
+              {% endif %}
+            badge_color: |
+              {% set speed = states('sensor.rashmi_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.rashmi', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            fill_container: true
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Arnav
+            secondary: |
+              {% set speed = states('sensor.arnav_composite_speed') | float(0) %}
+              {% if speed > 1 %}
+                🚗 {{ speed | round(0) }} mph
+              {% elif is_state('person.arnav', 'home') %}
+                Home
+              {% elif states('person.arnav') not in ['unknown', 'unavailable', 'not_home'] %}
+                {{ states('person.arnav') | replace('_', ' ') | title }}
+              {% else %}
+                Away
+              {% endif %}
+            picture: "{{ state_attr('person.arnav', 'entity_picture') }}"
             entity: person.arnav
-            show_entity_picture: true
+            icon_color: |
+              {% set speed = states('sensor.arnav_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.arnav', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            badge_icon: |
+              {% set speed = states('sensor.arnav_composite_speed') | float(0) %}
+              {% if speed > 1 %} mdi:car
+              {% elif is_state('person.arnav', 'home') %} mdi:home
+              {% else %} mdi:map-marker
+              {% endif %}
+            badge_color: |
+              {% set speed = states('sensor.arnav_composite_speed') | float(0) %}
+              {% if speed > 1 %} orange
+              {% elif is_state('person.arnav', 'home') %} green
+              {% else %} grey
+              {% endif %}
+            fill_container: true
+            tap_action:
+              action: more-info
   - icon: mdi:weather-cloudy
     id: weather
     title: Weather

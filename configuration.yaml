@@ -1,4 +1,5 @@
 homeassistant:
+  country: US
   auth_providers:
     - type: homeassistant
     - type: trusted_networks
@@ -23,21 +24,6 @@ homeassistant:
 
 default_config:
 stream:
-
-influxdb:
-  api_version: 2
-  ssl: false
-  host: 192.168.2.113
-  port: 8086
-  organization: homeassistant
-  bucket: homeassistant
-  token: !secret influxdb_token
-  tags:
-    source: HA
-  tags_attributes:
-    - friendly_name
-    - device_class
-  default_measurement: units
 
 python_script:
 
@@ -418,10 +404,8 @@ template:
       - name: Cube Last Action
         unique_id: cube_last_action
         state: >
-          {% set cube = states.binary_sensor.cube_158d0001035aa7 %}
-          {% if cube is not defined or cube.last_updated is none %}
-            unavailable
-          {% elif as_timestamp(now()) - as_timestamp(cube.last_updated) > 50 %}
+          {% set t = as_timestamp(states.binary_sensor.cube_158d0001035aa7.last_updated, default=0) %}
+          {% if t == 0 or as_timestamp(now()) - t > 50 %}
             None
           {% else %}
             {{ state_attr('binary_sensor.cube_158d0001035aa7', 'last_action') | default('None', true) }}
@@ -430,7 +414,7 @@ template:
         unique_id: livingroom_temp_rounded
         state: >-
           {% set temp = states('sensor.living_room_temperature') %}
-          {{ temp | float | round if is_number(temp) else 'unavailable' }}
+          {{ temp | float | round(0) | int if is_number(temp) else 'unavailable' }}
       - name: Study Temperature
         unique_id: study_temp_rounded
         state: >-
