@@ -428,13 +428,15 @@
     - sensor.downstairs_temp_change
     to: '-999'
   action:
+  - condition: template
+    value_template: "{{ trigger.from_state is not none and trigger.from_state.state not in ['unknown', 'unavailable'] }}"
   - service: input_number.set_value
     data_template:
       entity_id: "{%- if trigger.entity_id == 'sensor.master_temp_change' -%}\n  input_number.master_prev_eff\n{%-
         elif trigger.entity_id == 'sensor.upstairs_temp_change' -%}\n  input_number.upstairs_prev_eff\n{%-
         elif trigger.entity_id == 'sensor.downstairs_temp_change' -%}\n  input_number.downstairs_prev_eff\n{%-
         endif -%}\n"
-      value: '{{ trigger.from_state.state|float }}
+      value: '{{ trigger.from_state.state|float(0) }}
 
         '
 - id: hvac_set_prev_temp
@@ -1199,9 +1201,11 @@
   - platform: state
     entity_id: sensor.sonos_volume
   actions:
+  - condition: template
+    value_template: "{{ trigger.to_state is not none and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
   - data_template:
       entity_id: input_number.harmonyvolume
-      value: '{{ trigger.to_state.state }}'
+      value: '{{ trigger.to_state.state|float(0) }}'
     action: input_number.set_value
   - data_template:
       title: "\U0001F50A Home Assistant"

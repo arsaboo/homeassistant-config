@@ -182,12 +182,12 @@ notify:
   - platform: group
     name: iOS
     services:
-      - service: mobile_app_alokiphone
+      - service: mobile_app_alokphone2
       - service: mobile_app_rashmiiphone12
   - platform: group
     name: ios_home_automation
     services:
-      - service: mobile_app_alokiphone
+      - service: mobile_app_alokphone2
         data:
           title: 'Enable Home automation?'
           data:
