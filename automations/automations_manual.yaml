@@ -567,43 +567,6 @@
             switch.bedroom_away
           {%- endif -%}
 
-- id: image_processing_scan
-  alias: 'Image Processing Scan'
-  mode: queued
-  initial_state: 'off'
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.backyard_field_detection
-        - binary_sensor.driveway_field_detection
-        - binary_sensor.patio_field_detection
-        - binary_sensor.porch_field_detection
-        - binary_sensor.backyard_line_crossing
-        - binary_sensor.driveway_line_crossing
-        - binary_sensor.patio_line_crossing
-        - binary_sensor.porch_line_crossing
-        - binary_sensor.ring_front_door_motion
-  action:
-    - service: image_processing.scan
-      data_template:
-        entity_id: >
-          {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
-            image_processing.tensorflow_porch
-          {% else %}
-            image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
-          {% endif %}
-    # - service: image_processing.scan
-    #   data_template:
-    #     entity_id: >
-    #       {% if trigger.entity_id == "binary_sensor.ring_front_door_motion" %}
-    #         image_processing.deepstack_porch
-    #       {% else %}
-    #         image_processing.deepstack_{{ trigger.entity_id.split('.')[1].split('_')[0] }}
-    #       {% endif %}
-    # - service: image_processing.scan
-    #   data_template:
-    #     entity_id: "image_processing.opencv_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
-
 # - id: opencv_image_processing_notification
 #   alias: 'OpenCV image processing'
 #   initial_state: 'on'
@@ -623,51 +586,6 @@
 #         name: "OpenCV: "
 #         message: >-
 #           {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.to_state.attributes.camera.split('.')[1] }}.
-
-- id: tf_image_processing_notification
-  alias: 'TF image processing'
-  initial_state: 'on'
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - image_processing.tensorflow_porch
-        - image_processing.tensorflow_patio
-        - image_processing.tensorflow_driveway
-        - image_processing.tensorflow_backyard
-        - image_processing.deepstack_porch
-        - image_processing.deepstack_patio
-        - image_processing.deepstack_driveway
-        - image_processing.deepstack_backyard
-  condition:
-    - condition: template
-      value_template: '{{ trigger.to_state.state |int > 0 }}'
-    # - condition: template
-    #   value_template: >
-    #       {% set camera = trigger.entity_id.split('.')[1].split('_')[1] %}
-    #       {%- set tags = trigger.to_state.attributes.matches.keys()|list -%}
-    #
-    #       {% macro get_list(obj) %}
-    #         {%- for x in trigger.to_state.attributes.matches[obj]|list if x.box[0] > 0.25 -%}
-    #           {%- if loop.first %}{% elif loop.last %},{% else %},{% endif -%}{{ obj }}
-    #         {%- endfor -%}
-    #       {% endmacro %}
-    #
-    #       {% macro run() %}
-    #         {%- for object in tags -%}
-    #         {%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ obj }}
-    #           {{- get_list(object).split(',')|list|unique|list|join|title }}
-    #         {%- endfor -%}
-    #       {% endmacro %}
-    #
-    #       {% set output = run() %}
-    #       {{ output == '' }}
-  action:
-    - service: logbook.log
-      data_template:
-        name: "TF: "
-        message: >-
-          {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }}.
 
 - id: notify_camera_pictures
   alias: 'Notify camera pictures'
@@ -749,71 +667,6 @@
             {{(as_timestamp(now()) - as_timestamp(states.binary_sensor.porch_motion.attributes.last_tripped_time))|round(2)}} seconds ago.
           {%- endif -%}
 
-- id: notify_tensorflow_bus
-  alias: 'Notify Tensorflow bus'
-  mode: queued
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: alarm_control_panel.simplisafe_2
-      state: disarmed
-    - condition: or
-      conditions:
-        - condition: time
-          after: '07:45:00'
-          before: '08:45:00'
-        - condition: time
-          after: '15:20:00'
-          before: '16:30:00'
-  trigger:
-    - platform: template
-      value_template: >
-        {{ 'bus' in state_attr('image_processing.tensorflow_driveway','matches') }}
-  action:
-    - service: script.sonos_say
-      data:
-        sonos_entity: media_player.family_room_2
-        volume: 0.4
-        delay: '00:00:03'
-        message: 'Bus is detected in Driveway'
-
-- id: notify_tensorflow_detection
-  alias: 'Notify Tensorflow detection'
-  mode: queued
-  initial_state: 'on'
-  condition:
-    - condition: state
-      entity_id: input_select.abodestatus
-      state: 'armed_away'
-    - condition: template
-      value_template: '{{ trigger.to_state.state |int > 0 }}'
-    - condition: template
-      value_template: >
-        {%- if states.automation.notify_tensorflow_detection.attributes.last_triggered -%}
-          {{ (as_timestamp(now()) - as_timestamp(state_attr('automation.notify_tensorflow_detection','last_triggered'))) > 30 }}
-        {%- else -%}
-          true
-        {%- endif -%}
-  trigger:
-   - platform: state
-     entity_id:
-       - image_processing.tensorflow_porch
-       - image_processing.tensorflow_patio
-       - image_processing.tensorflow_driveway
-       - image_processing.tensorflow_backyard
-  action:
-    - service: notify.mobile_app_alokphone
-      data_template:
-        message: >
-          {{ state_attr(trigger.entity_id,'matches').keys()|list|unique|list|join(', ')|title }} detected in {{ trigger.entity_id.split('.')[1].split('_')[1] }} camera.
-        data:
-          push:
-            category: camera
-          entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[1] }}"
-          attachment:
-            url: "{{ states.camera[trigger.entity_id.split('.')[1].split('_')[1]].attributes.entity_picture }}"
-            content-type: jpg
-
 - id: update_wordltime_path
   alias: 'Camera - Update worldtime Path'
   initial_state: 'on'
@@ -889,7 +742,7 @@
   condition:
     - condition: template
       value_template: >
-        {{ trigger.to_state.state | length > 0 }}
+        {{ trigger.to_state is not none and trigger.to_state.state | trim | length > 0 and trigger.to_state.state not in ['unknown', 'unavailable', 'None'] }}
   action:
     - service: persistent_notification.create
       data_template:
@@ -934,133 +787,6 @@
         name: "{{states('input_select.current_theme')}}"
 
 #################################################################
-## Commute Times
-#################################################################
-
-- id: update_morning_commute_sensor
-  alias: "Commute - Update morning commute sensor"
-  initial_state: 'off'
-  trigger:
-    - platform: time_pattern
-      minutes: '/2'
-  condition:
-    - condition: time
-      after: '08:00:00'
-      before: '11:00:00'
-    - condition: time
-      weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-    - condition: state
-      entity_id: device_tracker.meta_alok
-      state: 'home'
-  action:
-    - service: homeassistant.update_entity
-      data:
-        entity_id: sensor.morning_commute
-
-- id: update_evening_commute_sensor
-  alias: "Commute - Update evening commute sensor"
-  initial_state: 'off'
-  trigger:
-    - platform: time_pattern
-      minutes: '/2'
-  condition:
-    - condition: time
-      after: '17:00:00'
-      before: '20:00:00'
-    - condition: time
-      weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-    - condition: template
-      value_template: >
-        {%- if states('device_tracker.meta_alok') -%}
-          {{ states('device_tracker.meta_alok')|lower in ('buckhead', 'downtown') }}
-        {%- else -%}
-          false
-        {%- endif -%}
-  action:
-    - service: homeassistant.update_entity
-      data:
-        entity_id: sensor.alok_to_home
-
-- id: morning_commute
-  alias: "Morning Commute"
-  initial_state: 'off'
-  condition:
-    condition: and
-    conditions:
-     - condition: time
-       after: '08:15:00'
-       before: '11:00:00'
-     - condition: time
-       weekday:
-         - mon
-         - tue
-         - wed
-         - thu
-         - fri
-     - condition: state
-       entity_id: device_tracker.meta_alok
-       state: 'home'
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.morning_commute
-    below: 43
-  action:
-    - service: notify.pushbullet
-      data:
-        message: Commute time is 43 minutes
-        title: Leave for Work
-        target: device/myiPhone
-    - service: homeassistant.turn_on
-      entity_id: script.notificationleavework
-
-- id: evening_commute
-  alias: "Evening Commute"
-  initial_state: 'off'
-  condition:
-    condition: and
-    conditions:
-     - condition: time
-       after: '17:00:00'
-       before: '20:00:00'
-     - condition: time
-       weekday:
-         - mon
-         - tue
-         - wed
-         - thu
-         - fri
-     - condition: template
-       value_template: >
-         {%- if states('device_tracker.meta_alok') -%}
-           {{ states('device_tracker.meta_alok') != 'home' }}
-         {%- else -%}
-           false
-         {%- endif -%}
-  trigger:
-    platform: template
-    value_template: >
-      {%- if states.sensor.alok_to_home.attributes.duration_in_traffic -%}
-        {{(states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int) / (states.sensor.alok_to_home.attributes.duration.split(' ')[0]|int) < 1.25}}
-      {%- else -%}
-        false
-      {%- endif -%}
-  action:
-    service: notify.pushbullet
-    data_template:
-      message: Commute time is {{states.sensor.alok_to_home.attributes.duration_in_traffic.split(' ')[0]|int}} minutes
-      title: Leave for Home
-      target: device/myiPhone
-
 - id: plexspy_notification
   alias: "Plex Spy notification"
   initial_state: 'off'
@@ -1302,45 +1028,45 @@
   trigger:
     - platform: state
       entity_id:
-        - sensor.masterthermoper
-        - sensor.upstairsthermoper
-        - sensor.downstairsthermoper
+        - sensor.master_thermostat
+        - sensor.upstairs_thermostat
+        - sensor.downstairs_thermostat
       to: 'cooling'
     - platform: state
       entity_id:
-        - sensor.masterthermoper
-        - sensor.upstairsthermoper
-        - sensor.downstairsthermoper
+        - sensor.master_thermostat
+        - sensor.upstairs_thermostat
+        - sensor.downstairs_thermostat
       to: 'heating'
   action:
     - service: input_datetime.set_datetime
       data_template:
         entity_id: >
-          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+          {%- if trigger.entity_id == 'sensor.master_thermostat' -%}
             input_datetime.master_time
-          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+          {%- elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}
             input_datetime.upstairs_time
-          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
+          {%- elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}
             input_datetime.downstairs_time
           {%- endif -%}
         datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
     - service: input_number.set_value
       data_template:
         entity_id: >
-          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+          {%- if trigger.entity_id == 'sensor.master_thermostat' -%}
             input_number.master_prev_temp
-          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+          {%- elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}
             input_number.upstairs_prev_temp
-          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
+          {%- elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}
             input_number.downstairs_prev_temp
           {%- endif -%}
         value: >
-          {%- if trigger.entity_id == 'sensor.masterthermoper' -%}
+          {%- if trigger.entity_id == 'sensor.master_thermostat' -%}
             {{state_attr("climate.master_homekit","current_temperature")|float}}
-          {%- elif trigger.entity_id == 'sensor.upstairsthermoper' -%}
+          {%- elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}
             {{state_attr("climate.upstairs_homekit","current_temperature")|float}}
-          {%- elif trigger.entity_id == 'sensor.downstairsthermoper' -%}
-            {{state_attr("climate.downstairs_homekit","current_temperature")|float}}
+          {%- elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}
+            {{state_attr("climate.downstairs","current_temperature")|float}}
           {%- endif -%}
 - id: prevent_hvac_failure_2
   alias: 'Prevent HVAC Failure 2'
@@ -1348,12 +1074,12 @@
   trigger:
     - platform: state
       entity_id:
-        - sensor.masterthermoper
+        - sensor.master_thermostat
       to: 'cooling'
       for: '00:03:00'
     - platform: state
       entity_id:
-        - sensor.masterthermoper
+        - sensor.master_thermostat
       to: 'heating'
       for: '00:03:00'
   condition:
@@ -1363,7 +1089,7 @@
     - service: logbook.log
       data:
         name: "Master vent: "
-        message: "Vent Temp is {{states('sensor.temperature_158d0001a35ba5')}} and pressure is {{states('sensor.pressure_158d0001a35ba5')}}. Temp change is {{states('sensor.master_vent_temp_change')}}"
+        message: "Vent Temp is {{ states('sensor.temperature_158d0001a35ba5') }} and pressure is {{ states('sensor.pressure_158d0001a35ba5') }}. Temp efficiency is {{ states('sensor.master_temp_change') }} min/deg."
 
 - id: notify_if_living_room_hvac_not_working
   alias: 'Notify if living room HVAC not working'
@@ -1371,12 +1097,12 @@
   trigger:
     - platform: state
       entity_id:
-        - sensor.downstairsthermoper
+        - sensor.downstairs_thermostat
       to: 'cooling'
       for: '00:05:00'
     - platform: state
       entity_id:
-        - sensor.downstairsthermoper
+        - sensor.downstairs_thermostat
       to: 'heating'
       for: '00:05:00'
   condition:
@@ -1390,13 +1116,13 @@
     - service: logbook.log
       data:
         name: "Living Room Vent: "
-        message: "Thermostat is {{ trigger.to_state.state }} for the last 3 minutes, but the temperature has only changed {{states('sensor.living_vent_temp_change')}}. Current temp is {{states('sensor.vent')}}."
+        message: "Thermostat is {{ trigger.to_state.state }} for the last 5 minutes. Downstairs temp efficiency is {{ states('sensor.downstairs_temp_change') }} min/deg. Current vent temp is {{ states('sensor.vent') }}."
     - service: notify.mobile_app_alokphone
       data_template:
         message: >
           Check Master Thermostat
         data:
-          subtitle: "Master thermostat {{ trigger.to_state.state }} for 5 minutes but the temperature only changed {{states('sensor.master_vent_temp_change')}}."
+          subtitle: "Downstairs thermostat {{ trigger.to_state.state }} for 5 minutes. Temp efficiency is {{ states('sensor.downstairs_temp_change') }} min/deg."
           push:
             badge: 0
 
@@ -1406,12 +1132,12 @@
   trigger:
     - platform: state
       entity_id:
-        - sensor.masterthermoper
+        - sensor.master_thermostat
       to: 'cooling'
       for: '00:03:00'
     - platform: state
       entity_id:
-        - sensor.masterthermoper
+        - sensor.master_thermostat
       to: 'heating'
       for: '00:03:00'
   condition:
@@ -1425,13 +1151,13 @@
     - service: logbook.log
       data:
         name: "Master Room Vent: "
-        message: "Temp is {{states('sensor.master_vent')}}. Temp change is {{states('sensor.master_vent_temp_change')}}"
+        message: "Temp is {{ states('sensor.master_vent') }}. Temp efficiency is {{ states('sensor.master_temp_change') }} min/deg."
     - service: notify.mobile_app_alokphone
       data_template:
         message: >
           Check Master Thermostat
         data:
-          subtitle: "Master thermostat {{ trigger.to_state.state }} for 3 minutes but the temperature only changed {{states('sensor.master_vent_temp_change')}}."
+          subtitle: "Master thermostat {{ trigger.to_state.state }} for 3 minutes. Temp efficiency is {{ states('sensor.master_temp_change') }} min/deg."
           push:
             badge: 0
 
@@ -2469,25 +2195,12 @@
         title: "\U0001F50A Home Assistant"
         message: >
             Volume changed to {{ trigger.to_state.state }}
-- id: update_master_sonos_volume
-  alias: "Update Master Sonos Volume"
-  initial_state: 'on'
-  mode: restart
-  trigger:
-    - platform: state
-      entity_id: sensor.master_sonos_volume
-  action:
-    - service: notify.aftvmaster
-      data_template:
-        title: "\U0001F50A Home Assistant"
-        message: >
-            Volume changed to {{ trigger.to_state.state }}
 - id: notify_ftv_master_on
   alias: "Notify when FTV master turned on"
   initial_state: 'on'
   trigger:
     - platform: state
-      entity_id: media_player.aftv_master
+      entity_id: media_player.fire_tv
       to: 'playing'
   action:
     service: notify.telegram

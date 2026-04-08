@@ -119,28 +119,6 @@
   action:
     service: switch.turn_off
     entity_id: switch.foscam_record
-- id: image_processing_scan
-  alias: Image Processing Scan
-  mode: queued
-  initial_state: 'on'
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.backyard_field_detection
-    - binary_sensor.driveway_field_detection
-    - binary_sensor.patio_field_detection
-    - binary_sensor.porch_field_detection
-    - binary_sensor.backyard_line_crossing
-    - binary_sensor.driveway_line_crossing
-    - binary_sensor.patio_line_crossing
-    - binary_sensor.porch_line_crossing
-    - binary_sensor.ring_front_door_motion
-  action:
-  - service: image_processing.scan
-    data_template:
-      entity_id: "{% if trigger.entity_id == \"binary_sensor.ring_front_door_motion\"
-        %}\n  image_processing.tensorflow_porch\n{% else %}\n  image_processing.tensorflow_{{
-        trigger.entity_id.split('.')[1].split('_')[0] }}\n{% endif %}\n"
 - id: notify_camera_pictures
   alias: Notify camera pictures
   initial_state: 'off'
@@ -187,72 +165,6 @@
         entity_id: camera.{{ trigger.entity_id.split('.')[1].split('_')[0] }}
         attachment:
           url: '{{ states.camera[trigger.entity_id.split(''.'')[1].split(''_'')[0]].attributes.entity_picture
-            }}'
-          content-type: jpg
-- id: notify_tensorflow_bus
-  alias: Notify Tensorflow bus
-  mode: queued
-  initial_state: 'off'
-  condition:
-  - condition: state
-    entity_id: alarm_control_panel.simplisafe_2
-    state: disarmed
-  - condition: or
-    conditions:
-    - condition: time
-      after: 07:45:00
-      before: 08:45:00
-    - condition: time
-      after: '15:20:00'
-      before: '16:30:00'
-  trigger:
-  - platform: template
-    value_template: '{{ ''bus'' in state_attr(''image_processing.tensorflow_driveway'',''matches'')
-      }}
-
-      '
-  action:
-  - service: script.sonos_say
-    data:
-      sonos_entity: media_player.family_room_2
-      volume: 0.4
-      delay: 00:00:03
-      message: Bus is detected in Driveway
-- id: notify_tensorflow_detection
-  alias: Notify Tensorflow detection
-  mode: queued
-  initial_state: 'on'
-  condition:
-  - condition: state
-    entity_id: alarm_control_panel.simplisafe_2
-    state: armed_away
-  - condition: template
-    value_template: '{{ trigger.to_state.state |int > 0 }}'
-  - condition: template
-    value_template: "{%- if states.automation.notify_tensorflow_detection.attributes.last_triggered
-      -%}\n  {{ (as_timestamp(now()) - as_timestamp(state_attr('automation.notify_tensorflow_detection','last_triggered')))
-      > 30 }}\n{%- else -%}\n  true\n{%- endif -%}\n"
-  trigger:
-  - platform: state
-    entity_id:
-    - image_processing.tensorflow_porch
-    - image_processing.tensorflow_patio
-    - image_processing.tensorflow_driveway
-    - image_processing.tensorflow_backyard
-  action:
-  - service: notify.mobile_app_alokphone2
-    data_template:
-      message: '{{ state_attr(trigger.entity_id,''matches'').keys()|list|unique|list|join('',
-        '')|title }} detected in {{ trigger.entity_id.split(''.'')[1].split(''_'')[1]
-        }} camera.
-
-        '
-      data:
-        push:
-          category: camera
-        entity_id: camera.{{ trigger.entity_id.split('.')[1].split('_')[1] }}
-        attachment:
-          url: '{{ states.camera[trigger.entity_id.split(''.'')[1].split(''_'')[1]].attributes.entity_picture
             }}'
           content-type: jpg
 - id: update_wordltime_path
@@ -324,7 +236,8 @@
     entity_id: sensor.battery_status
   condition:
   - condition: template
-    value_template: '{{ trigger.to_state.state | length > 0 }}
+    value_template: '{{ trigger.to_state is not none and trigger.to_state.state | trim | length > 0
+      and trigger.to_state.state not in [''unknown'', ''unavailable'', ''None''] }}
 
       '
   action:
@@ -341,14 +254,6 @@
       message: 'Check battery: {{ states(''sensor.battery_status'') }}
 
         '
-- id: heal_zwave_network
-  alias: Heal Z-Wave Network
-  initial_state: 'on'
-  trigger:
-    platform: time
-    at: '2:31:00'
-  action:
-    service: zwave.heal_network
 - id: update_available_notification
   alias: Update Available Notification
   initial_state: 'on'
@@ -538,33 +443,33 @@
   trigger:
   - platform: state
     entity_id:
-    - sensor.masterthermoper
-    - sensor.upstairsthermoper
-    - sensor.downstairsthermoper
+    - sensor.master_thermostat
+    - sensor.upstairs_thermostat
+    - sensor.downstairs_thermostat
     to: cooling
   - platform: state
     entity_id:
-    - sensor.masterthermoper
-    - sensor.upstairsthermoper
-    - sensor.downstairsthermoper
+    - sensor.master_thermostat
+    - sensor.upstairs_thermostat
+    - sensor.downstairs_thermostat
     to: heating
   action:
   - service: input_datetime.set_datetime
     data_template:
-      entity_id: "{%- if trigger.entity_id == 'sensor.masterthermoper' -%}\n  input_datetime.master_time\n{%-
-        elif trigger.entity_id == 'sensor.upstairsthermoper' -%}\n  input_datetime.upstairs_time\n{%-
-        elif trigger.entity_id == 'sensor.downstairsthermoper' -%}\n  input_datetime.downstairs_time\n{%-
+      entity_id: "{%- if trigger.entity_id == 'sensor.master_thermostat' -%}\n  input_datetime.master_time\n{%-
+        elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}\n  input_datetime.upstairs_time\n{%-
+        elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}\n  input_datetime.downstairs_time\n{%-
         endif -%}\n"
       datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
   - service: input_number.set_value
     data_template:
-      entity_id: "{%- if trigger.entity_id == 'sensor.masterthermoper' -%}\n  input_number.master_prev_temp\n{%-
-        elif trigger.entity_id == 'sensor.upstairsthermoper' -%}\n  input_number.upstairs_prev_temp\n{%-
-        elif trigger.entity_id == 'sensor.downstairsthermoper' -%}\n  input_number.downstairs_prev_temp\n{%-
+      entity_id: "{%- if trigger.entity_id == 'sensor.master_thermostat' -%}\n  input_number.master_prev_temp\n{%-
+        elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}\n  input_number.upstairs_prev_temp\n{%-
+        elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}\n  input_number.downstairs_prev_temp\n{%-
         endif -%}\n"
-      value: "{%- if trigger.entity_id == 'sensor.masterthermoper' -%}\n  {{state_attr(\"climate.master_homekit\",\"current_temperature\")|float}}\n{%-
-        elif trigger.entity_id == 'sensor.upstairsthermoper' -%}\n  {{state_attr(\"climate.upstairs_homekit\",\"current_temperature\")|float}}\n{%-
-        elif trigger.entity_id == 'sensor.downstairsthermoper' -%}\n  {{state_attr(\"climate.downstairs_homekit\",\"current_temperature\")|float}}\n{%-
+      value: "{%- if trigger.entity_id == 'sensor.master_thermostat' -%}\n  {{state_attr(\"climate.master_homekit\",\"current_temperature\")|float}}\n{%-
+        elif trigger.entity_id == 'sensor.upstairs_thermostat' -%}\n  {{state_attr(\"climate.upstairs_homekit\",\"current_temperature\")|float}}\n{%-
+        elif trigger.entity_id == 'sensor.downstairs_thermostat' -%}\n  {{state_attr(\"climate.downstairs\",\"current_temperature\")|float}}\n{%-
         endif -%}\n"
 - id: prevent_master_hvac_failure
   alias: Prevent master hvac failure
@@ -654,17 +559,18 @@
     to: 'on'
   condition:
   - condition: template
-    value_template: >
-      {% set h = now().hour %}
-      {{ is_state('sun.sun', 'below_horizon') and (h >= 17 or h < 5) }}
+    value_template: '{% set h = now().hour %} {{ is_state(''sun.sun'', ''below_horizon'')
+      and (h >= 17 or h < 5) }}
+
+      '
   - condition: state
     entity_id: light.master_lights
     state: 'off'
   - condition: not
     conditions:
-      - condition: state
-        entity_id: alarm_control_panel.simplisafe_2
-        state: armed_away
+    - condition: state
+      entity_id: alarm_control_panel.simplisafe_2
+      state: armed_away
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'off'
@@ -832,22 +738,6 @@
     service: ifttt.trigger
     data_template:
       event: leeocolor
-      value1: '{{ ''{:02x}{:02x}{:02x}''.format(range(0, 255) | random, range(0, 255)
-        | random, range(0, 255) | random) }}'
-- id: change_leeoup_color
-  alias: Change Leeo upstairs color
-  initial_state: 'on'
-  condition:
-  - condition: time
-    after: '19:15:00'
-    before: 07:45:00
-  trigger:
-  - platform: time_pattern
-    minutes: /15
-  action:
-    service: ifttt.trigger
-    data_template:
-      event: leeocolorup
       value1: '{{ ''{:02x}{:02x}{:02x}''.format(range(0, 255) | random, range(0, 255)
         | random, range(0, 255) | random) }}'
 - id: frontyard_lights
@@ -1305,46 +1195,34 @@
       entity_id: remote.livingroom
 - id: update_volume_slider
   alias: Update Volume Slider
-  initial_state: 'on'
-  mode: restart
-  trigger:
+  triggers:
   - platform: state
     entity_id: sensor.sonos_volume
-  action:
-  - service: input_number.set_value
-    data_template:
+  actions:
+  - data_template:
       entity_id: input_number.harmonyvolume
       value: '{{ trigger.to_state.state }}'
-  - service: notify.shield
-    data_template:
+    action: input_number.set_value
+  - data_template:
       title: "\U0001F50A Home Assistant"
       message: 'Volume changed to {{ trigger.to_state.state }}
 
         '
-- id: update_master_sonos_volume
-  alias: Update Master Sonos Volume
+    action: notify.shieldtvpro
   initial_state: 'on'
   mode: restart
-  trigger:
-  - platform: state
-    entity_id: sensor.master_sonos_volume
-  action:
-  - service: notify.aftvmaster
-    data_template:
-      title: "\U0001F50A Home Assistant"
-      message: 'Volume changed to {{ trigger.to_state.state }}
-
-        '
 - id: notify_ftv_master_on
   alias: Notify when FTV master turned on
   initial_state: 'on'
   trigger:
   - platform: state
-    entity_id: media_player.ftv_master
+    entity_id: media_player.fire_tv
     to: playing
   action:
-    service: notify.telegram
-    data_template:
+    action: notify.send_message
+    target:
+      entity_id: notify.telegram_bot_5233141365_5122715300
+    data:
       message: FTV Master turned on
       title: Check FTV Master
 - id: sonos_enable_speech_enhance_and_night_sound
@@ -1598,9 +1476,9 @@
     timeout: 00:00:20
     continue_on_timeout: false
   - variables:
-      device: "{{\n  {'RISHAANFIREHD': 'switch.firehd_rishaan',\n
-        \  'ARNAV_IPAD': 'switch.my_ipad',\n   'LENOVO': 'switch.lenovohome',\n   'TOSHIBA_AIO':
-        'switch.toshibaaio',\n   'SAMMY_TV': 'switch.samsungtv',\n  }[wait.trigger.event.data.actionName]
+      device: "{{\n  {'RISHAANFIREHD': 'switch.firehd_rishaan',\n   'ARNAV_IPAD':
+        'switch.my_ipad',\n   'LENOVO': 'switch.lenovohome',\n   'TOSHIBA_AIO': 'switch.toshibaaio',\n
+        \  'SAMMY_TV': 'switch.samsungtv',\n  }[wait.trigger.event.data.actionName]
         }}\n"
   - service: '{{ iphone }}'
     data:

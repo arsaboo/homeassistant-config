@@ -332,37 +332,6 @@
           entity_id: input_number.harmonyvolume
           value: >
               {{ (state_attr('media_player.family_room_2', 'volume_level') * 100) | int }}
-      - service: homeassistant.turn_on
-        entity_id: script.classify_images
-      - wait_template: >-
-          {% if states("binary_sensor.homekit_ready") %}
-            true
-          {% else %}
-            false
-          {% endif %}
-        timeout: 00:05  # Waits 15 minutes
-        continue_on_timeout: false
-  classify_images:
-    alias: 'Process all images'
-    sequence:
-      # - service: shell_command.image_classify
-      #   data_template:
-      #     camera: "porch"
-      # - service: shell_command.image_classify
-      #   data_template:
-      #     camera: "patio"
-      # - service: shell_command.image_classify
-      #   data_template:
-      #     camera: "driveway"
-      # - service: shell_command.image_classify
-      #   data_template:
-      #     camera: "backyard"
-      - service: image_processing.scan
-        entity_id:
-          - image_processing.tensorflow_porch
-          - image_processing.tensorflow_patio
-          - image_processing.tensorflow_driveway
-          - image_processing.tensorflow_backyard
 
   discovery:
     alias: 'Play Discovery'

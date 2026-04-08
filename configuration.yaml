@@ -12,7 +12,7 @@ homeassistant:
   name: Home
   temperature_unit: F
   time_zone: America/New_York
-  unit_system: imperial
+  unit_system: us_customary
   customize: !include customize.yaml
   customize_glob: !include customize_glob.yaml
   packages: !include_dir_named packages
@@ -59,40 +59,12 @@ zone:
     icon: mdi:school
 
 light:
-    brightness_state_topic: "smartthings/GE Dimmer Switch/level"
-    brightness_command_topic: "smartthings/GE Dimmer Switch/level"
-    brightness_scale: 99
-    brightness_value_template: '{{ value }}'
-    retain: true
-    optimistic: false
-    qos: 0
-  - platform: group
-    name: Living Room Lights
-    entities:
-      - light.living_room_1
-      - light.living_room_2
-      - light.living_room_3
-      - light.living_room_4
   - platform: group
     name: Kids Room Lights
     entities:
       - light.wb4_d_2
       - light.wb4_d_3
       - light.wb4_d
-  - platform: group
-    name: Master Lights
-    entities:
-      - light.master_1
-      - light.master_2
-      - light.master_3
-  - platform: group
-    name: Sunroom Lights
-    entities:
-      - light.sunroom_light_1
-      - light.sunroom_light_2
-      - light.sunroom_light_3
-      - light.sunroom_light_4
-
 alarm_control_panel:
   - platform: manual
     name: HASS Alarm
@@ -217,89 +189,10 @@ ffmpeg:
 
 camera:
 
-image_processing:
-  - platform: tensorflow
-    confidence: 75
-    scan_interval: 10000
-    source:
-      - entity_id: camera.patio
-    file_out:
-      - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-    model:
-      graph: /config/tensorflow/models/efficientdet_d1_coco17_tpu-32/
-      categories:
-        - person
-  - platform: tensorflow
-    confidence: 75
-    scan_interval: 10000
-    source:
-      - entity_id: camera.backyard
-      - entity_id: camera.driveway
-      - entity_id: camera.porch
-    file_out:
-      - "/config/downloads/camera/{{ camera_entity.split('.')[1] }}_latest.jpg"
-    model:
-      graph: /config/tensorflow/models/efficientdet_d1_coco17_tpu-32/
-      categories:
-        - category: person
-          area:
-            top: 0.20
-        - bus
-        - category: truck
-          area:
-            bottom: 0.70
-            right: 0.20
-        - category: car
-          area:
-            bottom: 0.70
-            right: 0.20
-
-media_player:
-  - platform: androidtv
-    host: 192.168.2.172
-    name: "ShieldTVPro"
-    device_class: androidtv
-  - platform: androidtv
-    host: 192.168.2.28
-    name: "ShieldTV"
-    device_class: androidtv
-    adb_server_ip: 192.168.2.233
-    apps:
-      com.google.android.tvlauncher: "Home"
-      com.google.android.youtube.tv: "Youtube"
-      com.amazon.amazonvideo.livingroom: "Amazon Prime Video"
-      com.plexapp.android: "Plex"
-      com.netflix.ninja: "Netflix"
-      com.google.android.tv: "Live Channels"
-      org.xbmc.kodi: "Kodi"
-      live.aiplex.software: "ThopTV"
-      com.mxtech.videoplayer.ad: "MXPlayer"
-      com.vectorunit.red: "RipTide"
-  - platform: androidtv
-    name: FTV Master
-    host: 192.168.2.180
-    device_class: firetv
-    adb_server_ip: 192.168.2.233
-    apps:
-      com.amazon.amazonvideo.livingroom: "Amazon Prime Video"
-      com.plexapp.android: "Plex"
-      com.netflix.ninja: "Netflix"
-      com.google.android.tv: "Live Channels"
-      org.xbmc.kodi: "Kodi"
-      live.aiplex.software: "ThopTV"
-      com.amazon.tv.launcher: Home
-      com.synology.dsvideo: "DS Video"
-      com.mxtech.videoplayer.ad: "MXPlayer"
-      com.amazon.firetv.youtube: "Youtube"
-
 geofency:
 
 
 notify:
-  - name: telegram
-    platform: telegram
-    api_key: !secret telegram_key
-    chat_id: !secret telegram_chatID_Alok
   - platform: group
     name: iOS
     services:
@@ -315,15 +208,6 @@ notify:
             push:
               badge: 0
               category: "home_automation"
-  - platform: nfandroidtv
-    name: Shield
-    host: 192.168.2.28
-  - platform: nfandroidtv
-    name: AFTVMaster
-    host: 192.168.2.180
-  - platform: command_line
-    name: 'Echo Dot'
-    command: "/config/shell_scripts/alexa_wrapper.sh -d 'Echo Dot Gen2'"
 
 logger:
   default: error
@@ -353,6 +237,362 @@ tts:
     time_memory: 300
 
 dialogflow:
+
+command_line:
+  - binary_sensor:
+      name: Internet Connected
+      unique_id: internet_connected
+      command: 'nslookup flurry.com | grep 0.0.0.0 | wc -l'
+      device_class: connectivity
+      payload_on: 1
+      payload_off: 0
+
+sql:
+  - name: Portfolio morning
+    db_url: !secret recorder_db_url
+    query: "SELECT s.state FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id WHERE sm.entity_id='sensor.pc_investment' AND HOUR(FROM_UNIXTIME(s.last_changed_ts)) >= 22 AND TIMESTAMPDIFF(DAY, FROM_UNIXTIME(s.last_changed_ts), NOW()) < 5 ORDER BY s.last_changed_ts DESC LIMIT 1;"
+    column: 'state'
+    unit_of_measurement: $
+  - name: Master HVAC Efficiency
+    db_url: !secret recorder_db_url
+    query: "SELECT ROUND(AVG(CAST(s.state AS DECIMAL(10,2))),2) AS AvgEff FROM (SELECT s.state FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id WHERE sm.entity_id='input_number.master_prev_eff' AND s.state <> '0' ORDER BY s.last_changed_ts DESC LIMIT 50) AS s;"
+    column: 'AvgEff'
+    unit_of_measurement: min
+  - name: Upstairs HVAC Efficiency
+    db_url: !secret recorder_db_url
+    query: "SELECT ROUND(AVG(CAST(s.state AS DECIMAL(10,2))),2) AS AvgEff FROM (SELECT s.state FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id WHERE sm.entity_id='input_number.upstairs_prev_eff' AND s.state <> '0' ORDER BY s.last_changed_ts DESC LIMIT 50) AS s;"
+    column: 'AvgEff'
+    unit_of_measurement: min
+  - name: Downstairs HVAC Efficiency
+    db_url: !secret recorder_db_url
+    query: "SELECT ROUND(AVG(CAST(s.state AS DECIMAL(10,2))),2) AS AvgEff FROM (SELECT s.state FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id WHERE sm.entity_id='input_number.downstairs_prev_eff' AND s.state <> '0' ORDER BY s.last_changed_ts DESC LIMIT 50) AS s;"
+    column: 'AvgEff'
+    unit_of_measurement: min
+
+template:
+  - binary_sensor:
+      - name: TV
+        unique_id: television
+        state: "{{ states('media_player.family_room_2') == 'playing' and state_attr('media_player.family_room_2', 'source') == 'TV' }}"
+      - name: Garage Door Open
+        unique_id: garagedoor_binary
+        device_class: opening
+        state: >-
+          {% if states("sensor.garage_door_tilt_sensor_alarm_level") %}
+            {{ is_state('sensor.garage_door_tilt_sensor_alarm_level', '255') }}
+          {% else %}
+            false
+          {% endif %}
+      - name: In Bed
+        unique_id: in_bed
+        device_class: presence
+        state: "{{ states('sensor.master_bed_weight') | float(0) > 1000 }}"
+      - name: Homekit Ready
+        unique_id: homekit_ready
+        device_class: connectivity
+        state: >-
+          {{ states.cover.garagedoor and states.light.living_room_lights and
+             states.switch.driveway and states.light.master_lights and
+             states.light.lifx5 and states.light.kitchen_lights and
+             states.alarm_control_panel.simplisafe_2 and
+             states.binary_sensor.water_leak_sensor_158d0001d77800 and
+             states.binary_sensor.water_leak_sensor_158d00027b0db6 }}
+  - switch:
+      - name: Downstairs Away
+        unique_id: downstairs_away
+        state: "{{ (state_attr('climate.downstairs_2', 'preset_mode') | default('home')) == 'away' }}"
+        turn_on:
+          action: climate.set_preset_mode
+          target:
+            entity_id: climate.downstairs_2
+          data:
+            preset_mode: 'away'
+        turn_off:
+          action: ecobee.resume_program
+          data:
+            entity_id: climate.downstairs_2
+      - name: Upstairs Away
+        unique_id: upstairs_away
+        state: "{{ (state_attr('climate.upstairs', 'preset_mode') | default('home')) == 'away' }}"
+        turn_on:
+          action: climate.set_preset_mode
+          target:
+            entity_id: climate.upstairs
+          data:
+            preset_mode: 'away'
+        turn_off:
+          action: ecobee.resume_program
+          data:
+            entity_id: climate.upstairs
+      - name: Master Away
+        unique_id: bedroom_away
+        state: "{{ (state_attr('climate.bedroom', 'preset_mode') | default('home')) == 'away' }}"
+        turn_on:
+          action: climate.set_preset_mode
+          target:
+            entity_id: climate.bedroom
+          data:
+            preset_mode: 'away'
+        turn_off:
+          action: ecobee.resume_program
+          data:
+            entity_id: climate.bedroom
+      - name: Home Security Arm
+        unique_id: security_armed
+        state: "{{ states('alarm_control_panel.simplisafe_2') != 'disarmed' }}"
+        turn_on:
+          action: homeassistant.turn_on
+          target:
+            entity_id: script.alarm_away
+        turn_off:
+          action: homeassistant.turn_on
+          target:
+            entity_id: script.alarm_standby
+      - name: Sonos Night Sound
+        unique_id: sonos_night_sound
+        state: "{{ state_attr('media_player.family_room_2', 'night_sound') }}"
+        turn_on:
+          action: switch.turn_on
+          target:
+            entity_id: switch.sonos_family_room_night_sound
+        turn_off:
+          action: switch.turn_off
+          target:
+            entity_id: switch.sonos_family_room_night_sound
+      - name: Sonos Speech Enhance
+        unique_id: sonos_speech_enhance
+        state: "{{ state_attr('media_player.family_room_2', 'speech_enhance') }}"
+        turn_on:
+          action: switch.turn_on
+          target:
+            entity_id: switch.sonos_family_room_speech_enhancement
+        turn_off:
+          action: switch.turn_off
+          target:
+            entity_id: switch.sonos_family_room_speech_enhancement
+      - name: Master Night Sound
+        unique_id: master_night_sound
+        state: "{{ state_attr('media_player.master', 'night_sound') }}"
+        turn_on:
+          action: switch.turn_on
+          target:
+            entity_id: switch.sonos_master_night_sound
+        turn_off:
+          action: switch.turn_off
+          target:
+            entity_id: switch.sonos_family_room_night_sound
+      - name: Master Speech Enhance
+        unique_id: master
+        state: "{{ state_attr('media_player.master', 'speech_enhance') }}"
+        turn_on:
+          action: switch.turn_on
+          target:
+            entity_id: switch.sonos_master_speech_enhancement
+        turn_off:
+          action: switch.turn_off
+          target:
+            entity_id: switch.sonos_master_speech_enhancement
+  - cover:
+      - name: Garage Door
+        unique_id: garagedoor
+        state: "{{ 'open' if is_state('binary_sensor.garagedoor_2', 'on') else 'closed' }}"
+        open_cover:
+          action: switch.turn_on
+          target:
+            entity_id: switch.shelly_garage
+        close_cover:
+          action: switch.turn_on
+          target:
+            entity_id: switch.shelly_garage
+        stop_cover:
+          action: switch.turn_on
+          target:
+            entity_id: switch.shelly_garage
+        icon: >-
+          {%- if is_state('binary_sensor.garagedoor_2', 'on') -%}
+            mdi:garage-open
+          {%- else -%}
+            mdi:garage
+          {%- endif -%}
+  - sensor:
+      - name: Cube Last Action
+        unique_id: cube_last_action
+        state: >
+          {% set cube = states.binary_sensor.cube_158d0001035aa7 %}
+          {% if cube is not defined or cube.last_updated is none %}
+            unavailable
+          {% elif as_timestamp(now()) - as_timestamp(cube.last_updated) > 50 %}
+            None
+          {% else %}
+            {{ state_attr('binary_sensor.cube_158d0001035aa7', 'last_action') | default('None', true) }}
+          {% endif %}
+      - name: Living Room Temperature
+        unique_id: livingroom_temp_rounded
+        state: >-
+          {% set temp = states('sensor.living_room_temperature') %}
+          {{ temp | float | round if is_number(temp) else 'unavailable' }}
+      - name: Study Temperature
+        unique_id: study_temp_rounded
+        state: >-
+          {% set primary = states('sensor.study_temperature_2') %}
+          {% set fallback = states('sensor.study_temperature') %}
+          {% if is_number(primary) %}
+            {{ primary | float | round }}
+          {% elif is_number(fallback) and 40 <= (fallback | float) <= 110 %}
+            {{ fallback | float | round }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: Battery Status
+        unique_id: battery_status
+        state: >-
+          {%- set threshold = 25 -%}
+          {%- set domains = ['light', 'switch', 'sensor', 'zwave', 'binary_sensor', 'camera'] -%}
+          {%- for domain in domains -%}
+          {%- for item in states[domain] if ((item.attributes.battery_low is defined and item.attributes['battery_low'] == true) or (item.attributes.battery_level is defined and item.attributes['battery_level'] | int < threshold)) -%}
+              {{ item.name }}{%- if not loop.last %}, {% endif -%}
+          {%- endfor -%}
+          {%- endfor -%}
+      - name: Master Temp Change
+        unique_id: master_temp_change
+        unit_of_measurement: "min"
+        state: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.master_time','timestamp')|float)/60 -%}
+          {%- set current_temp = state_attr('climate.master_homekit', 'current_temperature')|float -%}
+          {%- set prev_temp = states('input_number.master_prev_temp')|float -%}
+          {%- set temp_diff_cool = prev_temp - current_temp -%}
+          {%- set temp_diff_heat = current_temp - prev_temp -%}
+          {%- if states('sensor.master_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
+            {{ (time_elapsed_min / temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.master_thermostat') == 'heating' and temp_diff_heat != 0 -%}
+            {{ (time_elapsed_min / temp_diff_heat)|round(2) }}
+          {%- else -%}
+            -999
+          {%- endif -%}
+      - name: Upstairs Temp Change
+        unique_id: upstairs_temp_change
+        unit_of_measurement: "min"
+        state: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.upstairs_time','timestamp')|float)/60 -%}
+          {%- set current_temp = state_attr('climate.upstairs_homekit', 'current_temperature')|float -%}
+          {%- set prev_temp = states('input_number.upstairs_prev_temp')|float -%}
+          {%- set temp_diff_cool = prev_temp - current_temp -%}
+          {%- set temp_diff_heat = current_temp - prev_temp -%}
+          {%- if states('sensor.upstairs_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
+            {{ (time_elapsed_min / temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.upstairs_thermostat') == 'heating' and temp_diff_heat != 0 -%}
+            {{ (time_elapsed_min / temp_diff_heat)|round(2) }}
+          {%- else -%}
+            -999
+          {%- endif -%}
+      - name: Downstairs Temp Change
+        unique_id: downstairs_temp_change
+        unit_of_measurement: "min"
+        state: >-
+          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.downstairs_time','timestamp')|float)/60 -%}
+          {%- set current_temp = state_attr('climate.downstairs', 'current_temperature')|float -%}
+          {%- set prev_temp = states('input_number.downstairs_prev_temp')|float -%}
+          {%- set temp_diff_cool = prev_temp - current_temp -%}
+          {%- set temp_diff_heat = current_temp - prev_temp -%}
+          {%- if states('sensor.downstairs_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
+            {{ (time_elapsed_min / temp_diff_cool)|round(2) }}
+          {%- elif states('sensor.downstairs_thermostat') == 'heating' and temp_diff_heat != 0 -%}
+            {{ (time_elapsed_min / temp_diff_heat)|round(2) }}
+          {%- else -%}
+            -999
+          {%- endif -%}
+      - name: Wemo Current Power
+        unique_id: wemopowerused
+        unit_of_measurement: "w"
+        state: >-
+          {%- if state_attr('switch.wemoinsight','current_power_w') -%}
+            {{ state_attr('switch.wemoinsight','current_power_w')|round(2) }}
+          {%- else -%}
+            0
+          {%- endif -%}
+      - name: Portfolio Value
+        unique_id: portfolioval
+        unit_of_measurement: "$"
+        state: >-
+          {%- if states('input_number.portfoliovalue') -%}
+            {{ states('input_number.portfoliovalue')|round(2) }}
+          {%- else -%}
+            0
+          {%- endif -%}
+      - name: Portfolio Change
+        unique_id: portfoliochange
+        unit_of_measurement: "$"
+        state: >-
+          {%- if states('input_number.portfoliochange') -%}
+            {{ states('input_number.portfoliochange')|default(0)|round(2) }}
+          {%- else -%}
+            0
+          {%- endif -%}
+      - name: Portfolio Change (PC)
+        unique_id: portfoliochange2
+        unit_of_measurement: "$"
+        state: "{{ (states('sensor.pc_investment') | float(0) - states('sensor.portfolio_morning') | float(0)) | round(2) }}"
+      - name: Garage Door Sensor Battery
+        unique_id: garagedoorbattery
+        unit_of_measurement: "%"
+        state: >-
+          {%- if states('zwave.garage_door_tilt_sensor') -%}
+            {{ state_attr('zwave.garage_door_tilt_sensor','battery_level') }}
+          {%- else -%}
+            unknown
+          {%- endif -%}
+      - name: Living Room
+        unique_id: living_room
+        state: "{{ state_attr('remote.livingroom', 'current_activity') }}"
+      - name: Sonos Volume
+        unique_id: sonos_volume
+        state: "{{ (state_attr('media_player.family_room_2', 'volume_level')|default(0) * 100) | int }}"
+      - name: Master Volume
+        unique_id: master_sonos_volume
+        state: "{{ (state_attr('media_player.master', 'volume_level')|default(0) * 100) | int }}"
+      - name: Emulated Hue Names
+        unique_id: emulated_hue_names
+        state: >-
+          {% for item in states if item.attributes.emulated_hue_name|length > 0 -%}
+            {%- if loop.first %}{% elif loop.last %}, and {% else %}, {% endif -%}
+            {{ item.attributes.emulated_hue_name|title }}
+          {%- endfor -%}.
+      - name: Secrets Container
+        unique_id: secrets
+        state: "Secrets Container"
+      - name: Downstairs Thermostat
+        unique_id: downstairsthermoper
+        state: "{{ state_attr('climate.downstairs_homekit', 'hvac_action') }}"
+        icon: >-
+          {%- if state_attr('climate.downstairs_homekit', 'hvac_action') == "heating" -%}
+            mdi:fire
+          {%- elif state_attr('climate.downstairs_homekit', 'hvac_action') == "cooling" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
+      - name: Upstairs Thermostat
+        unique_id: upstairsthermoper
+        state: "{{ state_attr('climate.upstairs_homekit', 'hvac_action') }}"
+        icon: >-
+          {%- if state_attr('climate.upstairs_homekit', 'hvac_action') == "heating" -%}
+            mdi:fire
+          {%- elif state_attr('climate.upstairs_homekit', 'hvac_action') == "cooling" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
+      - name: Master Thermostat
+        unique_id: masterthermoper
+        state: "{{ state_attr('climate.master_homekit', 'hvac_action') }}"
+        icon: >-
+          {%- if state_attr('climate.master_homekit', 'hvac_action') == "heating" -%}
+            mdi:fire
+          {%- elif state_attr('climate.master_homekit', 'hvac_action') == "cooling" -%}
+            mdi:snowflake
+          {%- else -%}
+            mdi:fan
+          {%- endif -%}
 
 intent_script: !include intent_script.yaml
 ios: !include ios.yaml

@@ -783,8 +783,6 @@ views:
         show_header_toggle: false
         entities:
           - weather.home
-          - sensor.pollen_level
-          - sensor.cold_flu_risk
       - type: custom:vertical-stack-in-card
         cards:
           - type: entities
@@ -1022,7 +1020,6 @@ views:
           - input_select.hdmiswitcher
           - input_select.hdmiinput
           - input_number.harmonyvolume
-          - sensor.total_tv_time
           - script.tv_off
       - type: custom:auto-entities
         card:
@@ -1206,12 +1203,10 @@ views:
           - person.arnav
           - switch.shelly_garage
           - input_boolean.sleeping
-          - type: attribute
-            entity: sensor.master_temp_statistics
-            attribute: average_change
+          - entity: sensor.master_temp_change
             name: Master Temp change
           - binary_sensor.master_cooling
-          - sensor.masterthermoper
+          - sensor.master_thermostat
           - type: attribute
             entity: binary_sensor.master_cooling
             attribute: gradient
@@ -1596,7 +1591,7 @@ views:
           - type: timeline
             labelsVisible: false
             entities:
-              - entity: sensor.downstairsthermoper
+              - entity: sensor.downstairs_thermostat
                 name: ''
       # - type: custom:webrtc-camera
       #   url: rtmp://192.168.2.76/live/driveway

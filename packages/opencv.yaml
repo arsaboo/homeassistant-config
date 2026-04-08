@@ -39,8 +39,10 @@ automation:
           name: "OpenCV activity: "
           message: >-
             {{ dict(trigger.to_state.attributes)|tojson }}
-      - service: notify.telegram
-        data_template:
+      - action: notify.send_message
+        target:
+          entity_id: notify.telegram_bot_5233141365_5122715300
+        data:
           title: "OpenCV: "
           message: >-
             {{ dict(trigger.to_state.attributes)|tojson }}
@@ -78,8 +80,3 @@ automation:
   #                 {% set camera = trigger.to_state.attributes.camera.split('.')[1] %}
   #                 {{ states.sensor.secrets.attributes.base_url ~ states.camera[camera].attributes.entity_picture }}
 
-sensor:
-  - platform: template
-    sensors:
-      secrets:
-        value_template: "Secrets Container"

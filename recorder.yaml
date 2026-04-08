@@ -10,18 +10,12 @@
       - group.camera_sensors
       - input_select.livingroomharmony
       - sensor.living_room
-      - sensor.total_tv_time
       - zwave.garage_door_tilt_sensor
       - group.ring_doorbell
       - sensor.rpi_cpu_thermal_1_temperature
-      - sensor.cold_flu_risk
-      - sensor.pollen_level
       - sensor.sonos_stereo
       - sensor.sonos_audio_in
 
-      - sensor.downstairs_hvac_runtime
-      - sensor.upstairs_hvac_runtime
-      - sensor.master_hvac_runtime
       - sensor.downstairs_temp_change
       - sensor.master_temp_change
       - sensor.upstairs_temp_change
