@@ -76,6 +76,11 @@
   action:
   - service: script.turn_on
     entity_id: script.alarm_home
+  - condition: state
+    entity_id: cover.garagedoor
+    state: 'open'
+  - service: switch.turn_on
+    entity_id: switch.shelly_garage
 - id: morning_routine
   alias: Morning Routine
   initial_state: 'on'
@@ -561,10 +566,12 @@
     to: 'on'
   condition:
   - condition: template
-    value_template: '{% set h = now().hour %} {{ is_state(''sun.sun'', ''below_horizon'')
-      and (h >= 17 or h < 5) }}
-
-      '
+    value_template: >
+      {% set h = now().hour %}
+      {% set sun_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+      {% set now_ts = as_timestamp(now()) %}
+      {% set before_sunset = (sun_setting - now_ts) < 3600 %}
+      {{ (is_state('sun.sun', 'below_horizon') or before_sunset) and (h >= 17 or h < 5) }}
   - condition: state
     entity_id: light.master_lights
     state: 'off'

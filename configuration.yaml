@@ -441,9 +441,12 @@ template:
         unique_id: master_temp_change
         unit_of_measurement: "min"
         state: >-
-          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.master_time','timestamp')|float)/60 -%}
-          {%- set current_temp = state_attr('climate.master_homekit', 'current_temperature')|float -%}
-          {%- set prev_temp = states('input_number.master_prev_temp')|float -%}
+          {%- set time_started = state_attr('input_datetime.master_time','timestamp') -%}
+          {%- set current_temp = state_attr('climate.master_homekit', 'current_temperature') -%}
+          {%- set prev_temp = states('input_number.master_prev_temp')|float(0) -%}
+          {%- if time_started is not none and current_temp is not none -%}
+          {%- set time_elapsed_min = (as_timestamp(now()) - time_started|float(0))/60 -%}
+          {%- set current_temp = current_temp|float(0) -%}
           {%- set temp_diff_cool = prev_temp - current_temp -%}
           {%- set temp_diff_heat = current_temp - prev_temp -%}
           {%- if states('sensor.master_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
@@ -453,13 +456,19 @@ template:
           {%- else -%}
             -999
           {%- endif -%}
+          {%- else -%}
+            -999
+          {%- endif -%}
       - name: Upstairs Temp Change
         unique_id: upstairs_temp_change
         unit_of_measurement: "min"
         state: >-
-          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.upstairs_time','timestamp')|float)/60 -%}
-          {%- set current_temp = state_attr('climate.upstairs_homekit', 'current_temperature')|float -%}
-          {%- set prev_temp = states('input_number.upstairs_prev_temp')|float -%}
+          {%- set time_started = state_attr('input_datetime.upstairs_time','timestamp') -%}
+          {%- set current_temp = state_attr('climate.upstairs_homekit', 'current_temperature') -%}
+          {%- set prev_temp = states('input_number.upstairs_prev_temp')|float(0) -%}
+          {%- if time_started is not none and current_temp is not none -%}
+          {%- set time_elapsed_min = (as_timestamp(now()) - time_started|float(0))/60 -%}
+          {%- set current_temp = current_temp|float(0) -%}
           {%- set temp_diff_cool = prev_temp - current_temp -%}
           {%- set temp_diff_heat = current_temp - prev_temp -%}
           {%- if states('sensor.upstairs_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
@@ -469,19 +478,28 @@ template:
           {%- else -%}
             -999
           {%- endif -%}
+          {%- else -%}
+            -999
+          {%- endif -%}
       - name: Downstairs Temp Change
         unique_id: downstairs_temp_change
         unit_of_measurement: "min"
         state: >-
-          {%- set time_elapsed_min = (as_timestamp(now()) - state_attr('input_datetime.downstairs_time','timestamp')|float)/60 -%}
-          {%- set current_temp = state_attr('climate.downstairs', 'current_temperature')|float -%}
-          {%- set prev_temp = states('input_number.downstairs_prev_temp')|float -%}
+          {%- set time_started = state_attr('input_datetime.downstairs_time','timestamp') -%}
+          {%- set current_temp = state_attr('climate.downstairs', 'current_temperature') -%}
+          {%- set prev_temp = states('input_number.downstairs_prev_temp')|float(0) -%}
+          {%- if time_started is not none and current_temp is not none -%}
+          {%- set time_elapsed_min = (as_timestamp(now()) - time_started|float(0))/60 -%}
+          {%- set current_temp = current_temp|float(0) -%}
           {%- set temp_diff_cool = prev_temp - current_temp -%}
           {%- set temp_diff_heat = current_temp - prev_temp -%}
           {%- if states('sensor.downstairs_thermostat') == 'cooling' and temp_diff_cool != 0 -%}
             {{ (time_elapsed_min / temp_diff_cool)|round(2) }}
           {%- elif states('sensor.downstairs_thermostat') == 'heating' and temp_diff_heat != 0 -%}
             {{ (time_elapsed_min / temp_diff_heat)|round(2) }}
+          {%- else -%}
+            -999
+          {%- endif -%}
           {%- else -%}
             -999
           {%- endif -%}
