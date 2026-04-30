@@ -4,7 +4,6 @@
 
 - id: person_logging
   alias: 'Log person changes'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -16,13 +15,12 @@
       value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
   action:
     - service: logbook.log
-      data_template:
+      data:
         name: "Person: "
         message: "{{trigger.to_state.name}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}} by {{ trigger.to_state.attributes.source }}"
 
 - id: update_meta_tracker
   alias: "Update Device Meta Tracker"
-  initial_state: 'on'
   mode: queued
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
@@ -58,19 +56,18 @@
       to: 'home'
   action:
     - service: script.updatetracker
-      data_template:
+      data:
         entityid: '{{trigger.entity_id}}'
         fromstate: '{{trigger.from_state.state}}'
         tostate: '{{trigger.to_state.state}}'
     # - service: logbook.log
-    #   data_template:
+    #   data:
     #     name: "Update Tracker: "
     #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}."
 
 - id: update_alok_test_tracker
   alias: "Update Alok Test Tracker"
   mode: queued
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -88,7 +85,7 @@
         - device_tracker.alok_geofency
   action:
     - service: device_tracker.see
-      data_template:
+      data:
         dev_id: test_alok
         location_name: '{{trigger.to_state.state|lower }}'
         gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
@@ -120,7 +117,6 @@
 - id: update_alok_test_tracker_router
   alias: "Update Alok Test Tracker Router"
   mode: queued
-  initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
@@ -135,7 +131,7 @@
       to: 'home'
   action:
     - service: device_tracker.see
-      data_template:
+      data:
         dev_id: test_alok
         location_name: '{{trigger.to_state.state|lower }}'
         attributes:
@@ -145,7 +141,6 @@
 - id: update_rashmi_test_tracker
   alias: "Update Rashmi Test Tracker"
   mode: queued
-  initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
@@ -164,7 +159,7 @@
         - device_tracker.rashmiappiphone_2
   action:
     - service: device_tracker.see
-      data_template:
+      data:
         dev_id: test_rashmi
         location_name: '{{trigger.to_state.state|lower }}'
         gps: [ '{{ trigger.to_state.attributes.latitude }}' , '{{trigger.to_state.attributes.longitude }}' ]
@@ -203,7 +198,6 @@
 - id: update_rashmi_test_tracker_router
   alias: "Update Rashmi Test Tracker Router"
   mode: queued
-  initial_state: 'on'
   trigger:
     # Delayed action for router-based and Owntracks trackers that are not 100% reliable
     - platform: state
@@ -217,7 +211,7 @@
       to: 'home'
   action:
     - service: device_tracker.see
-      data_template:
+      data:
         dev_id: test_rashmi
         location_name: '{{trigger.to_state.state|lower }}'
         attributes:
@@ -225,7 +219,7 @@
           source_type: '{{ trigger.to_state.attributes.source_type }}'
 
     # - service: logbook.log
-    #   data_template:
+    #   data:
     #     name: "Meta Tracker: "
     #     message: "{{trigger.entity_id}} changed from {{trigger.from_state.state}} to {{trigger.to_state.state}}"
     # - service: script.notify_me
@@ -239,7 +233,7 @@
     - platform: event
       event_type: abode_alarm
   action:
-    - service: notify.ios
+    - service: notify.mobile_app_alokphone2
       data:
         message: 'Abode alarm triggered!'
         data:
@@ -249,7 +243,6 @@
 
 - id: disarm_abode_from_away
   alias: 'Disarm Abode from Away'
-  initial_state: 'on'
   condition:
     - condition: state
       entity_id: input_select.abodestatus
@@ -279,7 +272,6 @@
 
 - id: disarm_abode_at_night
   alias: 'Disarm Abode at night'
-  initial_state: 'on'
   condition:
     - condition: state
       entity_id: input_select.abodestatus
@@ -300,7 +292,6 @@
 
 - id: abode_home_from_standby
   alias: 'Abode Home from Standby'
-  initial_state: 'on'
   condition:
     condition: and
     conditions:
@@ -325,11 +316,11 @@
       minutes: '/10'
   action:
     - service: homeassistant.turn_on
-      entity_id: script.abodehome
+      target:
+        entity_id: script.abodehome
 
 - id: abode_standby
   alias: 'Abode Standby'
-  initial_state: 'on'
   condition:
     condition: and
     conditions:
@@ -362,11 +353,11 @@
       minutes: '/10'
   action:
     - service: homeassistant.turn_on
-      entity_id: script.abodestandby
+      target:
+        entity_id: script.abodestandby
 
 - id: abode_standby_2
   alias: 'Abode Standby_test'
-  initial_state: 'on'
   condition:
     - condition: state
       entity_id: group.household
@@ -387,11 +378,11 @@
       at: "05:30:00"
   action:
     - service: homeassistant.turn_on
-      entity_id: script.abodestandby
+      target:
+        entity_id: script.abodestandby
 
 - id: abode_arm
   alias: 'Arm Abode'
-  initial_state: 'on'
   condition:
     - condition: state
       entity_id: input_boolean.abodeupdate
@@ -421,7 +412,6 @@
 
 - id: abode_home_at_night
   alias: 'Abode Home at night'
-  initial_state: 'on'
   condition:
     condition: and
     conditions:
@@ -436,11 +426,11 @@
     at: '22:00:00'
   action:
     - service: homeassistant.turn_on
-      entity_id: script.abodehome
+      target:
+        entity_id: script.abodehome
 
 - id: abode_disarm_morning
   alias: 'Disarm Abode in the morning'
-  initial_state: 'on'
   condition:
     condition: and
     conditions:
@@ -455,16 +445,18 @@
       at: '05:20:00'
   action:
     - service: homeassistant.turn_on
-      entity_id: script.abodestandby
+      target:
+        entity_id: script.abodestandby
     - service: automation.turn_on
-      entity_id: automation.turn_off_master_lights
+      target:
+        entity_id: automation.turn_off_master_lights
     - service: input_boolean.turn_off
-      entity_id: input_boolean.sleeping
+      target:
+        entity_id: input_boolean.sleeping
     - service: shell_command.delete_unifi
 
 - id: disable_thermostat_away_mode
   alias: 'Disable thermostat away'
-  initial_state: 'on'
   condition:
     - condition: template
       value_template: >
@@ -474,8 +466,9 @@
       minutes: '/5'
   action:
     - service: homeassistant.turn_off
-      data_template:
+      target:
         entity_id: >
+      data:
           {%- if states('switch.downstairs_away') == 'on' -%}
             switch.downstairs_away
           {%- elif states('switch.upstairs_away') == 'on' -%}
@@ -486,7 +479,6 @@
 
 - id: enable_thermostat_away_mode
   alias: 'Enable thermostat away'
-  initial_state: 'on'
   condition:
     - condition: template
       value_template: >
@@ -513,8 +505,9 @@
       event_type: resume_thermostat_schedule
   action:
     - service: homeassistant.turn_on
-      data_template:
+      target:
         entity_id: >
+      data:
           {%- if states('switch.downstairs_away') == 'off' -%}
             switch.downstairs_away
           {%- elif states('switch.upstairs_away') == 'off' -%}
@@ -538,7 +531,7 @@
 #       value_template: '{{ trigger.to_state.state |int > 0 }}'
 #   action:
 #     - service: logbook.log
-#       data_template:
+#       data:
 #         name: "OpenCV: "
 #         message: >-
 #           {% for object in state_attr(trigger.entity_id,'matches').keys() -%}{%- if loop.first %}{% elif loop.last %}, {% else %}, {% endif -%}{{ object|title }}{%- endfor %} detected in {{ trigger.to_state.attributes.camera.split('.')[1] }}.
@@ -557,7 +550,7 @@
       knock_any_side: true
       cube_knock_any:
       - service: script.set_hue_scene
-        data_template:
+        data:
           group: "Master"
           scene: "Bright"
 
@@ -575,12 +568,13 @@
       cube_knock_any: []
       cube_flip_90:
       - service: script.set_hue_scene
-        data_template:
+        data:
           group: "Master"
           scene: >
             {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
       - service: automation.turn_off
-        entity_id: automation.turn_off_master_lights
+        target:
+          entity_id: automation.turn_off_master_lights
       flip_90: true
 
 # - id: micube_master_scenes
@@ -598,7 +592,7 @@
 #         action_type: flip90
 #   action:
 #     - service: script.set_hue_scene
-#       data_template:
+#       data:
 #         group: "Master"
 #         scene: >
 #           {{ ['Arctic aurora', 'Galaxy', 'Starlight', 'Nightlight', 'Savanna sunset', 'Spring blossom', 'Tropical twilight'] | random  }}
@@ -622,7 +616,6 @@
 
 - id: prevent_overcharging_kasa
   alias: 'Prevent overcharging Kasa'
-  initial_state: 'on'
   trigger:
     - platform: numeric_state
       entity_id: sensor.smart_wifi_current_consumption
@@ -634,12 +627,11 @@
       state: 'on'
   action:
      service: switch.turn_off
-     data:
+     target:
        entity_id: switch.smart_wifi
 
 - id: prevent_overcharging_kasa_3
   alias: 'Prevent overcharging Kasa_3'
-  initial_state: 'on'
   trigger:
     - platform: numeric_state
       entity_id: sensor.kasa_plug_3_current_consumption
@@ -651,12 +643,11 @@
       state: 'on'
   action:
      service: switch.turn_off
-     data:
+     target:
        entity_id: switch.kasa_plug_3
 
 - id: prevent_overcharging_wemo
   alias: 'Prevent overcharging wemo'
-  initial_state: 'on'
   trigger:
     - platform: numeric_state
       entity_id: sensor.wemoinsight_current_power
@@ -668,13 +659,12 @@
       state: 'on'
   action:
      service: switch.turn_off
-     data:
+     target:
        entity_id: switch.wemoinsight
 
 
 - id: prevent_hvac_failure_2
   alias: 'Prevent HVAC Failure 2'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -697,7 +687,6 @@
 
 - id: notify_if_living_room_hvac_not_working
   alias: 'Notify if living room HVAC not working'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -722,7 +711,7 @@
         name: "Living Room Vent: "
         message: "Thermostat is {{ trigger.to_state.state }} for the last 5 minutes. Downstairs temp efficiency is {{ states('sensor.downstairs_temp_change') }} min/deg. Current vent temp is {{ states('sensor.vent') }}."
     - service: notify.mobile_app_alokphone
-      data_template:
+      data:
         message: >
           Check Master Thermostat
         data:
@@ -732,7 +721,6 @@
 
 - id: notify_if_master_room_hvac_not_working
   alias: 'Notify if master room HVAC not working'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -757,7 +745,7 @@
         name: "Master Room Vent: "
         message: "Temp is {{ states('sensor.master_vent') }}. Temp efficiency is {{ states('sensor.master_temp_change') }} min/deg."
     - service: notify.mobile_app_alokphone
-      data_template:
+      data:
         message: >
           Check Master Thermostat
         data:
@@ -767,7 +755,6 @@
 
 - id: check_ubuntarr_public_ip
   alias: 'Notify on UbuntArr public IP change'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -776,7 +763,7 @@
     - condition: template
       value_template: '{{ trigger.to_state.state == "104.191.117.2" }}'
   action:
-    - service: notify.ios
+    - service: notify.mobile_app_alokphone2
       data:
         message: "Check VPN"
         data:
@@ -787,7 +774,6 @@
 
 - id: ensure_room_assistant_nodes_on
   alias: 'Ensure Room Assistant devices are on'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -797,7 +783,7 @@
       to: "unavailable"
   action:
     - service: notify.mobile_app_alokphone
-      data_template:
+      data:
         message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is offline."
         data:
           subtitle: "Check Room Assistant"
@@ -806,7 +792,6 @@
 
 - id: roomassistant_cluster_online
   alias: 'Room Assistant cluster back online'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -816,7 +801,7 @@
       from: "unavailable"
   action:
     - service: notify.mobile_app_alokphone
-      data_template:
+      data:
         message: "RoomAssistant {{ trigger.to_state.name.split(' ')[0]|capitalize }} is online"
         data:
           subtitle: "{{ 'All' if trigger.to_state.state == '3' else trigger.to_state.state }} clusters working."
@@ -867,7 +852,6 @@
 
 - id: sunroom_lights
   alias: 'Control Sunroom lights based on motion'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id: binary_sensor.sunroom_motion_3
@@ -896,12 +880,13 @@
               state: 'off'
           sequence:
             - service: light.turn_on
-              data:
+              target:
                 entity_id: light.sunroom_lights
+              data:
                 effect: Default
                 brightness: 128
             - service: light.turn_on
-              data:
+              target:
                 entity_id: light.deck_floor
         - conditions:
             - condition: trigger
@@ -916,12 +901,12 @@
                   state: 'on'
           sequence:
             - service: light.turn_off
-              entity_id:
+              target:
+                entity_id:
                 - light.sunroom_lights
                 - light.deck_floor
 - id: set_master_occupancy
   alias: 'Set Master Occupancy'
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id:
@@ -929,20 +914,20 @@
         - sensor.rashmi_ble_room
       to: ~
   action:
-    - service_template: "input_boolean.turn_{{ 'on' if (states('sensor.alok_ble_room') == 'master' or states('sensor.rashmi_ble_room') == 'master') else 'off' }}"
-      data:
+    - service: "input_boolean.turn_{{ 'on' if (states('sensor.alok_ble_room') == 'master' or states('sensor.rashmi_ble_room') == 'master') else 'off' }}"
+      target:
         entity_id: input_boolean.master_occupied
 
 - id: deck_effects
   alias: "Deck Effects"
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id: input_boolean.deckeffects
   action:
     - service: homeassistant.turn_on
-      data_template:
+      target:
         entity_id: >
+      data:
           {%- if trigger.to_state.state == 'on' -%}
             script.deck_color_loop
           {%- else -%}
@@ -951,14 +936,14 @@
 
 - id: sunroom_effects
   alias: "Sunroom Effects"
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id: input_boolean.sunroomeffects
   action:
     - service: homeassistant.turn_on
-      data_template:
+      target:
         entity_id: >
+      data:
           {%- if trigger.to_state.state == 'on' -%}
             script.sunroom_color_loop
           {%- else -%}
@@ -967,7 +952,6 @@
 
 - id: close_garage_door_when_abode_is_home_or_away
   alias: 'Close garage door when Abode is Home or Away'
-  initial_state: 'on'
   condition:
     - condition: state
       entity_id: binary_sensor.garagedoor_2
@@ -992,11 +976,11 @@
       minutes: '/5'
   action:
     - service: switch.turn_on
-      entity_id: switch.shelly_garage
+      target:
+        entity_id: switch.shelly_garage
 
 - id: turn_on_abode_updates
   alias: 'Turn on Abode updates'
-  initial_state: 'on'
   trigger:
     - platform: event
       event_type: ios.notification_action_fired
@@ -1004,11 +988,11 @@
         actionName: ENABLE_ABODE_UPDATES
   action:
     - service: homeassistant.turn_on
-      entity_id: input_boolean.abodeupdate
+      target:
+        entity_id: input_boolean.abodeupdate
 
 - id: update_ubuntarr_ip
   alias: Ubuntarr IP
-  initial_state: 'on'
   trigger:
     - platform: webhook
       webhook_id: "ubuntarr_public_ip"
@@ -1026,19 +1010,17 @@
         value: '{{trigger.json.public_ip}}'
 - id: ifttt_test
   alias: IFTTT Test
-  initial_state: 'on'
   trigger:
     platform: event
     event_type: ifttt_webhook_received
   action:
     - service: logbook.log
-      data_template:
+      data:
         name: "IFTTT event: "
         message: >
           {{trigger.event.data}}
 
 - alias: 'Arlo snapshot'
-  initial_state: True
   trigger:
     platform: event
     event_type: xiaomi_aqara.movement
@@ -1047,8 +1029,9 @@
       movement_type: vibrate
   action:
     - service: camera.aarlo_request_snapshot_to_file
-      entity_id: camera.aarlo_livingroom2
-      data_template:
+      target:
+        entity_id: camera.aarlo_livingroom2
+      data:
         filename: '/config/downloads/camera/arlo_{{ now().strftime("%d%h%Y_%H%M%S") }}.jpg'
 
 # Apple Watch related
@@ -1356,12 +1339,12 @@
         - conditions: "{{ option == 'OFF' }}"
           sequence:
             service: switch.turn_off
-            data:
+            target:
               entity_id: "{{ device }}"
         - conditions: "{{ option == 'ON' }}"
           sequence:
             service: switch.turn_on
-            data:
+            target:
               entity_id: "{{ device }}"
 
 - id: '16509132542337'

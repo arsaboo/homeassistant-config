@@ -67,15 +67,15 @@
   master_prev_eff:
     icon: mdi:chart-line-variant
     name: Master Prev Efficiency
-    min: 0
-    max: 100
+    min: -9999
+    max: 9999
   upstairs_prev_eff:
     icon: mdi:chart-line-variant
     name: Upstairs Prev Efficiency
-    min: 0
-    max: 100
+    min: -9999
+    max: 9999
   downstairs_prev_eff:
     icon: mdi:chart-line-variant
     name: Downstairs Prev Efficiency
-    min: 0
-    max: 100
+    min: -9999
+    max: 9999
