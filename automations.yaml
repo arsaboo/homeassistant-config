@@ -527,7 +527,7 @@
       fan_mode: true
 - id: ensure_smart_devices_on
   alias: Ensure smart-devices are on
-  trigger:
+  triggers:
   - platform: state
     entity_id:
     - light.living_room_lights
@@ -541,15 +541,32 @@
     - cover.garagedoor
     to: open
     for: 00:15:00
-  action:
-  - service: notify.mobile_app_alokphone2
-    data:
-      message: Check {{ trigger.to_state.name }}
-      data:
-        subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
-          }}
-        push:
-          badge: 0
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''cover.garagedoor'' }}'
+      sequence:
+      - data:
+          message: Check {{ trigger.to_state.name }}
+          data:
+            subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
+              }}
+            push:
+              badge: 0
+            actions:
+            - action: CLOSE_GARAGE
+              title: Close Garage Door
+        action: notify.mobile_app_alokphone2
+    default:
+    - data:
+        message: Check {{ trigger.to_state.name }}
+        data:
+          subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
+            }}
+          push:
+            badge: 0
+      action: notify.mobile_app_alokphone2
 - id: master_lights_on
   alias: Turn on Master lights on motion
   trigger:
@@ -1908,3 +1925,14 @@
       mac: 64:1c:ae:a6:c7:33
     action: wake_on_lan.send_magic_packet
   mode: single
+- id: '1777663814883'
+  alias: Handle Close Garage Notification Action
+  triggers:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: CLOSE_GARAGE
+  actions:
+  - target:
+      entity_id: switch.shelly_garage
+    action: switch.turn_on
