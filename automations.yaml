@@ -1,12 +1,13 @@
 - id: alarm_disarm_on_arrival
   alias: Disarm alarm when someone arrives home
-  mode: single
-  trigger:
+  triggers:
   - platform: state
-    entity_id: group.household
-    from: not_home
+    entity_id:
+    - person.alok
+    - person.rashmi
+    - person.arnav
     to: home
-  condition:
+  conditions:
   - condition: state
     entity_id: input_boolean.alarm_automation
     state: 'on'
@@ -15,30 +16,31 @@
     - condition: state
       entity_id: alarm_control_panel.simplisafe_2
       state: disarmed
-  action:
-    service: script.turn_on
+  actions:
     entity_id: script.alarm_standby
+    action: script.turn_on
+  mode: single
 - id: close_garage_door_notification
-  alias: Close Garage Door Notification
-  condition:
-    condition: state
-    entity_id: cover.garagedoor
-    state: open
-  trigger:
+  alias: Garage door open when alarm arms — notify
+  triggers:
   - platform: state
     entity_id: alarm_control_panel.simplisafe_2
     to: armed_home
   - platform: state
     entity_id: alarm_control_panel.simplisafe_2
     to: armed_away
-  action:
-  - service: notify.mobile_app_alokphone2
-    data:
+  conditions:
+    condition: state
+    entity_id: cover.garagedoor
+    state: open
+  actions:
+  - data:
       message: Garage Door Open
       title: Garage Door Open
-  - service: homeassistant.turn_on
-    target:
+    action: notify.mobile_app_alokphone2
+  - target:
       entity_id: script.notificationgaragedoor
+    action: homeassistant.turn_on
 - id: alarm_arm_away_on_departure
   alias: Arm alarm when everyone leaves
   mode: single
@@ -60,26 +62,20 @@
     entity_id: script.alarm_away
 - id: alarm_arm_home_at_night
   alias: Arm alarm to home mode at night
-  condition:
+  triggers:
+    platform: time
+    at: '22:00:00'
+  conditions:
   - condition: state
     entity_id: input_boolean.alarm_automation
     state: 'on'
   - condition: state
     entity_id: group.household
     state: home
-  trigger:
-    platform: time
-    at: '22:00:00'
-  action:
-  - service: script.turn_on
-    target:
+  actions:
+  - target:
       entity_id: script.alarm_home
-  - condition: state
-    entity_id: cover.garagedoor
-    state: open
-  - service: switch.turn_on
-    target:
-      entity_id: switch.shelly_garage
+    action: script.turn_on
 - id: morning_routine
   alias: Morning Routine
   condition:
@@ -209,29 +205,6 @@
       filename: /config/downloads/camera/{{ trigger.entity_id.split(".")[1].split("_")[0]
         }}/{{ trigger.entity_id.split(".")[1].split("_")[0] }}_{{ now().strftime("%d%h%Y_%H%M%S")
         }}.jpg
-- alias: Trigger alarm while armed away
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d00016612af
-    to: 'on'
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d00016c53bf
-    to: 'on'
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d00016daecc
-    to: 'on'
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d0001a1f2ab
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: alarm_control_panel.hass_alarm
-    state: armed_away
-  action:
-  - service: alarm_control_panel.alarm_trigger
-    target:
-      entity_id: alarm_control_panel.hass_alarm
-  id: 548aa97b967e4bbc812d187673b52de7
 - id: battery_alert
   alias: Battery Alert
   trigger:
@@ -536,37 +509,15 @@
     - light.kids_room_lights
     to: unavailable
     for: 00:05:00
-  - platform: state
-    entity_id:
-    - cover.garagedoor
-    to: open
-    for: 00:15:00
   actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.entity_id == ''cover.garagedoor'' }}'
-      sequence:
-      - data:
-          message: Check {{ trigger.to_state.name }}
-          data:
-            subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
-              }}
-            push:
-              badge: 0
-            actions:
-            - action: CLOSE_GARAGE
-              title: Close Garage Door
-        action: notify.mobile_app_alokphone2
-    default:
-    - data:
-        message: Check {{ trigger.to_state.name }}
-        data:
-          subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
-            }}
-          push:
-            badge: 0
-      action: notify.mobile_app_alokphone2
+  - data:
+      message: Check {{ trigger.to_state.name }}
+      data:
+        subtitle: Looks like {{ trigger.to_state.name }} is {{ trigger.to_state.state
+          }}
+        push:
+          badge: 0
+    action: notify.mobile_app_alokphone2
 - id: master_lights_on
   alias: Turn on Master lights on motion
   trigger:
@@ -629,8 +580,8 @@
     target:
       entity_id: light.master_lights
 - id: garage_lights_on
-  alias: Turn on garage lights when door opened
-  trigger:
+  alias: Garage lights on when door opens
+  triggers:
   - platform: state
     entity_id: binary_sensor.mud_room_door_4
     from: 'off'
@@ -638,7 +589,7 @@
   - platform: state
     entity_id: cover.garagedoor
     to: open
-  condition:
+  conditions:
   - condition: or
     conditions:
     - condition: state
@@ -647,26 +598,26 @@
     - condition: state
       entity_id: sun.sun
       state: below_horizon
-  action:
-    service: light.turn_on
+  actions:
     target:
       entity_id: light.lifx5
     data:
       brightness: 255
+    action: light.turn_on
 - id: garage_lights_off
-  alias: Turn off garage lights
-  trigger:
+  alias: Garage lights off when mudroom door closes
+  triggers:
   - platform: state
     entity_id: binary_sensor.mud_room_door_4
     to: 'off'
     for: 00:05:00
-  condition:
+  conditions:
   - condition: state
     entity_id: light.lifx5
     state: 'on'
-  action:
-    service: light.turn_off
+  actions:
     entity_id: light.lifx5
+    action: light.turn_off
 - id: kitchen_light_brightness
   alias: Kitchen light brightness
   trigger:
@@ -842,8 +793,15 @@
       - switch.driveway
       - switch.wemoporch
 - id: open_garage_door_when_someone_home
-  alias: Open Garage door when someone home
-  condition:
+  alias: Garage door auto-open when someone arrives
+  triggers:
+  - platform: state
+    entity_id:
+    - person.rashmi
+    - person.alok
+    from: not_home
+    to: home
+  conditions:
   - condition: state
     entity_id: cover.garagedoor
     state: closed
@@ -859,35 +817,26 @@
     value_template: "{%- if states.automation.update_ha_after_startup.attributes.last_triggered
       -%}\n  {{ (as_timestamp(now()) - as_timestamp(states.automation.update_ha_after_startup.attributes.last_triggered))
       > 120 }}\n{%- else -%}\n  true\n{%- endif -%}\n"
-  trigger:
-  - platform: state
-    entity_id:
-    - person.rashmi
-    - person.alok
-    from: not_home
-    to: home
-  action:
-  - service: switch.turn_on
-    target:
+  actions:
+  - target:
       entity_id: switch.shelly_garage
+    action: switch.turn_on
 - id: close_garage_door_when_alarm_armed
-  alias: Close garage door when alarm is armed
-  condition:
+  alias: Garage door auto-close when alarm is armed
+  triggers:
+  - platform: time_pattern
+    minutes: /5
+  conditions:
   - condition: state
     entity_id: cover.garagedoor
     state: open
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: alarm_control_panel.simplisafe_2
-      state: disarmed
-  trigger:
-  - platform: time_pattern
-    minutes: /5
-  action:
-  - service: switch.turn_on
-    target:
+  - condition: state
+    entity_id: alarm_control_panel.simplisafe_2
+    state: armed_away
+  actions:
+  - target:
       entity_id: switch.shelly_garage
+    action: switch.turn_on
 - id: sensors_changed_when_nobody_home
   alias: Sensors changed when nobody is home
   condition:
@@ -1278,255 +1227,6 @@
       entity_id:
       - switch.sonos_family_room_night_sound
       - switch.sonos_family_room_speech_enhancement
-- alias: 'iOS: Double Tap'
-  mode: queued
-  trigger:
-    platform: event
-    event_type: ios.action_fired
-    event_data:
-      actionName: Double Tap
-  action:
-    service: media_player.media_next_track
-    entity_id: media_player.family_room_2
-  id: 9a2d0bddf2ea44cf9b433d7f486ca8ba
-- alias: 'Apple Watch: Skip Track'
-  mode: queued
-  trigger:
-    platform: event
-    event_type: ios.action_fired
-    event_data:
-      actionName: Skip Track
-  action:
-    service: media_player.media_next_track
-    entity_id: media_player.family_room_2
-  id: 344200f092714520ba316593a85e2a57
-- alias: 'Apple Watch: temperature report'
-  mode: parallel
-  trigger:
-    platform: event
-    event_type: ios.action_fired
-    event_data:
-      actionName: Temperature report
-  action:
-  - variables:
-      iphone: 'notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(''
-        '', ''_'').replace("''", ''_'')|lower }}
-
-        '
-  - service: '{{ iphone }}'
-    data:
-      title: Temperature
-      message: 'Upstairs: {{ state_attr(''climate.upstairs_homekit'', ''temperature'')
-        }}°F Living room: {{ state_attr(''climate.downstairs_homekit'', ''temperature'')
-        }}°F Master: {{ state_attr(''climate.master_homekit'', ''temperature'') }}°F
-        Outside: {{ state_attr(''weather.home'', ''temperature'') }}°F
-
-        '
-  id: e22b3d1b730d4c08b08c212d92b79f64
-- alias: 'Apple Watch: set lights'
-  mode: parallel
-  trigger:
-    platform: event
-    event_type: ios.action_fired
-    event_data:
-      actionName: Set lights
-  action:
-  - variables:
-      iphone: 'notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(''
-        '', ''_'').replace("''", ''_'')|lower }}
-
-        '
-      action_on: '{{ ''ON'' }}'
-      action_off: '{{ ''OFF'' }}'
-      action_master: '{{ ''MASTER'' }}'
-      action_living_room: '{{ ''LIVING_ROOM'' }}'
-      action_kitchen: '{{ ''KITCHEN'' }}'
-  - service: '{{ iphone }}'
-    data:
-      message: Choose Light
-      data:
-        actions:
-        - action: '{{ action_master }}'
-          title: Master
-        - action: '{{ action_living_room }}'
-          title: Living Room
-        - action: '{{ action_kitchen }}'
-          title: Kitchen
-  - wait_for_trigger:
-    - platform: event
-      event_type: mobile_app_notification_action
-      event_data:
-        action: '{{ action_master }}'
-    - platform: event
-      event_type: mobile_app_notification_action
-      event_data:
-        action: '{{ action_living_room }}'
-    - platform: event
-      event_type: mobile_app_notification_action
-      event_data:
-        action: '{{ action_kitchen }}'
-  - choose:
-    - conditions: '{{ wait.trigger.event.data.action == action_master }}'
-      sequence:
-      - variables:
-          lights:
-          - light.master_lights
-      - service: '{{ iphone }}'
-        data:
-          message: Choose option
-          data:
-            actions:
-            - action: '{{ action_on }}'
-              title: Turn On
-            - action: '{{ action_off }}'
-              title: Turn Off
-      - wait_for_trigger:
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_on }}'
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_off }}'
-      - choose:
-        - conditions: '{{ wait.trigger.event.data.action == action_on }}'
-          sequence:
-          - service: light.turn_on
-            target:
-              entity_id: '{{ lights }}'
-        - conditions: '{{ wait.trigger.event.data.action == action_off }}'
-          sequence:
-          - service: light.turn_off
-            target:
-              entity_id: '{{ lights }}'
-    - conditions: '{{ wait.trigger.event.data.action == action_living_room }}'
-      sequence:
-      - variables:
-          lights:
-          - light.living_room_lights
-      - service: '{{ iphone }}'
-        data:
-          message: Choose option
-          data:
-            actions:
-            - action: '{{ action_on }}'
-              title: Turn On
-            - action: '{{ action_off }}'
-              title: Turn Off
-      - wait_for_trigger:
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_on }}'
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_off }}'
-      - choose:
-        - conditions: '{{ wait.trigger.event.data.action == action_on }}'
-          sequence:
-          - service: light.turn_on
-            target:
-              entity_id: '{{ lights }}'
-        - conditions: '{{ wait.trigger.event.data.action == action_off }}'
-          sequence:
-          - service: light.turn_off
-            target:
-              entity_id: '{{ lights }}'
-    - conditions: '{{ wait.trigger.event.data.action == action_kitchen }}'
-      sequence:
-      - variables:
-          lights:
-          - light.kitchen_lights
-      - service: '{{ iphone }}'
-        data:
-          message: Choose option
-          data:
-            actions:
-            - action: '{{ action_on }}'
-              title: Turn On
-            - action: '{{ action_off }}'
-              title: Turn Off
-      - wait_for_trigger:
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_on }}'
-        - platform: event
-          event_type: mobile_app_notification_action
-          event_data:
-            action: '{{ action_off }}'
-      - choose:
-        - conditions: '{{ wait.trigger.event.data.action == action_on }}'
-          sequence:
-          - service: light.turn_on
-            target:
-              entity_id: '{{ lights }}'
-        - conditions: '{{ wait.trigger.event.data.action == action_off }}'
-          sequence:
-          - service: light.turn_off
-            target:
-              entity_id: '{{ lights }}'
-  id: 3d0bf83c12df464ba6ff9a5798d05df7
-- alias: 'Apple Watch: set network'
-  mode: parallel
-  trigger:
-    platform: event
-    event_type: ios.action_fired
-    event_data:
-      actionName: Set network
-  action:
-  - variables:
-      iphone: 'notify.mobile_app_{{ trigger.event.data.sourceDeviceName.replace(''
-        '', ''_'').replace("''", ''_'')|lower }}
-
-        '
-  - service: '{{ iphone }}'
-    data:
-      message: 'Apple Watch: set network'
-      data:
-        push:
-          category: set_network
-  - wait_for_trigger:
-      platform: event
-      event_type: ios.notification_action_fired
-      event_data:
-        categoryName: set_network
-    timeout: 00:00:20
-    continue_on_timeout: false
-  - variables:
-      device: "{{\n  {'RISHAANFIREHD': 'switch.firehd_rishaan',\n   'ARNAV_IPAD':
-        'switch.my_ipad',\n   'LENOVO': 'switch.lenovohome',\n   'TOSHIBA_AIO': 'switch.toshibaaio',\n
-        \  'SAMMY_TV': 'switch.samsungtv',\n  }[wait.trigger.event.data.actionName]
-        }}\n"
-  - service: '{{ iphone }}'
-    data:
-      message: 'Apple Watch: choose option'
-      data:
-        push:
-          category: device_options
-  - wait_for_trigger:
-      platform: event
-      event_type: ios.notification_action_fired
-      event_data:
-        categoryName: device_options
-    timeout: 00:00:20
-    continue_on_timeout: false
-  - variables:
-      option: '{{ wait.trigger.event.data.actionName }}'
-  - choose:
-    - conditions: '{{ option == ''OFF'' }}'
-      sequence:
-        service: switch.turn_off
-        target:
-          entity_id: '{{ device }}'
-    - conditions: '{{ option == ''ON'' }}'
-      sequence:
-        service: switch.turn_on
-        target:
-          entity_id: '{{ device }}'
-  id: 48cc92426b434916b9a119676679f421
 - id: deck_wall_effects
   alias: Deck Wall Effects
   trigger:
@@ -1936,3 +1636,21 @@
   - target:
       entity_id: switch.shelly_garage
     action: switch.turn_on
+- id: '1777664263465'
+  alias: Garage door left open — notify
+  triggers:
+  - platform: state
+    entity_id: cover.garagedoor
+    to: open
+    for: 00:15:00
+  actions:
+  - data:
+      title: Garage Door
+      message: Garage door has been open for 15 minutes
+      data:
+        push:
+          badge: 0
+        actions:
+        - action: CLOSE_GARAGE
+          title: Close Garage Door
+    action: notify.mobile_app_alokphone2
